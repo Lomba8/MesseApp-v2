@@ -39,10 +39,17 @@ class Server {
         var scuola = await http.get(
             "https://web.spaggiari.eu/rest/v1/students/${prefs.getString('username').substring(1)}/card",
             headers: headers);
-        var data = json.decode(scuola.body);
-        if (data['schCode'].toString() == 'VRLS0003') print(data['schCode']);
-        print(data);
-        _isValid = true;
+        var data = json.decode(scuola.body)["card"];
+        if (data['schCode'].toString() == 'VRLS0003') {
+          _isValid = true;
+          prefs.setString(
+              'scuola', ("${data["schName"]} ${data["schDedication"]}"));
+          prefs.setString('nome', ("${data["schName"]} ${data["firstName"]}"));
+          prefs.setString(
+              'cognome', ("${data["schName"]} ${data["lastName"]}"));
+          prefs.setString(
+              'compleanno', ("${data["schName"]} ${data["birthDate"]}"));
+        }
       } else
         _isValid = false;
     } catch (e) {
