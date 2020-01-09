@@ -65,6 +65,11 @@ flutter:
     - family: CoreSansRounded
       fonts:
         - asset: fonts/CoreSansGRounded-Medium.ttf
+
+    - family: TeeFranklin
+      fonts:
+        - asset: fonts/TeeFranklin-Medium.otf
+  #     - asset: fonts/Tee_franklin_bold.ttf
   #        style: rounded
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic

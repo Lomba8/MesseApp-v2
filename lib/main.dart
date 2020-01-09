@@ -3,6 +3,7 @@ import 'package:applicazione_prova/screens/home_screen.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -11,19 +12,22 @@ import 'package:flutter/material.dart';
 
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
-void main() => runApp(
-      MaterialApp(
-        theme: Globals.darkTheme,
-        darkTheme: Globals.darkTheme,
-        debugShowCheckedModeBanner: false,
-        title: 'Applicazione di prova',
-        home: Home(),
-        routes: {
-          Menu.id: (context) => Menu(),
-          LoginScreen.id: (context) => LoginScreen(),
-        },
-      ),
-    );
+void main() async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  runApp(
+    MaterialApp(
+      theme: Globals.lightTheme,
+      darkTheme: Globals.darkTheme,
+      debugShowCheckedModeBanner: false,
+      title: 'Applicazione di prova',
+      home: (_pref.getString('username') != null) ? LoginScreen() : Menu(),
+      routes: {
+        Menu.id: (context) => Menu(),
+        LoginScreen.id: (context) => LoginScreen(),
+      },
+    ),
+  );
+}
 
 //FIXME: il token ha validita 60 sec uindi
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page

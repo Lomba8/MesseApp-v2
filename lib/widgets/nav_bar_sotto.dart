@@ -57,7 +57,6 @@ class _NavBarSottoState extends State<NavBarSotto> {
   Widget build(BuildContext context) {
     double _quinto = MediaQuery.of(context).size.width / 5;
     double _x = _quinto * items[active].x;
-    print(_x);
     return Stack(
       fit: StackFit.expand,
       overflow: Overflow.visible,
@@ -96,7 +95,6 @@ class _NavBarSottoState extends State<NavBarSotto> {
   }
 
   Widget _flare(Menuitem item, BuildContext contesto) {
-    print(item.name);
     return Expanded(
       child: GestureDetector(
         child: AspectRatio(

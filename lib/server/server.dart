@@ -1,10 +1,16 @@
 import 'dart:convert';
 
-import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Server {
+  static String nome, cognome, scuola, compleanno;
+
+  String _capitalize(String s) {
+    s.toLowerCase();
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
+
   static Map<String, String> headers = {
     'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
     'Content-Type': 'application/json',
@@ -36,19 +42,22 @@ class Server {
         await prefs.setString('username', _username);
         await prefs.setString('password', _password);
         headers['Z-Auth-Token'] = _token;
-        var scuola = await http.get(
+        var card = await http.get(
             "https://web.spaggiari.eu/rest/v1/students/${prefs.getString('username').substring(1)}/card",
             headers: headers);
-        var data = json.decode(scuola.body)["card"];
+        var data = json.decode(card.body)["card"];
+        print(data);
         if (data['schCode'].toString() == 'VRLS0003') {
           _isValid = true;
-          prefs.setString(
-              'scuola', ("${data["schName"]} ${data["schDedication"]}"));
-          prefs.setString('nome', ("${data["schName"]} ${data["firstName"]}"));
-          prefs.setString(
-              'cognome', ("${data["schName"]} ${data["lastName"]}"));
-          prefs.setString(
-              'compleanno', ("${data["schName"]} ${data["birthDate"]}"));
+
+          nome = _capitalize(data["firstName"]);
+          cognome = _capitalize(data["lastName"]);
+          scuola = _capitalize("${data["schName"]} ${data["schDedication"]}");
+          compleanno = _capitalize(data["birthDate"]);
+          await prefs.setString('scuola', scuola);
+          await prefs.setString('nome', nome);
+          await prefs.setString('cognome', cognome);
+          await prefs.setString('compleanno', compleanno);
         }
       } else
         _isValid = false;
@@ -56,10 +65,6 @@ class Server {
       print(e);
     }
     return _isValid;
-  }
-
-  static Future<bool> scuola() async {
-    //final prefs = await SharedPreferences.getInstance();
   }
 
   Future getGrades() {
