@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
                                       ),
                                     ),
                                     TextSpan(
-                                      text: " " + Server.nome,
+                                      text: " " + (Server.nome ?? 'unknown'),
                                       style: TextStyle(
                                         fontFamily: 'TeeFranklin',
                                         color: Color.fromRGBO(21, 38, 74, 1),
@@ -111,7 +111,6 @@ class _HomeState extends State<Home> {
               ),
               Container(
                 color: Theme.of(context).primaryColor,
-                transform: Matrix4.translationValues(0.0, 0, 0.0),
                 height: s.height * 1.2,
                 width: s.width,
                 child: Container(

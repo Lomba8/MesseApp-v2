@@ -1,9 +1,7 @@
 import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/screens/home_screen.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -13,18 +11,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
 void main() async {
-  SharedPreferences _pref = await SharedPreferences.getInstance();
+  print ("main");
+  Menu menu  = Menu();
+  LoginScreen loginScreen = LoginScreen();
   runApp(
     MaterialApp(
       theme: Globals.lightTheme,
       darkTheme: Globals.darkTheme,
       debugShowCheckedModeBanner: false,
       title: 'Applicazione di prova',
-      home: (_pref.getString('username') != null) ? LoginScreen() : Menu(),
-      routes: {
-        Menu.id: (context) => Menu(),
-        LoginScreen.id: (context) => LoginScreen(),
-      },
+      initialRoute: LoginScreen.id,
+      routes: {Menu.id: (context) => menu, LoginScreen.id: (context) => loginScreen},
     ),
   );
 }
