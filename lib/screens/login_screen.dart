@@ -6,6 +6,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'menu_screen.dart';
 
@@ -21,9 +22,28 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _firstInputFocusNode;
   FocusNode _secondInputFocusNode;
 
+  String _username, _password;
+  bool splash = true;
+
   @override
   void initState() {
     super.initState();
+
+    SharedPreferences.getInstance().then((prefs) {
+      _username = prefs.getString('username');
+      _password = prefs.getString('password');
+	  print((_username??"null")+' '+(_password??"null"));
+      if (_username == null || _password == null)
+        setState(() => splash = false);
+      else {
+        Server.login(_username, _password, true).then((ok) {
+          if (ok)
+            Navigator.pushReplacementNamed(context, Menu.id);
+          else
+            setState(() => splash = false);
+        });
+      }
+    });
 
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
@@ -31,32 +51,49 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _firstInputFocusNode.dispose();
-    _secondInputFocusNode.dispose();
+    _firstInputFocusNode?.dispose();
+    _secondInputFocusNode?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     MediaQueryData media = MediaQuery.of(context);
-
-    String _image, _username, _password;
+    String _image;
 
     (MediaQuery.platformBrightnessOf(context).toString() == 'Brightness.dark')
         ? _image = 'images/logomesse_scuro.png'
         : _image = 'images/logomesse_chiaro.png';
 
+    if (splash) {
+      return Container(
+        color: Theme.of(context).backgroundColor,
+        child: Center(
+          child: Container(
+            width: media.size.width * 0.8,
+            height: media.size.width * 0.8,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              image: DecorationImage(
+                fit: BoxFit.fill,
+                image: ExactAssetImage(_image),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     String _usernameMsg = 'L\'username deve essere lungo 9 caratteri';
-    String _passwordMsg = 'La passoword deve essere lunga 8 caratteri';
+    String _passwordMsg = 'La password deve essere lunga 8 caratteri';
 
     void _submit() async {
       SystemChannels.textInput.invokeMethod('TextInput.hide');
 
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
-        var _server = Server(_username, _password);
 
-        if (await _server.login()) {
+        if (await Server.login(_username, _password, true)) {
           Navigator.pushReplacementNamed(context, Menu.id);
         } else {
           _formKey.currentState.reset();
@@ -100,12 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
-        var _server = Server(_username, _password);
 
-        if (await _server.login()) {
+        if (await Server.login(_username, _password, true)) {
           _formKey.currentState.save();
 
-          if (await _server.login()) {
+          if (await Server.login(_username, _password, true)) {
             Navigator.pushReplacementNamed(context, Menu.id);
           } else {
             _formKey.currentState.reset();
@@ -203,18 +239,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 30.0, vertical: 10.0),
                             child: TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Nome utente',
-                                labelStyle: TextStyle(
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
+                              decoration: InputDecoration(labelText: 'Nome utente'),
                               focusNode: _firstInputFocusNode,
                               textInputAction: TextInputAction.next,
                               autocorrect: false,
                               validator: (input) =>
                                   input.length < 9 ? _usernameMsg : null,
-                              onSaved: (input) => _username = input,
+                              onChanged: (input) {
+                                print(input);
+                                _username = input;
+                                },
                               onFieldSubmitted: (v) {
                                 FocusScope.of(context)
                                     .requestFocus(_secondInputFocusNode);
@@ -226,13 +260,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 horizontal: 30.0, vertical: 10.0),
                             child: TextFormField(
                               focusNode: _secondInputFocusNode,
-                              decoration:
-                                  InputDecoration(labelText: 'Password'),
+                              decoration: InputDecoration(labelText: 'Password'),
                               textInputAction: TextInputAction.send,
                               autocorrect: false,
                               validator: (input) =>
                                   input.length != 8 ? _passwordMsg : null,
-                              onSaved: (input) => _password = input,
+                              onChanged: (input) {
+                                print (input);
+                                _password = input;},
                               onFieldSubmitted: _submitString,
                               obscureText: true,
                             ),
