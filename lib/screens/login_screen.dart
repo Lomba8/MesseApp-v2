@@ -1,14 +1,8 @@
-import 'dart:convert';
 import 'package:applicazione_prova/server/server.dart';
 import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/screens/home_screen.dart';
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'menu_screen.dart';
 
@@ -25,27 +19,10 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _secondInputFocusNode;
 
   String _username, _password;
-  bool splash = true;
 
   @override
   void initState() {
     super.initState();
-
-    SharedPreferences.getInstance().then((prefs) {
-      _username = prefs.getString('username');
-      _password = prefs.getString('password');
-      print((_username ?? "null") + ' ' + (_password ?? "null"));
-      if (_username == null || _password == null)
-        setState(() => splash = false);
-      else {
-        Server.login(_username, _password, true).then((ok) {
-          if (ok)
-            Navigator.pushReplacementNamed(context, Menu.id);
-          else
-            setState(() => splash = false);
-        });
-      }
-    });
 
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
@@ -66,24 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
     (MediaQuery.platformBrightnessOf(context).toString() == 'Brightness.dark')
         ? _image = 'images/logomesse_scuro.png'
         : _image = 'images/logomesse_chiaro.png';
-
-    if (splash) {
-      return Container(
-        child: Center(
-          child: Container(
-            color: Colors.black,
-            width: media.size.width * 0.3,
-            height: media.size.width * 0.3,
-            child: FlareActor(
-              'flare/Splash.flr',
-              animation: 'Go',
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-            ),
-          ),
-        ),
-      );
-    }
 
     String _usernameMsg = 'L\'username deve essere lungo 9 caratteri';
     String _passwordMsg = 'La password deve essere lunga 8 caratteri';
