@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:applicazione_prova/server/server.dart';
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/home_screen.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,17 +69,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (splash) {
       return Container(
-        color: Theme.of(context).backgroundColor,
         child: Center(
           child: Container(
-            width: media.size.width * 0.8,
-            height: media.size.width * 0.8,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: ExactAssetImage(_image),
-              ),
+            color: Colors.black,
+            width: media.size.width * 0.3,
+            height: media.size.width * 0.3,
+            child: FlareActor(
+              'flare/Splash.flr',
+              animation: 'Go',
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
             ),
           ),
         ),
@@ -185,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Theme.of(context).backgroundColor,
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
