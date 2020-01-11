@@ -19,29 +19,11 @@ class MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).backgroundColor,
-      height: MediaQuery.of(context).size.height,
-      child: Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Expanded(child: screens[selected]),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              color: Theme.of(context).backgroundColor,
-              height: MediaQuery.of(context).size.height / 14 + 8,
-              child: NavBarSotto(
-                (pos) => setState(() => selected = pos),
-              ),
-            ),
-          )
-        ],
-      ),
+    return Scaffold(
+      body: screens[selected],
+      bottomNavigationBar: NavBarSotto(
+        (pos) => setState(() => selected = pos),
+      )
     );
   }
 }

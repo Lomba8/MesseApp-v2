@@ -35,7 +35,13 @@ class Server {
 				//Globals.setCredentials(_username, _password);
 				final prefs = await SharedPreferences.getInstance();
 				headers['Z-Auth-Token'] = _token;
-				if (!check) return true;
+				if (!check) {
+          scuola = prefs.getString('scuola');
+          nome = prefs.getString('nome');
+          cognome = prefs.getString('cognome');
+          compleanno = prefs.getString('compleanno');
+          return true;
+        }
 
 				var card = await http.get(
 					"https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
@@ -44,12 +50,12 @@ class Server {
 				var data = json.decode(card.body)["card"];
 
 				if (data['schCode'].toString() == 'VRLS0003') {					
-					await prefs.setString('username', username);
-					await prefs.setString('password', password);
-					await prefs.setString('scuola', scuola = _capitalize("${data["schName"]} ${data["schDedication"]}"));
-					await prefs.setString('nome', nome = _capitalize(data["firstName"]));
-					await prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
-					await prefs.setString('compleanno', compleanno = _capitalize(data["birthDate"]));
+					prefs.setString('username', username);
+					prefs.setString('password', password);
+					prefs.setString('scuola', scuola = _capitalize("${data["schName"]} ${data["schDedication"]}"));
+					prefs.setString('nome', nome = _capitalize(data["firstName"]));
+					prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
+					prefs.setString('compleanno', compleanno = _capitalize(data["birthDate"]));
 					return true;
 				}
 			}

@@ -55,39 +55,23 @@ class _NavBarSottoState extends State<NavBarSotto> {
 
   @override
   Widget build(BuildContext context) {
-    double _quinto = MediaQuery.of(context).size.width / 5;
-    double _x = _quinto * items[active].x;
-    return Stack(
-      fit: StackFit.expand,
-      overflow: Overflow.visible,
+    return Column (
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Container(
-          height: MediaQuery.of(context).size.height / 19,
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: items.map((item) => _flare(item, context)).toList(),
-          ),
+        Row(
+          children: items.map((item) => _flare(item, context)).toList(),
         ),
-        Positioned(
-          bottom: 0, //_quinto * 5,
-          child: Container(
-            width: _quinto * 5,
-            child: AnimatedContainer(
-              color: Theme.of(context).backgroundColor,
-              duration: Duration(milliseconds: 200),
-              alignment: Alignment(items[active].x, -1),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: items[active].color),
-                height: 8,
-                width: MediaQuery.of(context).size.width * 0.2,
-              ),
-            ),
+        AnimatedContainer(
+          color: Theme.of(context).backgroundColor,
+          duration: Duration(milliseconds: 200),
+          alignment: Alignment(items[active].x, -1),
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: items[active].color),
+            height: 8,
+            width: MediaQuery.of(context).size.width * 0.2,
           ),
         ),
       ],
@@ -97,15 +81,18 @@ class _NavBarSottoState extends State<NavBarSotto> {
   Widget _flare(Menuitem item, BuildContext contesto) {
     return Expanded(
       child: GestureDetector(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Padding(
-            padding: EdgeInsets.only(top: 13, bottom: 13),
-            child: FlareActor(
-              'flare/${item.name}',
-              alignment: Alignment.center,
-              fit: BoxFit.contain,
-              animation: item.name == items[active].name ? 'Go' : 'idle',
+        child: Container(
+          height: MediaQuery.of(context).size.height/13,
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 3),
+              child: FlareActor(
+                'flare/${item.name}',
+                alignment: Alignment.center,
+                fit: BoxFit.contain,
+                animation: item.name == items[active].name ? 'Go' : 'idle',
+              ),
             ),
           ),
         ),

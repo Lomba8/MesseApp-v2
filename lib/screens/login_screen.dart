@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:applicazione_prova/server/server.dart';
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/home_screen.dart';
@@ -26,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String _username, _password;
   bool splash = true;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -38,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_username == null || _password == null)
         setState(() => splash = false);
       else {
-        Server.login(_username, _password, true).then((ok) {
+        Server.login(_username, _password, false).then((ok) {
           if (ok)
             Navigator.pushReplacementNamed(context, Menu.id);
           else
@@ -62,24 +64,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     MediaQueryData media = MediaQuery.of(context);
     String _image;
+    GlobalKey _scaffoldKey = GlobalKey();
 
-    (MediaQuery.platformBrightnessOf(context).toString() == 'Brightness.dark')
+    (Theme.of(context).brightness == Brightness.dark)
         ? _image = 'images/logomesse_scuro.png'
         : _image = 'images/logomesse_chiaro.png';
 
     if (splash) {
-      return Container(
-        child: Center(
-          child: Container(
-            color: Colors.black,
-            width: media.size.width * 0.3,
-            height: media.size.width * 0.3,
-            child: FlareActor(
-              'flare/Splash.flr',
-              animation: 'Go',
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-            ),
+      return Center(
+        child: Container(
+          color: Colors.black,
+          width: media.size.width * 0.3,
+          height: media.size.width * 0.3,
+          child: FlareActor(
+            'flare/Splash.flr',
+            animation: 'Go',
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
           ),
         ),
       );
@@ -90,6 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     void _submit() async {
       SystemChannels.textInput.invokeMethod('TextInput.hide');
+      setState(() {
+        _loading = true;
+      });
 
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
@@ -98,54 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacementNamed(context, Menu.id);
         } else {
           _formKey.currentState.reset();
-          Flushbar(
-            padding: EdgeInsets.all(20),
-            borderRadius: 20,
-            backgroundGradient: LinearGradient(
-              colors: [Globals.bluScolorito, Theme.of(context).accentColor],
-              stops: [0.3, 1],
-            ),
-            boxShadows: [
-              BoxShadow(
-                color: Colors.black45,
-                offset: Offset(3, 3),
-                blurRadius: 6,
-              ),
-            ],
-            duration: Duration(seconds: 3),
-            isDismissible: true,
-            icon: Icon(
-              Icons.error_outline,
-              size: 35,
-              color: Theme.of(context).backgroundColor,
-            ),
-            shouldIconPulse: true,
-            animationDuration: Duration(seconds: 1),
-            // All of the previous Flushbars could be dismissed by swiping down
-            // now we want to swipe to the sides
-            dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-            // The default curve is Curves.easeOut
-            forwardAnimationCurve: Curves.fastOutSlowIn,
-            title: 'Username o password errati',
-            message: 'Reinserire le credenziali',
-          )..show(context);
-        }
-      }
-    }
 
-    void _submitString(String text) async {
-      SystemChannels.textInput.invokeMethod('TextInput.hide');
-
-      if (_formKey.currentState.validate()) {
-        _formKey.currentState.save();
-
-        if (await Server.login(_username, _password, true)) {
-          _formKey.currentState.save();
-
-          if (await Server.login(_username, _password, true)) {
-            Navigator.pushReplacementNamed(context, Menu.id);
-          } else {
-            _formKey.currentState.reset();
+          if (Platform.isAndroid)
+            (_scaffoldKey.currentState as ScaffoldState).showSnackBar(SnackBar(
+              duration: Duration(seconds: 3),
+              content: Text(
+                  "Username o password errate! Reinserire le credenziali."),
+            ));
+          else
             Flushbar(
               padding: EdgeInsets.all(20),
               borderRadius: 20,
@@ -176,129 +140,130 @@ class _LoginScreenState extends State<LoginScreen> {
               forwardAnimationCurve: Curves.fastOutSlowIn,
               title: 'Username o password errati',
               message: 'Reinserire le credenziali',
-            )..show(context);
-          }
+            ).show(context);
         }
       }
+
+      setState(() {
+        _loading = false;
+      });
     }
 
-    return Container(
-      color: Theme.of(context).backgroundColor,
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          body: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            onVerticalDragCancel: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: SingleChildScrollView(
-              child: Container(
-                height: media.size.height,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: media.size.height / 10,
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        onVerticalDragCancel: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: ExactAssetImage(_image),
                     ),
-                    Container(
-                      width: 100.0,
-                      height: 100.0,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: ExactAssetImage(_image),
+                  ),
+                ),
+                SizedBox(
+                  height: media.size.height / 40,
+                ),
+                Text(
+                  'Messe App',
+                  style: TextStyle(
+                    color: (Theme.of(context).brightness == Brightness.dark)
+                        ? Globals.bluScolorito
+                        : Globals.violaScolorito,
+                    fontSize: 20.0,
+                    fontFamily: 'CoreSansRounded',
+                  ),
+                ),
+                SizedBox(height: media.size.height / 15),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 30.0, vertical: 10.0),
+                        child: TextFormField(
+                          decoration: InputDecoration(labelText: 'Nome utente'),
+                          focusNode: _firstInputFocusNode,
+                          textInputAction: TextInputAction.next,
+                          autocorrect: false,
+                          validator: (input) =>
+                              input.length < 9 ? _usernameMsg : null,
+                          onChanged: (input) {
+                            print(input);
+                            _username = input;
+                          },
+                          onFieldSubmitted: (v) {
+                            FocusScope.of(context)
+                                .requestFocus(_secondInputFocusNode);
+                          },
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: media.size.height / 40,
-                    ),
-                    Text(
-                      'Messe App',
-                      style: TextStyle(
-                        color: (MediaQuery.platformBrightnessOf(context)
-                                    .toString() ==
-                                'Brightness.dark')
-                            ? Globals.bluScolorito
-                            : Globals.violaScolorito,
-                        fontSize: 20.0,
-                        fontFamily: 'CoreSansRounded',
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 30.0, vertical: 10.0),
+                        child: TextFormField(
+                          focusNode: _secondInputFocusNode,
+                          decoration: InputDecoration(labelText: 'Password'),
+                          textInputAction: TextInputAction.send,
+                          autocorrect: false,
+                          validator: (input) =>
+                              input.length != 8 ? _passwordMsg : null,
+                          onChanged: (input) {
+                            print(input);
+                            _password = input;
+                          },
+                          //onFieldSubmitted: _submitString,
+                          obscureText: true,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: media.size.height / 15),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 10.0),
-                            child: TextFormField(
-                              decoration:
-                                  InputDecoration(labelText: 'Nome utente'),
-                              focusNode: _firstInputFocusNode,
-                              textInputAction: TextInputAction.next,
-                              autocorrect: false,
-                              validator: (input) =>
-                                  input.length < 9 ? _usernameMsg : null,
-                              onChanged: (input) {
-                                print(input);
-                                _username = input;
-                              },
-                              onFieldSubmitted: (v) {
-                                FocusScope.of(context)
-                                    .requestFocus(_secondInputFocusNode);
-                              },
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 10.0),
-                            child: TextFormField(
-                              focusNode: _secondInputFocusNode,
-                              decoration:
-                                  InputDecoration(labelText: 'Password'),
-                              textInputAction: TextInputAction.send,
-                              autocorrect: false,
-                              validator: (input) =>
-                                  input.length != 8 ? _passwordMsg : null,
-                              onChanged: (input) {
-                                print(input);
-                                _password = input;
-                              },
-                              onFieldSubmitted: _submitString,
-                              obscureText: true,
-                            ),
-                          ),
-                          SizedBox(
-                            height: media.size.height / 15,
-                          ),
-                          FlatButton(
-                            onPressed: _submit,
-                            color: Theme.of(context).primaryColor,
-                            splashColor: Theme.of(context).primaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 120.0, vertical: 16.0),
-                            child: Text(
-                              'Login',
-                              style: Theme.of(context).textTheme.body1,
-                            ),
-                          )
-                        ],
+                      SizedBox(
+                        height: media.size.height / 15,
                       ),
-                    )
-                  ],
-                ),
-              ),
+                      FlatButton(
+                        onPressed: _submit,
+                        color: Theme.of(context).primaryColor,
+                        splashColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 120.0, vertical: 16.0),
+                        child: _loading
+                            ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(
+                                    'Login',
+                                    style: Theme.of(context).textTheme.body1,
+                                  ),
+                                  Icon(Icons.arrow_upward) // TODO: sostituire con una animazione di caricamento
+                                ],
+                              )
+                            : Text(
+                                'Login',
+                                style: Theme.of(context).textTheme.body1,
+                              ),
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
         ),
