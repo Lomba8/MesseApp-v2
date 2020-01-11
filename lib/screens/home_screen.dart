@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
 //flare gia pronto per menu bar https://rive.app/a/akaaljotsingh/files/flare/drawer/preview
 
+//FIXME:aggiustare bordi dei container che si vedono i margini quando si scrolla la pagina
 class Home extends StatefulWidget {
   static final String id = 'home_screen';
   @override
@@ -40,7 +41,12 @@ class _HomeState extends State<Home> {
               Material(
                 elevation: 100.0,
                 child: Container(
-                  color: Theme.of(context).backgroundColor,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.0,
+                      color: Theme.of(context).backgroundColor,
+                    ),
+                  ),
                   transform: Matrix4.translationValues(0.0, 0.5, 0.0),
                   child: Container(
                     height: s.height / 3.5,

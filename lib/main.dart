@@ -1,7 +1,10 @@
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:applicazione_prova/server/server.dart';
+import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -11,17 +14,42 @@ import 'package:flutter/material.dart';
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
 void main() async {
-  print ("main");
-  Menu menu  = Menu();
+  WidgetsFlutterBinding.ensureInitialized();
+  print("main");
+  Menu menu = Menu();
   LoginScreen loginScreen = LoginScreen();
+  bool isLogged;
+  var _page;
+  String _username, _password;
+
+  var _prefs = await SharedPreferences.getInstance();
+
+  _username = _prefs.getString('username');
+  _password = _prefs.getString('password');
+  isLogged = await Server.login(_username, _password, true);
+
+  if (isLogged) {
+    _page = (context) => Menu();
+  } else {
+    _page = (context) => LoginScreen();
+  }
+
   runApp(
     MaterialApp(
       theme: Globals.lightTheme,
       darkTheme: Globals.darkTheme,
       debugShowCheckedModeBanner: false,
       title: 'Applicazione di prova',
-      initialRoute: LoginScreen.id,
-      routes: {Menu.id: (context) => menu, LoginScreen.id: (context) => loginScreen},
+      home: SplashScreen(
+        'flare/Splash.flr',
+        _page,
+        loopAnimation: 'Go',
+        until: () => Server.login(_username, _password, true),
+      ),
+      routes: {
+        Menu.id: (context) => menu,
+        LoginScreen.id: (context) => loginScreen
+      },
     ),
   );
 }
