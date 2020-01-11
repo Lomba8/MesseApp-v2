@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     SharedPreferences.getInstance().then((prefs) {
       _username = prefs.getString('username');
       _password = prefs.getString('password');
-	  print((_username??"null")+' '+(_password??"null"));
+      print((_username ?? "null") + ' ' + (_password ?? "null"));
       if (_username == null || _password == null)
         setState(() => splash = false);
       else {
@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Theme.of(context).backgroundColor,
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: Colors.black,
           body: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -239,7 +239,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 30.0, vertical: 10.0),
                             child: TextFormField(
-                              decoration: InputDecoration(labelText: 'Nome utente'),
+                              decoration:
+                                  InputDecoration(labelText: 'Nome utente'),
                               focusNode: _firstInputFocusNode,
                               textInputAction: TextInputAction.next,
                               autocorrect: false,
@@ -248,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onChanged: (input) {
                                 print(input);
                                 _username = input;
-                                },
+                              },
                               onFieldSubmitted: (v) {
                                 FocusScope.of(context)
                                     .requestFocus(_secondInputFocusNode);
@@ -260,14 +261,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 horizontal: 30.0, vertical: 10.0),
                             child: TextFormField(
                               focusNode: _secondInputFocusNode,
-                              decoration: InputDecoration(labelText: 'Password'),
+                              decoration:
+                                  InputDecoration(labelText: 'Password'),
                               textInputAction: TextInputAction.send,
                               autocorrect: false,
                               validator: (input) =>
                                   input.length != 8 ? _passwordMsg : null,
                               onChanged: (input) {
-                                print (input);
-                                _password = input;},
+                                print(input);
+                                _password = input;
+                              },
                               onFieldSubmitted: _submitString,
                               obscureText: true,
                             ),
