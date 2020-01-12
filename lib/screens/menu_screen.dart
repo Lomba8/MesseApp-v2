@@ -20,7 +20,10 @@ class MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[selected],
+      body: Padding(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        child: screens[selected],
+      ),
       bottomNavigationBar: NavBarSotto(
         (pos) => setState(() => selected = pos),
       )

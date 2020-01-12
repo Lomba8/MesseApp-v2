@@ -1,4 +1,3 @@
-import 'package:applicazione_prova/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
 
 class AreaStudenti extends StatefulWidget {

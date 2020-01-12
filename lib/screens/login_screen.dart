@@ -1,14 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:applicazione_prova/server/server.dart';
 import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/screens/home_screen.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'menu_screen.dart';
@@ -36,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     SharedPreferences.getInstance().then((prefs) {
       _username = prefs.getString('username');
       _password = prefs.getString('password');
-      print((_username ?? "null") + ' ' + (_password ?? "null"));
       if (_username == null || _password == null)
         setState(() => splash = false);
       else {
@@ -103,13 +97,13 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           _formKey.currentState.reset();
 
-          if (Platform.isAndroid)
+          /*if (Platform.isAndroid)
             (_scaffoldKey.currentState as ScaffoldState).showSnackBar(SnackBar(
               duration: Duration(seconds: 3),
               content: Text(
                   "Username o password errate! Reinserire le credenziali."),
             ));
-          else
+          else*/
             Flushbar(
               padding: EdgeInsets.all(20),
               borderRadius: 20,
@@ -143,7 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ).show(context);
         }
       }
-
       setState(() {
         _loading = false;
       });
@@ -252,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     'Login',
                                     style: Theme.of(context).textTheme.body1,
                                   ),
-                                  Icon(Icons.arrow_upward) // TODO: sostituire con una animazione di caricamento
+                                  CircularProgressIndicator() // FIXME: non modificare il bottone
                                 ],
                               )
                             : Text(

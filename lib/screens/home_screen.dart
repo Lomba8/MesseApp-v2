@@ -1,8 +1,5 @@
 import 'package:applicazione_prova/server/server.dart';
-import 'package:applicazione_prova/widgets/nav_bar.dart';
-import 'package:applicazione_prova/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
 //flare gia pronto per menu bar https://rive.app/a/akaaljotsingh/files/flare/drawer/preview
@@ -15,12 +12,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  SharedPreferences _prefs;
-  void _preferenze() async => _prefs = await SharedPreferences.getInstance();
 
   @override
   Widget build(BuildContext context) {
-    _preferenze();
     var s = MediaQuery.of(context).size;
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,

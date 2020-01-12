@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 class Globals {
   static final ThemeData lightTheme = ThemeData(
     pageTransitionsTheme: PageTransitionsTheme(builders: {
@@ -77,7 +75,7 @@ class Globals {
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
-          color: Color.fromRGBO(40, 41, 60, 1)),
+          color: Color.fromRGBO(255, 255, 255, 1)),
     ),
   );
 

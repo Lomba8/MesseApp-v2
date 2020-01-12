@@ -1,14 +1,6 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-
-import 'package:applicazione_prova/screens/agenda_screen.dart';
-import 'package:applicazione_prova/screens/area_studenti_screen.dart';
-import 'package:applicazione_prova/screens/home_screen.dart';
-import 'package:applicazione_prova/screens/login_screen.dart';
-import 'package:applicazione_prova/screens/orari_screen.dart';
-import 'package:applicazione_prova/screens/voti_screen.dart';
 
 class Menuitem {
   final String name;
