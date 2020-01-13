@@ -1,16 +1,15 @@
-# applicazione_prova
+# Messe-app-v2
 
-A new Flutter project.
+## Status
 
-## Getting Started
+![](https://github.com/Lomba8/messe-app-status/blob/master/Messe-app%2C%2010:1:20.png)
 
-This project is a starting point for a Flutter application.
+[Home screen link](https://www.pinterest.it/pin/687432330607879527/)
 
-A few resources to get you started if this is your first Flutter project:
+[Voti link](https://www.pinterest.it/pin/687432330607990243/)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+[Collegamento Gcal link](https://www.pinterest.it/pin/687432330607879389/)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[Una volta cliccato su giorno screen link](https://www.pinterest.it/pin/687432330607879358/)
+
+[Grafici una volta cliccato sui dati link](https://www.pinterest.it/pin/805299977103267045/)
