@@ -4,7 +4,7 @@ A new Flutter project.
 
 ## Getting Started
 
-![Image description](https://github.com/Lomba8/messe-app-status/blob/master/Lista%206.png)
+![Image description](https://github.com/Lomba8/messe-app-status/blob/master/Messe-app%2C%2010:1:20.png)
 
 This project is a starting point for a Flutter application.
 
