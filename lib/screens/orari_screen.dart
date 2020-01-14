@@ -11,7 +11,7 @@ class _OrariState extends State<Orari> {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).backgroundColor,
-      child: Text("Orari"),
+      child: Center(child: Text("Orari")),
     );
   }
 }

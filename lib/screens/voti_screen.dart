@@ -18,7 +18,7 @@ class _VotiState extends State<Voti> {
   void initState() {
     super.initState();
     Server.getVoti().then((ok) {
-      if (ok) setState(() {});
+      if (ok && mounted) setState(() {});
     });
   }
 
@@ -48,6 +48,7 @@ class _VotiState extends State<Voti> {
   }
 
   double _average(List marks) {
+    if (marks == null) return double.nan;
     int n = 0;
     return marks.fold<double>(0, (sum, m) {
           if (m['voto'] == null) return sum;
@@ -64,7 +65,7 @@ class _VotiState extends State<Voti> {
           double average = _average(sbj[periodo]);
           if (average.isNaN) return sum;
           n++;
-          return sum + average;
+          return sum + average.round();
         }) /
         n;
   }
@@ -167,10 +168,8 @@ class _VotiState extends State<Voti> {
             child: Padding(
                 padding: EdgeInsets.all(30.0 - 15.0),
                 child: Column(
-                  children: (Server.voti
-                        ..removeWhere(
-                            (key, value) => value[periods[0]] == null))
-                      .values
+                  children: Server.voti.values
+                      .where((sbj) => sbj[periods[0]] != null)
                       .expand((sbj) {
                     double average = _average(sbj[periods[0]]);
                     return [
@@ -190,7 +189,7 @@ class _VotiState extends State<Voti> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       bottom: BorderSide(
-                                        width: 2,
+                                          width: 2,
                                           color: average < 0 || average.isNaN
                                               ? Colors.blue
                                               : average < 6
@@ -205,12 +204,14 @@ class _VotiState extends State<Voti> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       bottom: BorderSide(
-                                        width: 2,
+                                          width: 2,
                                           color: average < 0 || average.isNaN
                                               ? Colors.blue.withAlpha(100)
                                               : average < 6
-                                                  ? Colors.deepOrange[900].withAlpha(100)
-                                                  : Colors.green.withAlpha(100)))),
+                                                  ? Colors.deepOrange[900]
+                                                      .withAlpha(100)
+                                                  : Colors.green
+                                                      .withAlpha(100)))),
                             ),
                           ),
                         ],

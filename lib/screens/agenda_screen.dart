@@ -11,7 +11,7 @@ class _AgendaState extends State<Agenda> {
     Widget build(BuildContext context) {
         return Container(
             color: Theme.of(context).backgroundColor,
-            child: Text("Agenda"),
+            child: Center(child: Text("Agenda")),
         );
     }
 }
