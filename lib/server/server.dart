@@ -75,45 +75,56 @@ class Server {
     return false;
   }
 
+  static Future<void> downloadAll (void Function(double) callback) async {
+    int N = 1;
+    int n = 0;
+    getVoti().then((ok) => callback(++n/N));
+  }
+
   static Future<bool> getVoti() async {
     // TODO: gestire Z-If-None-Match
     try {
       var r = await http.get(votiUrl.replaceFirst('%d', usrId.toString()), headers: headers);
       if (r.statusCode != 200) return false;
       var data = json.decode(r.body)['grades'];
+      Map voti2 = {};
 
-      (data as List).forEach((m) {
+      data.forEach((m) {
         if (m['canceled']) return;
-        Map subject = voti[m['subjectId']] ??= {
+        Map subject = voti2[m['subjectId']] ??= {
           'subjectCode': m['subjectCode'],  // nome abbreviato
           'subjectDesc': m['subjectDesc'],  // nome completo
           'periodi': []
         };
-        List votiPeriodo = subject[m['periodDesc'].toUpperCase()];
+        Map votiPeriodo = subject[m['periodDesc'].toUpperCase()];
         if (votiPeriodo == null) {
-          votiPeriodo = subject[m['periodDesc'].toUpperCase()] = [];
+          votiPeriodo = subject[m['periodDesc'].toUpperCase()] = {};
           subject['periodi'].add(m['periodDesc'].toUpperCase());
         }
-        votiPeriodo.add({
+        Map prevVoto = voti[m['subjectId']];
+        if (prevVoto != null) prevVoto = prevVoto[m['periodDesc'].toUpperCase()];
+        if (prevVoto != null) prevVoto = prevVoto[m['evtId']];
+        votiPeriodo[m['evtId']] = {
           'data': m['evtDate'],
           'voto': m['decimalValue'],
           'votoStr': m['displayValue'],
-          'ordine': m['displaPos'],
+          'data': m['evtDate'],
           'info': m['notesForFamily'],
-        });
+          'new': prevVoto == null || prevVoto['new']
+        };
       });
-      voti.forEach((key, value) {
-        value['TOTALE'] ??= [];
+      voti2.values.forEach((value) {
+        value['TOTALE'] ??= {};
         value['periodi'].forEach ((p) {
-          (value['TOTALE'] as List).addAll(value[p]);
-          value[p].sort((a, b) => (a['ordine'] - b['ordine']) as int);
+          value['TOTALE'].addAll(value[p]);
         });
-        value['TOTALE'].sort((a, b) => (a['ordine'] - b['ordine']) as int);
       });
+      voti = voti2;
       votiLastUpdate = DateTime.now().millisecondsSinceEpoch;
       return true;
-    } catch (Exception) {
-      print(Exception);
+    } catch (e, stack) {
+      print(e);
+      print(stack);
     }
     return false;
   }

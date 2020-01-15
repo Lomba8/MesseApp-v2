@@ -47,7 +47,7 @@ class _VotiState extends State<Voti> {
     return 'più di un giorno fa';
   }
 
-  double _average(List marks) {
+  double _average(Iterable marks) {
     if (marks == null) return double.nan;
     int n = 0;
     return marks.fold<double>(0, (sum, m) {
@@ -58,11 +58,24 @@ class _VotiState extends State<Voti> {
         n;
   }
 
+  int _countNewMarks(Map sbj) {
+    if (sbj[periods[0]] == null) return 0;
+    return sbj[periods[0]].values.fold(0, (sum, mark) {
+      if (mark['new']) return sum + 1;
+      return sum;
+    });
+  }
+
+  bool _hasNewMarks(Map sbj) {
+    if (sbj[periods[0]] == null) return false;
+    return sbj[periods[0]].values.any((mark) => mark['new'] as bool);
+  }
+
   double _averagePeriodo(String periodo) {
     int n = 0;
     return Server.voti.values.where((sbj) => sbj[periodo] != null).fold(0,
             (sum, sbj) {
-          double average = _average(sbj[periodo]);
+          double average = _average(sbj[periodo].values);
           if (average.isNaN) return sum;
           n++;
           return sum + average.round();
@@ -74,6 +87,10 @@ class _VotiState extends State<Voti> {
 
   @override
   Widget build(BuildContext context) {
+    int votiCount = Server.voti.values.fold(0, (sum, sbj) {
+      if (sbj[periods[0]] == null) return sum;
+      return sum + _countNewMarks(sbj);
+    });
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -99,10 +116,7 @@ class _VotiState extends State<Voti> {
                       Expanded(
                         flex: 2,
                         child: Center(
-                          child: CustomPaint(
-                            painter: MarkView(_averagePeriodo(periods[0])),
-                            size: Size.square(150),
-                          ),
+                          child: MarkView(_averagePeriodo(periods[0])),
                         ),
                       ),
                       Expanded(
@@ -116,10 +130,7 @@ class _VotiState extends State<Voti> {
                                     periods[0],
                                     periods[2]
                                   ]), // TODO: animazione del cambio periodo
-                              child: CustomPaint(
-                                painter: MarkView(_averagePeriodo(periods[1])),
-                                size: Size.square(75),
-                              ),
+                              child: MarkView(_averagePeriodo(periods[1])),
                             ),
                             GestureDetector(
                               onTap: () => setState(() => periods = [
@@ -127,10 +138,7 @@ class _VotiState extends State<Voti> {
                                     periods[1],
                                     periods[0]
                                   ]),
-                              child: CustomPaint(
-                                painter: MarkView(_averagePeriodo(periods[2])),
-                                size: Size.square(75),
-                              ),
+                              child: MarkView(_averagePeriodo(periods[2])),
                             )
                           ],
                         ),
@@ -141,20 +149,20 @@ class _VotiState extends State<Voti> {
                     padding: const EdgeInsets.only(top: 15.0),
                     child: ListTile(
                       dense: true,
-                      leading: /*nuovo voto*/ true
+                      leading: votiCount > 0
                           ? Icon(
                               Icons.warning,
                               color: Colors.yellow,
                             )
-                          : null, // TODO
+                          : null,
                       trailing: IconButton(
                         icon: Icon(Icons.cached),
                         onPressed: () => Server.getVoti().then((ok) {
-                          if (ok) setState(() {});
+                          if (ok) _setStateIfAlive();
                         }),
                       ),
                       title: Text(
-                        'n° di nuovi voti\n${_passedTime()}', // TODO
+                        '${votiCount > 0 ? votiCount : 'nessun'} nuov${votiCount > 1 ? 'i' : 'o'} vot${votiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
                       ),
                     ),
                   )
@@ -171,13 +179,23 @@ class _VotiState extends State<Voti> {
                   children: Server.voti.values
                       .where((sbj) => sbj[periods[0]] != null)
                       .expand((sbj) {
-                    double average = _average(sbj[periods[0]]);
+                    double average = _average(sbj[periods[0]].values);
                     return [
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
+                      ListTile(
+                        leading: _hasNewMarks(sbj)
+                            ? Icon(
+                                Icons.add_circle_outline,
+                                color: Colors.yellow,
+                              )
+                            : null,
+                        trailing: IconButton(
+                          icon: Icon(Icons.arrow_forward_ios),
+                          onPressed: null,  // TODO: open details
+                        ),
+                        title: Text(
                           sbj['subjectDesc'],
                           overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
                         ),
                       ),
                       Row(
@@ -206,12 +224,12 @@ class _VotiState extends State<Voti> {
                                       bottom: BorderSide(
                                           width: 2,
                                           color: average < 0 || average.isNaN
-                                              ? Colors.blue.withAlpha(100)
+                                              ? Colors.blue.withAlpha(50)
                                               : average < 6
                                                   ? Colors.deepOrange[900]
-                                                      .withAlpha(100)
+                                                      .withAlpha(50)
                                                   : Colors.green
-                                                      .withAlpha(100)))),
+                                                      .withAlpha(50)))),
                             ),
                           ),
                         ],
@@ -226,17 +244,51 @@ class _VotiState extends State<Voti> {
   }
 }
 
-class MarkView extends CustomPainter {
+class MarkView extends StatefulWidget {
+  final double _voto;
+
+  MarkView([this._voto = -1]);
+
+  @override
+  MarkViewState createState() => MarkViewState();
+}
+
+class MarkViewState extends State<MarkView>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        value: 0.0, vsync: this, duration: Duration(seconds: 2));
+    _controller.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _controller.animateTo(2);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: CustomPaint(
+        painter: MarkPainter(widget._voto, _controller.value),
+      ),
+    );
+  }
+}
+
+class MarkPainter extends CustomPainter {
   final Paint p = Paint()
     ..style = PaintingStyle.stroke
     ..strokeWidth = 10
+    ..strokeCap = StrokeCap.round
     ..color = Colors.green;
   double _mark;
-  bool _fill;
+  double _progress;
 
-  MarkView([this._mark = -1, this._fill = false]) {
-    if (_fill) p.style = PaintingStyle.fill;
-
+  MarkPainter([this._mark = -1, this._progress = 1]) {
     if (_mark == null || _mark.isNaN)
       p.color = Colors.blue;
     else if (_mark < 6) p.color = Colors.deepOrange[900];
@@ -244,20 +296,17 @@ class MarkView extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: animazione
-    canvas.drawArc(
-        Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
-        -math.pi / 2,
-        math.pi * (_mark == null || _mark.isNaN ? 10 : _mark) / 5,
-        _fill,
-        p);
+    if (_mark != null && !_mark.isNaN) {
+      canvas.drawArc(
+          Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
+          -math.pi / 2,
+          _progress * math.pi * (_mark == null || _mark.isNaN ? 10 : _mark) / 5,
+          false,
+          p);
+    }
     p.color = p.color.withAlpha(50);
-    canvas.drawArc(
-        Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
-        -math.pi / 2,
-        -math.pi * (_mark == null || _mark.isNaN ? 0 : 10 - _mark) / 5,
-        _fill,
-        p);
+    canvas.drawCircle(size.center(Offset.zero),
+        (math.min(size.width, size.height) - 10) / 2, p);
     p.color = p.color.withAlpha(255);
 
     TextPainter painter = TextPainter(
@@ -278,7 +327,7 @@ class MarkView extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    MarkView mv = oldDelegate as MarkView;
+    MarkPainter mv = oldDelegate as MarkPainter;
     if (mv._mark == _mark) return false;
     return true;
   }

@@ -24,6 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool splash = true;
   bool _loading = false;
 
+  double _progress = 0;
+
   @override
   void initState() {
     super.initState();
@@ -36,7 +38,13 @@ class _LoginScreenState extends State<LoginScreen> {
       else {
         Server.login(_username, _password, false).then((ok) {
           if (ok)
-            Navigator.pushReplacementNamed(context, Menu.id);
+            Server.downloadAll((double progress) {
+              setState(() {
+                _progress = progress;
+                if (progress == 1)
+                  Navigator.pushReplacementNamed(context, Menu.id);
+              });
+            });
           else
             setState(() => splash = false);
         });
@@ -65,18 +73,27 @@ class _LoginScreenState extends State<LoginScreen> {
         : _image = 'images/logomesse_chiaro.png';
 
     if (splash) {
-      return Center(
-        child: Container(
-          color: Colors.black,
-          width: media.size.width * 0.3,
-          height: media.size.width * 0.3,
-          child: FlareActor(
-            'flare/Splash.flr',
-            animation: 'Go',
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
+      return Scaffold (
+        backgroundColor: Colors.black,
+        body: Center(
+            child: Container(
+              width: media.size.width * 0.6,
+              height: media.size.width * 0.6,
+              child: FlareActor(
+                'flare/Splash.flr',
+                animation: 'Go',
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+              ),
+            ),
           ),
-        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: LinearProgressIndicator(
+            value: _progress,
+          ),
+        )
+        
       );
     }
 
@@ -104,37 +121,37 @@ class _LoginScreenState extends State<LoginScreen> {
                   "Username o password errate! Reinserire le credenziali."),
             ));
           else*/
-            Flushbar(
-              padding: EdgeInsets.all(20),
-              borderRadius: 20,
-              backgroundGradient: LinearGradient(
-                colors: [Globals.bluScolorito, Theme.of(context).accentColor],
-                stops: [0.3, 1],
+          Flushbar(
+            padding: EdgeInsets.all(20),
+            borderRadius: 20,
+            backgroundGradient: LinearGradient(
+              colors: [Globals.bluScolorito, Theme.of(context).accentColor],
+              stops: [0.3, 1],
+            ),
+            boxShadows: [
+              BoxShadow(
+                color: Colors.black45,
+                offset: Offset(3, 3),
+                blurRadius: 6,
               ),
-              boxShadows: [
-                BoxShadow(
-                  color: Colors.black45,
-                  offset: Offset(3, 3),
-                  blurRadius: 6,
-                ),
-              ],
-              duration: Duration(seconds: 3),
-              isDismissible: true,
-              icon: Icon(
-                Icons.error_outline,
-                size: 35,
-                color: Theme.of(context).backgroundColor,
-              ),
-              shouldIconPulse: true,
-              animationDuration: Duration(seconds: 1),
-              // All of the previous Flushbars could be dismissed by swiping down
-              // now we want to swipe to the sides
-              dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-              // The default curve is Curves.easeOut
-              forwardAnimationCurve: Curves.fastOutSlowIn,
-              title: 'Username o password errati',
-              message: 'Reinserire le credenziali',
-            ).show(context);
+            ],
+            duration: Duration(seconds: 3),
+            isDismissible: true,
+            icon: Icon(
+              Icons.error_outline,
+              size: 35,
+              color: Theme.of(context).backgroundColor,
+            ),
+            shouldIconPulse: true,
+            animationDuration: Duration(seconds: 1),
+            // All of the previous Flushbars could be dismissed by swiping down
+            // now we want to swipe to the sides
+            dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+            // The default curve is Curves.easeOut
+            forwardAnimationCurve: Curves.fastOutSlowIn,
+            title: 'Username o password errati',
+            message: 'Reinserire le credenziali',
+          ).show(context);
         }
       }
       setState(() {
@@ -239,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             horizontal: 120.0, vertical: 16.0),
                         child: _loading
                             ? Row(
-                              mainAxisSize: MainAxisSize.min,
+                                mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   Text(
                                     'Login',
