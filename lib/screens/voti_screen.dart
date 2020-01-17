@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:applicazione_prova/screens/voti_details_screen.dart';
 import 'package:applicazione_prova/server/server.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -94,9 +96,8 @@ class _VotiState extends State<Voti> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30))),
+          CustomPaint(
+            painter: BackgroundPainter(),
             child: Padding(
               padding: const EdgeInsets.all(30.0),
               child: Column(
@@ -146,7 +147,7 @@ class _VotiState extends State<Voti> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 15.0),
+                    padding: const EdgeInsets.only(top: 15.0, bottom: 40),
                     child: ListTile(
                       dense: true,
                       leading: votiCount > 0
@@ -170,74 +171,70 @@ class _VotiState extends State<Voti> {
               ),
             ),
           ),
-          Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30))),
-            child: Padding(
-                padding: EdgeInsets.all(30.0 - 15.0),
-                child: Column(
-                  children: Server.voti.values
-                      .where((sbj) => sbj[periods[0]] != null)
-                      .expand((sbj) {
-                    double average = _average(sbj[periods[0]].values);
-                    return [
-                      ListTile(
-                        leading: _hasNewMarks(sbj)
-                            ? Icon(
-                                Icons.add_circle_outline,
-                                color: Colors.yellow,
-                              )
-                            : null,
-                        trailing: IconButton(
-                          icon: Icon(Icons.arrow_forward_ios),
-                          onPressed: null,  // TODO: open details
-                        ),
-                        title: Text(
-                          sbj['subjectDesc'],
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                        ),
+          Padding(
+              padding: EdgeInsets.all(30.0 - 15.0),
+              child: Column(
+                children: Server.voti.values
+                    .where((sbj) => sbj[periods[0]] != null)
+                    .expand((sbj) {
+                  double average = _average(sbj[periods[0]].values);
+                  return [
+                    ListTile(
+                      leading: _hasNewMarks(sbj)
+                          ? Icon(
+                              Icons.add_circle,
+                              color: Colors.yellow,
+                            )
+                          : null,
+                      trailing: IconButton(
+                        icon: Icon(Icons.arrow_forward_ios),
+                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VotiDetails(sbj, periods[0]))),  // TODO: open details
                       ),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: (average * 10).round(),
-                            child: AnimatedContainer(
-                              duration: Duration(seconds: 1),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          width: 2,
-                                          color: average < 0 || average.isNaN
-                                              ? Colors.blue
-                                              : average < 6
-                                                  ? Colors.deepOrange[900]
-                                                  : Colors.green))),
-                            ),
+                      title: Text(
+                        sbj['subjectDesc'],
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: (average * 10).round(),
+                          child: AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        width: 2,
+                                        color: average < 0 || average.isNaN
+                                            ? Colors.blue
+                                            : average < 6
+                                                ? Colors.deepOrange[900]
+                                                : Colors.green))),
                           ),
-                          Expanded(
-                            flex: (100 - average * 10).round(),
-                            child: AnimatedContainer(
-                              duration: Duration(seconds: 1),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          width: 2,
-                                          color: average < 0 || average.isNaN
-                                              ? Colors.blue.withAlpha(50)
-                                              : average < 6
-                                                  ? Colors.deepOrange[900]
-                                                      .withAlpha(50)
-                                                  : Colors.green
-                                                      .withAlpha(50)))),
-                            ),
+                        ),
+                        Expanded(
+                          flex: (100 - average * 10).round(),
+                          child: AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        width: 2,
+                                        color: average < 0 || average.isNaN
+                                            ? Colors.blue.withAlpha(50)
+                                            : average < 6
+                                                ? Colors.deepOrange[900]
+                                                    .withAlpha(50)
+                                                : Colors.green
+                                                    .withAlpha(50)))),
                           ),
-                        ],
-                      )
-                    ];
-                  }).toList(),
-                )),
-          )
+                        ),
+                      ],
+                    )
+                  ];
+                }).toList(),
+              ))
         ],
       ),
     );
@@ -261,11 +258,17 @@ class MarkViewState extends State<MarkView>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        value: 0.0, vsync: this, duration: Duration(seconds: 2));
+        value: 0.0, vsync: this, duration: Duration(seconds: 1));
     _controller.addListener(() {
       if (mounted) setState(() {});
     });
-    _controller.animateTo(2);
+    _controller.animateTo(1);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
