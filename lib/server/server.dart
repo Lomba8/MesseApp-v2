@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Server {
@@ -29,7 +31,8 @@ class Server {
 
   static String _token;
 
-  static Future<bool> login(String username, String password, bool check) async {
+  static Future<bool> login(
+      String username, String password, bool check) async {
     try {
       body["pass"] = password;
       body["uid"] = username;
@@ -75,36 +78,40 @@ class Server {
     return false;
   }
 
-  static Future<void> downloadAll (void Function(double) callback) async {
+  static Future<void> downloadAll(void Function(double) callback) async {
+    await load ();
     int N = 1;
     int n = 0;
-    getVoti().then((ok) => callback(++n/N));
+    getVoti().then((ok) => callback(++n / N));
   }
 
   static Future<bool> getVoti() async {
     // TODO: gestire Z-If-None-Match
     try {
-      var r = await http.get(votiUrl.replaceFirst('%d', usrId.toString()), headers: headers);
+      var r = await http.get(votiUrl.replaceFirst('%d', usrId.toString()),
+          headers: headers);
       if (r.statusCode != 200) return false;
       var data = json.decode(r.body)['grades'];
-      Map voti2 = {};
+      Map<String, Map> voti2 = {};
 
       data.forEach((m) {
         if (m['canceled']) return;
-        Map subject = voti2[m['subjectId']] ??= {
-          'subjectCode': m['subjectCode'],  // nome abbreviato
-          'subjectDesc': m['subjectDesc'],  // nome completo
+        Map subject = voti2[m['subjectId'].toString()] ??= <String, dynamic>{
+          'subjectCode': m['subjectCode'], // nome abbreviato
+          'subjectDesc': m['subjectDesc'], // nome completo
           'periodi': []
         };
         Map votiPeriodo = subject[m['periodDesc'].toUpperCase()];
         if (votiPeriodo == null) {
-          votiPeriodo = subject[m['periodDesc'].toUpperCase()] = {};
+          votiPeriodo =
+              subject[m['periodDesc'].toUpperCase()] = <String, Map>{};
           subject['periodi'].add(m['periodDesc'].toUpperCase());
         }
-        Map prevVoto = voti[m['subjectId']];
-        if (prevVoto != null) prevVoto = prevVoto[m['periodDesc'].toUpperCase()];
-        if (prevVoto != null) prevVoto = prevVoto[m['evtId']];
-        votiPeriodo[m['evtId']] = {
+        Map prevVoto = voti[m['subjectId'].toString()];
+        if (prevVoto != null)
+          prevVoto = prevVoto[m['periodDesc'].toUpperCase()];
+        if (prevVoto != null) prevVoto = prevVoto[m['evtId'].toString()];
+        votiPeriodo[m['evtId'].toString()] = <String, dynamic>{
           'data': m['evtDate'],
           'voto': m['decimalValue'],
           'votoStr': m['displayValue'],
@@ -115,17 +122,40 @@ class Server {
       });
       voti2.values.forEach((value) {
         value['TOTALE'] ??= {};
-        value['periodi'].forEach ((p) {
+        value['periodi'].forEach((p) {
           value['TOTALE'].addAll(value[p]);
         });
       });
       voti = voti2;
       votiLastUpdate = DateTime.now().millisecondsSinceEpoch;
+
       return true;
     } catch (e, stack) {
       print(e);
       print(stack);
     }
     return false;
+  }
+
+  static void save() async {
+    Map<String, dynamic> data = {
+      'voti': voti,
+      'votiLastUpdate': votiLastUpdate
+      // ecc...
+    };
+    String json = jsonEncode(data);
+    Directory dataDir = await getApplicationSupportDirectory();
+    File file = File('${dataDir.path}/data.json');
+    if (!file.existsSync()) file.createSync();
+    file.writeAsStringSync(json, flush: true);
+  }
+
+  static void load() async {
+    Directory dataDir = await getApplicationSupportDirectory();
+    File file = File('${dataDir.path}/data.json');
+    if (!file.existsSync()) return;
+    Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
+    voti = data['voti'] ?? {};
+    votiLastUpdate = data['votiLastUpdate'];
   }
 }

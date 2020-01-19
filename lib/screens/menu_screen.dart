@@ -14,9 +14,14 @@ class Menu extends StatefulWidget {
   MenuState createState() => MenuState();
 }
 
-class MenuState extends State<Menu> {
+class MenuState extends State<Menu> with WidgetsBindingObserver {
   int selected = 2;
   List<Widget> screens = [Orari(), Agenda(), Home(), Voti(), AreaStudenti()];
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print ('state = $state');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +38,11 @@ class MenuState extends State<Menu> {
 }
 
 class BackgroundPainter extends CustomPainter {
+  final ThemeData _theme;
   final Paint p = Paint();
   final Path path = Path();
+
+  BackgroundPainter (this._theme);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -48,7 +56,7 @@ class BackgroundPainter extends CustomPainter {
     path.quadraticBezierTo(k*81, size.height - k*27, k*100, size.height - k*0.7);
     path.lineTo(size.width, 0);
     path.close();
-    p.color = Globals.darkTheme.primaryColor;
+    p.color = _theme.primaryColor;
     canvas.drawPath(path, p);
 
     path.reset();
@@ -58,7 +66,7 @@ class BackgroundPainter extends CustomPainter {
     path.quadraticBezierTo(k*84, size.height - k*45, k*100, size.height - k*8);
     path.lineTo(size.width, 0);
     path.close();
-    p.color = Globals.darkTheme.accentColor;
+    p.color = _theme.accentColor;
     canvas.drawPath(path, p);
 
     path.reset();
@@ -69,7 +77,7 @@ class BackgroundPainter extends CustomPainter {
     path.quadraticBezierTo(k*82, size.height - k*5, k*100, size.height - k*5);
     path.lineTo(size.width, 0);
     path.close();
-    p.color = Colors.grey[800];
+    p.color = Colors.grey[_theme.brightness == Brightness.light ? 200 : 800];
     canvas.drawPath(path, p);
 
 

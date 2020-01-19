@@ -24,6 +24,12 @@ class _VotiState extends State<Voti> {
     });
   }
 
+  @override
+  void dispose() {
+    Server.save();
+    super.dispose();
+  }
+
   void _setStateIfAlive() {
     if (mounted) setState(() {});
   }
@@ -97,7 +103,7 @@ class _VotiState extends State<Voti> {
       child: Column(
         children: <Widget>[
           CustomPaint(
-            painter: BackgroundPainter(),
+            painter: BackgroundPainter(Theme.of(context)),
             child: Padding(
               padding: const EdgeInsets.all(30.0),
               child: Column(
@@ -106,8 +112,13 @@ class _VotiState extends State<Voti> {
                     padding: const EdgeInsets.only(bottom: 15),
                     child: Text(
                       periods[0],
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   Row(
@@ -188,7 +199,11 @@ class _VotiState extends State<Voti> {
                           : null,
                       trailing: IconButton(
                         icon: Icon(Icons.arrow_forward_ios),
-                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VotiDetails(sbj, periods[0]))),  // TODO: open details
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VotiDetails(
+                                    sbj, periods[0]))), // TODO: open details
                       ),
                       title: Text(
                         sbj['subjectDesc'],
@@ -226,8 +241,7 @@ class _VotiState extends State<Voti> {
                                             : average < 6
                                                 ? Colors.deepOrange[900]
                                                     .withAlpha(50)
-                                                : Colors.green
-                                                    .withAlpha(50)))),
+                                                : Colors.green.withAlpha(50)))),
                           ),
                         ),
                       ],
@@ -276,7 +290,8 @@ class MarkViewState extends State<MarkView>
     return AspectRatio(
       aspectRatio: 1,
       child: CustomPaint(
-        painter: MarkPainter(widget._voto, _controller.value),
+        painter:
+            MarkPainter(Theme.of(context), widget._voto, _controller.value),
       ),
     );
   }
@@ -290,8 +305,9 @@ class MarkPainter extends CustomPainter {
     ..color = Colors.green;
   double _mark;
   double _progress;
+  ThemeData _theme;
 
-  MarkPainter([this._mark = -1, this._progress = 1]) {
+  MarkPainter(this._theme, [this._mark = -1, this._progress = 1]) {
     if (_mark == null || _mark.isNaN)
       p.color = Colors.blue;
     else if (_mark < 6) p.color = Colors.deepOrange[900];
@@ -318,7 +334,9 @@ class MarkPainter extends CustomPainter {
                 ? 'N/D'
                 : _mark.toStringAsPrecision(2),
             style: TextStyle(
-                color: Colors.white, // FIXME: supporto tema chiaro
+                color: _theme.brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white, // FIXME: supporto tema chiaro
                 fontSize: size.height / 3,
                 fontWeight: FontWeight.bold)),
         textDirection: TextDirection.ltr,
