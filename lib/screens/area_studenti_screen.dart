@@ -1,4 +1,3 @@
-import 'package:applicazione_prova/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
 
 class AreaStudenti extends StatefulWidget {
@@ -12,7 +11,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).backgroundColor,
-      child: Text("Area˜Studenti"),
+      child: Center(child: Text("Area Studenti")),
     );
   }
 }
