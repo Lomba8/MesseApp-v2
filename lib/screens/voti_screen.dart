@@ -109,7 +109,9 @@ class _VotiState extends State<Voti> {
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).size.height / 50,
+                        top: MediaQuery.of(context).size.height / 40),
                     child: Text(
                       periods[0],
                       style: TextStyle(
@@ -163,7 +165,8 @@ class _VotiState extends State<Voti> {
                       dense: true,
                       leading: votiCount > 0
                           ? Icon(
-                              Icons.warning,
+                              Icons
+                                  .warning, //FIXME: aggiornare il ['new'] della materia di cui si ė aperto il WillPopScope e si ritorno in voti_screen.dart
                               color: Colors.yellow,
                             )
                           : null,
@@ -208,7 +211,8 @@ class _VotiState extends State<Voti> {
                       title: Text(
                         sbj['subjectDesc'],
                         overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign
+                            .center, //FIXME: come centrare testo indipendentemente dall'icon_new?
                       ),
                     ),
                     Row(

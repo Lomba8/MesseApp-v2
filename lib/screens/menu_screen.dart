@@ -20,20 +20,16 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print ('state = $state');
+    print('state = $state');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-        child: screens[selected],
-      ),
-      bottomNavigationBar: NavBarSotto(
-        (pos) => setState(() => selected = pos),
-      )
-    );
+        body: screens[selected],
+        bottomNavigationBar: NavBarSotto(
+          (pos) => setState(() => selected = pos),
+        ));
   }
 }
 
@@ -42,7 +38,7 @@ class BackgroundPainter extends CustomPainter {
   final Paint p = Paint();
   final Path path = Path();
 
-  BackgroundPainter (this._theme);
+  BackgroundPainter(this._theme);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -50,10 +46,14 @@ class BackgroundPainter extends CustomPainter {
 
     path.reset();
     path.lineTo(0, size.height - 16);
-    path.quadraticBezierTo(k*10, size.height - k*5, k*21, size.height - k*3);
-    path.quadraticBezierTo(k*36, size.height + k*0.6, k*47, size.height - k*3);
-    path.quadraticBezierTo(k*56, size.height - k*6, k*63, size.height - k*12);
-    path.quadraticBezierTo(k*81, size.height - k*27, k*100, size.height - k*0.7);
+    path.quadraticBezierTo(
+        k * 10, size.height - k * 5, k * 21, size.height - k * 3);
+    path.quadraticBezierTo(
+        k * 36, size.height + k * 0.6, k * 47, size.height - k * 3);
+    path.quadraticBezierTo(
+        k * 56, size.height - k * 6, k * 63, size.height - k * 12);
+    path.quadraticBezierTo(
+        k * 81, size.height - k * 27, k * 100, size.height - k * 0.7);
     path.lineTo(size.width, 0);
     path.close();
     p.color = _theme.primaryColor;
@@ -61,9 +61,12 @@ class BackgroundPainter extends CustomPainter {
 
     path.reset();
     path.lineTo(0, size.height - 1.5);
-    path.quadraticBezierTo(k*19, size.height - k*23, k*31, size.height - k*8);
-    path.quadraticBezierTo(k*39, size.height + k*1, k*52, size.height - k*11);
-    path.quadraticBezierTo(k*84, size.height - k*45, k*100, size.height - k*8);
+    path.quadraticBezierTo(
+        k * 19, size.height - k * 23, k * 31, size.height - k * 8);
+    path.quadraticBezierTo(
+        k * 39, size.height + k * 1, k * 52, size.height - k * 11);
+    path.quadraticBezierTo(
+        k * 84, size.height - k * 45, k * 100, size.height - k * 8);
     path.lineTo(size.width, 0);
     path.close();
     p.color = _theme.accentColor;
@@ -71,21 +74,22 @@ class BackgroundPainter extends CustomPainter {
 
     path.reset();
     path.lineTo(0, size.height - 12);
-    path.quadraticBezierTo(k*13, size.height - k*23, k*21, size.height - k*10);
-    path.quadraticBezierTo(k*25, size.height - k*4, k*34, size.height - k*10);
-    path.quadraticBezierTo(k*41, size.height - k*14, k*63, size.height - k*9);
-    path.quadraticBezierTo(k*82, size.height - k*5, k*100, size.height - k*5);
+    path.quadraticBezierTo(
+        k * 13, size.height - k * 23, k * 21, size.height - k * 10);
+    path.quadraticBezierTo(
+        k * 25, size.height - k * 4, k * 34, size.height - k * 10);
+    path.quadraticBezierTo(
+        k * 41, size.height - k * 14, k * 63, size.height - k * 9);
+    path.quadraticBezierTo(
+        k * 82, size.height - k * 5, k * 100, size.height - k * 5);
     path.lineTo(size.width, 0);
     path.close();
     p.color = Colors.grey[_theme.brightness == Brightness.light ? 200 : 800];
     canvas.drawPath(path, p);
-
-
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return oldDelegate != this;
   }
-
 }

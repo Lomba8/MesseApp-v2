@@ -2,6 +2,7 @@ import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -11,9 +12,10 @@ import 'package:flutter/material.dart';
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
 void main() async {
-  print ("main");
-  Menu menu  = Menu();
+  print("main");
+  Menu menu = Menu();
   LoginScreen loginScreen = LoginScreen();
+  await initializeDateFormatting();
   runApp(
     MaterialApp(
       theme: Globals.lightTheme,
@@ -22,7 +24,10 @@ void main() async {
       debugShowCheckedModeBanner: false,
       title: 'Applicazione di prova',
       initialRoute: LoginScreen.id,
-      routes: {Menu.id: (context) => menu, LoginScreen.id: (context) => loginScreen},
+      routes: {
+        Menu.id: (context) => menu,
+        LoginScreen.id: (context) => loginScreen
+      },
     ),
   );
 }

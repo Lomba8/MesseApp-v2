@@ -26,6 +26,9 @@ dependencies:
   flare_flutter: ^1.8.3
   flare_splash_screen: ^3.0.0
   path_provider: ^1.5.1
+  liquid_pull_to_refresh: ^1.1.1
+  table_calendar: ^2.2.2
+  intl: ^0.16.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
