@@ -47,26 +47,33 @@ class VotiDetailsState extends State<VotiDetails> {
             CustomPaint(
               painter: BackgroundPainter(Theme.of(context)),
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 50, right: 10),
+                padding: const EdgeInsets.only(bottom: 50),
                 child: Padding(
                   padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).size.height / 30,
                       top: MediaQuery.of(context).size.height / 18),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      IconButton(
-                          icon: Icon(Icons.arrow_back_ios),
-                          onPressed: () {
-                            widget._sbj[widget._period].values
-                                .forEach((mark) => mark["new"] = false);
-                            Navigator.pop(context);
-                          }),
+                      Container(
+                        width: MediaQuery.of(context).size.width / 10,
+                        child: IconButton(
+                            icon: Icon(Icons.arrow_back_ios),
+                            onPressed: () {
+                              widget._sbj[widget._period].values
+                                  .forEach((mark) => mark["new"] = false);
+                              Navigator.pop(context);
+                            }),
+                      ),
                       Expanded(
                         child: Text(
                           widget._sbj["subjectDesc"],
                           textAlign:
                               TextAlign.center, //FIXME: come centrare testo?
                         ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 10,
                       )
                     ],
                   ),

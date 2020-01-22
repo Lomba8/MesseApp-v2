@@ -194,27 +194,54 @@ class _VotiState extends State<Voti> {
                   double average = _average(sbj[periods[0]].values);
                   return [
                     ListTile(
-                      leading: _hasNewMarks(sbj)
-                          ? Icon(
-                              Icons.add_circle,
-                              color: Colors.yellow,
-                            )
-                          : null,
-                      trailing: IconButton(
-                        icon: Icon(Icons.arrow_forward_ios),
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => VotiDetails(
-                                    sbj, periods[0]))), // TODO: open details
-                      ),
-                      title: Text(
-                        sbj['subjectDesc'],
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign
-                            .center, //FIXME: come centrare testo indipendentemente dall'icon_new?
-                      ),
-                    ),
+                        leading: Stack(
+                          children: [
+                            Text(
+                              "  ${average.toStringAsPrecision(2)}",
+                              style: TextStyle(
+                                fontFamily: 'CoreSansRounded',
+                                fontWeight: _hasNewMarks(sbj)
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            _hasNewMarks(sbj)
+                                ? Positioned(
+                                    bottom: 6,
+                                    left: 0,
+                                    child: Icon(
+                                      Icons.brightness_1,
+                                      size: 10,
+                                      color: Colors.yellow,
+                                    ),
+                                  )
+                                : SizedBox(),
+                          ],
+                        ),
+                        trailing: Container(
+                          width: MediaQuery.of(context).size.width / 10,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_forward_ios),
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => VotiDetails(sbj,
+                                        periods[0]))), // TODO: open details
+                          ),
+                        ),
+                        title: Text(
+                          sbj['subjectDesc'],
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: _hasNewMarks(sbj)
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: _hasNewMarks(sbj)
+                                  ? Theme.of(context).textTheme.body1.fontSize +
+                                      1.0
+                                  : Theme.of(context).textTheme.body1.fontSize),
+                        )),
                     Row(
                       children: <Widget>[
                         Expanded(
@@ -342,7 +369,8 @@ class MarkPainter extends CustomPainter {
                     ? Colors.black
                     : Colors.white, // FIXME: supporto tema chiaro
                 fontSize: size.height / 3,
-                fontWeight: FontWeight.bold)),
+                fontWeight: FontWeight.bold,
+                fontFamily: 'CoreSansRounded')),
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center);
     painter

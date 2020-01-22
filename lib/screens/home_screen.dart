@@ -12,7 +12,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   @override
   Widget build(BuildContext context) {
     var s = MediaQuery.of(context).size;
@@ -41,19 +40,18 @@ class _HomeState extends State<Home> {
                   text: TextSpan(
                     text: "Ciao, \n",
                     style: TextStyle(
-                      fontFamily: 'TeeFranklin',
                       color: Color.fromRGBO(141, 149, 167, 1),
                       fontSize: 35.0,
+                      fontFamily: 'CoreSansRounded',
                     ),
                     children: <TextSpan>[
                       TextSpan(
                         text: '${Server.cognome} ${Server.nome}',
                         style: TextStyle(
-                          fontFamily: 'TeeFranklin',
-                          color: Color.fromRGBO(21, 38, 74, 1),
-                          fontSize: 40.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            color: Color.fromRGBO(21, 38, 74, 1),
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'CoreSansRounded'),
                       ),
                     ],
                   ),
@@ -74,7 +72,7 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          Column () // TODO: schermata vera e propria
+          Column() // TODO: schermata vera e propria
         ],
       ),
     );
