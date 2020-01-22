@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -27,11 +28,10 @@ class _AgendaState extends State<Agenda> {
   }
 
   CalendarController _calendarController;
+
   void initState() {
     super.initState();
     _calendarController = CalendarController();
-    _calendarController.setFocusedDay(DateTime.now());
-    print("${_calendarController.focusedDay}");
   }
 
   @override
@@ -43,8 +43,7 @@ class _AgendaState extends State<Agenda> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    // print("${_calendarController.focusedDay.toString()}");
-
+    _calendarController = CalendarController();
     return LiquidPullToRefresh(
       //key: _refreshIndicatorKey,	// key if you want to add
       onRefresh: _refresh,
@@ -60,13 +59,12 @@ class _AgendaState extends State<Agenda> {
                   padding: const EdgeInsets.only(bottom: 50, right: 10),
                   child: Padding(
                     padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).size.height / 30,
-                        top: MediaQuery.of(context).size.height / 18),
+                        bottom: size.height / 30, top: size.height / 18),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "${_formatMonth(_calendarController.focusedDay) ?? _formatMonth(DateTime.now())} ${_formatYear(_calendarController.focusedDay) ?? DateTime.now().year}", //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                          "Agenda ${DateTime.now().year}", //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
                           style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.light
@@ -83,6 +81,52 @@ class _AgendaState extends State<Agenda> {
               TableCalendar(
                 locale: 'it_IT',
                 calendarController: _calendarController,
+                startingDayOfWeek: StartingDayOfWeek.monday,
+                onUnavailableDaySelected: () => () {},
+                startDay:
+                    DateTime(DateTime.now().year.toInt(), DateTime.now().month),
+                endDay: DateTime(DateTime.now().year.toInt(), 12, 31, 23, 59),
+                weekendDays: [7],
+                calendarStyle: CalendarStyle(
+                  outsideDaysVisible: false,
+                  weekendStyle: TextStyle(color: Theme.of(context).accentColor),
+                  weekdayStyle: TextStyle(color: Colors.white70),
+                ),
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  weekendStyle: TextStyle(color: Theme.of(context).accentColor),
+                  weekdayStyle: TextStyle(color: Colors.white70),
+                ),
+                availableGestures: AvailableGestures.horizontalSwipe,
+                headerStyle: HeaderStyle(
+                  formatButtonVisible: false,
+                  centerHeaderTitle: true,
+                  titleTextBuilder: (date, locale) =>
+                      _formatMonth(date).toUpperCase(),
+                  titleTextStyle: TextStyle(
+                    fontSize: 23.0,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  leftChevronIcon: Icon(
+                    Icons.arrow_back_ios,
+                    size: 20.0,
+                    color:
+                        (MediaQuery.platformBrightnessOf(context).toString() ==
+                                "Brightness.dark")
+                            ? Theme.of(context).primaryColor
+                            : Colors.black,
+                  ),
+                  leftChevronMargin: EdgeInsets.only(left: size.width / 5),
+                  rightChevronIcon: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 20.0,
+                    color:
+                        (MediaQuery.platformBrightnessOf(context).toString() ==
+                                "Brightness.dark")
+                            ? Theme.of(context).primaryColor
+                            : Colors.black,
+                  ),
+                  rightChevronMargin: EdgeInsets.only(right: size.width / 5),
+                ),
               )
             ]),
           )
