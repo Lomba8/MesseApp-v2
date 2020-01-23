@@ -4,7 +4,6 @@ import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
-import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
@@ -17,7 +16,7 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  var _currentDate = DateTime.now(), _currentMonth = DateTime.now();
+  var _currentDate, _currentMonth = DateTime.now();
 
   Future<void> _refresh() async {
     print('something');
@@ -80,10 +79,10 @@ class _AgendaState extends State<Agenda> {
                   setState(() {
                     _currentDate = date;
                     print(date);
-                    print("${events}");
+                    print(events);
                   });
                 },
-
+                pageScrollPhysics: NeverScrollableScrollPhysics(),
                 onCalendarChanged: (d) => setState(() => _currentMonth = d),
 
                 weekendTextStyle: TextStyle(
@@ -95,8 +94,8 @@ class _AgendaState extends State<Agenda> {
                 firstDayOfWeek: 1,
                 daysTextStyle: TextStyle(color: Colors.white70),
                 headerMargin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width / 6),
-                headerText: '${DateFormat.yMMMM().format(_currentMonth)}',
+                    horizontal: MediaQuery.of(context).size.width / 8),
+                headerText: DateFormat.yMMMM().format(_currentMonth),
                 headerTextStyle: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontSize: 22.0,

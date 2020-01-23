@@ -197,7 +197,7 @@ class _VotiState extends State<Voti> {
                         leading: Stack(
                           children: [
                             Text(
-                              "  ${average.toStringAsPrecision(2)}",
+                              '  ' + average.toStringAsPrecision(2),
                               style: TextStyle(
                                 fontFamily: 'CoreSansRounded',
                                 fontWeight: _hasNewMarks(sbj)
@@ -223,10 +223,13 @@ class _VotiState extends State<Voti> {
                           child: IconButton(
                             icon: Icon(Icons.arrow_forward_ios),
                             onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => VotiDetails(sbj,
-                                        periods[0]))), // TODO: open details
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            VotiDetails(sbj, periods[0])))
+                                .then((value) {
+                              if (mounted) setState(() {});
+                            }), // TODO: open details
                           ),
                         ),
                         title: Text(
@@ -305,9 +308,12 @@ class MarkViewState extends State<MarkView>
     _controller = AnimationController(
         value: 0.0, vsync: this, duration: Duration(seconds: 1));
     _controller.addListener(() {
+      print(_controller.value);
       if (mounted) setState(() {});
     });
-    _controller.animateTo(1);
+    _controller.animateTo(1).then((v) { // FIXME
+      if (mounted) setState(() {});
+    });
   }
 
   @override

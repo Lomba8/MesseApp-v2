@@ -15,10 +15,10 @@ class VotiDetailsState extends State<VotiDetails> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: () async {
         widget._sbj[widget._period].values
             .forEach((mark) => mark["new"] = false);
-        return Future.value(true);
+        return true;
       },
       child: Material(
         child: Stack(

@@ -16,6 +16,6 @@ class Eventi {
         trailing: e['name?'],
       );
     });
-    return EventList<Event>(events: {_eventiEncoded});
+    return null; //EventList<Event>(events: {_eventiEncoded});
   }
 }
