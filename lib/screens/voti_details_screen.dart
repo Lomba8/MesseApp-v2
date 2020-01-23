@@ -14,74 +14,65 @@ class VotiDetails extends StatefulWidget {
 class VotiDetailsState extends State<VotiDetails> {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        widget._sbj[widget._period].values
-            .forEach((mark) => mark["new"] = false);
-        return true;
-      },
-      child: Material(
-        child: Stack(
-          children: <Widget>[
-            SingleChildScrollView(
-                child: Column(
-              children: [
-                SizedBox(height: MediaQuery.of(context).size.height / 4),
-                Text(
-                  "work in progress...",
-                  textAlign: TextAlign.center,
-                )
-              ]..addAll(widget._sbj[widget._period] == null
-                  ? []
-                  : widget._sbj[widget._period].values
-                      .map<Widget>((mark) => ListTile(
-                            leading: mark['new']
-                                ? Icon(
-                                    Icons.fiber_new,
-                                    color: Colors.yellow,
-                                  )
-                                : null,
-                            title: Text(mark['votoStr']),
-                          ))),
-            )),
-            CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
+    return Material(
+      child: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+              child: Column(
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height / 4),
+              Text(
+                "work in progress...",
+                textAlign: TextAlign.center,
+              )
+            ]..addAll(widget._sbj[widget._period] == null
+                ? []
+                : widget._sbj[widget._period].values
+                    .map<Widget>((mark) => ListTile(
+                          leading: mark['new']
+                              ? Icon(
+                                  Icons.fiber_new,
+                                  color: Colors.yellow,
+                                )
+                              : null,
+                          title: Text(mark['votoStr']),
+                        ))),
+          )),
+          CustomPaint(
+            painter: BackgroundPainter(Theme.of(context)),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 50),
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 50),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).size.height / 30,
-                      top: MediaQuery.of(context).size.height / 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width / 10,
-                        child: IconButton(
-                            icon: Icon(Icons.arrow_back_ios),
-                            onPressed: () {
-                              widget._sbj[widget._period].values
-                                  .forEach((mark) => mark["new"] = false);
-                              Navigator.pop(context);
-                            }),
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).size.height / 30,
+                    top: MediaQuery.of(context).size.height / 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width / 10,
+                      child: IconButton(
+                          icon: Icon(Icons.arrow_back_ios),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                    ),
+                    Expanded(
+                      child: Text(
+                        widget._sbj["subjectDesc"],
+                        textAlign:
+                            TextAlign.center, //FIXME: come centrare testo?
                       ),
-                      Expanded(
-                        child: Text(
-                          widget._sbj["subjectDesc"],
-                          textAlign:
-                              TextAlign.center, //FIXME: come centrare testo?
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 10,
-                      )
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 10,
+                    )
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

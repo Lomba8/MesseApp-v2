@@ -228,6 +228,9 @@ class _VotiState extends State<Voti> {
                                         builder: (context) =>
                                             VotiDetails(sbj, periods[0])))
                                 .then((value) {
+                              sbj[periods[0]]
+                                  .values
+                                  .forEach((mark) => mark["new"] = false);
                               if (mounted) setState(() {});
                             }), // TODO: open details
                           ),
@@ -311,7 +314,8 @@ class MarkViewState extends State<MarkView>
       print(_controller.value);
       if (mounted) setState(() {});
     });
-    _controller.animateTo(1).then((v) { // FIXME
+    _controller.animateTo(1).then((v) {
+      // FIXME
       if (mounted) setState(() {});
     });
   }
