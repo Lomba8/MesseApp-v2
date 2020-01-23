@@ -104,6 +104,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_calendar_carousel:
+    dependency: "direct main"
+    description:
+      name: flutter_calendar_carousel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.10"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -233,13 +240,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2+2"
-  simple_gesture_detector:
-    dependency: transitive
-    description:
-      name: simple_gesture_detector
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -273,13 +273,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  table_calendar:
-    dependency: "direct main"
-    description:
-      name: table_calendar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.2"
   term_glyph:
     dependency: transitive
     description:

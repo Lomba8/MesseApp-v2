@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar_carousel/classes/event.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
+    show CalendarCarousel, EventList;
 
 class Agenda extends StatefulWidget {
   static final String id = 'agenda_screen';
@@ -14,8 +17,10 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
+  var _currentDate = DateTime.now(), _currentMonth = DateTime.now();
+
   Future<void> _refresh() async {
-    print(_formatMonth(_calendarController.focusedDay));
+    print('something');
     setState(() {});
   }
 
@@ -27,23 +32,18 @@ class _AgendaState extends State<Agenda> {
     if (date != null) return DateFormat("y").format(date).toString();
   }
 
-  CalendarController _calendarController;
-
   void initState() {
     super.initState();
-    _calendarController = CalendarController();
   }
 
   @override
   void dispose() {
-    _calendarController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    _calendarController = CalendarController();
     return LiquidPullToRefresh(
       //key: _refreshIndicatorKey,	// key if you want to add
       onRefresh: _refresh,
@@ -56,78 +56,112 @@ class _AgendaState extends State<Agenda> {
               CustomPaint(
                 painter: BackgroundPainter(Theme.of(context)),
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 50, right: 10),
+                  padding: const EdgeInsets.only(bottom: 50),
                   child: Padding(
                     padding: EdgeInsets.only(
                         bottom: size.height / 30, top: size.height / 18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "Agenda ${DateTime.now().year}", //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
-                          style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
+                    child: Text(
+                      "Agenda",
+                      textAlign: TextAlign
+                          .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
                                   ? Colors.black
                                   : Colors.white,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
               ),
-              TableCalendar(
-                locale: 'it_IT',
-                calendarController: _calendarController,
-                startingDayOfWeek: StartingDayOfWeek.monday,
-                onUnavailableDaySelected: () => () {},
-                startDay:
-                    DateTime(DateTime.now().year.toInt(), DateTime.now().month),
-                endDay: DateTime(DateTime.now().year.toInt(), 12, 31, 23, 59),
-                weekendDays: [7],
-                calendarStyle: CalendarStyle(
-                  outsideDaysVisible: false,
-                  weekendStyle: TextStyle(color: Theme.of(context).accentColor),
-                  weekdayStyle: TextStyle(color: Colors.white70),
+              CalendarCarousel<Event>(
+                onDayPressed: (DateTime date, List<Event> events) {
+                  setState(() {
+                    _currentDate = date;
+                    print(date);
+                    print("${events}");
+                  });
+                },
+
+                onCalendarChanged: (d) => setState(() => _currentMonth = d),
+
+                weekendTextStyle: TextStyle(
+                  color: Theme.of(context).accentColor,
                 ),
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  weekendStyle: TextStyle(color: Theme.of(context).accentColor),
-                  weekdayStyle: TextStyle(color: Colors.white70),
-                ),
-                availableGestures: AvailableGestures.horizontalSwipe,
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  centerHeaderTitle: true,
-                  titleTextBuilder: (date, locale) =>
-                      _formatMonth(date).toUpperCase(),
-                  titleTextStyle: TextStyle(
-                    fontSize: 23.0,
+                // weekdayTextStyle: TextStyle(color: Colors.white60),
+                thisMonthDayBorderColor: Colors.transparent,
+                showWeekDays: true,
+                firstDayOfWeek: 1,
+                daysTextStyle: TextStyle(color: Colors.white70),
+                headerMargin: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width / 6),
+                headerText: '${DateFormat.yMMMM().format(_currentMonth)}',
+                headerTextStyle: TextStyle(
                     color: Theme.of(context).primaryColor,
-                  ),
-                  leftChevronIcon: Icon(
-                    Icons.arrow_back_ios,
-                    size: 20.0,
-                    color:
-                        (MediaQuery.platformBrightnessOf(context).toString() ==
-                                "Brightness.dark")
-                            ? Theme.of(context).primaryColor
-                            : Colors.black,
-                  ),
-                  leftChevronMargin: EdgeInsets.only(left: size.width / 5),
-                  rightChevronIcon: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 20.0,
-                    color:
-                        (MediaQuery.platformBrightnessOf(context).toString() ==
-                                "Brightness.dark")
-                            ? Theme.of(context).primaryColor
-                            : Colors.black,
-                  ),
-                  rightChevronMargin: EdgeInsets.only(right: size.width / 5),
-                ),
-              )
+                    fontSize: 22.0,
+                    fontFamily: 'CoreSansRounded'),
+                iconColor: Theme.of(context).primaryColor,
+                locale: 'it',
+                prevDaysTextStyle: TextStyle(color: Colors.white24),
+                weekdayTextStyle: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'CoreSansRounded'),
+                showIconBehindDayText: true,
+
+                markedDatesMap: EventList<Event>(events: {
+                  DateTime(2020, 1, 24): [
+                    Event(
+                        date: DateTime(2020, 1, 24),
+                        title: 'test',
+                        icon: Icon(
+                          Icons.exposure,
+                          size: 20.0,
+                        ),
+                        dot: Container(
+                          margin: EdgeInsets.all(1.0),
+                          height: 8.0,
+                          width: 8.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Color.fromRGBO(115, 187, 126, 1),
+                          ),
+                        ))
+                  ]
+                }),
+                todayButtonColor: Colors.transparent,
+                selectedDayBorderColor: Colors.blue,
+                selectedDayButtonColor: Colors.transparent,
+
+                /// for pass null when you do not want to render weekDays
+                //headerText: 'Custom Header',
+                customDayBuilder: (
+                  /// you can provide your own build function to make custom day containers
+                  bool isSelectable,
+                  int index,
+                  bool isSelectedDay,
+                  bool isToday,
+                  bool isPrevMonthDay,
+                  TextStyle textStyle,
+                  bool isNextMonthDay,
+                  bool isThisMonthDay,
+                  DateTime day,
+                ) {
+                  /// If you return null, [CalendarCarousel] will build container for current [day] with default function.
+                  /// This way you can build custom containers for specific days only, leaving rest as default.
+                  //if (isSelectedDay) print(_currentDate.toIso8601String());
+                  // Example: every 15th of month, we have a flight, we can place an icon in the container like that:
+                  return null;
+                },
+                weekFormat: false,
+                height: 420.0,
+                selectedDateTime: _currentDate,
+                daysHaveCircularBorder: true,
+                //markedDateIconBuilder: (event) => event.icon,
+
+                /// null for not rendering any border, true for circular border, false for rectangular border
+              ),
             ]),
           )
         ],
