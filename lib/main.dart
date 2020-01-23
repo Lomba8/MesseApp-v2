@@ -15,7 +15,6 @@ void main() async {
   print("main");
   Menu menu = Menu();
   LoginScreen loginScreen = LoginScreen();
-  await initializeDateFormatting();
   runApp(
     MaterialApp(
       theme: Globals.lightTheme,

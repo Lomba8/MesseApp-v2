@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _secondInputFocusNode;
 
   String _username, _password;
-  bool splash = true;
+  bool splash = false;
   bool _loading = false;
 
   double _progress = 0;
@@ -30,26 +30,26 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    SharedPreferences.getInstance().then((prefs) {
-      _username = prefs.getString('username');
-      _password = prefs.getString('password');
-      if (_username == null || _password == null)
-        setState(() => splash = false);
-      else {
-        Server.login(_username, _password, false).then((ok) {
-          if (ok)
-            Server.downloadAll((double progress) {
-              setState(() {
-                _progress = progress;
-                if (progress == 1)
-                  Navigator.pushReplacementNamed(context, Menu.id);
-              });
-            });
-          else
-            setState(() => splash = false);
-        });
-      }
-    });
+    // SharedPreferences.getInstance().then((prefs) {
+    //   _username = prefs.getString('username');
+    //   _password = prefs.getString('password');
+    //   if (_username == null || _password == null)
+    //     setState(() => splash = false);
+    //   else {
+    //     Server.login(_username, _password, false).then((ok) {
+    //       if (ok)
+    //         Server.downloadAll((double progress) {
+    //           setState(() {
+    //             _progress = progress;
+    //             if (progress == 1)
+    //               Navigator.pushReplacementNamed(context, Menu.id);
+    //           });
+    //         });
+    //       else
+    //         setState(() => splash = false);
+    //     });
+    //   }
+    // });
 
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
@@ -73,9 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
         : _image = 'images/logomesse_chiaro.png';
 
     if (splash) {
-      return Scaffold (
-        backgroundColor: Colors.black,
-        body: Center(
+      return Scaffold(
+          backgroundColor: Colors.black,
+          body: Center(
             child: Container(
               width: media.size.width * 0.6,
               height: media.size.width * 0.6,
@@ -87,14 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: LinearProgressIndicator(
-            value: _progress,
-          ),
-        )
-        
-      );
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: LinearProgressIndicator(
+              value: _progress,
+            ),
+          ));
     }
 
     String _usernameMsg = 'L\'username deve essere lungo 9 caratteri';
@@ -178,10 +176,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: 100.0,
                   height: 100.0,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
+                    color: !_loading
+                        ? Theme.of(context).primaryColor
+                        : Colors.transparent,
                     image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: ExactAssetImage(_image),
+                      image: !_loading
+                          ? ExactAssetImage(_image)
+                          : AssetImage('images/loading.gif'),
                     ),
                   ),
                 ),
@@ -238,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             print(input);
                             _password = input;
                           },
-                          //onFieldSubmitted: _submitString,
+                          onFieldSubmitted: (str) => _submit(),
                           obscureText: true,
                         ),
                       ),
@@ -246,30 +248,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: media.size.height / 15,
                       ),
                       FlatButton(
-                        onPressed: _submit,
-                        color: Theme.of(context).primaryColor,
-                        splashColor: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 120.0, vertical: 16.0),
-                        child: _loading
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(
-                                    'Login',
-                                    style: Theme.of(context).textTheme.body1,
-                                  ),
-                                  CircularProgressIndicator() // FIXME: non modificare il bottone
-                                ],
-                              )
-                            : Text(
-                                'Login',
-                                style: Theme.of(context).textTheme.body1,
-                              ),
-                      )
+                          onPressed: _submit,
+                          color: Theme.of(context).primaryColor,
+                          splashColor: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 120.0, vertical: 16.0),
+                          child: Container(
+                            width: 90.0,
+                            child: Text(
+                              'Login',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.body1,
+                            ),
+                          ))
                     ],
                   ),
                 )
