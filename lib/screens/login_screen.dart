@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _secondInputFocusNode;
 
   String _username, _password;
-  bool splash = false;
+  bool splash = true;
   bool _loading = false;
 
   double _progress = 0;
@@ -30,26 +30,26 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    // SharedPreferences.getInstance().then((prefs) {
-    //   _username = prefs.getString('username');
-    //   _password = prefs.getString('password');
-    //   if (_username == null || _password == null)
-    //     setState(() => splash = false);
-    //   else {
-    //     Server.login(_username, _password, false).then((ok) {
-    //       if (ok)
-    //         Server.downloadAll((double progress) {
-    //           setState(() {
-    //             _progress = progress;
-    //             if (progress == 1)
-    //               Navigator.pushReplacementNamed(context, Menu.id);
-    //           });
-    //         });
-    //       else
-    //         setState(() => splash = false);
-    //     });
-    //   }
-    // });
+    SharedPreferences.getInstance().then((prefs) {
+      _username = prefs.getString('username');
+      _password = prefs.getString('password');
+      if (_username == null || _password == null)
+        setState(() => splash = false);
+      else {
+        Server.login(_username, _password, false).then((ok) {
+          if (ok)
+            Server.downloadAll((double progress) {
+              setState(() {
+                _progress = progress;
+                if (progress == 1)
+                  Navigator.pushReplacementNamed(context, Menu.id);
+              });
+            });
+          else
+            setState(() => splash = false);
+        });
+      }
+    });
 
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
