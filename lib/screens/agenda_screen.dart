@@ -18,7 +18,7 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  String _info, _data = ' ';
+  String _info = ' ', _data = ' ';
   var _currentDate, _currentMonth = DateTime.now();
 
   Future<void> _refresh() async {}
