@@ -130,6 +130,7 @@ class _AgendaState extends State<Agenda> {
                       fontWeight: FontWeight.w600,
                       fontFamily: 'CoreSansRounded'),
                   showIconBehindDayText: true,
+                  pageSnapping: false,
 
                   markedDatesMap: e,
                   todayButtonColor: Colors.transparent,
