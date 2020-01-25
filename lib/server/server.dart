@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,10 +12,20 @@ class Server {
 
   static Map voti = {};
   static int votiLastUpdate;
+  static Map eventi = {};
+  static int eventiLastUpdate;
 
   static String _capitalize(String s) {
     s.toLowerCase();
     return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
+
+  static String _getSchoolYear(DateTime date) {
+    if (int.parse(DateFormat.M().format(date)) >= 9) {
+      return '${DateFormat.y().format(DateTime.now())}${(int.parse(DateFormat.M().format(DateTime.now())) < 10) ? "0${DateFormat.M().format(DateTime.now())}" : "${DateFormat.M().format(DateTime.now())}"}${(int.parse(DateFormat.d().format(DateTime.now())) < 10) ? "0${DateFormat.d().format(DateTime.now())}" : "${DateFormat.d().format(DateTime.now())}"}/${int.parse(DateFormat.y().format(DateTime.now())) + 1}1231';
+    } else {
+      return '${DateFormat.y().format(DateTime.now())}${(int.parse(DateFormat.M().format(DateTime.now())) < 10) ? "0${DateFormat.M().format(DateTime.now())}" : "${DateFormat.M().format(DateTime.now())}"}${(int.parse(DateFormat.d().format(DateTime.now())) < 10) ? "0${DateFormat.d().format(DateTime.now())}" : "${DateFormat.d().format(DateTime.now())}"}/${DateFormat.y().format(DateTime.now())}1231';
+    }
   }
 
   static Map<String, String> headers = {
@@ -28,6 +39,8 @@ class Server {
   static final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
   static final String votiUrl =
       'https://web.spaggiari.eu/rest/v1/students/%d/grades2';
+  static final String agendaUrl =
+      'https://web.spaggiari.eu/rest/v1/students/%d/agenda/all/${_getSchoolYear(DateTime.now())}';
 
   static String _token;
 
@@ -79,10 +92,10 @@ class Server {
   }
 
   static Future<void> downloadAll(void Function(double) callback) async {
-    await load ();
+    await load();
     int N = 1;
     int n = 0;
-    getVoti().then((ok) => callback(++n / N));
+    getVoti().then((ok) => callback(++n / N)); //FIXME: aggiungere getAgenda();
   }
 
   static Future<bool> getVoti() async {
@@ -137,10 +150,50 @@ class Server {
     return false;
   }
 
+  static Future<bool> getAgenda() async {
+    final prefs = await SharedPreferences.getInstance();
+    await Server.login(
+        prefs.getString('username'), prefs.getString('username'), false);
+
+    // TODO: gestire Z-If-None-Match
+    try {
+      var r = await http.get(agendaUrl.replaceFirst('%d', usrId.toString()),
+          headers: headers);
+      if (r.statusCode != 200) return false;
+      var data = json.decode(r.body)['agenda'];
+      Map<String, Map> eventi2 = {};
+
+      data.forEach((m) {
+        var prevEvento = eventi[m['evtId']];
+
+        Map event = eventi2[m['evtId'].toString()] ??= <String, dynamic>{
+          'inizio': m['evtDatetimeBegin'], // nome abbreviato
+          'fine': m['evtDatetimeEnd'], // nome completo
+          'giornaliero': m['isFullDay'],
+          'info': m['notes'],
+          'autore': m['authorName'],
+          'classe': m['classDesc'],
+          'new': prevEvento == null || prevEvento['new']
+        };
+      });
+
+      eventi = eventi2;
+      eventiLastUpdate = DateTime.now().millisecondsSinceEpoch;
+
+      return true;
+    } catch (e, stack) {
+      print(e);
+      print(stack);
+    }
+    return false;
+  }
+
   static void save() async {
     Map<String, dynamic> data = {
       'voti': voti,
-      'votiLastUpdate': votiLastUpdate
+      'votiLastUpdate': votiLastUpdate,
+      'eventi': eventi,
+      'eventiLastUpdate': eventiLastUpdate
       // ecc...
     };
     String json = jsonEncode(data);
@@ -157,5 +210,7 @@ class Server {
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
     voti = data['voti'] ?? {};
     votiLastUpdate = data['votiLastUpdate'];
+    eventi = data['eventi'] ?? {};
+    eventiLastUpdate = data['eventiLastUpdate'];
   }
 }
