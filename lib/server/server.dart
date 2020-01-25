@@ -21,11 +21,8 @@ class Server {
   }
 
   static String _getSchoolYear(DateTime date) {
-    if (int.parse(DateFormat.M().format(date)) >= 9) {
-      return '${DateFormat.y().format(DateTime.now())}${(int.parse(DateFormat.M().format(DateTime.now())) < 10) ? "0${DateFormat.M().format(DateTime.now())}" : "${DateFormat.M().format(DateTime.now())}"}${(int.parse(DateFormat.d().format(DateTime.now())) < 10) ? "0${DateFormat.d().format(DateTime.now())}" : "${DateFormat.d().format(DateTime.now())}"}/${int.parse(DateFormat.y().format(DateTime.now())) + 1}1231';
-    } else {
-      return '${DateFormat.y().format(DateTime.now())}${(int.parse(DateFormat.M().format(DateTime.now())) < 10) ? "0${DateFormat.M().format(DateTime.now())}" : "${DateFormat.M().format(DateTime.now())}"}${(int.parse(DateFormat.d().format(DateTime.now())) < 10) ? "0${DateFormat.d().format(DateTime.now())}" : "${DateFormat.d().format(DateTime.now())}"}/${DateFormat.y().format(DateTime.now())}1231';
-    }
+    int year2 = int.parse(DateFormat.M().format(date)) >= 9 ? 1 : 0;
+    return '${DateFormat.y().format(DateTime.now())}${DateFormat.M().format(DateTime.now()).padLeft(2, '0')}${DateFormat.d().format(DateTime.now()).padLeft(2, '0')}/${int.parse(DateFormat.y().format(DateTime.now())) + year2}1231';
   }
 
   static Map<String, String> headers = {
@@ -167,8 +164,8 @@ class Server {
         var prevEvento = eventi[m['evtId']];
 
         Map event = eventi2[m['evtId'].toString()] ??= <String, dynamic>{
-          'inizio': m['evtDatetimeBegin'], // nome abbreviato
-          'fine': m['evtDatetimeEnd'], // nome completo
+          'inizio': m['evtDatetimeBegin'],
+          'fine': m['evtDatetimeEnd'],
           'giornaliero': m['isFullDay'],
           'info': m['notes'],
           'autore': m['authorName'],
