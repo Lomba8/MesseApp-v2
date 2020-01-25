@@ -1,4 +1,4 @@
-import 'package:applicazione_prova/server/server.dart';
+import 'package:applicazione_prova/registro/registro.dart';
 import 'package:flutter/material.dart';
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
@@ -46,7 +46,7 @@ class _HomeState extends State<Home> {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                        text: '${Server.cognome} ${Server.nome}',
+                        text: '${RegistroApi.cognome} ${RegistroApi.nome}',
                         style: TextStyle(
                             color: Color.fromRGBO(21, 38, 74, 1),
                             fontSize: 30.0,

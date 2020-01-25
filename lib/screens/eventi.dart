@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:applicazione_prova/server/server.dart';
+import 'package:applicazione_prova/registro/registro.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_calendar_carousel/classes/event_list.dart';
 
 class Eventi {
   static EventList<Event> listaEventi() {
-    var _ev = Server.eventi;
+    var _ev = RegistroApi.agenda.data;
     Map<DateTime, List<Event>> _eventi = {};
 
     EventList<Event> _markedDateMap = new EventList<Event>(events: _eventi);

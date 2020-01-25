@@ -1,4 +1,4 @@
-import 'package:applicazione_prova/server/server.dart';
+import 'package:applicazione_prova/registro/registro.dart';
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
@@ -36,9 +36,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_username == null || _password == null)
         setState(() => splash = false);
       else {
-        Server.login(_username, _password, false).then((ok) {
+        RegistroApi.login(_username, _password, false).then((ok) {
           if (ok)
-            Server.downloadAll((double progress) {
+            RegistroApi.downloadAll((double progress) {
               setState(() {
                 _progress = progress;
                 if (progress == 1)
@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
 
-        if (await Server.login(_username, _password, true)) {
+        if (await RegistroApi.login(_username, _password, true)) {
           Navigator.pushReplacementNamed(context, Menu.id);
         } else {
           _formKey.currentState.reset();
