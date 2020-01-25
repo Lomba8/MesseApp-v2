@@ -57,7 +57,7 @@ class Globals {
     // hintColor: Globals.rosso, // da togliere
 
     // Define the default font family.
-    fontFamily: 'CoreSans',
+    fontFamily: 'CoreSansRounded',
 
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.

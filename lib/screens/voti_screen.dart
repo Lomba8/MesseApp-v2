@@ -109,7 +109,9 @@ class _VotiState extends State<Voti> {
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).size.height / 50,
+                        top: MediaQuery.of(context).size.height / 40),
                     child: Text(
                       periods[0],
                       style: TextStyle(
@@ -163,7 +165,8 @@ class _VotiState extends State<Voti> {
                       dense: true,
                       leading: votiCount > 0
                           ? Icon(
-                              Icons.warning,
+                              Icons
+                                  .warning, //FIXME: aggiornare il ['new'] della materia di cui si ė aperto il WillPopScope e si ritorno in voti_screen.dart
                               color: Colors.yellow,
                             )
                           : null,
@@ -191,26 +194,60 @@ class _VotiState extends State<Voti> {
                   double average = _average(sbj[periods[0]].values);
                   return [
                     ListTile(
-                      leading: _hasNewMarks(sbj)
-                          ? Icon(
-                              Icons.add_circle,
-                              color: Colors.yellow,
-                            )
-                          : null,
-                      trailing: IconButton(
-                        icon: Icon(Icons.arrow_forward_ios),
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => VotiDetails(
-                                    sbj, periods[0]))), // TODO: open details
-                      ),
-                      title: Text(
-                        sbj['subjectDesc'],
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                        leading: Stack(
+                          children: [
+                            Text(
+                              '  ' + average.toStringAsPrecision(2),
+                              style: TextStyle(
+                                fontFamily: 'CoreSansRounded',
+                                fontWeight: _hasNewMarks(sbj)
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            _hasNewMarks(sbj)
+                                ? Positioned(
+                                    bottom: 6,
+                                    left: 0,
+                                    child: Icon(
+                                      Icons.brightness_1,
+                                      size: 10,
+                                      color: Colors.yellow,
+                                    ),
+                                  )
+                                : SizedBox(),
+                          ],
+                        ),
+                        trailing: Container(
+                          width: MediaQuery.of(context).size.width / 10,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_forward_ios),
+                            onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            VotiDetails(sbj, periods[0])))
+                                .then((value) {
+                              sbj[periods[0]]
+                                  .values
+                                  .forEach((mark) => mark["new"] = false);
+                              if (mounted) setState(() {});
+                            }), // TODO: open details
+                          ),
+                        ),
+                        title: Text(
+                          sbj['subjectDesc'],
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: _hasNewMarks(sbj)
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: _hasNewMarks(sbj)
+                                  ? Theme.of(context).textTheme.body1.fontSize +
+                                      1.0
+                                  : Theme.of(context).textTheme.body1.fontSize),
+                        )),
                     Row(
                       children: <Widget>[
                         Expanded(
@@ -274,9 +311,13 @@ class MarkViewState extends State<MarkView>
     _controller = AnimationController(
         value: 0.0, vsync: this, duration: Duration(seconds: 1));
     _controller.addListener(() {
+      print(_controller.value);
       if (mounted) setState(() {});
     });
-    _controller.animateTo(1);
+    _controller.animateTo(1).then((v) {
+      // FIXME
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -338,7 +379,8 @@ class MarkPainter extends CustomPainter {
                     ? Colors.black
                     : Colors.white, // FIXME: supporto tema chiaro
                 fontSize: size.height / 3,
-                fontWeight: FontWeight.bold)),
+                fontWeight: FontWeight.bold,
+                fontFamily: 'CoreSansRounded')),
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center);
     painter
