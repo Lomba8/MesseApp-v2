@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:applicazione_prova/screens/eventi.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
-import 'package:applicazione_prova/server/server.dart';
+import 'package:applicazione_prova/registro/registro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -34,16 +32,15 @@ class _AgendaState extends State<Agenda> {
   var e;
 
   void initState() {
-    Server.getAgenda().then((ok) {
+    RegistroApi.agenda.getData().then((r) {
       e = Eventi.listaEventi();
-      if (ok && mounted) setState(() {});
+      if (r.reload && mounted) setState(() {});
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    Server.save();
     super.dispose();
   }
 
@@ -158,8 +155,8 @@ class _AgendaState extends State<Agenda> {
                     return null;
                   },
                   weekFormat: false,
-                  height: 420.0,
                   selectedDateTime: _currentDate,
+                  height: 420,
                   daysHaveCircularBorder: true,
                   //markedDateIconBuilder: (event) => event.icon,
 

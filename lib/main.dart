@@ -1,10 +1,8 @@
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
-import 'package:applicazione_prova/server/server.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 

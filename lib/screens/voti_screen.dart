@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:applicazione_prova/screens/voti_details_screen.dart';
-import 'package:applicazione_prova/server/server.dart';
+import 'package:applicazione_prova/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -14,19 +14,17 @@ class Voti extends StatefulWidget {
 }
 
 class _VotiState extends State<Voti> {
-  List<String> periods = ["TOTALE", "TRIMESTRE", "PENTAMESTRE"];
 
   @override
   void initState() {
     super.initState();
-    Server.getVoti().then((ok) {
-      if (ok && mounted) setState(() {});
+    RegistroApi.voti.getData().then((r) {
+      if (r.reload) _setStateIfAlive();
     });
   }
 
   @override
   void dispose() {
-    Server.save();
     super.dispose();
   }
 
@@ -35,70 +33,28 @@ class _VotiState extends State<Voti> {
   }
 
   String _passedTime() {
-    int currentTime = DateTime.now().millisecondsSinceEpoch;
-    int startTime = Server.votiLastUpdate;
-    if (startTime == null) return 'mai aggiornato';
-    if (currentTime - startTime < 1000 * 60) {
+    if (RegistroApi.voti.lastUpdate == null) return 'mai aggiornato';
+    Duration difference = DateTime.now().difference(RegistroApi.voti.lastUpdate);
+    if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
     }
-    if (currentTime - startTime < 1000 * 60 * 60) {
+    if (difference.inHours < 1) {
       Future.delayed(Duration(minutes: 1), _setStateIfAlive);
-      int mins = (currentTime - startTime) ~/ (60 * 1000);
+      int mins = difference.inMinutes;
       return '$mins minut${mins == 1 ? 'o' : 'i'} fa';
     }
-    if (currentTime - startTime < 1000 * 60 * 60 * 24) {
+    if (difference.inDays < 1) {
       Future.delayed(Duration(hours: 1), _setStateIfAlive);
-      int hours = (currentTime - startTime) ~/ (60 * 60 * 1000);
+      int hours = difference.inHours;
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
   }
 
-  double _average(Iterable marks) {
-    if (marks == null) return double.nan;
-    int n = 0;
-    return marks.fold<double>(0, (sum, m) {
-          if (m['voto'] == null) return sum;
-          n++;
-          return sum += m['voto'];
-        }) /
-        n;
-  }
-
-  int _countNewMarks(Map sbj) {
-    if (sbj[periods[0]] == null) return 0;
-    return sbj[periods[0]].values.fold(0, (sum, mark) {
-      if (mark['new']) return sum + 1;
-      return sum;
-    });
-  }
-
-  bool _hasNewMarks(Map sbj) {
-    if (sbj[periods[0]] == null) return false;
-    return sbj[periods[0]].values.any((mark) => mark['new'] as bool);
-  }
-
-  double _averagePeriodo(String periodo) {
-    int n = 0;
-    return Server.voti.values.where((sbj) => sbj[periodo] != null).fold(0,
-            (sum, sbj) {
-          double average = _average(sbj[periodo].values);
-          if (average.isNaN) return sum;
-          n++;
-          return sum + average.round();
-        }) /
-        n;
-  }
-
-  // TODO: see details
-
   @override
   Widget build(BuildContext context) {
-    int votiCount = Server.voti.values.fold(0, (sum, sbj) {
-      if (sbj[periods[0]] == null) return sum;
-      return sum + _countNewMarks(sbj);
-    });
+    int newVotiCount = RegistroApi.voti.newVotiPeriodCount;
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -113,7 +69,7 @@ class _VotiState extends State<Voti> {
                         bottom: MediaQuery.of(context).size.height / 50,
                         top: MediaQuery.of(context).size.height / 40),
                     child: Text(
-                      periods[0],
+                      RegistroApi.voti.periods[0],
                       style: TextStyle(
                           color:
                               Theme.of(context).brightness == Brightness.light
@@ -124,13 +80,12 @@ class _VotiState extends State<Voti> {
                     ),
                   ),
                   Row(
-                    // FIXME: sostituire con una griglia?
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
                         flex: 2,
                         child: Center(
-                          child: MarkView(_averagePeriodo(periods[0])),
+                          child: MarkView(RegistroApi.voti.averagePeriodo(0)),
                         ),
                       ),
                       Expanded(
@@ -139,20 +94,12 @@ class _VotiState extends State<Voti> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             GestureDetector(
-                              onTap: () => setState(() => periods = [
-                                    periods[1],
-                                    periods[0],
-                                    periods[2]
-                                  ]), // TODO: animazione del cambio periodo
-                              child: MarkView(_averagePeriodo(periods[1])),
+                              onTap: () => setState(() => RegistroApi.voti.period = 1), // TODO: animazione del cambio periodo
+                              child: MarkView(RegistroApi.voti.averagePeriodo(1)),
                             ),
                             GestureDetector(
-                              onTap: () => setState(() => periods = [
-                                    periods[2],
-                                    periods[1],
-                                    periods[0]
-                                  ]),
-                              child: MarkView(_averagePeriodo(periods[2])),
+                              onTap: () => setState(() => RegistroApi.voti.period = 2),
+                              child: MarkView(RegistroApi.voti.averagePeriodo(2)),
                             )
                           ],
                         ),
@@ -163,7 +110,7 @@ class _VotiState extends State<Voti> {
                     padding: const EdgeInsets.only(top: 15.0, bottom: 40),
                     child: ListTile(
                       dense: true,
-                      leading: votiCount > 0
+                      leading: newVotiCount > 0
                           ? Icon(
                               Icons
                                   .warning, //FIXME: aggiornare il ['new'] della materia di cui si ė aperto il WillPopScope e si ritorno in voti_screen.dart
@@ -172,12 +119,12 @@ class _VotiState extends State<Voti> {
                           : null,
                       trailing: IconButton(
                         icon: Icon(Icons.cached),
-                        onPressed: () => Server.getVoti().then((ok) {
-                          if (ok) _setStateIfAlive();
+                        onPressed: () => RegistroApi.voti.getData().then((r) {
+                          if (r.reload) _setStateIfAlive();
                         }),
                       ),
                       title: Text(
-                        '${votiCount > 0 ? votiCount : 'nessun'} nuov${votiCount > 1 ? 'i' : 'o'} vot${votiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
+                        '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
                       ),
                     ),
                   )
@@ -188,10 +135,8 @@ class _VotiState extends State<Voti> {
           Padding(
               padding: EdgeInsets.all(30.0 - 15.0),
               child: Column(
-                children: Server.voti.values
-                    .where((sbj) => sbj[periods[0]] != null)
-                    .expand((sbj) {
-                  double average = _average(sbj[periods[0]].values);
+                children: RegistroApi.voti.sbjsWithMarks.expand((sbj) {
+                  double average = RegistroApi.voti.average(sbj);
                   return [
                     ListTile(
                         leading: Stack(
@@ -200,12 +145,12 @@ class _VotiState extends State<Voti> {
                               '  ' + average.toStringAsPrecision(2),
                               style: TextStyle(
                                 fontFamily: 'CoreSansRounded',
-                                fontWeight: _hasNewMarks(sbj)
+                                fontWeight: RegistroApi.voti.hasNewMarks(sbj)
                                     ? FontWeight.bold
                                     : FontWeight.normal,
                               ),
                             ),
-                            _hasNewMarks(sbj)
+                            RegistroApi.voti.hasNewMarks(sbj)
                                 ? Positioned(
                                     bottom: 6,
                                     left: 0,
@@ -226,10 +171,9 @@ class _VotiState extends State<Voti> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            VotiDetails(sbj, periods[0])))
+                                            VotiDetails(sbj, RegistroApi.voti.periods[0])))
                                 .then((value) {
-                              sbj[periods[0]]
-                                  .values
+                              RegistroApi.voti.sbjVoti(sbj)
                                   .forEach((mark) => mark["new"] = false);
                               if (mounted) setState(() {});
                             }), // TODO: open details
@@ -240,10 +184,10 @@ class _VotiState extends State<Voti> {
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: _hasNewMarks(sbj)
+                              fontWeight: RegistroApi.voti.hasNewMarks(sbj)
                                   ? FontWeight.bold
                                   : FontWeight.normal,
-                              fontSize: _hasNewMarks(sbj)
+                              fontSize: RegistroApi.voti.hasNewMarks(sbj)
                                   ? Theme.of(context).textTheme.body1.fontSize +
                                       1.0
                                   : Theme.of(context).textTheme.body1.fontSize),
