@@ -19,7 +19,7 @@ class Eventi {
       (_eventi[DateTime(inizio.year, inizio.month, inizio.day)] ??= <Event>[])
           .add(
         Event(
-          date: inizio,
+          date: inizio, // se è seganto come all day cosa fare?
           title: v['info'],
           // TODO: icon: Icon(Icons.add),
           dot: Container(
