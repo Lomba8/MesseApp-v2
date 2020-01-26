@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:applicazione_prova/registro/registro.dart';
-import 'package:http/http.dart' as http;
 
 class VotiRegistroData extends RegistroData {
   List<String> periods = ['TOTALE', 'TRIMESTRE', 'PENTAMESTRE'];
@@ -10,15 +7,12 @@ class VotiRegistroData extends RegistroData {
       : super('https://web.spaggiari.eu/rest/v1/students/%uid/grades2');
 
   @override
-  Future<Result> getData() async {
+  Result parseData(json) {
     try {
-      var r = await http.get(url, headers: RegistroData.headers);
-      // if (r.statusCode == 304) return Result(true, false);
-      if (r.statusCode != 200) return Result(false, false);
-      var data = json.decode(r.body)['grades'];
+      json = json['grades'];
       Map<String, Map> data2 = {};
 
-      data.forEach((m) {
+      json.forEach((m) {
         if (m['canceled']) return;
         Map subject = data2[m['subjectId'].toString()] ??= <String, dynamic>{
           'subjectCode': m['subjectCode'], // nome abbreviato
@@ -31,7 +25,7 @@ class VotiRegistroData extends RegistroData {
               subject[m['periodDesc'].toUpperCase()] = <String, Map>{};
           subject['periodi'].add(m['periodDesc'].toUpperCase());
         }
-        Map prevVoto = this.data[m['subjectId'].toString()];
+        Map prevVoto = data[m['subjectId'].toString()];
         if (prevVoto != null)
           prevVoto = prevVoto[m['periodDesc'].toUpperCase()];
         if (prevVoto != null) prevVoto = prevVoto[m['evtId'].toString()];
@@ -39,7 +33,6 @@ class VotiRegistroData extends RegistroData {
           'data': m['evtDate'],
           'voto': m['decimalValue'],
           'votoStr': m['displayValue'],
-          'data': m['evtDate'],
           'info': m['notesForFamily'],
           'new': prevVoto == null || prevVoto['new']
         };
@@ -50,8 +43,7 @@ class VotiRegistroData extends RegistroData {
           value['TOTALE'].addAll(value[p]);
         });
       });
-      this.data = data2;
-      lastUpdate = DateTime.now().millisecondsSinceEpoch;
+      data = data2;
 
       return Result(true, true);
     } catch (e, stack) {
@@ -61,7 +53,7 @@ class VotiRegistroData extends RegistroData {
     return Result(false, false);
   }
 
-  Iterable<Map> get sbjsWithMarks {
+  Iterable get sbjsWithMarks {
     return data.values
         .where((sbj) => sbj[periods[0]] != null && sbj[periods[0]].isNotEmpty);
   }

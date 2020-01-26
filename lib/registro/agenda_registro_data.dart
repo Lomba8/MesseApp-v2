@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 import 'package:applicazione_prova/registro/registro.dart';
 import 'package:intl/intl.dart';
 
@@ -15,16 +12,13 @@ class AgendaRegistroData extends RegistroData {
             'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${_getSchoolYear(DateTime.now())}');
 
   @override
-  Future<Result> getData() async {
-    // TODO: gestire Z-If-None-Match
+  Result parseData(json) {
     try {
-      var r = await http.get(url, headers: RegistroData.headers);
-      if (r.statusCode != 200) return Result(false, false);
-      var data = json.decode(r.body)['agenda'];
+      json = json['agenda'];
       Map<String, Map> data2 = {};
 
-      data.forEach((m) {
-        var prevEvento = this.data[m['evtId']];
+      json.forEach((m) {
+        var prevEvento = data[m['evtId']];
 
         Map event = data2[m['evtId'].toString()] ??= <String, dynamic>{
           'inizio': m['evtDatetimeBegin'],
@@ -37,8 +31,7 @@ class AgendaRegistroData extends RegistroData {
         };
       });
 
-      this.data = data2;
-      lastUpdate = DateTime.now().millisecondsSinceEpoch;
+      data = data2;
 
       return Result(true, true);
     } catch (e, stack) {

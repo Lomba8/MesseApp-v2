@@ -15,9 +15,9 @@ class RegistroApi {
   static final AgendaRegistroData agenda = AgendaRegistroData();
 
   // TODO: gestire parte dei download dall'esterno:
-  //  - Z-If-None-Match
+  //  - ignore update requests if already loading         OK
+  //  - Z-If-None-Match                                   OK
   //  - lastUpdate
-  //  - get request (usare solo un callback?)
   //  - ecc...
 
   static String _capitalize(String s) {
@@ -29,21 +29,25 @@ class RegistroApi {
 
   static final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
 
-  static String _token;
+  static String token;
 
   static Future<bool> login(
       String username, String password, bool check) async {
     try {
+      Map<String, String> headers = {
+        'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
+        'Content-Type': 'application/json',
+        'User-Agent': 'CVVS/std/1.7.9',
+      };
       body["pass"] = password;
       body["uid"] = username;
       var res = await http.post(loginUrl,
-          headers: RegistroData.headers, body: json.encode(body));
+          headers: headers, body: json.encode(body));
 
       if (res.statusCode != 200) return false;
-      _token = json.decode(res.body)["token"];
+      token = json.decode(res.body)["token"];
       //Globals.setCredentials(_username, _password);
       final prefs = await SharedPreferences.getInstance();
-      RegistroData.headers['Z-Auth-Token'] = _token;
       if (!check) {
         scuola = prefs.getString('scuola');
         nome = prefs.getString('nome');
@@ -52,10 +56,11 @@ class RegistroApi {
         usrId = prefs.getInt('usrId');
         return true;
       }
+      headers['Z-Auth-Token'] = token;
 
       var card = await http.get(
           "https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
-          headers: RegistroData.headers);
+          headers: headers);
       var data = json.decode(card.body)["card"];
 
       if (data['schCode'].toString() == 'VRLS0003') {
@@ -74,7 +79,7 @@ class RegistroApi {
       }
     } catch (e, s) {
       print(e);
-      print (s);
+      print(s);
     }
     return false;
   }
@@ -84,7 +89,7 @@ class RegistroApi {
     int N = 2;
     int n = 0;
     voti.getData().then((ok) => callback(++n / N));
-    agenda.getData().then((ok) => callback(++n /N));
+    agenda.getData().then((ok) => callback(++n / N));
   }
 
   static void save() async {
@@ -115,21 +120,40 @@ class RegistroApi {
 }
 
 abstract class RegistroData {
-  static final Map<String,String> headers = {
-    'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
-    'Content-Type': 'application/json',
-    'User-Agent': 'CVVS/std/1.7.9'
-  };
-  int lastUpdate;
+  DateTime lastUpdate;
   String etag;
-  Map data;
+  Map data = {};
   final String _url;
+  bool _loading = false;
+
+  Future<Result> getData() async {
+    if (_loading) return Result(true, false);
+    _loading = true;
+    Map<String, String> headers = {
+      'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
+      'Content-Type': 'application/json',
+      'User-Agent': 'CVVS/std/1.7.9',
+      'Z-Auth-Token': RegistroApi.token,
+      'Z-If-None-Match': etag
+    };
+    http.Response r = await http.get(url, headers: headers);
+    if (r.statusCode != HttpStatus.ok) {
+      _loading = false;
+      if (r.statusCode == HttpStatus.notModified) lastUpdate = DateTime.now();
+      return Result(r.statusCode == HttpStatus.notModified, false);
+    }
+    etag = r.headers['etag'];
+    Result result = parseData(json.decode(r.body));
+    lastUpdate = DateTime.now();
+    _loading = false;
+    return result;
+  }
 
   RegistroData(this._url);
 
   String get url => _url.replaceFirst('%uid', RegistroApi.usrId.toString());
 
-  Future<Result> getData();
+  Result parseData(dynamic json);
 }
 
 class Result {

@@ -33,21 +33,20 @@ class _VotiState extends State<Voti> {
   }
 
   String _passedTime() {
-    int currentTime = DateTime.now().millisecondsSinceEpoch;
-    int startTime = RegistroApi.voti.lastUpdate;
-    if (startTime == null) return 'mai aggiornato';
-    if (currentTime - startTime < 1000 * 60) {
+    if (RegistroApi.voti.lastUpdate == null) return 'mai aggiornato';
+    Duration difference = DateTime.now().difference(RegistroApi.voti.lastUpdate);
+    if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
     }
-    if (currentTime - startTime < 1000 * 60 * 60) {
+    if (difference.inHours < 1) {
       Future.delayed(Duration(minutes: 1), _setStateIfAlive);
-      int mins = (currentTime - startTime) ~/ (60 * 1000);
+      int mins = difference.inMinutes;
       return '$mins minut${mins == 1 ? 'o' : 'i'} fa';
     }
-    if (currentTime - startTime < 1000 * 60 * 60 * 24) {
+    if (difference.inDays < 1) {
       Future.delayed(Duration(hours: 1), _setStateIfAlive);
-      int hours = (currentTime - startTime) ~/ (60 * 60 * 1000);
+      int hours = difference.inHours;
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
