@@ -41,8 +41,8 @@ class RegistroApi {
       };
       body["pass"] = password;
       body["uid"] = username;
-      var res = await http.post(loginUrl,
-          headers: headers, body: json.encode(body));
+      var res =
+          await http.post(loginUrl, headers: headers, body: json.encode(body));
 
       if (res.statusCode != 200) return false;
       token = json.decode(res.body)["token"];
@@ -107,7 +107,7 @@ class RegistroApi {
     file.writeAsStringSync(json, flush: true);
   }
 
-  static void load() async {
+  static Future<void> load() async {
     Directory dataDir = await getApplicationSupportDirectory();
     File file = File('${dataDir.path}/data.json');
     if (!file.existsSync()) return;
