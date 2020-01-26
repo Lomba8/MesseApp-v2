@@ -92,10 +92,11 @@ class _AgendaState extends State<Agenda> {
                             '${events[i].date}');
                         if (events.length > 1) {
                           _info += events[i].title + '\n';
-                          _data += events[i].date.toIso8601String() + '\n';
+                          _data +=
+                              DateFormat.jm().format(events[i].date) + '\n';
                         } else {
                           _info = events[i].title;
-                          _data = events[i].date.toIso8601String();
+                          _data = DateFormat.jm().format(events[i].date);
                         }
                       }
                     });
