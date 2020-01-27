@@ -15,11 +15,15 @@ class Eventi {
       DateTime inizio = DateTime.parse(
               v['inizio'].replaceFirst(':', '', v['inizio'].lastIndexOf(':')))
           .toLocal();
+      DateTime fine = DateTime.parse(
+              v['fine'].replaceFirst(':', '', v['fine'].lastIndexOf(':')))
+          .toLocal();
       // DateTime fine = DateTime.parse(v['fine'].replaceFirst(':','',v['fine'].lastIndexOf(':')));
       (_eventi[DateTime(inizio.year, inizio.month, inizio.day)] ??= <Event>[])
           .add(
         Event(
-          date: inizio, // se è seganto come all day cosa fare?
+          inizio: inizio, // se è seganto come all day cosa fare?
+          fine: fine,
           title: v['info'],
           // TODO: icon: Icon(Icons.add),
           dot: Container(
