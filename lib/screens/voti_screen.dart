@@ -141,31 +141,36 @@ class _VotiState extends State<Voti> {
                                     Expanded(
                                       child: Stack(
                                         children: [
-                                          Center(
-                                            child: Text(
-                                              '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                wordSpacing: 1.0,
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 14.0,
-                                                fontFamily: 'CoreSans',
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              newVotiCount > 0
+                                                  ? Container(
+                                                      child: Icon(
+                                                        Icons.warning,
+                                                        color: Colors.yellow,
+                                                      ),
+                                                    )
+                                                  : SizedBox(),
+                                              Text(
+                                                '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  wordSpacing: 1.0,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'CoreSans',
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                          newVotiCount > 0
-                                              ? Container(
-                                                  margin: EdgeInsets.only(
-                                                      left: 85.0),
-                                                  child: Icon(
-                                                    Icons.warning,
-                                                    color: Colors.yellow,
-                                                  ),
-                                                )
-                                              : SizedBox(),
                                         ],
                                       ),
                                     ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                    )
                                   ],
                                 ),
                               )
