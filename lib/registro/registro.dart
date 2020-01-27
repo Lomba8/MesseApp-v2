@@ -97,6 +97,7 @@ class RegistroApi {
       'voti': voti.data,
       'votiLastUpdate': voti.lastUpdate,
       'eventi': agenda.data,
+      'events': agenda.events,
       'eventiLastUpdate': agenda.lastUpdate
       // ecc...
     };
@@ -115,6 +116,7 @@ class RegistroApi {
     voti.data = data['voti'] ?? {};
     voti.lastUpdate = data['votiLastUpdate'];
     agenda.data = data['eventi'] ?? {};
+    agenda.events = data['events'] ?? {};
     agenda.lastUpdate = data['eventiLastUpdate'];
   }
 }
@@ -122,7 +124,8 @@ class RegistroApi {
 abstract class RegistroData {
   String lastUpdate;
   String etag;
-  Map data = {};
+  dynamic data = {};
+  var events;
   final String _url;
   bool _loading = false;
 
