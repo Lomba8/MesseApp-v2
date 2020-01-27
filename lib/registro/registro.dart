@@ -17,7 +17,7 @@ class RegistroApi {
   // TODO: gestire parte dei download dall'esterno:
   //  - ignore update requests if already loading         OK
   //  - Z-If-None-Match                                   OK
-  //  - lastUpdate
+  //  - lastUpdate                                        OK
   //  - ecc...
 
   static String _capitalize(String s) {
