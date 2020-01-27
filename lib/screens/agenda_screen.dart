@@ -16,7 +16,7 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  String _info = ' ', _data = ' ';
+  String _info = ' ', _inizio = ' ', _fine = ' ';
   var _currentDate, _currentMonth = DateTime.now();
 
   Future<void> _refresh() async {}
@@ -87,16 +87,17 @@ class _AgendaState extends State<Agenda> {
                       _currentDate = date;
                       print(date);
                       for (int i = 0; i < events.length; i++) {
-                        print('${events[i].title}' +
-                            '\n ORE:' +
-                            '${events[i].date}');
                         if (events.length > 1) {
                           _info += events[i].title + '\n';
-                          _data +=
-                              DateFormat.jm().format(events[i].date) + '\n';
+                          _inizio +=
+                              DateFormat.jm().format(events[i].getInizio()) +
+                                  '\n';
+                          _fine = DateFormat.jm().format(events[i].getFine());
                         } else {
                           _info = events[i].title;
-                          _data = DateFormat.jm().format(events[i].date);
+                          _inizio =
+                              DateFormat.jm().format(events[i].getInizio());
+                          _fine = DateFormat.jm().format(events[i].getFine());
                         }
                       }
                     });
@@ -177,7 +178,7 @@ class _AgendaState extends State<Agenda> {
                       ),
                       Flexible(
                         child: Text(
-                          _data,
+                          "$_inizio-$_fine",
                           softWrap: true,
                           overflow: TextOverflow.visible,
                           style: TextStyle(fontSize: 10.0),
