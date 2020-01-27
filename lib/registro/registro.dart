@@ -120,7 +120,7 @@ class RegistroApi {
 }
 
 abstract class RegistroData {
-  DateTime lastUpdate;
+  String lastUpdate;
   String etag;
   Map data = {};
   final String _url;
@@ -139,12 +139,13 @@ abstract class RegistroData {
     http.Response r = await http.get(url, headers: headers);
     if (r.statusCode != HttpStatus.ok) {
       _loading = false;
-      if (r.statusCode == HttpStatus.notModified) lastUpdate = DateTime.now();
+      if (r.statusCode == HttpStatus.notModified)
+        lastUpdate = DateTime.now().toIso8601String();
       return Result(r.statusCode == HttpStatus.notModified, false);
     }
     etag = r.headers['etag'];
     Result result = parseData(json.decode(r.body));
-    lastUpdate = DateTime.now();
+    lastUpdate = DateTime.now().toIso8601String();
     _loading = false;
     return result;
   }
