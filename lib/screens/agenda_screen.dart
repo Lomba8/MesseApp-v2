@@ -1,3 +1,4 @@
+import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/screens/eventi.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:applicazione_prova/registro/registro.dart';
@@ -16,10 +17,14 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  String _info = ' ', _inizio = ' ', _fine = ' ';
+  String _info = ' ',
+      _inizio = ' ',
+      _fine = ' ',
+      _autore = ' ',
+      _classe = AgendaRegistroData.classe;
+  bool _giornaliero;
+  var _nuovo;
   var _currentDate, _currentMonth = DateTime.now();
-
-  Future<void> _refresh() async {}
 
   String _formatMonth(DateTime date) {
     if (date != null) return DateFormat("MMMM").format(date).toString();
@@ -33,7 +38,7 @@ class _AgendaState extends State<Agenda> {
 
   void initState() {
     RegistroApi.agenda.getData().then((r) {
-      e = Eventi.listaEventi();
+      e = RegistroApi.agenda.events;
       if (r.reload && mounted) setState(() {});
     });
     super.initState();
@@ -42,6 +47,38 @@ class _AgendaState extends State<Agenda> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _setStateIfAlive() {
+    if (mounted) setState(() {});
+  }
+
+  String _passedTime() {
+    if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
+    Duration difference = DateTime.now()
+        .difference((DateTime.parse(RegistroApi.voti.lastUpdate)));
+    if (difference.inMinutes < 1) {
+      Future.delayed(Duration(seconds: 15), _setStateIfAlive);
+      return 'adesso';
+    }
+    if (difference.inHours < 1) {
+      Future.delayed(Duration(minutes: 1), _setStateIfAlive);
+      int mins = difference.inMinutes;
+      return '$mins minut${mins == 1 ? 'o' : 'i'} fa';
+    }
+    if (difference.inDays < 1) {
+      Future.delayed(Duration(hours: 1), _setStateIfAlive);
+      int hours = difference.inHours;
+      return '$hours or${hours == 1 ? 'a' : 'e'} fa';
+    }
+    return 'più di un giorno fa';
+  }
+
+  Future<void> _refresh() async {
+    RegistroApi.agenda.getData().then((r) {
+      if (r.reload) _setStateIfAlive();
+    });
+    return null;
   }
 
   @override
@@ -86,18 +123,36 @@ class _AgendaState extends State<Agenda> {
                     setState(() {
                       _currentDate = date;
                       print(date);
+                      print(events);
+
+                      var year = int.parse(DateFormat.y().format(date));
+                      var month = int.parse(DateFormat.M().format(date));
+                      var day = int.parse(DateFormat.d().format(date));
+
+                      print(e.events[DateTime(year, month, day)][0].nuovo);
+
                       for (int i = 0; i < events.length; i++) {
+                        _nuovo = events[i].nuovo;
+                        e.events[DateTime(year, month, day)][0].nuovo =
+                            false; // TODO:gestire casi con piu eventi in una giornata
+
                         if (events.length > 1) {
-                          _info += events[i].title + '\n';
-                          _inizio +=
-                              DateFormat.jm().format(events[i].getInizio()) +
-                                  '\n';
-                          _fine = DateFormat.jm().format(events[i].getFine());
+                          // _info += events[i].title + '\n';
+                          // _inizio +=
+                          //     DateFormat.jm().format(events[i].getInizio()) +
+                          //         '\n';
+                          // _fine = DateFormat.jm().format(events[i].getFine());
+                          // _autore = events[i].autore;
+                          // _giornaliero = events[1].giornaliero;
+                          // _nuovo = events[i].nuovo = false;
                         } else {
-                          _info = events[i].title;
-                          _inizio =
-                              DateFormat.jm().format(events[i].getInizio());
-                          _fine = DateFormat.jm().format(events[i].getFine());
+                          // _info = events[i].title;
+                          // _inizio =
+                          //     DateFormat.jm().format(events[i].getInizio());
+                          // _fine = DateFormat.jm().format(events[i].getFine());
+                          // _autore = events[i].autore;
+                          // _giornaliero = events[1].giornaliero;
+                          // _nuovo = events[i].nuovo = false;
                         }
                       }
                     });
@@ -178,7 +233,7 @@ class _AgendaState extends State<Agenda> {
                       ),
                       Flexible(
                         child: Text(
-                          "$_inizio-$_fine",
+                          "$_inizio-$_fine $_nuovo",
                           softWrap: true,
                           overflow: TextOverflow.visible,
                           style: TextStyle(fontSize: 10.0),

@@ -25,18 +25,19 @@ class Eventi {
           inizio: inizio, // se è seganto come all day cosa fare?
           fine: fine,
           title: v['info'],
+          autore: v['autore'],
+          giornaliero: v['giornaliero'],
+          nuovo: v['new'],
           // TODO: icon: Icon(Icons.add),
           dot: Container(
             margin: EdgeInsets.symmetric(horizontal: 1.0),
-            color: Colors.red, //TODO: aggiustare colore container dinamicamente
+            color: v['new'] ? Colors.red : Colors.lightBlueAccent,
             height: 5.0,
             width: 5.0,
           ),
         ),
       );
     });
-
-    print(_eventi);
 
     return _markedDateMap;
   }
