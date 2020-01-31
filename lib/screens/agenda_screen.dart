@@ -219,29 +219,124 @@ class _AgendaState extends State<Agenda> {
 
                   /// null for not rendering any border, true for circular border, false for rectangular border
                 ),
-                Container(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 33.0),
+                      child: Text(
+                        'Ora',
+                        style: TextStyle(color: Colors.blueGrey),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 50.0),
+                      child: Text(
+                        'Evento',
+                        style: TextStyle(color: Colors.blueGrey),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30.0),
+                SingleChildScrollView(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Flexible(
-                        child: Text(
-                          _info,
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
-                          style: TextStyle(fontSize: 10.0),
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border(
+                                right: BorderSide(
+                                    color: Colors.white54, width: 1))),
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 20, left: 20.0),
+                          child: Column(
+                              children: [
+                            ' 8:00',
+                            ' 8:30',
+                            ' 9:00',
+                            ' 9:30',
+                            '10:00',
+                            '10:30',
+                            '11:00',
+                            '11:30',
+                            '12:00',
+                            '12:30',
+                            '13:00'
+                          ]
+                                  .map(
+                                    (n) => SizedBox(
+                                      height: 70,
+                                      child: Text(
+                                        n,
+                                        style: TextStyle(color: Colors.white60),
+                                      ),
+                                    ),
+                                  )
+                                  .toList()),
                         ),
                       ),
-                      Flexible(
-                        child: Text(
-                          "$_inizio-$_fine $_nuovo",
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
-                          style: TextStyle(fontSize: 10.0),
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(20),
+                                  color: Colors.white10),
+                              height: 140,
+                              width: 250,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.green[200],
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0)),
+                                              child: Align(
+                                                  alignment:
+                                                      Alignment(0.5, -0.7),
+                                                  child: SizedBox(
+                                                    width: 40.0,
+                                                    child: Icon(
+                                                      Icons.adb,
+                                                      size: 25.0,
+                                                      color: Colors.green[600],
+                                                    ),
+                                                  ))),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        //RichText(),
+                                      ],
+                                    ),
+                                    Column(),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           )
