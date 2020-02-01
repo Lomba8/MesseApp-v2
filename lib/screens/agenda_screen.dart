@@ -131,27 +131,7 @@ class _AgendaState extends State<Agenda> {
 
                       for (int i = 0; i < events.length; i++) {
                         //_nuovo = events[i].nuovo;
-                        e.events[DateTime(year, month, day)][0].nuovo =
-                            false; // TODO:gestire casi con piu eventi in una giornata
-
-                        if (events.length > 1) {
-                          // _info += events[i].title + '\n';
-                          // _inizio +=
-                          //     DateFormat.jm().format(events[i].getInizio()) +
-                          //         '\n';
-                          // _fine = DateFormat.jm().format(events[i].getFine());
-                          // _autore = events[i].autore;
-                          // _giornaliero = events[1].giornaliero;
-                          // _nuovo = events[i].nuovo = false;
-                        } else {
-                          // _info = events[i].title;
-                          // _inizio =
-                          //     DateFormat.jm().format(events[i].getInizio());
-                          // _fine = DateFormat.jm().format(events[i].getFine());
-                          // _autore = events[i].autore;
-                          // _giornaliero = events[1].giornaliero;
-                          // _nuovo = events[i].nuovo = false;
-                        }
+                        e.events[DateTime(year, month, day)][i].nuovo = false;
                       }
                     });
                   },
@@ -315,7 +295,7 @@ class EventCard extends StatelessWidget {
                 borderRadius: BorderRadiusDirectional.circular(20),
                 color: Colors.white10),
             height: 140,
-            width: 250,
+            width: 270,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Row(
@@ -347,48 +327,55 @@ class EventCard extends StatelessWidget {
                   Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        RichText(
-                          text: TextSpan(
-                            text: 'Titolo evento\n',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: 'Descrizione',
+                    child: SizedBox(
+                      width: 160.0,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          ListTile(
+                            contentPadding: EdgeInsets.all(0.0),
+                            dense: true,
+                            title: Text(evento.autore,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: 10.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'CoreSans',
+                                )),
+                            subtitle: Text('\n' + evento.title,
+                                maxLines: 5,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10.0,
                                   fontWeight: FontWeight.normal,
                                   color: Colors.white54,
+                                  fontFamily: 'CoreSans',
+                                )),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 2.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.access_time,
+                                  size: 14.0,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 2.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Icon(
-                                Icons.access_time,
-                                size: 14.0,
-                              ),
-                              SizedBox(width: 5.0),
-                              Text(
-                                '8:00-9:00',
-                                style: TextStyle(fontSize: 11.0),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                                SizedBox(width: 5.0),
+                                Text(
+                                  !evento.giornaliero
+                                      ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
+                                      : 'Giornaliero',
+                                  style: TextStyle(fontSize: 11.0),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
@@ -396,10 +383,13 @@ class EventCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
-                        Icon(
-                          Icons.brightness_1,
-                          color: Colors.green[600],
-                        )
+                        evento.nuovo
+                            ? Icon(
+                                Icons.brightness_1,
+                                color: Colors.yellow,
+                                size: 15.0,
+                              )
+                            : SizedBox(),
                       ],
                     ),
                   ),
