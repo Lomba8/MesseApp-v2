@@ -9,6 +9,8 @@ import 'dart:math' as math;
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
+import '../registro/registro.dart';
+
 class Voti extends StatefulWidget {
   static final String id = 'voti_screen';
   @override
@@ -35,8 +37,8 @@ class _VotiState extends State<Voti> {
 
   String _passedTime() {
     if (RegistroApi.voti.lastUpdate == null) return 'mai aggiornato';
-    Duration difference = DateTime.now()
-        .difference((DateTime.parse(RegistroApi.voti.lastUpdate)));
+    Duration difference =
+        DateTime.now().difference(RegistroApi.voti.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -135,43 +137,25 @@ class _VotiState extends State<Voti> {
                               Padding(
                                 padding: const EdgeInsets.only(
                                     top: 20.0, bottom: 45),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Stack(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              newVotiCount > 0
-                                                  ? Container(
-                                                      child: Icon(
-                                                        Icons.warning,
-                                                        color: Colors.yellow,
-                                                      ),
-                                                    )
-                                                  : SizedBox(),
-                                              Text(
-                                                '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  wordSpacing: 1.0,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 14.0,
-                                                  fontFamily: 'CoreSans',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                    )
-                                  ],
+                                child: ListTile(
+                                  title: Text(
+                                    '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        //fontFamily: 'CoreSans',
+                                        ),
+                                  ),
+                                  leading: newVotiCount > 0
+                                      ? Icon(
+                                          Icons.warning,
+                                          color: Colors.yellow,
+                                        )
+                                      : null,
+                                  trailing: newVotiCount > 0
+                                      ? IconButton(
+                                          icon: Icon(Icons.clear_all),
+                                          onPressed: () => setState(() => RegistroApi.voti.allSeen()))
+                                      : null,
                                 ),
                               )
                             ],
@@ -220,15 +204,12 @@ class _VotiState extends State<Voti> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        VotiDetails(
-                                                            sbj,
-                                                            RegistroApi.voti
-                                                                .periods[0])))
+                                                        VotiDetails(sbj['voti'],
+                                                            sbj['subjectDesc'])))
                                             .then((value) {
-                                          RegistroApi.voti.sbjVoti(sbj).forEach(
-                                              (mark) => mark["new"] = false);
-                                          if (mounted) setState(() {});
-                                        }), // TODO: open details
+                                          sbj['voti'].forEach((v) => v.seen());
+                                          _setStateIfAlive();
+                                        }),
                                       ),
                                     ),
                                     title: Text(
@@ -412,10 +393,4 @@ class MarkPainter extends CustomPainter {
     if (mv._mark == _mark) return false;
     return true;
   }
-}
-
-@override
-Widget build(BuildContext context) {
-  // TODO: implement build
-  throw UnimplementedError();
 }

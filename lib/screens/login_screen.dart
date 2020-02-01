@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../registro/registro.dart';
 import 'menu_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -108,7 +109,15 @@ class _LoginScreenState extends State<LoginScreen> {
         _formKey.currentState.save();
 
         if (await RegistroApi.login(_username, _password, true)) {
-          Navigator.pushReplacementNamed(context, Menu.id);
+          setState(() {
+            splash = true;
+          });
+          RegistroApi.downloadAll((double progress) =>
+              setState(() {
+                _progress = progress;
+                if (progress == 1)
+                  Navigator.pushReplacementNamed(context, Menu.id);
+              }));
         } else {
           _formKey.currentState.reset();
 
