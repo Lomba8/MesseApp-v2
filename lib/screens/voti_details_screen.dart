@@ -1,11 +1,13 @@
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 
-class VotiDetails extends StatefulWidget {
-  final Map _sbj;
-  final String _period;
+import '../registro/voti_registro_data.dart';
 
-  VotiDetails(this._sbj, this._period);
+class VotiDetails extends StatefulWidget {
+  final List<Voto> voti;
+  final String sbjDesc;
+
+  VotiDetails(this.voti, this.sbjDesc);
 
   @override
   VotiDetailsState createState() => VotiDetailsState();
@@ -25,17 +27,16 @@ class VotiDetailsState extends State<VotiDetails> {
                 "work in progress...",
                 textAlign: TextAlign.center,
               )
-            ]..addAll(widget._sbj[widget._period] == null
+            ]..addAll(widget.voti == null
                 ? []
-                : widget._sbj[widget._period].values
-                    .map<Widget>((mark) => ListTile(
-                          leading: mark['new']
+                : widget.voti.map<Widget>((mark) => ListTile(
+                          leading: mark.isNew
                               ? Icon(
                                   Icons.fiber_new,
                                   color: Colors.yellow,
                                 )
                               : null,
-                          title: Text(mark['votoStr']),
+                          title: Text(mark.votoStr),
                         ))),
           )),
           CustomPaint(
@@ -59,7 +60,7 @@ class VotiDetailsState extends State<VotiDetails> {
                     ),
                     Expanded(
                       child: Text(
-                        widget._sbj["subjectDesc"],
+                        widget.sbjDesc,
                         textAlign:
                             TextAlign.center, //FIXME: come centrare testo?
                       ),

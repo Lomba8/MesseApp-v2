@@ -1,14 +1,14 @@
-import 'package:applicazione_prova/registro/agenda_registro_data.dart';
-import 'package:applicazione_prova/screens/eventi.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:applicazione_prova/registro/registro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
     show CalendarCarousel, EventList;
+
+import '../registro/agenda_registro_data.dart';
+import '../registro/registro.dart';
 
 class Agenda extends StatefulWidget {
   static final String id = 'agenda_screen';
@@ -18,24 +18,24 @@ class Agenda extends StatefulWidget {
 
 class _AgendaState extends State<Agenda> {
   var _currentDate, _currentMonth = DateTime.now();
+  List<String> orari = [];
 
-  String _formatMonth(DateTime date) {
-    if (date != null) return DateFormat("MMMM").format(date).toString();
-  }
+  EventList<Evento> get e => RegistroApi.agenda.data;
 
-  String _formatYear(DateTime date) {
-    if (date != null) return DateFormat("y").format(date).toString();
-  }
-
-  var e, e_day;
+  var e_day;
 
   void initState() {
+    for (int i = 0; i < 24; i++) {
+      // TODO: mettere solo l'intervallo orario di interesse
+      orari.add('${i.toString().padLeft(2, '0')}:00');
+      orari.add('${i.toString().padLeft(2, '0')}:30');
+    }
     RegistroApi.agenda.getData().then((r) {
-      e = RegistroApi.agenda.events;
-      var year = int.parse(DateFormat.y().format(DateTime.now()));
-      var month = int.parse(DateFormat.M().format(DateTime.now()));
-      var day = int.parse(DateFormat.d().format(DateTime.now()));
-      e_day = e.events[DateTime(year, month, day)];
+      var year = DateTime.now().year;
+      var month = DateTime.now().month;
+      var day = DateTime.now().day;
+      _currentDate = DateTime(year, month, day);
+      e_day = e.events[_currentDate];
       if (r.reload && mounted) setState(() {});
     });
     super.initState();
@@ -52,8 +52,8 @@ class _AgendaState extends State<Agenda> {
 
   String _passedTime() {
     if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
-    Duration difference = DateTime.now()
-        .difference((DateTime.parse(RegistroApi.voti.lastUpdate)));
+    Duration difference =
+        DateTime.now().difference(RegistroApi.voti.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -115,24 +115,15 @@ class _AgendaState extends State<Agenda> {
                     ),
                   ),
                 ),
-                CalendarCarousel<Event>(
-                  onDayPressed: (DateTime date, List<Event> events) {
+                CalendarCarousel<Evento>(
+                  onDayPressed: (DateTime date, List<Evento> events) {
+                    if (date.isAtSameMomentAs(_currentDate)) return;
                     setState(() {
+                      for (int i = 0; i < e_day.length; i++) e_day[i].seen();
                       e_day = events;
                       _currentDate = date;
                       print(date);
                       print(events);
-
-                      var year = int.parse(DateFormat.y().format(date));
-                      var month = int.parse(DateFormat.M().format(date));
-                      var day = int.parse(DateFormat.d().format(date));
-
-                      print(e.events[DateTime(year, month, day)][0].nuovo);
-
-                      for (int i = 0; i < events.length; i++) {
-                        //_nuovo = events[i].nuovo;
-                        e.events[DateTime(year, month, day)][i].nuovo = false;
-                      }
                     });
                   },
                   // isScrollable: true,
@@ -157,6 +148,7 @@ class _AgendaState extends State<Agenda> {
                   iconColor: Theme.of(context).primaryColor,
                   locale: 'it',
                   prevDaysTextStyle: TextStyle(color: Colors.white24),
+                  nextDaysTextStyle: TextStyle(color: Colors.white24),
                   weekdayTextStyle: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -191,7 +183,7 @@ class _AgendaState extends State<Agenda> {
                   },
                   weekFormat: false,
                   selectedDateTime: _currentDate,
-                  height: 420,
+                  height: 350,
                   daysHaveCircularBorder: true,
                   //markedDateIconBuilder: (event) => event.icon,
 
@@ -220,6 +212,7 @@ class _AgendaState extends State<Agenda> {
                 SizedBox(height: 30.0),
                 SingleChildScrollView(
                   child: Row(
+                    mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
@@ -228,21 +221,9 @@ class _AgendaState extends State<Agenda> {
                                 right: BorderSide(
                                     color: Colors.white54, width: 1))),
                         child: Padding(
-                          padding: EdgeInsets.only(right: 20, left: 20.0),
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
-                              children: [
-                            ' 8:00',
-                            ' 8:30',
-                            ' 9:00',
-                            ' 9:30',
-                            '10:00',
-                            '10:30',
-                            '11:00',
-                            '11:30',
-                            '12:00',
-                            '12:30',
-                            '13:00'
-                          ]
+                              children: orari
                                   .map(
                                     (n) => SizedBox(
                                       height: 70,
@@ -256,13 +237,19 @@ class _AgendaState extends State<Agenda> {
                         ),
                       ),
                       if (e_day != null)
-                        Column(
-                          children: e_day.map<Widget>((oggi) {
-                            print(oggi);
-                            return EventCard(
-                              evento: oggi,
-                            );
-                          }).toList(),
+                        Expanded(
+                          child: Container(
+                            height: 140.0 * 24,
+                            child: Stack(
+                              // FIXME: sovrapposizione di eventi
+                              children: e_day.map<Widget>((oggi) {
+                                print(oggi);
+                                return EventCard(
+                                  evento: oggi,
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         )
                     ],
                   ),
@@ -277,7 +264,7 @@ class _AgendaState extends State<Agenda> {
 }
 
 class EventCard extends StatelessWidget {
-  final Event evento;
+  final Evento evento;
   const EventCard({
     Key key,
     @required this.evento,
@@ -286,70 +273,59 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
+      padding: EdgeInsets.only(
+          top: 70 * (evento.inizio.hour * 2 + evento.inizio.minute / 30)),
+      child: Container(
+        height: 70 * evento.fine.difference(evento.inizio).inMinutes / 30,
+        child: Padding(
+          padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
+          child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadiusDirectional.circular(20),
                 color: Colors.white10),
-            height: 140,
-            width: 270,
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.green[200],
-                              borderRadius: BorderRadius.circular(10.0)),
-                          child: Align(
-                            alignment: Alignment(0.5, -0.7),
-                            child: SizedBox(
-                              width: 40.0,
-                              child: Icon(
-                                Icons.adb,
-                                size: 25.0,
-                                color: Colors.green[600],
-                              ),
-                            ),
-                          ),
+                  Container(
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                        color: Colors.green[200],
+                        borderRadius: BorderRadius.circular(10.0)),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.adb, // TODO: cosa ci mettiamo?
+                          size: 25.0,
+                          color: Colors.green[600],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
-                    child: SizedBox(
-                      width: 160.0,
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 12.0),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          ListTile(
-                            contentPadding: EdgeInsets.all(0.0),
-                            dense: true,
-                            title: Text(evento.autore,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 10.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'CoreSans',
-                                )),
-                            subtitle: Text('\n' + evento.title,
+                          Text(evento.autore,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: 10.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'CoreSans',
+                              )),
+                          Expanded(
+                            child: Text(evento.info,
                                 maxLines: 5,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 10.0,
-                                  fontWeight: FontWeight.normal,
                                   color: Colors.white54,
                                   fontFamily: 'CoreSans',
                                 )),
@@ -378,26 +354,20 @@ class EventCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        evento.nuovo
-                            ? Icon(
-                                Icons.brightness_1,
-                                color: Colors.yellow,
-                                size: 15.0,
-                              )
-                            : SizedBox(),
-                      ],
-                    ),
+                  Center(
+                    child: evento.nuovo
+                        ? Icon(
+                            Icons.brightness_1,
+                            color: Colors.yellow,
+                            size: 15.0,
+                          )
+                        : SizedBox(),
                   ),
                 ],
               ),
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }

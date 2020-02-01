@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/registro/voti_registro_data.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,12 +14,6 @@ class RegistroApi {
 
   static final VotiRegistroData voti = VotiRegistroData();
   static final AgendaRegistroData agenda = AgendaRegistroData();
-
-  // TODO: gestire parte dei download dall'esterno:
-  //  - ignore update requests if already loading         OK
-  //  - Z-If-None-Match                                   OK
-  //  - lastUpdate                                        OK
-  //  - ecc...
 
   static String _capitalize(String s) {
     s.toLowerCase();
@@ -94,11 +89,8 @@ class RegistroApi {
 
   static void save() async {
     Map<String, dynamic> data = {
-      'voti': voti.data,
-      'votiLastUpdate': voti.lastUpdate,
-      'eventi': agenda.data,
-      'events': agenda.events,
-      'eventiLastUpdate': agenda.lastUpdate
+      'voti': voti,
+      'agenda': agenda
       // ecc...
     };
     String json = jsonEncode(data);
@@ -113,19 +105,15 @@ class RegistroApi {
     File file = File('${dataDir.path}/data.json');
     if (!file.existsSync()) return;
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
-    voti.data = data['voti'] ?? {};
-    voti.lastUpdate = data['votiLastUpdate'];
-    agenda.data = data['eventi'] ?? {};
-    agenda.events = data['events'] ?? {};
-    agenda.lastUpdate = data['eventiLastUpdate'];
+    voti.fromJson(data['voti']);
+    agenda.fromJson(data['agenda']);
   }
 }
 
 abstract class RegistroData {
-  String lastUpdate;
+  DateTime lastUpdate;
   String etag;
   dynamic data = {};
-  var events;
   final String _url;
   bool _loading = false;
 
@@ -143,15 +131,27 @@ abstract class RegistroData {
     if (r.statusCode != HttpStatus.ok) {
       _loading = false;
       if (r.statusCode == HttpStatus.notModified)
-        lastUpdate = DateTime.now().toIso8601String();
+        lastUpdate = DateTime.now();
       return Result(r.statusCode == HttpStatus.notModified, false);
     }
     etag = r.headers['etag'];
     Result result = parseData(json.decode(r.body));
-    lastUpdate = DateTime.now().toIso8601String();
+    lastUpdate = DateTime.now();
     _loading = false;
     return result;
   }
+
+  @mustCallSuper
+  void fromJson (Map<String, dynamic> json ) {
+    lastUpdate = DateTime.parse(json['lastUpdate']);
+    etag = json['etag'];
+  }
+
+  @mustCallSuper
+  Map<String, dynamic> toJson () => {
+    'lastUpdate': lastUpdate.toIso8601String(),
+    'etag': etag,
+  };  // delegates data save to the derivate class
 
   RegistroData(this._url);
 
