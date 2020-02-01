@@ -17,13 +17,6 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  String _info = ' ',
-      _inizio = ' ',
-      _fine = ' ',
-      _autore = ' ',
-      _classe = AgendaRegistroData.classe;
-  bool _giornaliero;
-  var _nuovo;
   var _currentDate, _currentMonth = DateTime.now();
 
   String _formatMonth(DateTime date) {
@@ -34,11 +27,15 @@ class _AgendaState extends State<Agenda> {
     if (date != null) return DateFormat("y").format(date).toString();
   }
 
-  var e;
+  var e, e_day;
 
   void initState() {
     RegistroApi.agenda.getData().then((r) {
       e = RegistroApi.agenda.events;
+      var year = int.parse(DateFormat.y().format(DateTime.now()));
+      var month = int.parse(DateFormat.M().format(DateTime.now()));
+      var day = int.parse(DateFormat.d().format(DateTime.now()));
+      e_day = e.events[DateTime(year, month, day)];
       if (r.reload && mounted) setState(() {});
     });
     super.initState();
@@ -121,6 +118,7 @@ class _AgendaState extends State<Agenda> {
                 CalendarCarousel<Event>(
                   onDayPressed: (DateTime date, List<Event> events) {
                     setState(() {
+                      e_day = events;
                       _currentDate = date;
                       print(date);
                       print(events);
@@ -132,7 +130,7 @@ class _AgendaState extends State<Agenda> {
                       print(e.events[DateTime(year, month, day)][0].nuovo);
 
                       for (int i = 0; i < events.length; i++) {
-                        _nuovo = events[i].nuovo;
+                        //_nuovo = events[i].nuovo;
                         e.events[DateTime(year, month, day)][0].nuovo =
                             false; // TODO:gestire casi con piu eventi in una giornata
 
@@ -277,63 +275,15 @@ class _AgendaState extends State<Agenda> {
                                   .toList()),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadiusDirectional.circular(20),
-                                  color: Colors.white10),
-                              height: 140,
-                              width: 250,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.green[200],
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0)),
-                                              child: Align(
-                                                  alignment:
-                                                      Alignment(0.5, -0.7),
-                                                  child: SizedBox(
-                                                    width: 40.0,
-                                                    child: Icon(
-                                                      Icons.adb,
-                                                      size: 25.0,
-                                                      color: Colors.green[600],
-                                                    ),
-                                                  ))),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        //RichText(),
-                                      ],
-                                    ),
-                                    Column(),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                      if (e_day != null)
+                        Column(
+                          children: e_day.map<Widget>((oggi) {
+                            print(oggi);
+                            return EventCard(
+                              evento: oggi,
+                            );
+                          }).toList(),
+                        )
                     ],
                   ),
                 ),
@@ -342,6 +292,123 @@ class _AgendaState extends State<Agenda> {
           )
         ],
       ), // scroll view
+    );
+  }
+}
+
+class EventCard extends StatelessWidget {
+  final Event evento;
+  const EventCard({
+    Key key,
+    @required this.evento,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadiusDirectional.circular(20),
+                color: Colors.white10),
+            height: 140,
+            width: 250,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.green[200],
+                              borderRadius: BorderRadius.circular(10.0)),
+                          child: Align(
+                            alignment: Alignment(0.5, -0.7),
+                            child: SizedBox(
+                              width: 40.0,
+                              child: Icon(
+                                Icons.adb,
+                                size: 25.0,
+                                color: Colors.green[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        RichText(
+                          text: TextSpan(
+                            text: 'Titolo evento\n',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Descrizione',
+                                style: TextStyle(
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Icon(
+                                Icons.access_time,
+                                size: 14.0,
+                              ),
+                              SizedBox(width: 5.0),
+                              Text(
+                                '8:00-9:00',
+                                style: TextStyle(fontSize: 11.0),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Icon(
+                          Icons.brightness_1,
+                          color: Colors.green[600],
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
