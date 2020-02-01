@@ -119,7 +119,8 @@ class _AgendaState extends State<Agenda> {
                   onDayPressed: (DateTime date, List<Evento> events) {
                     if (date.isAtSameMomentAs(_currentDate)) return;
                     setState(() {
-                      for (int i = 0; i < e_day.length; i++) e_day[i].seen();
+                      if (e_day != null && e_day.isNotEmpty)
+                        for (int i = 0; i < e_day.length; i++) e_day[i].seen();
                       e_day = events;
                       _currentDate = date;
                       print(date);
