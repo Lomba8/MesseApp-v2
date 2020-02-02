@@ -94,7 +94,6 @@ class VotiRegistroData extends RegistroData {
   double averagePeriodo(int period) {
     int n = 0;
     return data[periods[period]].values.fold(0, (sum, sbj) {
-          print(sbj['voti'].runtimeType);
           double avg = _average(sbj['voti']);
           if (avg.isNaN) return sum;
           n++;
@@ -141,7 +140,7 @@ class VotiRegistroData extends RegistroData {
     List<String> periods = ['TRIMESTRE', 'PENTAMESTRE'];
     for (String period in periods) {
       data[period].forEach((sbjId, sbj) {
-        totale[sbjId] = {
+        totale[sbjId] ??= {
           'subjectCode': sbj['subjectCode'], // nome abbreviato
           'subjectDesc': sbj['subjectDesc'], // nome completo
           'voti': <Voto>[]

@@ -22,7 +22,7 @@ class _VotiState extends State<Voti> {
   void initState() {
     super.initState();
     RegistroApi.voti.getData().then((r) {
-      if (r.reload) _setStateIfAlive();
+      if (r.ok) _setStateIfAlive();
     });
   }
 
@@ -35,7 +35,7 @@ class _VotiState extends State<Voti> {
     if (mounted) setState(() {});
   }
 
-  String _passedTime() {
+  String _passedTime() {  // FIXME: i temporizzatori per l'aggiornamento dell'ultimo controllo si accumulano
     if (RegistroApi.voti.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
         DateTime.now().difference(RegistroApi.voti.lastUpdate);
@@ -57,10 +57,8 @@ class _VotiState extends State<Voti> {
   }
 
   Future<void> _refresh() async {
-    RegistroApi.voti.getData().then((r) {
-      if (r.reload) _setStateIfAlive();
-    });
-    return null;
+    Result r = await RegistroApi.voti.getData();
+    if (r.ok) _setStateIfAlive();
   }
 
   @override
