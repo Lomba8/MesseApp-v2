@@ -244,7 +244,6 @@ class _AgendaState extends State<Agenda> {
                             child: Stack(
                               // FIXME: sovrapposizione di eventi
                               children: e_day.map<Widget>((oggi) {
-                                print(oggi);
                                 return EventCard(
                                   evento: oggi,
                                 );

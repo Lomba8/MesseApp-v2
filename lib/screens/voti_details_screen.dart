@@ -1,4 +1,5 @@
 import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../registro/voti_registro_data.dart';
@@ -23,6 +24,13 @@ class VotiDetailsState extends State<VotiDetails> {
               child: Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height / 4),
+              AspectRatio(
+                aspectRatio: 1.7,
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: LineChart(_votiData()),
+                ),
+              ),
               Text(
                 "work in progress...",
                 textAlign: TextAlign.center,
@@ -30,14 +38,14 @@ class VotiDetailsState extends State<VotiDetails> {
             ]..addAll(widget.voti == null
                 ? []
                 : widget.voti.map<Widget>((mark) => ListTile(
-                          leading: mark.isNew
-                              ? Icon(
-                                  Icons.fiber_new,
-                                  color: Colors.yellow,
-                                )
-                              : null,
-                          title: Text(mark.votoStr),
-                        ))),
+                      leading: mark.isNew
+                          ? Icon(
+                              Icons.fiber_new,
+                              color: Colors.yellow,
+                            )
+                          : null,
+                      title: Text(mark.votoStr),
+                    ))),
           )),
           CustomPaint(
             painter: BackgroundPainter(Theme.of(context)),
@@ -76,5 +84,62 @@ class VotiDetailsState extends State<VotiDetails> {
         ],
       ),
     );
+  }
+
+  LineChartData _votiData() => LineChartData(
+    lineTouchData: LineTouchData(
+
+    ),
+          minY: 0,
+          maxY: 10,
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: true,
+            getDrawingVerticalLine: (value) =>
+                FlLine(color: Colors.white10, strokeWidth: 1),
+            drawHorizontalLine: true,
+            getDrawingHorizontalLine: (value) =>
+                FlLine(color: Colors.white10, strokeWidth: 1),
+          ),
+          titlesData: FlTitlesData(
+              bottomTitles: SideTitles(showTitles: false),
+              leftTitles: SideTitles(
+                reservedSize: 25,
+                textStyle: TextStyle(
+                  color: Colors.white60,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+                margin: 15,
+                showTitles: true,
+                getTitles: (value) => value.toInt().toString(),
+              )),
+          borderData: FlBorderData(show: false),
+          lineBarsData: [
+            LineChartBarData(
+              spots: widget.voti
+                  .where((voto) => voto.voto != null && !voto.voto.isNaN)
+                  .toList()
+                  .asMap()
+                  .map((index, voto) =>
+                      MapEntry(index, FlSpot(index.toDouble(), voto.voto)))
+                  .values
+                  .toList(),
+              isCurved: true,
+              dotData: FlDotData(
+                  dotColor: Theme.of(context).primaryColor, dotSize: 5),
+              colors: [Theme.of(context).primaryColor],
+              /*belowBarData: BarAreaData(  // TODO: gradient verticale?
+                  show: true,
+                  colors: [Color(0xFF002000), Color(0xFF200000)],
+                  gradientColorStops: [0, 1],
+                  cutOffY: 6,
+                  applyCutOffY: true
+                )*/
+            )
+          ]);
+
+  LineChartData _averageData() {
+    return null;
   }
 }
