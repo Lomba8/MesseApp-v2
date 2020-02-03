@@ -25,7 +25,7 @@ class _AgendaState extends State<Agenda> {
   var e_day;
 
   void initState() {
-    for (int i = 0; i < 24; i++) {
+    for (int i = 7; i < 17; i++) {
       // TODO: mettere solo l'intervallo orario di interesse
       orari.add('${i.toString().padLeft(2, '0')}:00');
       orari.add('${i.toString().padLeft(2, '0')}:30');
@@ -240,8 +240,9 @@ class _AgendaState extends State<Agenda> {
                       if (e_day != null)
                         Expanded(
                           child: Container(
-                            height: 140.0 * 24,
+                            height: 140.0 * 10,
                             child: Stack(
+                              overflow: Overflow.clip,
                               // FIXME: sovrapposizione di eventi
                               children: e_day.map<Widget>((oggi) {
                                 return EventCard(
@@ -274,9 +275,13 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          top: 70 * (evento.inizio.hour * 2 + evento.inizio.minute / 30)),
+          top: !evento.giornaliero
+              ? 70 * ((evento.inizio.hour - 7) * 2 + evento.inizio.minute / 30)
+              : 0.0),
       child: Container(
-        height: 70 * evento.fine.difference(evento.inizio).inMinutes / 30,
+        height: !evento.giornaliero
+            ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
+            : 140.0,
         child: Padding(
           padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
           child: Container(
@@ -300,7 +305,9 @@ class EventCard extends StatelessWidget {
                         child: Icon(
                           Icons.adb, // TODO: cosa ci mettiamo?
                           size: 25.0,
-                          color: Colors.green[600],
+                          color: Colors.green[
+                              600], //TODO: mappa in globals.dart con corrispondenza autore icona colore
+                          //                se giornaliero cambiare colore a prescienere dalla materia
                         ),
                       ),
                     ),
