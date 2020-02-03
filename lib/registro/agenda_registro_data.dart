@@ -56,13 +56,15 @@ class AgendaRegistroData extends RegistroData {
   }
 
   @override
-  Map<String, dynamic> toJson () {
+  Map<String, dynamic> toJson() {
     Map<String, dynamic> tr = super.toJson();
     tr['eventList'] = {};
-    (data as EventList<Evento>).events.forEach((key, value) => tr['eventList'][key.toIso8601String()] = value);
+    (data as EventList<Evento>).events.forEach(
+        (key, value) => tr['eventList'][key.toIso8601String()] = value);
     tr['newFlags'] = eventiNewFlags;
     return tr;
   }
+
   @override
   void fromJson(Map<String, dynamic> json) {
     super.fromJson(json);
@@ -76,7 +78,8 @@ class AgendaRegistroData extends RegistroData {
       }
     });
     data = evtList;
-    eventiNewFlags = json['newFlags'].map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
+    eventiNewFlags = json['newFlags']
+        .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
   }
 }
 
@@ -112,20 +115,48 @@ class Evento implements EventInterface {
   @override
   String getTitle() => info;
 
-  Map<String, dynamic> toJson () => {
-    'evtId': _evtId,
-    'inizio': inizio.toIso8601String(),
-    'fine': fine.toIso8601String(),
-    'giornaliero': giornaliero,
-    'autore': autore,
-    'info': info
-  };
-  static Evento fromJson (json) => Evento(
-    json['evtId'],
-    inizio: DateTime.parse(json['inizio']),
-    fine: DateTime.parse(json['fine']),
-    giornaliero: json['giornaliero'],
-    autore: json['autore'],
-    info: json['info']
-  );
+  Map<String, dynamic> toJson() => {
+        'evtId': _evtId,
+        'inizio': inizio.toIso8601String(),
+        'fine': fine.toIso8601String(),
+        'giornaliero': giornaliero,
+        'autore': autore,
+        'info': info
+      };
+  static Evento fromJson(json) => Evento(json['evtId'],
+      inizio: DateTime.parse(json['inizio']),
+      fine: DateTime.parse(json['fine']),
+      giornaliero: json['giornaliero'],
+      autore: json['autore'],
+      info: json['info']);
+
+  @override
+  String getAutore() {
+    // TODO: implement getAutore
+    throw UnimplementedError();
+  }
+
+  @override
+  DateTime getFine() {
+    // TODO: implement getFine
+    throw UnimplementedError();
+  }
+
+  @override
+  bool getGiornaliero() {
+    // TODO: implement getGiornaliero
+    throw UnimplementedError();
+  }
+
+  @override
+  DateTime getInizio() {
+    // TODO: implement getInizio
+    throw UnimplementedError();
+  }
+
+  @override
+  bool getNuovo() {
+    // TODO: implement getNuovo
+    throw UnimplementedError();
+  }
 }
