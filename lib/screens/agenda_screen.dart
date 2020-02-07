@@ -199,19 +199,24 @@ class _AgendaState extends State<Agenda> {
                 ),
                 if (e_day_giornaliero != null &&
                     esistono_eventi_giornalieri == true)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                          vertical: 10.0), //TODO: dynamic values
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints.tight(Size(
-                            double.infinity, 100.0)), //TODO: dynamic values
-                        child: EventCard(
-                          evento: e_day_giornaliero,
+                  Flex(
+                    direction: Axis.horizontal,
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: size.width / 20.0,
+                              vertical: size.height / 50.0),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints.tight(
+                                Size(double.infinity, size.height / 8.0)),
+                            child: EventCard(
+                              evento: e_day_giornaliero,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
