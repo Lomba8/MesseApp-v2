@@ -22,7 +22,9 @@ class _AgendaState extends State<Agenda> {
 
   EventList<Evento> get e => RegistroApi.agenda.data;
 
-  var e_day;
+  List<Evento> e_day = List<Evento>();
+  Evento e_day_giornaliero;
+  bool esistono_eventi_giornalieri = false;
 
   void initState() {
     for (int i = 7; i < 17; i++) {
@@ -121,10 +123,15 @@ class _AgendaState extends State<Agenda> {
                     setState(() {
                       if (e_day != null && e_day.isNotEmpty)
                         for (int i = 0; i < e_day.length; i++) e_day[i].seen();
+                      esistono_eventi_giornalieri = false;
+                      events.forEach((f) {
+                        if (f.giornaliero) {
+                          e_day_giornaliero = f;
+                          esistono_eventi_giornalieri = true;
+                        }
+                      });
                       e_day = events;
                       _currentDate = date;
-                      print(date);
-                      print(events);
                     });
                   },
                   // isScrollable: true,
@@ -190,6 +197,22 @@ class _AgendaState extends State<Agenda> {
 
                   /// null for not rendering any border, true for circular border, false for rectangular border
                 ),
+                if (e_day_giornaliero != null &&
+                    esistono_eventi_giornalieri == true)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                          vertical: 10.0), //TODO: dynamic values
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints.tight(Size(
+                            double.infinity, 100.0)), //TODO: dynamic values
+                        child: EventCard(
+                          evento: e_day_giornaliero,
+                        ),
+                      ),
+                    ),
+                  ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
@@ -245,9 +268,13 @@ class _AgendaState extends State<Agenda> {
                               overflow: Overflow.clip,
                               // FIXME: sovrapposizione di eventi
                               children: e_day.map<Widget>((oggi) {
-                                return EventCard(
-                                  evento: oggi,
-                                );
+                                if (!oggi.giornaliero) {
+                                  return EventCard(
+                                    evento: oggi,
+                                  );
+                                } else {
+                                  return SizedBox();
+                                }
                               }).toList(),
                             ),
                           ),
