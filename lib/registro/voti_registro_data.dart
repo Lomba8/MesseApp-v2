@@ -39,6 +39,7 @@ class VotiRegistroData extends RegistroData {
           List<Voto> voti = subject['voti'];
           voti.add(voto);
         }
+        votiNewFlags2[voto._id] = votiNewFlags[voto._id] ?? true;
       });
 
       data = data2;
