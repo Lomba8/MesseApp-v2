@@ -129,34 +129,4 @@ class Evento implements EventInterface {
       giornaliero: json['giornaliero'],
       autore: json['autore'],
       info: json['info']);
-
-  @override
-  String getAutore() {
-    // TODO: implement getAutore
-    throw UnimplementedError();
-  }
-
-  @override
-  DateTime getFine() {
-    // TODO: implement getFine
-    throw UnimplementedError();
-  }
-
-  @override
-  bool getGiornaliero() {
-    // TODO: implement getGiornaliero
-    throw UnimplementedError();
-  }
-
-  @override
-  DateTime getInizio() {
-    // TODO: implement getInizio
-    throw UnimplementedError();
-  }
-
-  @override
-  bool getNuovo() {
-    // TODO: implement getNuovo
-    throw UnimplementedError();
-  }
 }

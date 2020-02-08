@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:applicazione_prova/registro/registro.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,28 +19,22 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  var _currentDate, _currentMonth = DateTime.now();
-  List<String> orari = [];
+  DateTime _currentDate, _currentMonth = DateTime.now();
 
   EventList<Evento> get e => RegistroApi.agenda.data;
 
-  List<Evento> e_day = List<Evento>();
-  Evento e_day_giornaliero;
-  bool esistono_eventi_giornalieri = false;
+  List<Evento> dayEvents = List<Evento>();
 
   void initState() {
-    for (int i = 7; i < 17; i++) {
-      // TODO: mettere solo l'intervallo orario di interesse
-      orari.add('${i.toString().padLeft(2, '0')}:00');
-      orari.add('${i.toString().padLeft(2, '0')}:30');
-    }
+    _currentDate =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    dayEvents = e.events[_currentDate] ?? [];
     RegistroApi.agenda.getData().then((r) {
-      var year = DateTime.now().year;
-      var month = DateTime.now().month;
-      var day = DateTime.now().day;
-      _currentDate = DateTime(year, month, day);
-      e_day = e.events[_currentDate];
-      if (r.reload && mounted) setState(() {});
+      if (!r.reload || !mounted) return;
+      _currentDate = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      dayEvents = e.events[_currentDate] ?? [];
+      setState(() {});
     });
     super.initState();
   }
@@ -80,8 +76,11 @@ class _AgendaState extends State<Agenda> {
     return null;
   }
 
+  static int timelineStart = 0;
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> orariList = _orariList();
     var size = MediaQuery.of(context).size;
     return LiquidPullToRefresh(
       backgroundColor: Color.fromRGBO(66, 66, 66, 1),
@@ -121,16 +120,9 @@ class _AgendaState extends State<Agenda> {
                   onDayPressed: (DateTime date, List<Evento> events) {
                     if (date.isAtSameMomentAs(_currentDate)) return;
                     setState(() {
-                      if (e_day != null && e_day.isNotEmpty)
-                        for (int i = 0; i < e_day.length; i++) e_day[i].seen();
-                      esistono_eventi_giornalieri = false;
-                      events.forEach((f) {
-                        if (f.giornaliero) {
-                          e_day_giornaliero = f;
-                          esistono_eventi_giornalieri = true;
-                        }
-                      });
-                      e_day = events;
+                      if (dayEvents != null && dayEvents.isNotEmpty)
+                        dayEvents.forEach((event) => event.seen());
+                      dayEvents = events ?? [];
                       _currentDate = date;
                     });
                   },
@@ -171,24 +163,6 @@ class _AgendaState extends State<Agenda> {
 
                   /// for pass null when you do not want to render weekDays
                   //headerText: 'Custom Header',
-                  customDayBuilder: (
-                    /// you can provide your own build function to make custom day containers
-                    bool isSelectable,
-                    int index,
-                    bool isSelectedDay,
-                    bool isToday,
-                    bool isPrevMonthDay,
-                    TextStyle textStyle,
-                    bool isNextMonthDay,
-                    bool isThisMonthDay,
-                    DateTime day,
-                  ) {
-                    /// If you return null, [CalendarCarousel] will build container for current [day] with default function.
-                    /// This way you can build custom containers for specific days only, leaving rest as default.
-                    //if (isSelectedDay) print(_currentDate.toIso8601String());
-                    // Example: every 15th of month, we have a flight, we can place an icon in the container like that:
-                    return null;
-                  },
                   weekFormat: false,
                   selectedDateTime: _currentDate,
                   height: 350,
@@ -197,27 +171,7 @@ class _AgendaState extends State<Agenda> {
 
                   /// null for not rendering any border, true for circular border, false for rectangular border
                 ),
-                if (e_day_giornaliero != null &&
-                    esistono_eventi_giornalieri == true)
-                  Flex(
-                    direction: Axis.horizontal,
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: size.width / 20.0,
-                              vertical: size.height / 50.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints.tight(
-                                Size(double.infinity, size.height / 8.0)),
-                            child: EventCard(
-                              evento: e_day_giornaliero,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
@@ -239,60 +193,82 @@ class _AgendaState extends State<Agenda> {
                   ],
                 ),
                 SizedBox(height: 30.0),
-                SingleChildScrollView(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                    color: Colors.white54, width: 1))),
-                        child: Padding(
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right:
+                                  BorderSide(color: Colors.white54, width: 1))),
+                      child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Column(
-                              children: orari
-                                  .map(
-                                    (n) => SizedBox(
-                                      height: 70,
-                                      child: Text(
-                                        n,
-                                        style: TextStyle(color: Colors.white60),
-                                      ),
-                                    ),
-                                  )
-                                  .toList()),
+                          child: Column(children: orariList)),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 70.0 * orariList.length,
+                        child: Stack(
+                          overflow: Overflow.clip,
+                          // FIXME: sovrapposizione di eventi
+                          children: dayEvents
+                              .where((event) => !event.giornaliero)
+                              .map<Widget>((oggi) => EventCard(
+                                    evento: oggi,
+                                  ))
+                              .toList(),
                         ),
                       ),
-                      if (e_day != null)
-                        Expanded(
-                          child: Container(
-                            height: 140.0 * 10,
-                            child: Stack(
-                              overflow: Overflow.clip,
-                              // FIXME: sovrapposizione di eventi
-                              children: e_day.map<Widget>((oggi) {
-                                if (!oggi.giornaliero) {
-                                  return EventCard(
-                                    evento: oggi,
-                                  );
-                                } else {
-                                  return SizedBox();
-                                }
-                              }).toList(),
-                            ),
-                          ),
-                        )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
+                Column( // TODO: meglio sopra o sotto?
+                  children: dayEvents
+                      .where((event) => event.giornaliero)
+                      .map((evento) => Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: size.width / 10.0,
+                              vertical: size.height / 50.0),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints.tight(
+                                Size(double.infinity, size.height / 8.0)),
+                            child: EventCard(
+                              evento: evento,
+                            ),
+                          )))
+                      .toList(),
+                ),
+                if (dayEvents.isEmpty) Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text('Nessun evento programmato per questa giornata!', textAlign: TextAlign.center,),
+                )
               ],
             ),
           )
         ],
       ), // scroll view
     );
+  }
+
+  List<Widget> _orariList() {
+    int inizio = 24 * 60, fine = 0;
+    dayEvents.where((event) => !event.giornaliero).forEach((event) {
+      inizio = min(inizio, event.inizio.hour * 60 + event.inizio.minute);
+      fine = max(fine, event.fine.hour * 60 + event.fine.minute);
+    });
+    if (inizio >= 24 * 60) return [];
+    timelineStart = inizio ~/ 60;
+    List<Widget> tr = [];
+    for (int i = inizio ~/ 60 * 2; i < fine ~/ 30; i++)
+      tr.add(SizedBox(
+        height: 70,
+        child: Text(
+          '${(i ~/ 2).toString().padLeft(2, '0')}:${(i % 2 * 30).toString().padLeft(2, '0')}',
+          style: TextStyle(color: Colors.white60),
+        ),
+      ));
+    return tr;
   }
 }
 
@@ -305,10 +281,14 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(evento.inizio.hour);
+    print(_AgendaState.timelineStart);
     return Padding(
       padding: EdgeInsets.only(
           top: !evento.giornaliero
-              ? 70 * ((evento.inizio.hour - 7) * 2 + evento.inizio.minute / 30)
+              ? 70 *
+                  ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
+                      evento.inizio.minute / 30)
               : 0.0),
       child: Container(
         height: !evento.giornaliero
