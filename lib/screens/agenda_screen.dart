@@ -191,7 +191,11 @@ class _AgendaState extends State<Agenda> {
                                 child: SizedBox(),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(left: 12.5, top: 12.0),
+                                padding: (int.parse(DateFormat.d()
+                                            .format(_currentDate)) <
+                                        10)
+                                    ? EdgeInsets.only(left: 18.5, top: 12.0)
+                                    : EdgeInsets.only(left: 12.5, top: 12.0),
                                 child: Text(
                                   DateFormat.d().format(_currentDate),
                                   style: TextStyle(

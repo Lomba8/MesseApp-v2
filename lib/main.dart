@@ -20,7 +20,7 @@ void main() async {
       MaterialApp(
         theme: Globals.lightTheme,
         darkTheme: Globals.darkTheme,
-        themeMode: ThemeMode.dark,
+        themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
         title: 'Applicazione di prova',
         initialRoute: LoginScreen.id,
