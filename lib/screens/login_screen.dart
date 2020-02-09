@@ -66,12 +66,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     MediaQueryData media = MediaQuery.of(context);
-    String _image;
+    String _image, _loader;
     GlobalKey _scaffoldKey = GlobalKey();
 
     (Theme.of(context).brightness == Brightness.dark)
         ? _image = 'images/logomesse_scuro.png'
         : _image = 'images/logomesse_chiaro.png';
+
+    (Theme.of(context).brightness == Brightness.dark)
+        ? _loader = 'images/loading_dark.gif'
+        : _loader = 'images/loading_light.gif';
 
     if (splash) {
       return Scaffold(
@@ -112,8 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {
             splash = true;
           });
-          RegistroApi.downloadAll((double progress) =>
-              setState(() {
+          RegistroApi.downloadAll((double progress) => setState(() {
                 _progress = progress;
                 if (progress == 1)
                   Navigator.pushReplacementNamed(context, Menu.id);
@@ -192,7 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       fit: BoxFit.fill,
                       image: !_loading
                           ? ExactAssetImage(_image)
-                          : AssetImage('images/loading.gif'),
+                          : AssetImage(
+                              _loader), // link loader https://icons8.com/preloaders/
                     ),
                   ),
                 ),
