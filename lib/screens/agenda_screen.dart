@@ -36,6 +36,7 @@ class _AgendaState extends State<Agenda> {
       dayEvents = e.events[_currentDate] ?? [];
       setState(() {});
     });
+
     super.initState();
   }
 
@@ -171,27 +172,78 @@ class _AgendaState extends State<Agenda> {
 
                   /// null for not rendering any border, true for circular border, false for rectangular border
                 ),
-                
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(left: 33.0),
-                      child: Text(
-                        'Ora',
-                        style: TextStyle(color: Colors.blueGrey),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 50.0),
-                      child: Text(
-                        'Evento',
-                        style: TextStyle(color: Colors.blueGrey),
-                      ),
-                    ),
-                  ],
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: dayEvents
+                      .where((event) => event.giornaliero)
+                      .map((evento) => Stack(
+                            alignment: Alignment(-0.9, 0.0),
+                            overflow: Overflow.visible,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 8.0),
+                                width: 34.0,
+                                height: 38.0,
+                                decoration: BoxDecoration(
+                                    color: Colors
+                                        .white10 //Color.fromRGBO(22, 22, 31, 1),
+                                    ),
+                                child: SizedBox(),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 12.5, top: 12.0),
+                                child: Text(
+                                  DateFormat.d().format(_currentDate),
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontFamily: 'CoreSans',
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Icon(
+                                Icons.calendar_today,
+                                size: 50.0,
+                                color: Colors.green[200],
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    size.width / 6.0,
+                                    size.height / 50.0,
+                                    size.width / 19.0,
+                                    size.height / 50.0,
+                                  ),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints.tight(Size(
+                                        double.infinity, size.height / 6.0)),
+                                    child: EventCard(
+                                      evento: evento,
+                                    ),
+                                  )),
+                            ],
+                          ))
+                      .toList(),
                 ),
+                if (dayEvents.any((evento) => !evento.giornaliero))
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(left: 33.0),
+                        child: Text(
+                          'Ora',
+                          style: TextStyle(color: Colors.blueGrey),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 50.0),
+                        child: Text(
+                          'Evento',
+                          style: TextStyle(color: Colors.blueGrey),
+                        ),
+                      ),
+                    ],
+                  ),
                 SizedBox(height: 30.0),
                 Row(
                   mainAxisSize: MainAxisSize.max,
@@ -223,26 +275,14 @@ class _AgendaState extends State<Agenda> {
                     )
                   ],
                 ),
-                Column( // TODO: meglio sopra o sotto?
-                  children: dayEvents
-                      .where((event) => event.giornaliero)
-                      .map((evento) => Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: size.width / 10.0,
-                              vertical: size.height / 50.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints.tight(
-                                Size(double.infinity, size.height / 8.0)),
-                            child: EventCard(
-                              evento: evento,
-                            ),
-                          )))
-                      .toList(),
-                ),
-                if (dayEvents.isEmpty) Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text('Nessun evento programmato per questa giornata!', textAlign: TextAlign.center,),
-                )
+                if (dayEvents.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      'Nessun evento programmato per questa giornata!',
+                      textAlign: TextAlign.center,
+                    ),
+                  )
               ],
             ),
           )

@@ -41,7 +41,6 @@ class RegistroApi {
 
       if (res.statusCode != 200) return false;
       token = json.decode(res.body)["token"];
-      //Globals.setCredentials(_username, _password);
       final prefs = await SharedPreferences.getInstance();
       if (!check) {
         scuola = prefs.getString('scuola');
@@ -63,12 +62,11 @@ class RegistroApi {
         prefs.setString('password', password);
         prefs.setString(
             'scuola',
-            scuola =
-                _capitalize("${data["schName"]} ${data["schDedication"]}"));
+            scuola ="${data["schName"]} ${data["schDedication"]}");
         prefs.setString('nome', nome = _capitalize(data["firstName"]));
         prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
         prefs.setString(
-            'compleanno', compleanno = _capitalize(data["birthDate"]));
+            'compleanno', compleanno = data["birthDate"]);
         prefs.setInt('usrId', usrId = data["usrId"]);
         return true;
       }
