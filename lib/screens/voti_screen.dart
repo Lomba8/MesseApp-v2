@@ -35,7 +35,8 @@ class _VotiState extends State<Voti> {
     if (mounted) setState(() {});
   }
 
-  String _passedTime() {  // FIXME: i temporizzatori per l'aggiornamento dell'ultimo controllo si accumulano
+  String _passedTime() {
+    // FIXME: i temporizzatori per l'aggiornamento dell'ultimo controllo si accumulano
     if (RegistroApi.voti.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
         DateTime.now().difference(RegistroApi.voti.lastUpdate);
@@ -152,7 +153,8 @@ class _VotiState extends State<Voti> {
                                   trailing: newVotiCount > 0
                                       ? IconButton(
                                           icon: Icon(Icons.clear_all),
-                                          onPressed: () => setState(() => RegistroApi.voti.allSeen()))
+                                          onPressed: () => setState(
+                                              () => RegistroApi.voti.allSeen()))
                                       : null,
                                 ),
                               )
@@ -224,12 +226,12 @@ class _VotiState extends State<Voti> {
                                               RegistroApi.voti.hasNewMarks(sbj)
                                                   ? Theme.of(context)
                                                           .textTheme
-                                                          .body1
+                                                          .bodyText2
                                                           .fontSize +
                                                       1.0
                                                   : Theme.of(context)
                                                       .textTheme
-                                                      .body1
+                                                      .bodyText2
                                                       .fontSize),
                                     )),
                                 Row(
@@ -306,15 +308,9 @@ class MarkViewState extends State<MarkView>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        value: 0.0, vsync: this, duration: Duration(seconds: 1));
-    _controller.addListener(() {
-      print(_controller.value);
-      if (mounted) setState(() {});
-    });
-    _controller.animateTo(1).then((v) {
-      // FIXME
-      if (mounted) setState(() {});
-    });
+        value: 0.0, vsync: this, duration: Duration(seconds: 2))
+      ..addListener(() => setState(() {}))
+      ..forward();
   }
 
   @override
@@ -339,20 +335,30 @@ class MarkPainter extends CustomPainter {
   final Paint p = Paint()
     ..style = PaintingStyle.stroke
     ..strokeWidth = 10
-    ..strokeCap = StrokeCap.round
-    ..color = Colors.green;
+    ..strokeCap = StrokeCap.round;
+  Color startColor, endColor;
   double _mark;
   double _progress;
   ThemeData _theme;
 
   MarkPainter(this._theme, [this._mark = -1, this._progress = 1]) {
     if (_mark == null || _mark.isNaN)
-      p.color = Colors.blue;
-    else if (_mark < 6) p.color = Colors.deepOrange[900];
+      startColor = endColor = Colors.blue;
+    else if (_mark < 6)
+      startColor = endColor = Colors.deepOrange[900];
+    else {
+      startColor = Colors.deepOrange[900];
+      endColor = Colors.green;
+    }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
+    p.color = Color.fromARGB(
+        255,
+        ((endColor.red - startColor.red) * _progress + startColor.red).round(),
+        ((endColor.green - startColor.green) * _progress + startColor.green).round(),
+        ((endColor.blue - startColor.blue) * _progress + startColor.blue).round());
     if (_mark != null && !_mark.isNaN) {
       canvas.drawArc(
           Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
@@ -364,7 +370,6 @@ class MarkPainter extends CustomPainter {
     p.color = p.color.withAlpha(50);
     canvas.drawCircle(size.center(Offset.zero),
         (math.min(size.width, size.height) - 10) / 2, p);
-    p.color = p.color.withAlpha(255);
 
     TextPainter painter = TextPainter(
         text: TextSpan(
@@ -388,7 +393,7 @@ class MarkPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     MarkPainter mv = oldDelegate as MarkPainter;
-    if (mv._mark == _mark) return false;
+    if (mv._mark == _mark && mv._progress == _progress) return false;
     return true;
   }
 }

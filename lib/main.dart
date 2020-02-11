@@ -11,16 +11,15 @@ import 'package:intl/date_symbol_data_local.dart';
 
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
-void main() async {
-  initializeDateFormatting('it_IT', null).then((_) {
-    print("main");
+void main() {
+  initializeDateFormatting('it_IT', null).then((_) async {
     Menu menu = Menu();
     LoginScreen loginScreen = LoginScreen();
     runApp(
       MaterialApp(
         theme: Globals.lightTheme,
         darkTheme: Globals.darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.dark,  // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
         debugShowCheckedModeBanner: false,
         title: 'Applicazione di prova',
         initialRoute: LoginScreen.id,

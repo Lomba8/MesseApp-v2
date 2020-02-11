@@ -23,15 +23,15 @@ class Globals {
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.
     textTheme: TextTheme(
-      headline: TextStyle(
+      headline5: TextStyle(
           fontSize: 72.0,
           fontWeight: FontWeight.bold,
           color: Color.fromRGBO(246, 232, 234, 1)),
-      title: TextStyle(
+      headline6: TextStyle(
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(246, 232, 234, 1)),
-      body1: TextStyle(
+      bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
@@ -62,16 +62,16 @@ class Globals {
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.
     textTheme: TextTheme(
-      headline: TextStyle(
+      headline5: TextStyle(
         fontSize: 72.0,
         fontWeight: FontWeight.bold,
         color: Color.fromRGBO(105, 181, 201, 1),
       ),
-      title: TextStyle(
+      headline6: TextStyle(
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(40, 41, 60, 1)), // rgb(40, 41, 60, 1)
-      body1: TextStyle(
+      bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
