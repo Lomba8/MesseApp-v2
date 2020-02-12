@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/preferences/theme.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -27,22 +27,33 @@ void main() {
     IosDeviceInfo iosInfo;
     AndroidDeviceInfo androidInfo;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    ThemeMode _mode;
+    dynamic _mode;
+    final prefs = await SharedPreferences.getInstance();
 
-    try {
-      if (Platform.isAndroid) {
-        androidInfo = await deviceInfo.androidInfo;
-      } else if (Platform.isIOS) {
-        iosInfo = await deviceInfo.iosInfo;
-        if (double.parse(iosInfo.systemVersion.replaceAll(RegExp('\D'), '')) <
-            13.0)
-          _mode = ThemeMode.dark;
-        else
-          _mode = ThemeMode.system;
+    if (prefs.getBool('DarkMode') == null) {
+      try {
+        if (Platform.isAndroid) {
+          androidInfo = await deviceInfo.androidInfo;
+        } else if (Platform.isIOS) {
+          iosInfo = await deviceInfo.iosInfo;
+          if (double.parse(iosInfo.systemVersion.replaceAll(RegExp('\D'), '')) <
+              13.0) {
+            _mode = ThemeMode.dark;
+            prefs.setBool('DarkMode', true);
+          } else {
+            _mode = ThemeMode.system;
+          }
+        }
+      } on PlatformException {
+        print('Error: Failed to get platform version.');
       }
-    } on PlatformException {
-      print('Error: Failed to get platform version.');
+    } else {
+      prefs.getBool('DarkMode')
+          ? _mode = ThemeMode.dark
+          : _mode = ThemeMode.light;
     }
+
+    print(_mode);
 
     runApp(
       ChangeNotifierProvider<Globals>(

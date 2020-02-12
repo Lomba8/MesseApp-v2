@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Globals with ChangeNotifier {
   ThemeMode _themeMode;
 
   Globals(this._themeMode);
   getTheme() => _themeMode;
-  setTheme(ThemeMode mode) {
+  setTheme(ThemeMode mode) async {
     _themeMode = mode;
+    final prefs = await SharedPreferences.getInstance();
+
+    (mode.toString() == 'ThemeMode.dark')
+        ? prefs.setBool('DarkMode', true)
+        : prefs.setBool('DarkMode', false);
+
+    print(mode.toString());
+
     notifyListeners();
   }
 

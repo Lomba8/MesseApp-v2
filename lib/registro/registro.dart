@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
@@ -61,12 +62,10 @@ class RegistroApi {
         prefs.setString('username', username);
         prefs.setString('password', password);
         prefs.setString(
-            'scuola',
-            scuola ="${data["schName"]} ${data["schDedication"]}");
+            'scuola', scuola = "${data["schName"]} ${data["schDedication"]}");
         prefs.setString('nome', nome = _capitalize(data["firstName"]));
         prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
-        prefs.setString(
-            'compleanno', compleanno = data["birthDate"]);
+        prefs.setString('compleanno', compleanno = data["birthDate"]);
         prefs.setInt('usrId', usrId = data["usrId"]);
         return true;
       }
@@ -128,8 +127,7 @@ abstract class RegistroData {
     http.Response r = await http.get(url, headers: headers);
     if (r.statusCode != HttpStatus.ok) {
       _loading = false;
-      if (r.statusCode == HttpStatus.notModified)
-        lastUpdate = DateTime.now();
+      if (r.statusCode == HttpStatus.notModified) lastUpdate = DateTime.now();
       return Result(r.statusCode == HttpStatus.notModified, false);
     }
     etag = r.headers['etag'];
@@ -140,16 +138,16 @@ abstract class RegistroData {
   }
 
   @mustCallSuper
-  void fromJson (Map<String, dynamic> json ) {
+  void fromJson(Map<String, dynamic> json) {
     lastUpdate = DateTime.parse(json['lastUpdate']);
     etag = json['etag'];
   }
 
   @mustCallSuper
-  Map<String, dynamic> toJson () => {
-    'lastUpdate': lastUpdate.toIso8601String(),
-    'etag': etag,
-  };  // delegates data save to the derivate class
+  Map<String, dynamic> toJson() => {
+        'lastUpdate': lastUpdate.toIso8601String(),
+        'etag': etag,
+      }; // delegates data save to the derivate class
 
   RegistroData(this._url);
 
