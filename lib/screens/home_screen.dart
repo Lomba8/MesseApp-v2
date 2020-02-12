@@ -1,4 +1,5 @@
 import 'package:applicazione_prova/registro/registro.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
@@ -35,30 +36,40 @@ class _HomeState extends State<Home> {
               child: Padding(
                 padding:
                     EdgeInsets.only(left: s.width / 15, top: s.height / 15),
-                child: RichText(
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    text: "Ciao, \n",
-                    style: TextStyle(
-                      color: Color.fromRGBO(141, 149, 167, 1),
-                      fontSize: 35.0,
-                      fontFamily: 'CoreSansRounded',
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: '${RegistroApi.cognome} ${RegistroApi.nome}',
-                        style: TextStyle(
-                            color: Color.fromRGBO(21, 38, 74, 1),
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'CoreSansRounded'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Ciao,",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color.fromRGBO(141, 149, 167, 1),
+                        fontSize: 35.0,
+                        fontFamily: 'CoreSansRounded',
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    AutoSizeText(
+                      '${RegistroApi.cognome} ${RegistroApi.nome}',
+                      overflow: TextOverflow.ellipsis,
+                      minFontSize: 20.0,
+                      maxFontSize: 30.0,
+                      maxLines: 1,
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(
+                          color: Color.fromRGBO(21, 38, 74, 1),
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'CoreSansRounded'),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
+
           Container(
             color: Theme.of(context).primaryColor,
             height: 40,

@@ -2,12 +2,15 @@ import 'dart:math';
 
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:applicazione_prova/registro/registro.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
     show CalendarCarousel, EventList;
+import 'package:flutter_dash/flutter_dash.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import '../registro/agenda_registro_data.dart';
 import '../registro/registro.dart';
@@ -24,6 +27,8 @@ class _AgendaState extends State<Agenda> {
   EventList<Evento> get e => RegistroApi.agenda.data;
 
   List<Evento> dayEvents = List<Evento>();
+
+  double lunghezza_dash = 0;
 
   void initState() {
     _currentDate =
@@ -125,6 +130,7 @@ class _AgendaState extends State<Agenda> {
                         dayEvents.forEach((event) => event.seen());
                       dayEvents = events ?? [];
                       _currentDate = date;
+                      lunghezza_dash = 0;
                     });
                   },
                   // isScrollable: true,
@@ -184,10 +190,8 @@ class _AgendaState extends State<Agenda> {
                                 margin: EdgeInsets.only(left: 8.0),
                                 width: 34.0,
                                 height: 38.0,
-                                decoration: BoxDecoration(
-                                    color: Colors
-                                        .white10 //Color.fromRGBO(22, 22, 31, 1),
-                                    ),
+                                decoration:
+                                    BoxDecoration(color: Colors.white10),
                                 child: SizedBox(),
                               ),
                               Padding(
@@ -254,13 +258,17 @@ class _AgendaState extends State<Agenda> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              right:
-                                  BorderSide(color: Colors.white54, width: 1))),
                       child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(children: orariList)),
+                    ),
+                    Dash(
+                      direction: Axis.vertical,
+                      dashBorderRadius: 0.0,
+                      dashColor: Colors.white54,
+                      dashGap: 2,
+                      dashThickness: 1.0,
+                      length: lunghezza_dash - 47,
                     ),
                     Expanded(
                       child: Container(
@@ -304,7 +312,8 @@ class _AgendaState extends State<Agenda> {
     if (inizio >= 24 * 60) return [];
     timelineStart = inizio ~/ 60;
     List<Widget> tr = [];
-    for (int i = inizio ~/ 60 * 2; i < fine ~/ 30; i++)
+    for (int i = inizio ~/ 60 * 2; i < (fine + 30) ~/ 30; i++) {
+      lunghezza_dash += 70;
       tr.add(SizedBox(
         height: 70,
         child: Text(
@@ -312,6 +321,7 @@ class _AgendaState extends State<Agenda> {
           style: TextStyle(color: Colors.white60),
         ),
       ));
+    }
     return tr;
   }
 }
@@ -374,21 +384,27 @@ class EventCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(evento.autore,
+                          AutoSizeText(evento.autore,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                              minFontSize: 10.0,
+                              maxFontSize: 15.0,
                               softWrap: true,
                               style: TextStyle(
-                                fontSize: 10.0,
+                                fontSize: 15.0,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'CoreSans',
                               )),
+                          SizedBox(
+                            height: 5.0,
+                          ),
                           Expanded(
-                            child: Text(evento.info,
+                            child: AutoSizeText(evento.info,
                                 maxLines: 5,
                                 overflow: TextOverflow.ellipsis,
+                                minFontSize: 10.0,
+                                maxFontSize: 13.0,
                                 style: TextStyle(
-                                  fontSize: 10.0,
                                   color: Colors.white54,
                                   fontFamily: 'CoreSans',
                                 )),
