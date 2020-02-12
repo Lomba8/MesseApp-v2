@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:device_info/device_info.dart';
+import 'package:flutter/services.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -15,11 +19,34 @@ void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     Menu menu = Menu();
     LoginScreen loginScreen = LoginScreen();
+    WidgetsFlutterBinding.ensureInitialized();
+    //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
+
+    IosDeviceInfo iosInfo;
+    AndroidDeviceInfo androidInfo;
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    var themeMode;
+    try {
+      if (Platform.isAndroid) {
+        androidInfo = await deviceInfo.androidInfo;
+      } else if (Platform.isIOS) {
+        iosInfo = await deviceInfo.iosInfo;
+        if (double.parse(iosInfo.systemVersion.replaceAll(RegExp('\D'), '')) <
+            13.0)
+          themeMode = ThemeMode.dark;
+        else
+          themeMode = ThemeMode.system;
+      }
+    } on PlatformException {
+      print('Error: Failed to get platform version.');
+    }
+
     runApp(
       MaterialApp(
         theme: Globals.lightTheme,
         darkTheme: Globals.darkTheme,
-        themeMode: ThemeMode.dark,  // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
+        themeMode:
+            themeMode, // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
         debugShowCheckedModeBanner: false,
         title: 'Applicazione di prova',
         initialRoute: LoginScreen.id,
