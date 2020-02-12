@@ -101,6 +101,7 @@ class _VotiState extends State<Voti> {
                                 ),
                               ),
                               Row(
+                                //TODO: animare solo il periodo corrente ed metterlo in primo piano + distinguere vari periodi
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Expanded(
@@ -303,14 +304,17 @@ class MarkView extends StatefulWidget {
 class MarkViewState extends State<MarkView>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
+  Animation animation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-        value: 0.0, vsync: this, duration: Duration(seconds: 2))
-      ..addListener(() => setState(() {}))
-      ..forward();
+        value: 0.0, vsync: this, duration: Duration(seconds: 1));
+    animation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart);
+    _controller.forward();
+    animation.addListener(() => setState(() {}));
   }
 
   @override
@@ -324,8 +328,7 @@ class MarkViewState extends State<MarkView>
     return AspectRatio(
       aspectRatio: 1,
       child: CustomPaint(
-        painter:
-            MarkPainter(Theme.of(context), widget._voto, _controller.value),
+        painter: MarkPainter(Theme.of(context), widget._voto, animation.value),
       ),
     );
   }
@@ -357,8 +360,10 @@ class MarkPainter extends CustomPainter {
     p.color = Color.fromARGB(
         255,
         ((endColor.red - startColor.red) * _progress + startColor.red).round(),
-        ((endColor.green - startColor.green) * _progress + startColor.green).round(),
-        ((endColor.blue - startColor.blue) * _progress + startColor.blue).round());
+        ((endColor.green - startColor.green) * _progress + startColor.green)
+            .round(),
+        ((endColor.blue - startColor.blue) * _progress + startColor.blue)
+            .round());
     if (_mark != null && !_mark.isNaN) {
       canvas.drawArc(
           Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
