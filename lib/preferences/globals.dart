@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 
-class Globals {
+class Globals with ChangeNotifier {
+  ThemeMode _themeMode;
+
+  Globals(this._themeMode);
+  getTheme() => _themeMode;
+  setTheme(ThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners();
+  }
+
   static final ThemeData lightTheme = ThemeData(
     pageTransitionsTheme: PageTransitionsTheme(builders: {
       TargetPlatform.android: CupertinoPageTransitionsBuilder(),

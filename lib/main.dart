@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:applicazione_prova/preferences/globals.dart';
+import 'package:applicazione_prova/preferences/theme.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -25,7 +27,8 @@ void main() {
     IosDeviceInfo iosInfo;
     AndroidDeviceInfo androidInfo;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    var themeMode;
+    ThemeMode _mode;
+
     try {
       if (Platform.isAndroid) {
         androidInfo = await deviceInfo.androidInfo;
@@ -33,30 +36,50 @@ void main() {
         iosInfo = await deviceInfo.iosInfo;
         if (double.parse(iosInfo.systemVersion.replaceAll(RegExp('\D'), '')) <
             13.0)
-          themeMode = ThemeMode.dark;
+          _mode = ThemeMode.dark;
         else
-          themeMode = ThemeMode.system;
+          _mode = ThemeMode.system;
       }
     } on PlatformException {
       print('Error: Failed to get platform version.');
     }
 
     runApp(
-      MaterialApp(
-        theme: Globals.lightTheme,
-        darkTheme: Globals.darkTheme,
-        themeMode:
-            themeMode, // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
-        debugShowCheckedModeBanner: false,
-        title: 'Applicazione di prova',
-        initialRoute: LoginScreen.id,
-        routes: {
-          Menu.id: (context) => menu,
-          LoginScreen.id: (context) => loginScreen
-        },
+      ChangeNotifierProvider<Globals>(
+        create: (_) => Globals(_mode),
+        child: MaterialAppWithTheme(menu: menu, loginScreen: loginScreen),
       ),
     );
   });
+}
+
+class MaterialAppWithTheme extends StatelessWidget {
+  const MaterialAppWithTheme({
+    Key key,
+    @required this.menu,
+    @required this.loginScreen,
+  }) : super(key: key);
+
+  final Menu menu;
+  final LoginScreen loginScreen;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<Globals>(context);
+    return MaterialApp(
+      theme: Globals.lightTheme,
+      darkTheme: Globals.darkTheme,
+      themeMode: theme
+          .getTheme(), // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
+      debugShowCheckedModeBanner: false,
+      title: 'Applicazione di prova',
+      initialRoute: LoginScreen.id,
+      routes: {
+        Menu.id: (context) => menu,
+        LoginScreen.id: (context) => loginScreen
+      },
+    );
+  }
 }
 
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
