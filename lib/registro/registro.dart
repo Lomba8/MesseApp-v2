@@ -17,13 +17,13 @@ class RegistroApi {
   static final AgendaRegistroData agenda = AgendaRegistroData();
 
   static String _capitalize(String s) {
-    dynamic nomi = [];
-    nomi = s.split(' ');
+    List<String> parole = [];
+    parole = s.split(' ');
     String capitalizzato = ' ';
-    for (nome in nomi) {
+    parole.forEach((parola) {
       capitalizzato +=
-          nome[0].toUpperCase() + nome.substring(1).toLowerCase() + ' ';
-    }
+          parola[0].toUpperCase() + parola.substring(1).toLowerCase() + ' ';
+    });
     return capitalizzato.trim();
   }
 
