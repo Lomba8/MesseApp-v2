@@ -17,8 +17,14 @@ class RegistroApi {
   static final AgendaRegistroData agenda = AgendaRegistroData();
 
   static String _capitalize(String s) {
-    s.toLowerCase();
-    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+    dynamic nomi = [];
+    nomi = s.split(' ');
+    String capitalizzato = ' ';
+    for (nome in nomi) {
+      capitalizzato +=
+          nome[0].toUpperCase() + nome.substring(1).toLowerCase() + ' ';
+    }
+    return capitalizzato.trim();
   }
 
   static Map<String, String> body = {"ident": null, "pass": '', "uid": ''};
@@ -62,7 +68,9 @@ class RegistroApi {
         prefs.setString('username', username);
         prefs.setString('password', password);
         prefs.setString(
-            'scuola', scuola = "${data["schName"]} ${data["schDedication"]}");
+            'scuola',
+            scuola =
+                _capitalize("${data["schName"]} ${data["schDedication"]}"));
         prefs.setString('nome', nome = _capitalize(data["firstName"]));
         prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
         prefs.setString('compleanno', compleanno = data["birthDate"]);
