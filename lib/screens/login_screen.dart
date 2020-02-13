@@ -231,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               input.length < 9 ? _usernameMsg : null,
                           onChanged: (input) {
                             print(input);
-                            _username = input;
+                            _username = input.trim();
                           },
                           onFieldSubmitted: (v) {
                             FocusScope.of(context)
@@ -248,10 +248,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           textInputAction: TextInputAction.send,
                           autocorrect: false,
                           validator: (input) =>
-                              input.length != 8 ? _passwordMsg : null,
+                              input.length == 0 ? _passwordMsg : null,
                           onChanged: (input) {
                             print(input);
-                            _password = input;
+                            _password = input.trim();
                           },
                           onFieldSubmitted: (str) => _submit(),
                           obscureText: true,
