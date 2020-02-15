@@ -57,7 +57,7 @@ class _AgendaState extends State<Agenda> {
   String _passedTime() {
     if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
-        DateTime.now().difference(RegistroApi.voti.lastUpdate);
+        DateTime.now().difference(RegistroApi.agenda.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -77,7 +77,7 @@ class _AgendaState extends State<Agenda> {
 
   Future<void> _refresh() async {
     RegistroApi.agenda.getData().then((r) {
-      if (r.reload) _setStateIfAlive();
+      if (r.ok) _setStateIfAlive();
     });
     return null;
   }
@@ -106,77 +106,105 @@ class _AgendaState extends State<Agenda> {
                     padding: const EdgeInsets.only(bottom: 50),
                     child: Padding(
                       padding: EdgeInsets.only(
-                          bottom: size.height / 30, top: size.height / 18),
-                      child: Text(
-                        "Agenda",
-                        textAlign: TextAlign
-                            .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.light
+                          bottom: size.height / 100, top: size.height / 18),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            "Agenda",
+                            textAlign: TextAlign
+                                .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                            style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
                                     ? Colors.black
                                     : Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          CalendarCarousel<Evento>(
+                            onDayPressed: (DateTime date, List<Evento> events) {
+                              if (date.isAtSameMomentAs(_currentDate)) return;
+                              setState(() {
+                                if (dayEvents != null && dayEvents.isNotEmpty)
+                                  dayEvents.forEach((event) => event.seen());
+                                dayEvents = events ?? [];
+                                _currentDate = date;
+                                lunghezza_dash = 0;
+                              });
+                            },
+                            // isScrollable: true,
+                            scrollDirection: Axis.horizontal,
+                            onCalendarChanged: (d) =>
+                                setState(() => _currentMonth = d),
+
+                            weekendTextStyle: TextStyle(
+                              color: Theme.of(context).accentColor,
+                            ),
+                            // weekdayTextStyle: TextStyle(color: Colors.white60),
+                            thisMonthDayBorderColor: Colors.transparent,
+                            showWeekDays: true,
+                            firstDayOfWeek: 1,
+                            daysTextStyle: TextStyle(color: Colors.white70),
+                            headerMargin: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width / 8),
+                            headerText:
+                                DateFormat.yMMMM().format(_currentMonth),
+                            headerTextStyle: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 22.0,
+                                fontFamily: 'CoreSansRounded'),
+                            iconColor: Theme.of(context).primaryColor,
+                            locale: 'it',
+                            prevDaysTextStyle: TextStyle(color: Colors.white24),
+                            nextDaysTextStyle: TextStyle(color: Colors.white24),
+                            weekdayTextStyle: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'CoreSansRounded'),
+                            showIconBehindDayText: true,
+                            pageSnapping: true,
+
+                            markedDatesMap: e,
+                            todayButtonColor: Colors.transparent,
+                            selectedDayBorderColor: Colors.blue,
+                            selectedDayButtonColor: Colors.transparent,
+
+                            /// for pass null when you do not want to render weekDays
+                            //headerText: 'Custom Header',
+                            weekFormat: false,
+                            selectedDateTime: _currentDate,
+                            height: 380,
+                            daysHaveCircularBorder: true,
+                            //markedDateIconBuilder: (event) => event.icon,
+
+                            /// null for not rendering any border, true for circular border, false for rectangular border
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15.0),
+                            child: SizedBox(
+                              width: size.width,
+                              child: Text(
+                                '\n${_passedTime()}',
+                                textAlign: TextAlign
+                                    .right, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                                style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.black
+                                        : Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-                CalendarCarousel<Evento>(
-                  onDayPressed: (DateTime date, List<Evento> events) {
-                    if (date.isAtSameMomentAs(_currentDate)) return;
-                    setState(() {
-                      if (dayEvents != null && dayEvents.isNotEmpty)
-                        dayEvents.forEach((event) => event.seen());
-                      dayEvents = events ?? [];
-                      _currentDate = date;
-                      lunghezza_dash = 0;
-                    });
-                  },
-                  // isScrollable: true,
-                  scrollDirection: Axis.horizontal,
-                  onCalendarChanged: (d) => setState(() => _currentMonth = d),
-
-                  weekendTextStyle: TextStyle(
-                    color: Theme.of(context).accentColor,
-                  ),
-                  // weekdayTextStyle: TextStyle(color: Colors.white60),
-                  thisMonthDayBorderColor: Colors.transparent,
-                  showWeekDays: true,
-                  firstDayOfWeek: 1,
-                  daysTextStyle: TextStyle(color: Colors.white70),
-                  headerMargin: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width / 8),
-                  headerText: DateFormat.yMMMM().format(_currentMonth),
-                  headerTextStyle: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 22.0,
-                      fontFamily: 'CoreSansRounded'),
-                  iconColor: Theme.of(context).primaryColor,
-                  locale: 'it',
-                  prevDaysTextStyle: TextStyle(color: Colors.white24),
-                  nextDaysTextStyle: TextStyle(color: Colors.white24),
-                  weekdayTextStyle: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'CoreSansRounded'),
-                  showIconBehindDayText: true,
-                  pageSnapping: false,
-
-                  markedDatesMap: e,
-                  todayButtonColor: Colors.transparent,
-                  selectedDayBorderColor: Colors.blue,
-                  selectedDayButtonColor: Colors.transparent,
-
-                  /// for pass null when you do not want to render weekDays
-                  //headerText: 'Custom Header',
-                  weekFormat: false,
-                  selectedDateTime: _currentDate,
-                  height: 350,
-                  daysHaveCircularBorder: true,
-                  //markedDateIconBuilder: (event) => event.icon,
-
-                  /// null for not rendering any border, true for circular border, false for rectangular border
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -312,6 +340,7 @@ class _AgendaState extends State<Agenda> {
     if (inizio >= 24 * 60) return [];
     timelineStart = inizio ~/ 60;
     List<Widget> tr = [];
+    lunghezza_dash = 0;
     for (int i = inizio ~/ 60 * 2; i < (fine + 30) ~/ 30; i++) {
       lunghezza_dash += 70;
       tr.add(SizedBox(
@@ -346,7 +375,7 @@ class EventCard extends StatelessWidget {
               : 0.0),
       child: Container(
         height: !evento.giornaliero
-            ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
+            ? 80 * evento.fine.difference(evento.inizio).inMinutes / 30
             : 140.0,
         child: Padding(
           padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
