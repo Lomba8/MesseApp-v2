@@ -58,6 +58,8 @@ class Globals with ChangeNotifier {
   );
 
   static final ThemeData darkTheme = ThemeData(
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     // Define the default brightness and colors.
     brightness: Brightness.dark,
 

@@ -108,7 +108,8 @@ class _VotiState extends State<Voti> {
                                     flex: 2,
                                     child: Center(
                                       child: MarkView(
-                                          RegistroApi.voti.averagePeriodo(0)),
+                                          RegistroApi.voti.averagePeriodo(0),
+                                          true),
                                     ),
                                   ),
                                   Expanded(
@@ -171,6 +172,17 @@ class _VotiState extends State<Voti> {
                               double average = RegistroApi.voti.average(sbj);
                               return [
                                 ListTile(
+                                    onLongPress: () => null,
+                                    onTap: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        VotiDetails(sbj['voti'],
+                                                            sbj['subjectDesc'])))
+                                            .then((value) {
+                                          sbj['voti'].forEach((v) => v.seen());
+                                          _setStateIfAlive();
+                                        }),
                                     leading: Stack(
                                       children: [
                                         Text(
@@ -294,8 +306,9 @@ class _VotiState extends State<Voti> {
 
 class MarkView extends StatefulWidget {
   final double _voto;
+  final bool _animate;
 
-  MarkView([this._voto = -1]);
+  MarkView([this._voto = -1, this._animate = false]);
 
   @override
   MarkViewState createState() => MarkViewState();
@@ -310,10 +323,12 @@ class MarkViewState extends State<MarkView>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        value: 0.0, vsync: this, duration: Duration(seconds: 1));
+        value: widget._animate ? 0.0 : 1.0,
+        vsync: this,
+        duration: Duration(seconds: 1));
     animation =
         CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart);
-    _controller.forward();
+    if (widget._animate) _controller.forward();
     animation.addListener(() => setState(() {}));
   }
 
