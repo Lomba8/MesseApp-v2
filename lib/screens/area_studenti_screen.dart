@@ -8,8 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
-    show CalendarCarousel, EventList;
 
 import '../registro/agenda_registro_data.dart';
 import '../registro/registro.dart';
@@ -53,20 +51,19 @@ class _AreaStudentiState extends State<AreaStudenti> {
     return null;
   }
 
-  static int timelineStart = 0;
   DateTime _currentDate, _currentMonth = DateTime.now();
 
   EventList<Evento> get e => RegistroApi.agenda.data;
 
   List<Evento> dayEvents = List<Evento>();
 
-  double lunghezza_dash = 0;
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return LiquidPullToRefresh(
       onRefresh: _refresh,
+      showChildOpacityTransition: false, // refresh callback
+
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
