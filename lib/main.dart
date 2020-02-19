@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:device_info/device_info.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -11,26 +17,80 @@ import 'package:intl/date_symbol_data_local.dart';
 
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
-void main() async {
-  initializeDateFormatting('it_IT', null).then((_) {
-    print("main");
+void main() {
+  initializeDateFormatting('it_IT', null).then((_) async {
     Menu menu = Menu();
     LoginScreen loginScreen = LoginScreen();
+    WidgetsFlutterBinding.ensureInitialized();
+    //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
+
+    IosDeviceInfo iosInfo;
+    AndroidDeviceInfo androidInfo;
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    dynamic _mode;
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getBool('DarkMode') == null) {
+      try {
+        if (Platform.isAndroid) {
+          androidInfo = await deviceInfo.androidInfo;
+        } else if (Platform.isIOS) {
+          iosInfo = await deviceInfo.iosInfo;
+          if (double.parse(iosInfo.systemVersion.replaceAll(RegExp('\D'), '')) <
+              13.0) {
+            _mode = ThemeMode.dark;
+            prefs.setBool('DarkMode', true);
+          } else {
+            _mode = ThemeMode.system;
+          }
+        }
+      } on PlatformException {
+        print('Error: Failed to get platform version.');
+      }
+    } else {
+      prefs.getBool('DarkMode')
+          ? _mode = ThemeMode.dark
+          : _mode = ThemeMode.light;
+    }
+
+    print(_mode);
+
     runApp(
-      MaterialApp(
-        theme: Globals.lightTheme,
-        darkTheme: Globals.darkTheme,
-        themeMode: ThemeMode.dark,
-        debugShowCheckedModeBanner: false,
-        title: 'Applicazione di prova',
-        initialRoute: LoginScreen.id,
-        routes: {
-          Menu.id: (context) => menu,
-          LoginScreen.id: (context) => loginScreen
-        },
+      ChangeNotifierProvider<Globals>(
+        create: (_) => Globals(_mode),
+        child: MaterialAppWithTheme(menu: menu, loginScreen: loginScreen),
       ),
     );
   });
+}
+
+class MaterialAppWithTheme extends StatelessWidget {
+  const MaterialAppWithTheme({
+    Key key,
+    @required this.menu,
+    @required this.loginScreen,
+  }) : super(key: key);
+
+  final Menu menu;
+  final LoginScreen loginScreen;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<Globals>(context);
+    return MaterialApp(
+      theme: Globals.lightTheme,
+      darkTheme: Globals.darkTheme,
+      themeMode: theme
+          .getTheme(), // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
+      debugShowCheckedModeBanner: false,
+      title: 'Applicazione di prova',
+      initialRoute: LoginScreen.id,
+      routes: {
+        Menu.id: (context) => menu,
+        LoginScreen.id: (context) => loginScreen
+      },
+    );
+  }
 }
 
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page

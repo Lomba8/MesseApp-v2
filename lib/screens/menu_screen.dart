@@ -1,8 +1,8 @@
-import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/registro/registro.dart';
 import 'package:applicazione_prova/screens/voti_screen.dart';
 import 'package:applicazione_prova/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
@@ -20,12 +20,26 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   List<Widget> screens = [Orari(), Agenda(), Home(), Voti(), AreaStudenti()];
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state.toString());
     RegistroApi.save();
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
         body: screens[selected],
         bottomNavigationBar: NavBarSotto(
