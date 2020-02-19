@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:applicazione_prova/registro/registro.dart';
+import 'package:applicazione_prova/widgets/calendar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class Agenda extends StatefulWidget {
 }
 
 class _AgendaState extends State<Agenda> {
-  DateTime _currentDate, _currentMonth = DateTime.now();
+  DateTime _currentDate;
 
   EventList<Evento> get e => RegistroApi.agenda.data;
 
@@ -124,65 +125,13 @@ class _AgendaState extends State<Agenda> {
                           SizedBox(
                             height: 10,
                           ),
-                          CalendarCarousel<Evento>(
-                            onDayPressed: (DateTime date, List<Evento> events) {
-                              if (date.isAtSameMomentAs(_currentDate)) return;
-                              setState(() {
+                          Calendar((day, events) => setState(() {
                                 if (dayEvents != null && dayEvents.isNotEmpty)
                                   dayEvents.forEach((event) => event.seen());
                                 dayEvents = events ?? [];
-                                _currentDate = date;
+                                _currentDate = day;
                                 lunghezza_dash = 0;
-                              });
-                            },
-                            // isScrollable: true,
-                            scrollDirection: Axis.horizontal,
-                            onCalendarChanged: (d) =>
-                                setState(() => _currentMonth = d),
-
-                            weekendTextStyle: TextStyle(
-                              color: Theme.of(context).accentColor,
-                            ),
-                            // weekdayTextStyle: TextStyle(color: Colors.white60),
-                            thisMonthDayBorderColor: Colors.transparent,
-                            showWeekDays: true,
-                            firstDayOfWeek: 1,
-                            daysTextStyle: TextStyle(color: Colors.white70),
-                            headerMargin: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).size.width / 8),
-                            headerText:
-                                DateFormat.yMMMM().format(_currentMonth),
-                            headerTextStyle: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 22.0,
-                                fontFamily: 'CoreSansRounded'),
-                            iconColor: Theme.of(context).primaryColor,
-                            locale: 'it',
-                            prevDaysTextStyle: TextStyle(color: Colors.white24),
-                            nextDaysTextStyle: TextStyle(color: Colors.white24),
-                            weekdayTextStyle: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'CoreSansRounded'),
-                            showIconBehindDayText: true,
-                            pageSnapping: true,
-
-                            markedDatesMap: e,
-                            todayButtonColor: Colors.transparent,
-                            selectedDayBorderColor: Colors.blue,
-                            selectedDayButtonColor: Colors.transparent,
-
-                            /// for pass null when you do not want to render weekDays
-                            //headerText: 'Custom Header',
-                            weekFormat: false,
-                            selectedDateTime: _currentDate,
-                            height: 380,
-                            daysHaveCircularBorder: true,
-                            //markedDateIconBuilder: (event) => event.icon,
-
-                            /// null for not rendering any border, true for circular border, false for rectangular border
-                          ),
+                              })),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 15.0),
                             child: SizedBox(
@@ -223,9 +172,7 @@ class _AgendaState extends State<Agenda> {
                                 child: SizedBox(),
                               ),
                               Padding(
-                                padding: (int.parse(DateFormat.d()
-                                            .format(_currentDate)) <
-                                        10)
+                                padding: (_currentDate.day < 10)
                                     ? EdgeInsets.only(left: 18.5, top: 12.0)
                                     : EdgeInsets.only(left: 12.5, top: 12.0),
                                 child: Text(
