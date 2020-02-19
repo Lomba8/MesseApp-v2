@@ -16,7 +16,7 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   DateTime _currentDay = DateTime.now();
   final PageController _controller = PageController(initialPage: 12);
-  int _index = 0;
+  static final Curve _curve = Curves.easeIn;
 
   set currentDay(DateTime currentDay) {
     setState(() => _currentDay = currentDay);
@@ -39,12 +39,24 @@ class _CalendarState extends State<Calendar> {
                     ),
                     onPressed: () => _controller.previousPage(
                         duration: Duration(seconds: 1),
-                        curve: Curves.bounceIn)),
+                        curve: _curve)),
                 Expanded(
                     child: Text(
                   DateFormat.yMMMM('it')
-                      .format(DateTime(DateTime.now().year,
-                          (DateTime.now().month + _index) % 12))
+                      .format(DateTime(
+                          DateTime.now().year +
+                              (DateTime.now().month +
+                                      (_controller.hasClients
+                                          ? _controller.page.round()
+                                          : _controller.initialPage) -
+                                      1) ~/
+                                  12 -
+                              1,
+                          (DateTime.now().month +
+                                  (_controller.hasClients
+                                      ? _controller.page.round()
+                                      : _controller.initialPage) -1) %
+                              12 +1))
                       .toUpperCase(), // TODO: cambio anno
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).primaryColor),
@@ -55,7 +67,7 @@ class _CalendarState extends State<Calendar> {
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () => _controller.nextPage(
-                        duration: Duration(seconds: 1), curve: Curves.bounceIn))
+                        duration: Duration(seconds: 1), curve: _curve))
               ],
             ),
           ),
@@ -79,7 +91,7 @@ class _CalendarState extends State<Calendar> {
             child: PageView.builder(
               itemCount: 24,
               onPageChanged: (value) {
-                setState(() => _index = value);
+                setState(() {});
                 print(value);
               },
               controller: _controller,
@@ -95,33 +107,10 @@ class _CalendarState extends State<Calendar> {
         ],
       );
 
-  Duration get _currentMonthDuration =>
-      _monthDuration(_currentDay.month, _currentDay.year);
-  Duration get _prevMonthDuration {
-    if (_currentDay.month > 1)
-      return _monthDuration(_currentDay.month - 1, _currentDay.year);
-    return _monthDuration(12, _currentDay.year - 1);
-  }
-
-  Duration _monthDuration(int month, int year) {
-    // FIXME: alcune volte si sminchia l'orario
-    switch (month) {
-      case 11:
-      case 4:
-      case 6:
-      case 9:
-        return Duration(days: 30);
-      case 2:
-        return Duration(days: year % 4 == 0 ? 29 : 28);
-      default:
-        return Duration(days: 31);
-    }
-  }
-
   List<Widget> _children(int index) {
-    int month = (DateTime.now().month + index) % 12;
+    int month = (DateTime.now().month + index - 1) % 12 +1;
     DateTime firstDayOfMonth = DateTime(
-        DateTime.now().year + (DateTime.now().month + index - 12) ~/ 12,
+        DateTime.now().year + (DateTime.now().month + index - 1) ~/ 12 - 1,
         month,
         1);
     DateTime startDay =
@@ -138,8 +127,12 @@ class _CalendarState extends State<Calendar> {
           clipBehavior: Clip.none,
           onPressed: () {
             setState(() => currentDay = day);
-            if (day.isBefore(firstDayOfMonth)) _controller.previousPage(duration: Duration(seconds: 1), curve: Curves.bounceIn);
-            else if (day.month != month) _controller.nextPage(duration: Duration(seconds: 1), curve: Curves.bounceIn);
+            if (day.isBefore(firstDayOfMonth))
+              _controller.previousPage(
+                  duration: Duration(seconds: 1), curve: _curve);
+            else if (day.month != month)
+              _controller.nextPage(
+                  duration: Duration(seconds: 1), curve: _curve);
           },
           child: Stack(children: [
             Center(
