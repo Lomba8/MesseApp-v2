@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Globals {
+class Globals with ChangeNotifier {
+  ThemeMode _themeMode;
+
+  Globals(this._themeMode);
+  getTheme() => _themeMode;
+  setTheme(ThemeMode mode) async {
+    _themeMode = mode;
+    final prefs = await SharedPreferences.getInstance();
+
+    (mode.toString() == 'ThemeMode.dark')
+        ? prefs.setBool('DarkMode', true)
+        : prefs.setBool('DarkMode', false);
+
+    print(mode.toString());
+
+    notifyListeners();
+  }
+
   static final ThemeData lightTheme = ThemeData(
     pageTransitionsTheme: PageTransitionsTheme(builders: {
       TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -23,15 +41,15 @@ class Globals {
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.
     textTheme: TextTheme(
-      headline: TextStyle(
+      headline5: TextStyle(
           fontSize: 72.0,
           fontWeight: FontWeight.bold,
           color: Color.fromRGBO(246, 232, 234, 1)),
-      title: TextStyle(
+      headline6: TextStyle(
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(246, 232, 234, 1)),
-      body1: TextStyle(
+      bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
@@ -40,6 +58,8 @@ class Globals {
   );
 
   static final ThemeData darkTheme = ThemeData(
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     // Define the default brightness and colors.
     brightness: Brightness.dark,
 
@@ -62,16 +82,16 @@ class Globals {
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.
     textTheme: TextTheme(
-      headline: TextStyle(
+      headline5: TextStyle(
         fontSize: 72.0,
         fontWeight: FontWeight.bold,
         color: Color.fromRGBO(105, 181, 201, 1),
       ),
-      title: TextStyle(
+      headline6: TextStyle(
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(40, 41, 60, 1)), // rgb(40, 41, 60, 1)
-      body1: TextStyle(
+      bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,

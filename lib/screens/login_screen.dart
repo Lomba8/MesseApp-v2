@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../registro/registro.dart';
 import 'menu_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -65,12 +66,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     MediaQueryData media = MediaQuery.of(context);
-    String _image;
+    String _image, _loader;
     GlobalKey _scaffoldKey = GlobalKey();
 
     (Theme.of(context).brightness == Brightness.dark)
         ? _image = 'images/logomesse_scuro.png'
         : _image = 'images/logomesse_chiaro.png';
+
+    (Theme.of(context).brightness == Brightness.dark)
+        ? _loader = 'images/loading_dark.gif'
+        : _loader = 'images/loading_light.gif';
 
     if (splash) {
       return Scaffold(
@@ -108,7 +113,14 @@ class _LoginScreenState extends State<LoginScreen> {
         _formKey.currentState.save();
 
         if (await RegistroApi.login(_username, _password, true)) {
-          Navigator.pushReplacementNamed(context, Menu.id);
+          setState(() {
+            splash = true;
+          });
+          RegistroApi.downloadAll((double progress) => setState(() {
+                _progress = progress;
+                if (progress == 1)
+                  Navigator.pushReplacementNamed(context, Menu.id);
+              }));
         } else {
           _formKey.currentState.reset();
 
@@ -183,7 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       fit: BoxFit.fill,
                       image: !_loading
                           ? ExactAssetImage(_image)
-                          : AssetImage('images/loading.gif'),
+                          : AssetImage(
+                              _loader), // link loader https://icons8.com/preloaders/
                     ),
                   ),
                 ),
@@ -218,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               input.length < 9 ? _usernameMsg : null,
                           onChanged: (input) {
                             print(input);
-                            _username = input;
+                            _username = input.trim();
                           },
                           onFieldSubmitted: (v) {
                             FocusScope.of(context)
@@ -235,10 +248,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           textInputAction: TextInputAction.send,
                           autocorrect: false,
                           validator: (input) =>
-                              input.length != 8 ? _passwordMsg : null,
+                              input.length == 0 ? _passwordMsg : null,
                           onChanged: (input) {
                             print(input);
-                            _password = input;
+                            _password = input.trim();
                           },
                           onFieldSubmitted: (str) => _submit(),
                           obscureText: true,
@@ -261,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Login',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.body1,
+                              style: Theme.of(context).textTheme.bodyText2,
                             ),
                           ))
                     ],

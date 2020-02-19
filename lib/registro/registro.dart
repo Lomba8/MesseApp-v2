@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/registro/voti_registro_data.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,15 +16,15 @@ class RegistroApi {
   static final VotiRegistroData voti = VotiRegistroData();
   static final AgendaRegistroData agenda = AgendaRegistroData();
 
-  // TODO: gestire parte dei download dall'esterno:
-  //  - ignore update requests if already loading         OK
-  //  - Z-If-None-Match                                   OK
-  //  - lastUpdate
-  //  - ecc...
-
   static String _capitalize(String s) {
-    s.toLowerCase();
-    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+    List<String> parole = [];
+    parole = s.split(' ');
+    String capitalizzato = ' ';
+    parole.forEach((parola) {
+      capitalizzato +=
+          parola[0].toUpperCase() + parola.substring(1).toLowerCase() + ' ';
+    });
+    return capitalizzato.trim();
   }
 
   static Map<String, String> body = {"ident": null, "pass": '', "uid": ''};
@@ -41,12 +43,11 @@ class RegistroApi {
       };
       body["pass"] = password;
       body["uid"] = username;
-      var res = await http.post(loginUrl,
-          headers: headers, body: json.encode(body));
+      var res =
+          await http.post(loginUrl, headers: headers, body: json.encode(body));
 
       if (res.statusCode != 200) return false;
       token = json.decode(res.body)["token"];
-      //Globals.setCredentials(_username, _password);
       final prefs = await SharedPreferences.getInstance();
       if (!check) {
         scuola = prefs.getString('scuola');
@@ -72,8 +73,7 @@ class RegistroApi {
                 _capitalize("${data["schName"]} ${data["schDedication"]}"));
         prefs.setString('nome', nome = _capitalize(data["firstName"]));
         prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
-        prefs.setString(
-            'compleanno', compleanno = _capitalize(data["birthDate"]));
+        prefs.setString('compleanno', compleanno = data["birthDate"]);
         prefs.setInt('usrId', usrId = data["usrId"]);
         return true;
       }
@@ -94,10 +94,8 @@ class RegistroApi {
 
   static void save() async {
     Map<String, dynamic> data = {
-      'voti': voti.data,
-      'votiLastUpdate': voti.lastUpdate,
-      'eventi': agenda.data,
-      'eventiLastUpdate': agenda.lastUpdate
+      'voti': voti,
+      'agenda': agenda
       // ecc...
     };
     String json = jsonEncode(data);
@@ -107,22 +105,20 @@ class RegistroApi {
     file.writeAsStringSync(json, flush: true);
   }
 
-  static void load() async {
+  static Future<void> load() async {
     Directory dataDir = await getApplicationSupportDirectory();
     File file = File('${dataDir.path}/data.json');
     if (!file.existsSync()) return;
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
-    voti.data = data['voti'] ?? {};
-    voti.lastUpdate = data['votiLastUpdate'];
-    agenda.data = data['eventi'] ?? {};
-    agenda.lastUpdate = data['eventiLastUpdate'];
+    voti.fromJson(data['voti']);
+    agenda.fromJson(data['agenda']);
   }
 }
 
 abstract class RegistroData {
   DateTime lastUpdate;
   String etag;
-  Map data = {};
+  dynamic data = {};
   final String _url;
   bool _loading = false;
 
@@ -148,6 +144,18 @@ abstract class RegistroData {
     _loading = false;
     return result;
   }
+
+  @mustCallSuper
+  void fromJson(Map<String, dynamic> json) {
+    lastUpdate = DateTime.parse(json['lastUpdate']);
+    etag = json['etag'];
+  }
+
+  @mustCallSuper
+  Map<String, dynamic> toJson() => {
+        'lastUpdate': lastUpdate.toIso8601String(),
+        'etag': etag,
+      }; // delegates data save to the derivate class
 
   RegistroData(this._url);
 
