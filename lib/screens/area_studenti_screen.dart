@@ -1,10 +1,10 @@
 import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/registro/registro.dart';
+import 'package:applicazione_prova/screens/map_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
-import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -123,8 +123,11 @@ class _AreaStudentiState extends State<AreaStudenti> {
           SliverGrid.count(
             crossAxisCount: 4,
             children: <Widget>[
-              Card(
-                child: Text('ciao'),
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => MapScreen())),
+                              child: Card(
+                  child: Text('map'),
+                ),
               ),
             ],
           )
