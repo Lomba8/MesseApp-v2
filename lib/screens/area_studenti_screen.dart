@@ -2,6 +2,7 @@ import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/registro/registro.dart';
 import 'package:applicazione_prova/screens/map_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
@@ -124,9 +125,95 @@ class _AreaStudentiState extends State<AreaStudenti> {
             crossAxisCount: 4,
             children: <Widget>[
               GestureDetector(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => MapScreen())),
-                              child: Card(
-                  child: Text('map'),
+                onTap: () => Navigator.push(
+                    context, MaterialPageRoute(builder: (c) => MapScreen())),
+                child: Card(
+                  color: Colors.transparent,
+                  child: Container(
+                    height: 500,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(62, 123, 150, 0.5),
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 10),
+                        SizedBox(
+                            child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color.fromRGBO(109, 158, 218, 1.0),
+                          ),
+                          child: Icon(Icons.map),
+                        )),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          height: 10,
+                          child: AutoSizeText(
+                            'Autogestione',
+                            maxLines: 1,
+                            maxFontSize: 12.0,
+                            minFontSize: 7.0,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color.fromRGBO(109, 158, 218, 1.0),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                    context, MaterialPageRoute(builder: (c) => MapScreen())),
+                child: Card(
+                  color: Colors.transparent,
+                  child: Container(
+                    height: 500,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(105, 181, 201, 0.5),
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 10),
+                        SizedBox(
+                            child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color.fromRGBO(109, 158, 218, 1.0),
+                          ),
+                          child: Icon(Icons.map),
+                        )),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          height: 10,
+                          child: AutoSizeText(
+                            'Autogestione',
+                            maxLines: 1,
+                            maxFontSize: 12.0,
+                            minFontSize: 7.0,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color.fromRGBO(109, 158, 218, 1.0),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
