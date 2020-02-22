@@ -220,7 +220,7 @@ packages:
     source: hosted
     version: "0.4.1"
   path_parsing:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_parsing
       url: "https://pub.dartlang.org"
@@ -342,7 +342,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.11"
+    version: "0.2.14"
   typed_data:
     dependency: transitive
     description:
