@@ -31,9 +31,12 @@ class Globals with ChangeNotifier {
 
     scaffoldBackgroundColor: Color.fromRGBO(239, 238, 245, 1),
 
-    primaryColor: Color.fromRGBO(115, 121, 247, 1), // rgb(115, 121, 247, 1)
+    primaryColor: Color.fromRGBO(105, 181, 201, 1), // rgb(105, 181, 201, 1)
+    /*
+    Color.fromRGBO(91, 34, 196,
+        1),  (Globals.rosso,). Alternativa a 91,34,19662, 123, 150,)*/
 
-    accentColor: Color.fromRGBO(237, 117, 190, 1),
+    accentColor: Color.fromRGBO(62, 123, 150, 1), // rgb(62, 123, 150, 1)
 
     // Define the default font family.
     fontFamily: 'CoreSans',
@@ -53,7 +56,7 @@ class Globals with ChangeNotifier {
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
-          color: Color.fromRGBO(246, 232, 234, 1)),
+          color: Color.fromRGBO(0, 0, 0, 1)),
     ),
   );
 

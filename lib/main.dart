@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/screens/login_screen.dart';
+import 'package:applicazione_prova/screens/map_screen.dart';
 import 'package:applicazione_prova/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -81,7 +82,7 @@ class MaterialAppWithTheme extends StatelessWidget {
       theme: Globals.lightTheme,
       darkTheme: Globals.darkTheme,
       themeMode: theme
-          .getTheme(), // TODO: per android < 10 e iOS < 13 non esiste il cambio tema di sistema
+          .getTheme(),
       debugShowCheckedModeBanner: false,
       title: 'Applicazione di prova',
       initialRoute: LoginScreen.id,
@@ -89,6 +90,7 @@ class MaterialAppWithTheme extends StatelessWidget {
         Menu.id: (context) => menu,
         LoginScreen.id: (context) => loginScreen
       },
+      //home: MapScreen(),
     );
   }
 }
