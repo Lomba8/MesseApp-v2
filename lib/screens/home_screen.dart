@@ -99,6 +99,11 @@ class _HomeState extends State<Home> {
                 icon: Icon(Icons.brightness_5),
                 label: Text('ThemeMode.light'),
               ),
+              RaisedButton.icon(
+                onPressed: () => _themeChanger.setTheme(ThemeMode.system),
+                icon: Icon(Icons.settings),
+                label: Text('ThemeMode.system'),
+              ),
 
               // TODO: schermata vera e propria
             ],
