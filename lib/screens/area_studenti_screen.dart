@@ -1,3 +1,4 @@
+import 'package:applicazione_prova/preferences/globals.dart';
 import 'package:applicazione_prova/registro/agenda_registro_data.dart';
 import 'package:applicazione_prova/registro/registro.dart';
 import 'package:applicazione_prova/screens/map_screen.dart';
@@ -118,108 +119,123 @@ class _AreaStudentiState extends State<AreaStudenti> {
                     ),
                   ),
                 ),
+                SizedBox(height: size.height / 100),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Section(
+                      sezione: 'Autogestione', // mappa Globals.icone[sezione]
+                      colore: 'verde', // mappa Globals.sezioni[colore]
+                      page: MapScreen(),
+                    ),
+                    Section(
+                      sezione: 'Alternanza',
+                      colore: 'blu',
+                      page: MapScreen(),
+                    ),
+                    Section(
+                      sezione: 'Bacheca',
+                      colore: 'arancione',
+                      page: MapScreen(),
+                    ),
+                    Section(
+                      sezione: 'Note',
+                      colore: 'rosa',
+                      page: MapScreen(),
+                    ),
+                    Section(
+                      sezione: 'App Panini',
+                      colore: 'viola',
+                      page: MapScreen(),
+                    ),
+                    Section(
+                      sezione: 'Tutoraggi',
+                      colore: 'rosso',
+                      page: MapScreen(),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
-          SliverGrid.count(
-            crossAxisCount: 4,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (c) => MapScreen())),
-                child: Card(
-                  color: Colors.transparent,
-                  child: Container(
-                    height: 500,
-                    width: 400,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(62, 123, 150, 0.5),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 10),
-                        SizedBox(
-                            child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromRGBO(109, 158, 218, 1.0),
-                          ),
-                          child: Icon(Icons.map),
-                        )),
-                        SizedBox(height: 10),
-                        SizedBox(
-                          height: 10,
-                          child: AutoSizeText(
-                            'Autogestione',
-                            maxLines: 1,
-                            maxFontSize: 12.0,
-                            minFontSize: 7.0,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color.fromRGBO(109, 158, 218, 1.0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (c) => MapScreen())),
-                child: Card(
-                  color: Colors.transparent,
-                  child: Container(
-                    height: 500,
-                    width: 400,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(105, 181, 201, 0.5),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 10),
-                        SizedBox(
-                            child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromRGBO(109, 158, 218, 1.0),
-                          ),
-                          child: Icon(Icons.map),
-                        )),
-                        SizedBox(height: 10),
-                        SizedBox(
-                          height: 10,
-                          child: AutoSizeText(
-                            'Autogestione',
-                            maxLines: 1,
-                            maxFontSize: 12.0,
-                            minFontSize: 7.0,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color.fromRGBO(109, 158, 218, 1.0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )
         ],
       ),
+    );
+  }
+}
+
+class Section extends StatelessWidget {
+  final String colore, sezione;
+  final dynamic page;
+
+  const Section({
+    Key key,
+    @required this.colore,
+    @required this.sezione,
+    @required this.page,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.all(10.0),
+          child: GestureDetector(
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (c) => page)),
+            child: Container(
+              height: 290 / 267 * 170,
+              width: 257 / 257 * 170,
+              decoration: BoxDecoration(
+                color: Colors.white10, //Color.fromRGBO(94, 172, 194, 0.35),
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment(0.0, -0.5),
+                    child: SizedBox(
+                        child: Container(
+                      width: 65,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Globals.sezioni[colore]['color'],
+                        gradient: RadialGradient(
+                          colors: Globals.sezioni[colore]['gradientColors'],
+                          center: Alignment(1.0, 1.0),
+                          radius: 1,
+                          focal: Alignment(1.0, 1.0),
+                        ),
+                      ),
+                      child: Globals.icone[sezione], //icona
+                    )),
+                  ),
+                  Align(
+                    alignment: Alignment(0.0, 0.55),
+                    child: SizedBox(
+                      child: AutoSizeText(
+                        sezione,
+                        maxLines: 1,
+                        maxFontSize: 14.0,
+                        minFontSize: 9.0,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          letterSpacing: 1.5,
+                          color: Globals.sezioni[colore]['textColor'],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
