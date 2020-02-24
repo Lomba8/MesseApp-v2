@@ -1,4 +1,4 @@
-import 'package:applicazione_prova/mapUtils/mapUtils.dart';
+import 'package:applicazione_prova/utils/mapUtils.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
