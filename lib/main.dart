@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/screens/login_screen.dart';
-import 'package:applicazione_prova/screens/map_screen.dart';
-import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/screens/login_screen.dart';
+import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';

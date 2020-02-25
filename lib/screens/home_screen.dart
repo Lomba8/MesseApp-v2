@@ -1,5 +1,5 @@
-import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/registro/registro.dart';
+import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,5 +1,5 @@
-import 'package:applicazione_prova/registro/agenda_registro_data.dart';
-import 'package:applicazione_prova/registro/registro.dart';
+import 'package:Messedaglia/registro/agenda_registro_data.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import 'package:intl/intl.dart';
@@ -38,8 +38,7 @@ class _CalendarState extends State<Calendar> {
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () => _controller.previousPage(
-                        duration: Duration(seconds: 1),
-                        curve: _curve)),
+                        duration: Duration(seconds: 1), curve: _curve)),
                 Expanded(
                     child: Text(
                   DateFormat.yMMMM('it')
@@ -53,10 +52,12 @@ class _CalendarState extends State<Calendar> {
                                   12 -
                               1,
                           (DateTime.now().month +
-                                  (_controller.hasClients
-                                      ? _controller.page.round()
-                                      : _controller.initialPage) -1) %
-                              12 +1))
+                                      (_controller.hasClients
+                                          ? _controller.page.round()
+                                          : _controller.initialPage) -
+                                      1) %
+                                  12 +
+                              1))
                       .toUpperCase(), // TODO: cambio anno
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).primaryColor),
@@ -108,7 +109,7 @@ class _CalendarState extends State<Calendar> {
       );
 
   List<Widget> _children(int index) {
-    int month = (DateTime.now().month + index - 1) % 12 +1;
+    int month = (DateTime.now().month + index - 1) % 12 + 1;
     DateTime firstDayOfMonth = DateTime(
         DateTime.now().year + (DateTime.now().month + index - 1) ~/ 12 - 1,
         month,

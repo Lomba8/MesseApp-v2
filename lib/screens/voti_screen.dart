@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:applicazione_prova/screens/menu_screen.dart';
-import 'package:applicazione_prova/screens/voti_details_screen.dart';
-import 'package:applicazione_prova/registro/registro.dart';
+import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/voti_details_screen.dart';
+import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -74,227 +75,251 @@ class _VotiState extends State<Voti> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                SingleChildScrollView(
+                CustomPaint(
+                  painter: BackgroundPainter(Theme.of(context)),
                   child: Column(
-                    children: <Widget>[
-                      CustomPaint(
-                        painter: BackgroundPainter(Theme.of(context)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    bottom:
-                                        MediaQuery.of(context).size.height / 50,
-                                    top: MediaQuery.of(context).size.height /
-                                        40),
-                                child: Text(
-                                  RegistroApi.voti.periods[0],
-                                  style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.light
-                                          ? Colors.black
-                                          : Colors.white,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Row(
-                                //TODO: animare solo il periodo corrente ed metterlo in primo piano + distinguere vari periodi
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Center(
-                                      child: MarkView(
-                                          RegistroApi.voti.averagePeriodo(0),
-                                          true),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () => setState(() => RegistroApi
-                                                  .voti.period =
-                                              1), // TODO: animazione del cambio periodo
-                                          child: MarkView(RegistroApi.voti
-                                              .averagePeriodo(1)),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => setState(() =>
-                                              RegistroApi.voti.period = 2),
-                                          child: MarkView(RegistroApi.voti
-                                              .averagePeriodo(2)),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20.0, bottom: 45),
-                                child: ListTile(
-                                  title: Text(
-                                    '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        //fontFamily: 'CoreSans',
-                                        ),
-                                  ),
-                                  leading: newVotiCount > 0
-                                      ? Icon(
-                                          Icons.warning,
-                                          color: Colors.yellow,
-                                        )
-                                      : null,
-                                  trailing: newVotiCount > 0
-                                      ? IconButton(
-                                          icon: Icon(Icons.clear_all),
-                                          onPressed: () => setState(
-                                              () => RegistroApi.voti.allSeen()))
-                                      : null,
-                                ),
-                              )
-                            ],
-                          ),
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).padding.top + 8),
+                        child: Text(
+                          RegistroApi.voti.periods[0],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                       Padding(
-                          padding: EdgeInsets.all(30.0 - 15.0),
-                          child: Column(
-                            children:
-                                RegistroApi.voti.sbjsWithMarks.expand((sbj) {
-                              double average = RegistroApi.voti.average(sbj);
-                              return [
-                                ListTile(
-                                    onLongPress: () => null,
-                                    onTap: () => Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        VotiDetails(sbj['voti'],
-                                                            sbj['subjectDesc'])))
-                                            .then((value) {
-                                          sbj['voti'].forEach((v) => v.seen());
-                                          _setStateIfAlive();
-                                        }),
-                                    leading: Stack(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              //TODO: animare solo il periodo corrente e metterlo in primo piano + distinguere vari periodi
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: MarkView(
+                                        RegistroApi.voti.averagePeriodo(0)),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(
-                                          '  ' + average.toStringAsPrecision(2),
-                                          style: TextStyle(
-                                            fontFamily: 'CoreSansRounded',
-                                            fontWeight: RegistroApi.voti
-                                                    .hasNewMarks(sbj)
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
+                                        AspectRatio(
+                                            aspectRatio: 2,
+                                            child: MaterialButton(
+                                              onPressed: () => setState(() =>
+                                                  RegistroApi.voti.period = 1),
+                                              child: Text(
+                                                RegistroApi.voti.periods[1],
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              shape: Border(
+                                                  bottom: BorderSide(
+                                                      color: Voto.getColor(
+                                                          RegistroApi.voti
+                                                              .averagePeriodo(
+                                                                  2)),
+                                                      width: 5)),
+                                            )),
+                                        AspectRatio(
+                                          aspectRatio: 2,
+                                          child: MaterialButton(
+                                            onPressed: () => setState(() =>
+                                                RegistroApi.voti.period = 2),
+                                            shape: Border(
+                                                bottom: BorderSide(
+                                                    color: Voto.getColor(
+                                                        RegistroApi.voti
+                                                            .averagePeriodo(2)),
+                                                    width: 5)),
+                                            child: Text(
+                                              RegistroApi.voti.periods[2],
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                         ),
-                                        RegistroApi.voti.hasNewMarks(sbj)
-                                            ? Positioned(
-                                                bottom: 6,
-                                                left: 0,
-                                                child: Icon(
-                                                  Icons.brightness_1,
-                                                  size: 10,
-                                                  color: Colors.yellow,
-                                                ),
-                                              )
-                                            : SizedBox(),
                                       ],
                                     ),
-                                    trailing: Container(
-                                      width: MediaQuery.of(context).size.width /
-                                          10,
-                                      child: IconButton(
-                                        icon: Icon(Icons.arrow_forward_ios),
-                                        onPressed: () => Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        VotiDetails(sbj['voti'],
-                                                            sbj['subjectDesc'])))
-                                            .then((value) {
-                                          sbj['voti'].forEach((v) => v.seen());
-                                          _setStateIfAlive();
-                                        }),
-                                      ),
-                                    ),
-                                    title: Text(
-                                      sbj['subjectDesc'],
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          letterSpacing: 1.0,
-                                          fontWeight: RegistroApi.voti
-                                                  .hasNewMarks(sbj)
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                          fontSize:
-                                              RegistroApi.voti.hasNewMarks(sbj)
-                                                  ? Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText2
-                                                          .fontSize +
-                                                      1.0
-                                                  : Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2
-                                                      .fontSize),
-                                    )),
-                                Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: (average * 10).round(),
-                                      child: AnimatedContainer(
-                                        duration: Duration(seconds: 1),
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                                    width: 2,
-                                                    color: average < 0 ||
-                                                            average.isNaN
-                                                        ? Colors.blue
-                                                        : average < 6
-                                                            ? Colors
-                                                                .deepOrange[900]
-                                                            : Colors.green))),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: (100 - average * 10).round(),
-                                      child: AnimatedContainer(
-                                        duration: Duration(seconds: 1),
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                                    width: 2,
-                                                    color: average < 0 ||
-                                                            average.isNaN
-                                                        ? Colors.blue
-                                                            .withAlpha(50)
-                                                        : average < 6
-                                                            ? Colors
-                                                                .deepOrange[900]
-                                                                .withAlpha(50)
-                                                            : Colors.green
-                                                                .withAlpha(
-                                                                    50)))),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 )
-                              ];
-                            }).toList(),
-                          ))
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 20.0,
+                                  bottom:
+                                      MediaQuery.of(context).size.width / 8),
+                              child: ListTile(
+                                title: Text(
+                                  '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      //fontFamily: 'CoreSans',
+                                      ),
+                                ),
+                                leading: newVotiCount > 0
+                                    ? Icon(
+                                        Icons.warning,
+                                        color: Colors.yellow,
+                                      )
+                                    : null,
+                                trailing: newVotiCount > 0
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear_all),
+                                        onPressed: () => setState(
+                                            () => RegistroApi.voti.allSeen()))
+                                    : null,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                )
+                ),
+                Padding(
+                    padding: EdgeInsets.all(30.0 - 15.0),
+                    child: Column(
+                      children: RegistroApi.voti.sbjsWithMarks.expand((sbj) {
+                        double average = RegistroApi.voti.average(sbj);
+                        return [
+                          ListTile(
+                              onLongPress: () => null,
+                              onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => VotiDetails(
+                                                  sbj['voti'],
+                                                  sbj['subjectDesc'])))
+                                      .then((value) {
+                                    sbj['voti'].forEach((v) => v.seen());
+                                    _setStateIfAlive();
+                                  }),
+                              leading: Stack(
+                                children: [
+                                  Text(
+                                    '  ' + average.toStringAsPrecision(2),
+                                    style: TextStyle(
+                                      fontFamily: 'CoreSansRounded',
+                                      fontWeight:
+                                          RegistroApi.voti.hasNewMarks(sbj)
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                    ),
+                                  ),
+                                  RegistroApi.voti.hasNewMarks(sbj)
+                                      ? Positioned(
+                                          bottom: 6,
+                                          left: 0,
+                                          child: Icon(
+                                            Icons.brightness_1,
+                                            size: 10,
+                                            color: Colors.yellow,
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                ],
+                              ),
+                              trailing: Container(
+                                width: MediaQuery.of(context).size.width / 10,
+                                child: IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios),
+                                  onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => VotiDetails(
+                                                  sbj['voti'],
+                                                  sbj['subjectDesc'])))
+                                      .then((value) {
+                                    sbj['voti'].forEach((v) => v.seen());
+                                    _setStateIfAlive();
+                                  }),
+                                ),
+                              ),
+                              title: Text(
+                                sbj['subjectDesc'],
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    letterSpacing: 1.0,
+                                    fontWeight:
+                                        RegistroApi.voti.hasNewMarks(sbj)
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                    fontSize: RegistroApi.voti.hasNewMarks(sbj)
+                                        ? Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                .fontSize +
+                                            1.0
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            .fontSize),
+                              )),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                flex: (average * 10).round(),
+                                child: AnimatedContainer(
+                                  duration: Duration(seconds: 1),
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                              width: 2,
+                                              color: average < 0 ||
+                                                      average.isNaN
+                                                  ? Colors.blue
+                                                  : average < 6
+                                                      ? Colors.deepOrange[900]
+                                                      : Colors.green))),
+                                ),
+                              ),
+                              Expanded(
+                                flex: (100 - average * 10).round(),
+                                child: AnimatedContainer(
+                                  duration: Duration(seconds: 1),
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                              width: 2,
+                                              color: average < 0 ||
+                                                      average.isNaN
+                                                  ? Colors.blue.withAlpha(50)
+                                                  : average < 6
+                                                      ? Colors.deepOrange[900]
+                                                          .withAlpha(50)
+                                                      : Colors.green
+                                                          .withAlpha(50)))),
+                                ),
+                              ),
+                            ],
+                          )
+                        ];
+                      }).toList(),
+                    ))
               ],
             ),
           ),
@@ -306,9 +331,8 @@ class _VotiState extends State<Voti> {
 
 class MarkView extends StatefulWidget {
   final double _voto;
-  final bool _animate;
 
-  MarkView([this._voto = -1, this._animate = false]);
+  MarkView([this._voto = -1]);
 
   @override
   MarkViewState createState() => MarkViewState();
@@ -323,12 +347,10 @@ class MarkViewState extends State<MarkView>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        value: widget._animate ? 0.0 : 1.0,
-        vsync: this,
-        duration: Duration(seconds: 1));
+        value: 0.0, vsync: this, duration: Duration(seconds: 1));
     animation =
         CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart);
-    if (widget._animate) _controller.forward();
+    _controller.forward();
     animation.addListener(() => setState(() {}));
   }
 
