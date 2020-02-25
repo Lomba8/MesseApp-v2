@@ -35,6 +35,7 @@ dependencies:
   auto_size_text: ^2.1.0
   provider: ^4.0.4
   path_parsing: ^0.1.4
+  material_design_icons_flutter: ^3.4.4995
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
