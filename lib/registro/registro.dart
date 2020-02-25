@@ -15,6 +15,7 @@ class RegistroApi {
 
   static final VotiRegistroData voti = VotiRegistroData();
   static final AgendaRegistroData agenda = AgendaRegistroData();
+  static final SubjectsRegistroData subjects = SubjectsRegistroData();
 
   static String _capitalize(String s) {
     List<String> parole = [];
@@ -86,10 +87,11 @@ class RegistroApi {
 
   static Future<void> downloadAll(void Function(double) callback) async {
     await load();
-    int N = 2;
+    int N = 3;
     int n = 0;
     voti.getData().then((ok) => callback(++n / N));
     agenda.getData().then((ok) => callback(++n / N));
+    subjects.getData().then((ok) => callback(++n / N));
   }
 
   static void save() async {
