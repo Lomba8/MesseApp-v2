@@ -1,6 +1,6 @@
-import 'package:applicazione_prova/registro/registro.dart';
-import 'package:applicazione_prova/screens/voti_screen.dart';
-import 'package:applicazione_prova/widgets/nav_bar_sotto.dart';
+import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/voti_screen.dart';
+import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
