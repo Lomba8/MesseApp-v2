@@ -1,5 +1,6 @@
-import 'package:applicazione_prova/registro/registro.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'registro.dart';
 
@@ -158,7 +159,7 @@ class VotiRegistroData extends RegistroData {
   }
 }
 
-class Voto {
+class Voto extends Comparable<Voto> {
   String _id;
   DateTime _data;
   double voto;
@@ -170,6 +171,13 @@ class Voto {
     _data = DateTime.parse(data);
   }
 
+  Color get color => getColor(voto);
+  static Color getColor (double value) {
+    if (value == null || value < 0 || value.isNaN) return Colors.blue[800];
+    if (value < 6) return Colors.deepOrange[900];
+    return Colors.green[700];
+  }
+  String get data => DateFormat.yMMMMd('it').format(_data);
   bool get isNew => RegistroApi.voti.votiNewFlags[_id] ?? true;
   void seen() => RegistroApi.voti.votiNewFlags[_id] = false;
 
@@ -187,4 +195,7 @@ class Voto {
       votoStr: json['votoStr'],
       info: json['info'],
       data: json['data']);
+
+  @override
+  int compareTo(Voto other) => _data.compareTo(other._data);
 }

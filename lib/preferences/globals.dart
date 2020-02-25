@@ -97,6 +97,9 @@ class Globals with ChangeNotifier {
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(40, 41, 60, 1)), // rgb(40, 41, 60, 1)
+      bodyText1: TextStyle(
+        color: Colors.white54
+      ),
       bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,

@@ -1,4 +1,4 @@
-import 'package:applicazione_prova/utils/mapUtils.dart';
+import 'package:Messedaglia/utils/mapUtils.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
@@ -163,7 +163,7 @@ class MapPainter extends CustomPainter {
   Paint _paint = Paint()
     ..color = border
     ..style = PaintingStyle.stroke
-    ..strokeWidth = 2;
+    ..strokeWidth = 1;
 
   List<String> _selectedClass;
   double floor;

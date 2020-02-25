@@ -1,4 +1,4 @@
-import 'package:applicazione_prova/registro/registro.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';

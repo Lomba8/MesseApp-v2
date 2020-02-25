@@ -1,4 +1,5 @@
-import 'package:applicazione_prova/utils/orariUtils.dart' as orariUtils;
+import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class Orari extends StatefulWidget {
@@ -8,19 +9,12 @@ class Orari extends StatefulWidget {
 }
 
 class _OrariState extends State<Orari> {
-  String _selectedClass;
+  static String _selectedClass;
 
   @override
   void initState() {
     super.initState();
   }
-
-  List<double> invertMatrix = [
-    -209.15/255,-0.1,0.03,0,255,
-    0.05,-209.15/255,-0.12,0,255,
-    0.07,-0.04,-223.65/255,0,255,
-    0,0,0,1,255
-  ];
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -39,18 +33,24 @@ class _OrariState extends State<Orari> {
                             child: Text('    $cls'),
                             value: cls,
                           ))
-                      .toList()..sort((d1, d2) => d1.value.compareTo(d2.value)),  // TODO: sort solo una volta
+                      .toList()
+                        ..sort((d1, d2) => d1.value
+                            .compareTo(d2.value)), // TODO: sort solo una volta
                   onChanged: (cls) => setState(() => _selectedClass = cls)),
             ),
             if (_selectedClass != null)
               GridView.count(
                 crossAxisCount: 6,
+                childAspectRatio: 1.5,
                 shrinkWrap: true,
-                children: (orariUtils.orari[_selectedClass] ?? []).map<Widget>((sbj) => 
-                  Center(
-                    child: Text(sbj),
-                  )                
-                ).toList(),
+                children: (orariUtils.orari[_selectedClass] ?? [])
+                    .map<Widget>((sbj) => Container(
+                      color: orariUtils.colors[sbj] ?? Colors.transparent,
+                      child: Center(
+                            child: AutoSizeText(sbj, textAlign: TextAlign.center,),
+                          ),
+                    ))
+                    .toList(),
               )
           ],
         ),

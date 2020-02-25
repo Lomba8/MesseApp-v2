@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:applicazione_prova/registro/agenda_registro_data.dart';
-import 'package:applicazione_prova/registro/subjects_registro_data.dart';
-import 'package:applicazione_prova/registro/voti_registro_data.dart';
+import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/agenda_registro_data.dart';
+import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
