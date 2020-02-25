@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:applicazione_prova/screens/menu_screen.dart';
-import 'package:applicazione_prova/registro/registro.dart';
-import 'package:applicazione_prova/widgets/calendar.dart';
+import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

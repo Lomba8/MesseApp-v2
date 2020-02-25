@@ -1,6 +1,7 @@
-import 'package:applicazione_prova/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../registro/voti_registro_data.dart';
 
@@ -8,22 +9,50 @@ class VotiDetails extends StatefulWidget {
   final List<Voto> voti;
   final String sbjDesc;
 
-  VotiDetails(this.voti, this.sbjDesc);
+  VotiDetails(this.voti, this.sbjDesc) {
+    voti.sort();
+  }
 
   @override
   VotiDetailsState createState() => VotiDetailsState();
 }
 
 class VotiDetailsState extends State<VotiDetails> {
+  Voto _selected;
+
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
-        children: <Widget>[
-          SingleChildScrollView(
-              child: Column(
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.height / 4),
+  Widget build(BuildContext context) => Material(
+          child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            title: Text(
+              widget.sbjDesc,
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+            bottom: PreferredSize(
+                child: Container(),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+            centerTitle: true,
+            leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white60,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            pinned: true,
+            flexibleSpace: CustomPaint(
+              painter: BackgroundPainter(Theme.of(context)),
+              size: Size.infinite,
+            ),
+          ),
+          SliverList(
+              delegate: SliverChildListDelegate(
+            [
               AspectRatio(
                 aspectRatio: 1.7,
                 child: Padding(
@@ -31,82 +60,62 @@ class VotiDetailsState extends State<VotiDetails> {
                   child: LineChart(_votiData()),
                 ),
               ),
-              Text(
-                "work in progress...",
-                textAlign: TextAlign.center,
-              )
-            ]..addAll(widget.voti == null
-                ? []
-                : widget.voti.map<Widget>((mark) => ListTile(
-                      leading: mark.isNew
-                          ? Icon(
-                              Icons.fiber_new,
-                              color: Colors.yellow,
+            ]..addAll(
+                (widget.voti ?? []).reversed.map<Widget>((mark) => ListTile(
+                      title: Text(mark.data, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+                      subtitle: mark==_selected ? Text(mark.info, style: Theme.of(context).textTheme.bodyText1, textAlign: TextAlign.center,) : null,
+                      onTap: () => setState(() => _selected = _selected == mark ? null : mark),
+                      leading: Stack(
+                        children: <Widget>[
+                          CircleAvatar(
+                            backgroundColor: mark.color,
+                            child: Center(
+                              child: Text(
+                                mark.votoStr,
+                                style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          if (mark.isNew)
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: Colors.yellow),
                             )
-                          : null,
-                      title: Text(mark.votoStr),
-                    ))),
-          )),
-          CustomPaint(
-            painter: BackgroundPainter(Theme.of(context)),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 50),
-              child: Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).size.height / 30,
-                    top: MediaQuery.of(context).size.height / 18),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width / 10,
-                      child: IconButton(
-                          icon: Icon(Icons.arrow_back_ios),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }),
-                    ),
-                    Expanded(
-                      child: Text(
-                        widget.sbjDesc,
-                        textAlign:
-                            TextAlign.center, //FIXME: come centrare testo?
+                        ],
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 10,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
+                    ))),
+          ))
         ],
-      ),
-    );
-  }
+      ));
 
   LineChartData _votiData() => LineChartData(
-    lineTouchData: LineTouchData(
-
-    ),
+          lineTouchData: LineTouchData(),
           minY: 0,
           maxY: 10,
           gridData: FlGridData(
             show: true,
             drawVerticalLine: true,
-            getDrawingVerticalLine: (value) =>
-                FlLine(color: Colors.white10, strokeWidth: 1),
+            getDrawingVerticalLine: (value) => FlLine(
+                color: value == 0 ? Colors.white70 : Colors.white10,
+                strokeWidth: value == 0 ? 2 : 1),
             drawHorizontalLine: true,
-            getDrawingHorizontalLine: (value) =>
-                FlLine(color: Colors.white10, strokeWidth: 1),
+            getDrawingHorizontalLine: (value) => FlLine(
+                color: value == 0 ? Colors.white70 : Colors.white10,
+                strokeWidth: value == 0 ? 2 : 1),
           ),
           titlesData: FlTitlesData(
               bottomTitles: SideTitles(showTitles: false),
               leftTitles: SideTitles(
                 reservedSize: 25,
                 textStyle: TextStyle(
-                  color: Colors.white60,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -117,6 +126,9 @@ class VotiDetailsState extends State<VotiDetails> {
           borderData: FlBorderData(show: false),
           lineBarsData: [
             LineChartBarData(
+              gradientFrom: Offset(0.5, 0),
+              gradientTo: Offset(0.5, 1),
+              colorStops: [0, 1],
               spots: widget.voti
                   .where((voto) => voto.voto != null && !voto.voto.isNaN)
                   .toList()
@@ -127,15 +139,10 @@ class VotiDetailsState extends State<VotiDetails> {
                   .toList(),
               isCurved: true,
               dotData: FlDotData(
-                  dotColor: Theme.of(context).primaryColor, dotSize: 5),
-              colors: [Theme.of(context).primaryColor],
-              /*belowBarData: BarAreaData(  // TODO: gradient verticale?
-                  show: true,
-                  colors: [Color(0xFF002000), Color(0xFF200000)],
-                  gradientColorStops: [0, 1],
-                  cutOffY: 6,
-                  applyCutOffY: true
-                )*/
+                dotColor: Colors.green[800],
+                dotSize: 5,
+              ), // TODO: non posso decidere il colore per ogni dot?!?!?
+              colors: [Colors.green, Colors.deepOrange[900]],
             )
           ]);
 
