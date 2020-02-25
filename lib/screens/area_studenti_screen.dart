@@ -120,45 +120,44 @@ class _AreaStudentiState extends State<AreaStudenti> {
                   ),
                 ),
                 SizedBox(height: size.height / 100),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  direction: Axis.horizontal,
-                  children: <Widget>[
-                    Section(
-                      sezione: 'Autogestione', // mappa Globals.icone[sezione]
-                      colore: 'verde', // mappa Globals.sezioni[colore]
-                      page: MapScreen(),
-                    ),
-                    Section(
-                      sezione: 'Alternanza',
-                      colore: 'blu',
-                      page: MapScreen(),
-                    ),
-                    Section(
-                      sezione: 'Bacheca',
-                      colore: 'arancione',
-                      page: MapScreen(),
-                    ),
-                    Section(
-                      sezione: 'Note',
-                      colore: 'rosa',
-                      page: MapScreen(),
-                    ),
-                    Section(
-                      sezione: 'App Panini',
-                      colore: 'viola',
-                      page: MapScreen(),
-                    ),
-                    Section(
-                      sezione: 'Tutoraggi',
-                      colore: 'rosso',
-                      page: MapScreen(),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
+          SliverGrid.count(
+            crossAxisCount: 2,
+            children: <Widget>[
+              Section(
+                sezione: 'Autogestione', // mappa Globals.icone[sezione]
+                colore: 'verde', // mappa Globals.sezioni[colore]
+                page: MapScreen(),
+              ),
+              Section(
+                sezione: 'Alternanza',
+                colore: 'blu',
+                page: MapScreen(),
+              ),
+              Section(
+                sezione: 'Bacheca',
+                colore: 'arancione',
+                page: MapScreen(),
+              ),
+              Section(
+                sezione: 'Note',
+                colore: 'rosa',
+                page: MapScreen(),
+              ),
+              Section(
+                sezione: 'App Panini',
+                colore: 'viola',
+                page: MapScreen(),
+              ),
+              Section(
+                sezione: 'Tutoraggi',
+                colore: 'rosso',
+                page: MapScreen(),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -181,13 +180,13 @@ class Section extends StatelessWidget {
     return Column(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: EdgeInsets.all(0.0),
           child: GestureDetector(
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (c) => page)),
             child: Container(
-              height: 290 / 267 * 170,
-              width: 257 / 257 * 170,
+              height: 290 / 267 * 165,
+              width: 257 / 257 * 165,
               decoration: BoxDecoration(
                 color: Colors.white10, //Color.fromRGBO(94, 172, 194, 0.35),
                 borderRadius: BorderRadius.circular(20.0),
