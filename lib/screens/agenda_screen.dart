@@ -338,17 +338,27 @@ class EventCard extends StatelessWidget {
                   Container(
                     height: double.infinity,
                     decoration: BoxDecoration(
-                        color: Colors.green[200],
+                        color: (Globals.subjects[
+                                    '${evento.autore.toUpperCase()}'] !=
+                                null)
+                            ? Globals.subjects['${evento.autore.toUpperCase()}']
+                                    ['colore']
+                                .withOpacity(0.7)
+                            : Colors.grey, //FIXME cosa mettere?
                         borderRadius: BorderRadius.circular(10.0)),
                     child: Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
                         padding: EdgeInsets.all(8),
                         child: Icon(
-                          Icons.adb, // TODO: cosa ci mettiamo?
+                          (Globals.subjects['${evento.autore.toUpperCase()}'] !=
+                                  null)
+                              ? Globals.subjects[
+                                  '${evento.autore.toUpperCase()}']['icona']
+                              : Icons.help, //FIXME cosa mettere?
                           size: 25.0,
-                          color: Colors.green[
-                              600], //TODO: mappa in globals.dart con corrispondenza autore icona colore
+                          color: Colors
+                              .black, //TODO: mappa in globals.dart con corrispondenza autore icona colore
                           //                se giornaliero cambiare colore a prescienere dalla materia
                         ),
                       ),

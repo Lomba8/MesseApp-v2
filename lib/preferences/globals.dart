@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Globals with ChangeNotifier {
@@ -111,16 +112,102 @@ class Globals with ChangeNotifier {
 
   static Color violaScolorito = Color.fromRGBO(115, 121, 247, 0.7);
 
+  static Map<String, Map<String, dynamic>> subjects = {
+    'profe1': {
+      'materia': 'DISEGNO - ST. DELL\'ARTE',
+      'colore': Colors.red,
+      'icona': Icons.brush,
+    },
+    'profe2': {
+      'materia': 'FILOSOFIA',
+      'colore': Colors.blue,
+      'icona': MdiIcons.yinYang,
+    },
+    'profe3': {
+      'materia': 'FISICA',
+      'colore': Colors.yellow,
+      'icona': MdiIcons.atom,
+    },
+    'profe4': {
+      'materia': 'INGLESE',
+      'colore': Colors.lightGreenAccent,
+      'icona': MdiIcons.currencyGbp,
+    },
+    'profe5': {
+      'materia': 'INFORMATICA',
+      'colore': Colors.green,
+      'icona': MdiIcons.codeBraces,
+    },
+    'profe6': {
+      'materia': 'LATINO',
+      'colore': Colors.amber,
+      'icona': MdiIcons.help, // IFXME cosa mettere?
+    },
+    'profe7': {
+      'materia': 'LINGUA E LETTERATURA ITALIANA',
+      'colore': Colors.cyan,
+      'icona': MdiIcons.pasta, // or pizza?
+    },
+    'profe8': {
+      'materia': 'MATEMATICA',
+      'colore': Colors.brown,
+      'icona': MdiIcons.squareRoot,
+    },
+    'profe9': {
+      'mat10ria': 'PROGETTI / POTENZIAMENTO', // 4 profe di potenziamento
+      'colore': Colors.grey,
+      'icona': MdiIcons.help, // FIXME cosa mettere?
+    },
+    'profe11': {
+      'materia': 'PROGETTI / POTENZIAMENTO',
+      'colore': Colors.grey,
+      'icona': MdiIcons.help, // FIXME cosa mettere?
+    },
+    'profe12': {
+      'materia': 'PROGETTI / POTENZIAMENTO',
+      'colore': Colors.grey,
+      'icona': MdiIcons.help, // FIXME cosa mettere?
+    },
+    'profe13': {
+      'materia': 'PROGETTI / POTENZIAMENTO',
+      'colore': Colors.grey,
+      'icona': MdiIcons.help, // FIXME cosa mettere?
+    },
+    'profe14': {
+      'materia': 'RELIGIONE-ATTIVITA\' ALTERNATIVE',
+      'colore': Colors.deepPurple,
+      'icona': MdiIcons.christianity,
+    },
+    'profe15': {
+      'materia': 'SCIENZE MOTORIE E SPORTIVE',
+      'colore': Colors.purpleAccent,
+      'icona': MdiIcons.basketball,
+    },
+    'profe16': {
+      'materia': 'SCIENZE NATURALI',
+      'colore': Colors.tealAccent,
+      'icona': MdiIcons.flask, // or test-tube, dna, bacteria, microscope
+    },
+    'profe17': {
+      'materia': 'STORIA',
+      'colore': Colors.deepOrangeAccent,
+      'icona': Icons.account_balance,
+    },
+  };
+
   static Map<String, Icon> icone = {
-    'Autogestione': Icon(Icons.map), // TODO: scegliere icone
+    // TODO: scegliere icone
     'Alternanza':
         Icon(Icons.headset_mic), // headset_mic, work, home_work, euro, weekend
+    'App Panini': Icon(Icons.smartphone),
+    'Autogestione': Icon(Icons.map),
+
     'Bacheca': Icon(Icons
         .markunread_mailbox), // drafts, description, markunread_mailbox, inbox, attach_file, local_post_office, insert_drive_file
+    'Note': Icon(Icons.sentiment_dissatisfied), //feedback,
+
     'Tutoraggi': Icon(Icons
         .person_add), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
-    'Note': Icon(Icons.sentiment_dissatisfied), //feedback,
-    'App Panini': Icon(Icons.smartphone),
   };
 
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);
