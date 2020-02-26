@@ -2,6 +2,7 @@ import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
 import 'package:provider/provider.dart';
@@ -14,13 +15,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
+/*final GoogleSignIn _signIn = GoogleSignIn(
+    signInOption: SignInOption.standard,
+    scopes: ['https://www.googleapis.com/auth/admin.directory.group.readonly'],
+    hostedDomain: 'messedaglia.edu.it');*/
+
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     Menu menu = Menu();
     LoginScreen loginScreen = LoginScreen();
     WidgetsFlutterBinding.ensureInitialized();
     //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
-
+    //_signIn.signIn();
     IosDeviceInfo iosInfo;
     AndroidDeviceInfo androidInfo;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -28,7 +34,8 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.getBool('DarkMode') == null) {
-      _mode = ThemeMode.dark;   // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
+      _mode = ThemeMode
+          .dark; // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
       /*try {
         if (Platform.isAndroid) {
           androidInfo = await deviceInfo.androidInfo;

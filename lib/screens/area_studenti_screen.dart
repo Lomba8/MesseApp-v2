@@ -1,6 +1,7 @@
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
@@ -147,17 +148,17 @@ class _AreaStudentiState extends State<AreaStudenti> {
               Section(
                 sezione: 'Alternanza',
                 colore: 'blu',
-                page: MapScreen(),
+                page: null,
               ),
               Section(
                 sezione: 'Bacheca',
                 colore: 'arancione',
-                page: MapScreen(),
+                page: BachecaScreen(),
               ),
               Section(
                 sezione: 'Note',
                 colore: 'rosa',
-                page: MapScreen(),
+                page: null,
               ),
               Section(
                 sezione: 'App Panini',
@@ -195,12 +196,15 @@ class Section extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: GestureDetector(
-        onTap: (action == null)
-            ? () =>
-                Navigator.push(context, MaterialPageRoute(builder: (c) => page))
+        onTap: action == null
+            ? page == null
+                ? null
+                : () => Navigator.push(
+                    context, MaterialPageRoute(builder: (c) => page))
             : action,
         child: Card(
-          color: Colors.white10,
+          color:
+              page == null && action == null ? Colors.white24 : Colors.white10,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Column(
@@ -213,9 +217,13 @@ class Section extends StatelessWidget {
                 height: 65,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Globals.sezioni[colore]['color'],
+                  color: action == null && page == null
+                      ? Colors.white54
+                      : Globals.sezioni[colore]['color'],
                   gradient: RadialGradient(
-                    colors: Globals.sezioni[colore]['gradientColors'],
+                    colors: action == null && page == null
+                        ? [Colors.white54, Colors.white30]
+                        : Globals.sezioni[colore]['gradientColors'],
                     center: Alignment(1.0, 1.0),
                     radius: 1,
                     focal: Alignment(1.0, 1.0),
@@ -234,7 +242,9 @@ class Section extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     letterSpacing: 1.5,
-                    color: Globals.sezioni[colore]['textColor'],
+                    color: action == null && page == null
+                        ? Colors.white54
+                        : Globals.sezioni[colore]['textColor'],
                   ),
                 ),
               ),
