@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
     show CalendarCarousel, EventList;
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../registro/agenda_registro_data.dart';
 import '../registro/registro.dart';
@@ -344,7 +346,7 @@ class EventCard extends StatelessWidget {
                             ? Globals.subjects['${evento.autore.toUpperCase()}']
                                     ['colore']
                                 .withOpacity(0.7)
-                            : Colors.grey, //FIXME cosa mettere?
+                            : Colors.white10, //FIXME cosa mettere?
                         borderRadius: BorderRadius.circular(10.0)),
                     child: Align(
                       alignment: Alignment.topCenter,
@@ -355,7 +357,8 @@ class EventCard extends StatelessWidget {
                                   null)
                               ? Globals.subjects[
                                   '${evento.autore.toUpperCase()}']['icona']
-                              : Icons.help, //FIXME cosa mettere?
+                              : MdiIcons
+                                  .exitRun, //FIXME cosa mettere? information-variant, human-male, robber ?
                           size: 25.0,
                           color: Colors
                               .black, //TODO: mappa in globals.dart con corrispondenza autore icona colore

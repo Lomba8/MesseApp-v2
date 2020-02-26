@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
+import 'package:Messedaglia/registro/subjects_registro_data.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
