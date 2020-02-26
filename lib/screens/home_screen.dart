@@ -104,7 +104,6 @@ class _HomeState extends State<Home> {
                 icon: Icon(Icons.settings),
                 label: Text('ThemeMode.system'),
               ),
-              Text('${Globals.subjects}')
 
               // TODO: schermata vera e propria
             ],

@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^0.5.6+2
-  http: ^0.12.0+3
+  http: ^0.12.0+4
   convert: ^2.1.1
   flare_flutter: ^1.8.3
   flare_splash_screen: ^3.0.0
@@ -36,6 +36,9 @@ dependencies:
   provider: ^4.0.4
   path_parsing: ^0.1.4
   material_design_icons_flutter: ^3.4.4995
+  url_launcher: ^5.4.2
+  html: ^0.14.0+3
+  scrapy: ^0.0.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

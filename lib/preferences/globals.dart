@@ -97,9 +97,7 @@ class Globals with ChangeNotifier {
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(40, 41, 60, 1)), // rgb(40, 41, 60, 1)
-      bodyText1: TextStyle(
-        color: Colors.white54
-      ),
+      bodyText1: TextStyle(color: Colors.white54),
       bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
@@ -136,17 +134,18 @@ class Globals with ChangeNotifier {
     'profe5': {
       'materia': 'INFORMATICA',
       'colore': Colors.green,
-      'icona': MdiIcons.codeBraces,
+      'icona': MdiIcons.codeBraces, //  or code-json?
     },
     'profe6': {
       'materia': 'LATINO',
       'colore': Colors.amber,
-      'icona': MdiIcons.help, // IFXME cosa mettere?
+      'icona': MdiIcons
+          .school, // FIXME cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
     },
     'profe7': {
       'materia': 'LINGUA E LETTERATURA ITALIANA',
       'colore': Colors.cyan,
-      'icona': MdiIcons.pasta, // or pizza?
+      'icona': MdiIcons.alphabetical, // or pizza?
     },
     'profe8': {
       'materia': 'MATEMATICA',
@@ -156,22 +155,23 @@ class Globals with ChangeNotifier {
     'profe9': {
       'mat10ria': 'PROGETTI / POTENZIAMENTO', // 4 profe di potenziamento
       'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
+      'icona': MdiIcons
+          .foodOff, // FIXME cosa mettere?   weightLifter, bag-personal-outline?
     },
     'profe11': {
       'materia': 'PROGETTI / POTENZIAMENTO',
       'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
+      'icona': MdiIcons.foodOff, // FIXME cosa mettere?
     },
     'profe12': {
       'materia': 'PROGETTI / POTENZIAMENTO',
       'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
+      'icona': MdiIcons.foodOff, // FIXME cosa mettere?
     },
     'profe13': {
       'materia': 'PROGETTI / POTENZIAMENTO',
       'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
+      'icona': MdiIcons.foodOff, // FIXME cosa mettere?
     },
     'profe14': {
       'materia': 'RELIGIONE-ATTIVITA\' ALTERNATIVE',
@@ -191,7 +191,7 @@ class Globals with ChangeNotifier {
     'profe17': {
       'materia': 'STORIA',
       'colore': Colors.deepOrangeAccent,
-      'icona': Icons.account_balance,
+      'icona': MdiIcons.pillar, // or account_balance?
     },
   };
 

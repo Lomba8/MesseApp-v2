@@ -1,5 +1,5 @@
-import 'package:applicazione_prova/preferences/globals.dart';
-import 'package:applicazione_prova/registro/registro.dart';
+import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/registro.dart';
 
 class SubjectsRegistroData extends RegistroData {
   SubjectsRegistroData()
