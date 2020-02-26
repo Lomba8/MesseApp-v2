@@ -1,8 +1,7 @@
-import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
 //flare gia pronto per menu bar https://rive.app/a/akaaljotsingh/files/flare/drawer/preview
@@ -16,100 +15,115 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   @override
-  Widget build(BuildContext context) {
-    var s = MediaQuery.of(context).size;
-    Globals _themeChanger = Provider.of<Globals>(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      physics: AlwaysScrollableScrollPhysics(),
-      child: Column(
-        children: <Widget>[
-          Container(
-            color: Theme.of(context).backgroundColor,
-            //transform: Matrix4.translationValues(0.0, 0.5, 0.0),
-            child: Container(
-              width: s.width,
-              height: s.height / 3.5,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.elliptical(40.0, 40.0),
-                ),
+  Widget build(BuildContext context) => LiquidPullToRefresh(
+        onRefresh: () => RegistroApi.downloadAll((d) {}),
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              centerTitle: true,
+              elevation: 0,
+              pinned: true,
+              backgroundColor: Colors.transparent,
+              title: Text(
+                '${RegistroApi.nome} ${RegistroApi.cognome}',
+                textAlign: TextAlign
+                    .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold),
               ),
-              child: Padding(
-                padding:
-                    EdgeInsets.only(left: s.width / 15, top: s.height / 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Ciao,",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Color.fromRGBO(141, 149, 167, 1),
-                        fontSize: 35.0,
-                        fontFamily: 'CoreSansRounded',
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    AutoSizeText(
-                      '${RegistroApi.cognome} ${RegistroApi.nome}',
-                      overflow: TextOverflow.ellipsis,
-                      minFontSize: 20.0,
-                      maxFontSize: 30.0,
-                      maxLines: 1,
-                      textDirection: TextDirection.ltr,
-                      style: TextStyle(
-                          color: Color.fromRGBO(21, 38, 74, 1),
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'CoreSansRounded'),
-                    ),
-                  ],
-                ),
+              bottom: PreferredSize(
+                  child: Container(),
+                  preferredSize:
+                      Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+              flexibleSpace: CustomPaint(
+                painter: BackgroundPainter(Theme.of(context)),
+                size: Size.infinite,
               ),
             ),
-          ),
-          Container(
-            color: Theme.of(context).primaryColor,
-            height: 40,
-            width: s.width,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).backgroundColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.elliptical(40.0, 40.0),
+            SliverList(
+                delegate: SliverChildListDelegate(
+              <Widget>[
+                ListTile(
+                  leading: Icon(Icons.warning, color: Colors.yellow[600]),
+                  trailing: Icon(Icons.warning, color: Colors.yellow[600]),
+                  title: Text(
+                    'WORK IN PROGRESS',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                  subtitle: Text(
+                    'PS: la GUI è totalmente buttata a caso',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                 ),
-              ),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              RaisedButton.icon(
-                onPressed: () => _themeChanger.setTheme(ThemeMode.dark),
-                icon: Icon(Icons.brightness_6),
-                label: Text('ThemeMode.dark'),
-              ),
-              RaisedButton.icon(
-                onPressed: () => _themeChanger.setTheme(ThemeMode.light),
-                icon: Icon(Icons.brightness_5),
-                label: Text('ThemeMode.light'),
-              ),
-              RaisedButton.icon(
-                onPressed: () => _themeChanger.setTheme(ThemeMode.system),
-                icon: Icon(Icons.settings),
-                label: Text('ThemeMode.system'),
-              ),
-
-              // TODO: schermata vera e propria
-            ],
-          )
-        ],
-      ),
-    );
-  }
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${RegistroApi.voti.newVotiTot} nuovi voti'),
+                  ),
+                ),
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('0 nuove comunicazioni'),
+                  ),
+                ),
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('nessuna supplenza per domani'),
+                  ),
+                ),
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                        '${RegistroApi.agenda.data.getEvents(DateTime.now().add(Duration(days: 1))).length} eventi domani'), // FIXME
+                  ),
+                ),
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                        'è attivo un nuovo sondaggio da parte dei rappre'),
+                  ),
+                ),
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                        'guarda le nuove magliette di istituto!'),
+                  ),
+                ),
+                Card(
+                  color: Colors.white10,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                        'altre notizie varie ed eventuali (tipo borracce / foto di classe / balli / ecc...)'),
+                  ),
+                ),
+              ],
+            ))
+          ],
+        ),
+      );
 }

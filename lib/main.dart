@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,7 +28,8 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.getBool('DarkMode') == null) {
-      try {
+      _mode = ThemeMode.dark;   // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
+      /*try {
         if (Platform.isAndroid) {
           androidInfo = await deviceInfo.androidInfo;
         } else if (Platform.isIOS) {
@@ -46,7 +44,7 @@ void main() {
         }
       } on PlatformException {
         print('Error: Failed to get platform version.');
-      }
+      }*/
     } else {
       prefs.getBool('DarkMode')
           ? _mode = ThemeMode.dark
@@ -80,8 +78,7 @@ class MaterialAppWithTheme extends StatelessWidget {
     return MaterialApp(
       theme: Globals.lightTheme,
       darkTheme: Globals.darkTheme,
-      themeMode: theme
-          .getTheme(),
+      themeMode: theme.getTheme(),
       debugShowCheckedModeBanner: false,
       title: 'Applicazione di prova',
       initialRoute: LoginScreen.id,

@@ -119,6 +119,9 @@ class VotiRegistroData extends RegistroData {
     return voti.any((mark) => mark.isNew);
   }
 
+  int get newVotiTot => data['TOTALE'].values.fold(0, (sum, sbj) {
+        return sum + _countNewMarks(sbj);
+      });
   int get newVotiPeriodCount => data[periods[0]].values.fold(0, (sum, sbj) {
         return sum + _countNewMarks(sbj);
       });
@@ -172,11 +175,12 @@ class Voto extends Comparable<Voto> {
   }
 
   Color get color => getColor(voto);
-  static Color getColor (double value) {
+  static Color getColor(double value) {
     if (value == null || value < 0 || value.isNaN) return Colors.blue[800];
     if (value < 6) return Colors.deepOrange[900];
     return Colors.green[700];
   }
+
   String get data => DateFormat.yMMMMd('it').format(_data);
   bool get isNew => RegistroApi.voti.votiNewFlags[_id] ?? true;
   void seen() => RegistroApi.voti.votiNewFlags[_id] = false;
