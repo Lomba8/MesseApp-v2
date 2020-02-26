@@ -21,6 +21,7 @@ class AgendaRegistroData extends RegistroData {
 
   @override
   Result parseData(json) {
+    print (json);
     try {
       json = json['agenda'];
       EventList<Evento> data2 = EventList<Evento>();

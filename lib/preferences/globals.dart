@@ -111,84 +111,57 @@ class Globals with ChangeNotifier {
   static Color violaScolorito = Color.fromRGBO(115, 121, 247, 0.7);
 
   static Map<String, Map<String, dynamic>> subjects = {
-    'profe1': {
-      'materia': 'DISEGNO - ST. DELL\'ARTE',
+    "DISEGNO - ST. DELL'ARTE": {
       'colore': Colors.red,
       'icona': Icons.brush,
     },
-    'profe2': {
-      'materia': 'FILOSOFIA',
+    'FILOSOFIA': {
       'colore': Colors.blue,
       'icona': MdiIcons.yinYang,
     },
-    'profe3': {
-      'materia': 'FISICA',
+    'FISICA': {
       'colore': Colors.yellow,
       'icona': MdiIcons.atom,
     },
-    'profe4': {
-      'materia': 'INGLESE',
+    'INGLESE': {
       'colore': Colors.lightGreenAccent,
       'icona': MdiIcons.currencyGbp,
     },
-    'profe5': {
-      'materia': 'INFORMATICA',
+    'INFORMATICA': {
       'colore': Colors.green,
       'icona': MdiIcons.codeBraces, //  or code-json?
     },
-    'profe6': {
-      'materia': 'LATINO',
+    'LATINO': {
       'colore': Colors.amber,
       'icona': MdiIcons
           .school, // FIXME cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
     },
-    'profe7': {
-      'materia': 'LINGUA E LETTERATURA ITALIANA',
+    'LINGUA E LETTERATURA ITALIANA': {
       'colore': Colors.cyan,
       'icona': MdiIcons.alphabetical, // or pizza?
     },
-    'profe8': {
-      'materia': 'MATEMATICA',
+    'MATEMATICA': {
       'colore': Colors.brown,
       'icona': MdiIcons.squareRoot,
     },
-    'profe9': {
-      'mat10ria': 'PROGETTI / POTENZIAMENTO', // 4 profe di potenziamento
+    'PROGETTI / POTENZIAMENTO': {
       'colore': Colors.grey,
       'icona': MdiIcons
           .foodOff, // FIXME cosa mettere?   weightLifter, bag-personal-outline?
     },
-    'profe11': {
-      'materia': 'PROGETTI / POTENZIAMENTO',
-      'colore': Colors.grey,
-      'icona': MdiIcons.foodOff, // FIXME cosa mettere?
-    },
-    'profe12': {
-      'materia': 'PROGETTI / POTENZIAMENTO',
-      'colore': Colors.grey,
-      'icona': MdiIcons.foodOff, // FIXME cosa mettere?
-    },
-    'profe13': {
-      'materia': 'PROGETTI / POTENZIAMENTO',
-      'colore': Colors.grey,
-      'icona': MdiIcons.foodOff, // FIXME cosa mettere?
-    },
-    'profe14': {
-      'materia': 'RELIGIONE-ATTIVITA\' ALTERNATIVE',
+    "RELIGIONE-ATTIVITA' ALTERNATIVE": {
       'colore': Colors.deepPurple,
       'icona': MdiIcons.christianity,
     },
-    'profe15': {
-      'materia': 'SCIENZE MOTORIE E SPORTIVE',
+    'SCIENZE MOTORIE E SPORTIVE': {
       'colore': Colors.purpleAccent,
       'icona': MdiIcons.basketball,
     },
-    'profe16': {
-      'materia': 'SCIENZE NATURALI',
+    'SCIENZE NATURALI': {
       'colore': Colors.tealAccent,
       'icona': MdiIcons.flask, // or test-tube, dna, bacteria, microscope
     },
-    'profe17': {
+    'STORIA': {
       'materia': 'STORIA',
       'colore': Colors.deepOrangeAccent,
       'icona': MdiIcons.pillar, // or account_balance?

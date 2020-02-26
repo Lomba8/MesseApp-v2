@@ -10,9 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
-    show CalendarCarousel, EventList;
+    show EventList;
 import 'package:flutter_dash/flutter_dash.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../registro/agenda_registro_data.dart';
@@ -313,8 +312,6 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(evento.inizio.hour);
-    print(_AgendaState.timelineStart);
     return Padding(
       padding: EdgeInsets.only(
           top: !evento.giornaliero
@@ -340,24 +337,21 @@ class EventCard extends StatelessWidget {
                   Container(
                     height: double.infinity,
                     decoration: BoxDecoration(
-                        color: (Globals.subjects[
-                                    '${evento.autore.toUpperCase()}'] !=
-                                null)
-                            ? Globals.subjects['${evento.autore.toUpperCase()}']
-                                    ['colore']
-                                .withOpacity(0.7)
-                            : Colors.white10, //FIXME cosa mettere?
+                        color: (Globals.subjects[RegistroApi
+                                        .subjects.data[evento.autore]] ??
+                                    {})['colore']
+                                ?.withOpacity(0.7) ??
+                            Colors.white10, //FIXME cosa mettere?
                         borderRadius: BorderRadius.circular(10.0)),
                     child: Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
                         padding: EdgeInsets.all(8),
                         child: Icon(
-                          (Globals.subjects['${evento.autore.toUpperCase()}'] !=
-                                  null)
-                              ? Globals.subjects[
-                                  '${evento.autore.toUpperCase()}']['icona']
-                              : MdiIcons
+                          (Globals.subjects[RegistroApi
+                                      .subjects.data[evento.autore]] ??
+                                  {})['icona'] ??
+                              MdiIcons
                                   .exitRun, //FIXME cosa mettere? information-variant, human-male, robber ?
                           size: 25.0,
                           color: Colors
