@@ -5,6 +5,8 @@ import 'package:flutter/rendering.dart';
 
 import '../registro/voti_registro_data.dart';
 
+//FIXME: grafico, dettaglio dei voti che rimangono aperti
+
 class VotiDetails extends StatefulWidget {
   final List<Voto> voti;
   final String sbjDesc;
@@ -62,9 +64,20 @@ class VotiDetailsState extends State<VotiDetails> {
               ),
             ]..addAll(
                 (widget.voti ?? []).reversed.map<Widget>((mark) => ListTile(
-                      title: Text(mark.data, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-                      subtitle: mark==_selected ? Text(mark.info, style: Theme.of(context).textTheme.bodyText1, textAlign: TextAlign.center,) : null,
-                      onTap: () => setState(() => _selected = _selected == mark ? null : mark),
+                      title: Text(
+                        mark.data,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: mark == _selected
+                          ? Text(
+                              mark.info,
+                              style: Theme.of(context).textTheme.bodyText1,
+                              textAlign: TextAlign.center,
+                            )
+                          : null,
+                      onTap: () => setState(
+                          () => _selected = _selected == mark ? null : mark),
                       leading: Stack(
                         children: <Widget>[
                           CircleAvatar(
@@ -96,55 +109,63 @@ class VotiDetailsState extends State<VotiDetails> {
       ));
 
   LineChartData _votiData() => LineChartData(
-          lineTouchData: LineTouchData(),
-          minY: 0,
-          maxY: 10,
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: true,
-            getDrawingVerticalLine: (value) => FlLine(
-                color: value == 0 ? Colors.white70 : Colors.white10,
-                strokeWidth: value == 0 ? 2 : 1),
-            drawHorizontalLine: true,
-            getDrawingHorizontalLine: (value) => FlLine(
-                color: value == 0 ? Colors.white70 : Colors.white10,
-                strokeWidth: value == 0 ? 2 : 1),
-          ),
-          titlesData: FlTitlesData(
-              bottomTitles: SideTitles(showTitles: false),
-              leftTitles: SideTitles(
-                reservedSize: 25,
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
-                margin: 15,
-                showTitles: true,
-                getTitles: (value) => value.toInt().toString(),
-              )),
-          borderData: FlBorderData(show: false),
-          lineBarsData: [
-            LineChartBarData(
-              gradientFrom: Offset(0.5, 0),
-              gradientTo: Offset(0.5, 1),
-              colorStops: [0, 1],
-              spots: widget.voti
-                  .where((voto) => voto.voto != null && !voto.voto.isNaN)
-                  .toList()
-                  .asMap()
-                  .map((index, voto) =>
-                      MapEntry(index, FlSpot(index.toDouble(), voto.voto)))
-                  .values
-                  .toList(),
-              isCurved: true,
-              dotData: FlDotData(
-                dotColor: Colors.green[800],
-                dotSize: 5,
-              ), // TODO: non posso decidere il colore per ogni dot?!?!?
-              colors: [Colors.green, Colors.deepOrange[900]],
-            )
-          ]);
+      betweenBarsData: [
+        BetweenBarsData(
+          fromIndex: 0,
+          toIndex: 0,
+          gradientTo: Offset(0.0, 0.0),
+          colors: [Colors.green, Colors.red],
+        )
+      ],
+      lineTouchData: LineTouchData(),
+      minY: 0,
+      maxY: 10,
+      gridData: FlGridData(
+        show: true,
+        drawVerticalLine: true,
+        getDrawingVerticalLine: (value) => FlLine(
+            color: value == 0 ? Colors.white70 : Colors.white10,
+            strokeWidth: value == 0 ? 2 : 1),
+        drawHorizontalLine: true,
+        getDrawingHorizontalLine: (value) => FlLine(
+            color: value == 0 ? Colors.white70 : Colors.white10,
+            strokeWidth: value == 0 ? 2 : 1),
+      ),
+      titlesData: FlTitlesData(
+          bottomTitles: SideTitles(showTitles: false),
+          leftTitles: SideTitles(
+            reservedSize: 25,
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+            margin: 15,
+            showTitles: true,
+            getTitles: (value) => value.toInt().toString(),
+          )),
+      borderData: FlBorderData(show: false),
+      lineBarsData: [
+        LineChartBarData(
+          gradientFrom: Offset(0.5, 0),
+          gradientTo: Offset(0.5, 1),
+          colorStops: [0, 1],
+          spots: widget.voti
+              .where((voto) => voto.voto != null && !voto.voto.isNaN)
+              .toList()
+              .asMap()
+              .map((index, voto) =>
+                  MapEntry(index, FlSpot(index.toDouble(), voto.voto)))
+              .values
+              .toList(),
+          isCurved: true,
+          dotData: FlDotData(
+            dotColor: Colors.green[800],
+            dotSize: 5,
+          ), // TODO: non posso decidere il colore per ogni dot?!?!?
+          colors: [Colors.green, Colors.deepOrange[900]],
+        )
+      ]);
 
   LineChartData _averageData() {
     return null;

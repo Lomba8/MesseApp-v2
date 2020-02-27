@@ -33,19 +33,6 @@ class TutoraggiScreen extends StatefulWidget {
 class _TutoraggiScreenState extends State<TutoraggiScreen> {
   Scaffold _scaffold;
 
-  /*_scrape() async {
-    var client = Client();
-    Response response = await client.get(
-        'https://www.messedaglia.edu.it/index.php/studenti/205-index/studenti/2050-tutoraggio-degli-studenti');
-
-    var document = parse(
-        response.body); // FIXME se importo il pacchetto mi da un errore strano
-    List<dom.Element> links =
-        document.querySelectorAll(".item-page > div:nth-child(3)");
-
-    for (dom.Element link in links) print(link.text);
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
