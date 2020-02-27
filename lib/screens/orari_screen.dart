@@ -2,6 +2,8 @@ import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
+//TODO: optional menu scelta materia con highligth(aggiungendo alpha a materie non rilevanti)
+
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
   @override
@@ -45,11 +47,16 @@ class _OrariState extends State<Orari> {
                 shrinkWrap: true,
                 children: (orariUtils.orari[_selectedClass] ?? [])
                     .map<Widget>((sbj) => Container(
-                      color: orariUtils.colors[sbj] ?? Colors.transparent,
-                      child: Center(
-                            child: AutoSizeText(sbj, textAlign: TextAlign.center,),
+                          color: orariUtils.colors[sbj]?.withOpacity(1) ??
+                              Colors.transparent,
+                          child: Center(
+                            child: AutoSizeText(
+                              sbj,
+                              style: TextStyle(color: Colors.black54),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                    ))
+                        ))
                     .toList(),
               )
           ],

@@ -99,7 +99,6 @@ class _VotiState extends State<Voti> {
                         child: Column(
                           children: <Widget>[
                             Row(
-                              //TODO: animare solo il periodo corrente e metterlo in primo piano + distinguere vari periodi
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Expanded(
@@ -181,7 +180,7 @@ class _VotiState extends State<Voti> {
                                 ),
                                 leading: newVotiCount > 0
                                     ? Icon(
-                                        Icons.warning,
+                                        Icons.brightness_1,
                                         color: Colors.yellow,
                                       )
                                     : null,
@@ -279,43 +278,49 @@ class _VotiState extends State<Voti> {
                                             .bodyText2
                                             .fontSize),
                               )),
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: (average * 10).round(),
-                                child: AnimatedContainer(
-                                  duration: Duration(seconds: 1),
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(
-                                              width: 2,
-                                              color: average < 0 ||
-                                                      average.isNaN
-                                                  ? Colors.blue
-                                                  : average < 6
-                                                      ? Colors.deepOrange[900]
-                                                      : Colors.green))),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.0),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: (average * 10).round(),
+                                  child: AnimatedContainer(
+                                    duration: Duration(seconds: 1),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                width: 2,
+                                                color: average < 0 ||
+                                                        average.isNaN
+                                                    ? Colors.blue
+                                                    : average < 6
+                                                        ? Colors.deepOrange[900]
+                                                        : Colors.green))),
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: (100 - average * 10).round(),
-                                child: AnimatedContainer(
-                                  duration: Duration(seconds: 1),
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(
-                                              width: 2,
-                                              color: average < 0 ||
-                                                      average.isNaN
-                                                  ? Colors.blue.withAlpha(50)
-                                                  : average < 6
-                                                      ? Colors.deepOrange[900]
-                                                          .withAlpha(50)
-                                                      : Colors.green
-                                                          .withAlpha(50)))),
+                                Expanded(
+                                  flex: (100 - average * 10).round(),
+                                  child: AnimatedContainer(
+                                    duration: Duration(seconds: 1),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                width: 2,
+                                                color: average < 0 ||
+                                                        average.isNaN
+                                                    ? Colors.blue.withAlpha(50)
+                                                    : average < 6
+                                                        ? Colors.deepOrange[900]
+                                                            .withAlpha(50)
+                                                        : Colors.green
+                                                            .withAlpha(50)))),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20.0,
                           )
                         ];
                       }).toList(),

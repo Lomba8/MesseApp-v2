@@ -104,7 +104,7 @@ class Evento implements EventInterface {
   @override
   Widget getDot() => Container(
         margin: EdgeInsets.symmetric(horizontal: 1.0),
-        color: nuovo ? Colors.red : Colors.lightBlueAccent,
+        color: nuovo ?? true ? Colors.red : Colors.lightBlueAccent,
         height: 5.0,
         width: 5.0,
       );

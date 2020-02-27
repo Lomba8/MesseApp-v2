@@ -68,6 +68,9 @@ class _MapScreenState extends State<MapScreen> {
                   left: 20)
             ]),
             Slider(
+              label: _floor.toStringAsFixed(0),
+
+              divisions: 5,
               value: _floor,
               onChanged: (v) => setState(() => _floor = v),
               onChangeEnd: (v) => setState(() => _floor = v.roundToDouble()),
@@ -143,11 +146,11 @@ class _MapScreenState extends State<MapScreen> {
                                   child: Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Text(activity)),
-                                  onTap: () =>
-                                      setState(() {
-                                        _floor = getFloor (activities[activity][0]).toDouble();
-                                        selectedClass = activities[activity];
-                                      }),
+                                  onTap: () => setState(() {
+                                    _floor = getFloor(activities[activity][0])
+                                        .toDouble();
+                                    selectedClass = activities[activity];
+                                  }),
                                 ))
                             .toList()),
               ),

@@ -139,8 +139,7 @@ class _AgendaState extends State<Agenda> {
                               width: size.width,
                               child: Text(
                                 '\n${_passedTime()}',
-                                textAlign: TextAlign
-                                    .right, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                                textAlign: TextAlign.right,
                                 style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.light
@@ -341,7 +340,7 @@ class EventCard extends StatelessWidget {
                                         .subjects.data[evento.autore]] ??
                                     {})['colore']
                                 ?.withOpacity(0.7) ??
-                            Colors.white10, //FIXME cosa mettere?
+                            Colors.white10,
                         borderRadius: BorderRadius.circular(10.0)),
                     child: Align(
                       alignment: Alignment.topCenter,
@@ -351,12 +350,13 @@ class EventCard extends StatelessWidget {
                           (Globals.subjects[RegistroApi
                                       .subjects.data[evento.autore]] ??
                                   {})['icona'] ??
-                              MdiIcons
-                                  .exitRun, //FIXME cosa mettere? information-variant, human-male, robber ?
+                              MdiIcons.sleep,
                           size: 25.0,
-                          color: Colors
-                              .black, //TODO: mappa in globals.dart con corrispondenza autore icona colore
-                          //                se giornaliero cambiare colore a prescienere dalla materia
+                          color: Globals.subjects[RegistroApi
+                                      .subjects.data[evento.autore]] !=
+                                  null
+                              ? Colors.black
+                              : Colors.white,
                         ),
                       ),
                     ),
@@ -417,7 +417,7 @@ class EventCard extends StatelessWidget {
                     ),
                   ),
                   Center(
-                    child: evento.nuovo
+                    child: evento.nuovo ?? true
                         ? Icon(
                             Icons.brightness_1,
                             color: Colors.yellow,

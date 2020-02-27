@@ -117,28 +117,28 @@ class Globals with ChangeNotifier {
     },
     'FILOSOFIA': {
       'colore': Colors.blue,
-      'icona': MdiIcons.yinYang,
+      'icona': MdiIcons.yinYang, //yinYang
     },
     'FISICA': {
       'colore': Colors.yellow,
-      'icona': MdiIcons.atom,
+      'icona': MdiIcons.electronFramework, // atom
     },
     'INGLESE': {
       'colore': Colors.lightGreenAccent,
-      'icona': MdiIcons.currencyGbp,
+      'icona': MdiIcons.currencyGbp, // or googleTranslate ?
     },
     'INFORMATICA': {
       'colore': Colors.green,
-      'icona': MdiIcons.codeBraces, //  or code-json?
+      'icona': Icons.desktop_mac, //  or codeBraces, languageCpp
     },
-    'LATINO': {
+    'LINGUA E CULTURA LATINA': {
       'colore': Colors.amber,
       'icona': MdiIcons
-          .school, // FIXME cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
+          .romanNumeral6, // FIXME cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
     },
     'LINGUA E LETTERATURA ITALIANA': {
       'colore': Colors.cyan,
-      'icona': MdiIcons.alphabetical, // or pizza?
+      'icona': MdiIcons.alphabeticalVariant, //
     },
     'MATEMATICA': {
       'colore': Colors.brown,
@@ -147,7 +147,7 @@ class Globals with ChangeNotifier {
     'PROGETTI / POTENZIAMENTO': {
       'colore': Colors.grey,
       'icona': MdiIcons
-          .foodOff, // FIXME cosa mettere?   weightLifter, bag-personal-outline?
+          .gavel, // FIXME cosa mettere?   weightLifter, bag-personal-outline, foodOff?
     },
     "RELIGIONE-ATTIVITA' ALTERNATIVE": {
       'colore': Colors.deepPurple,
@@ -159,12 +159,11 @@ class Globals with ChangeNotifier {
     },
     'SCIENZE NATURALI': {
       'colore': Colors.tealAccent,
-      'icona': MdiIcons.flask, // or test-tube, dna, bacteria, microscope
+      'icona': MdiIcons.flask, // or dna,
     },
     'STORIA': {
-      'materia': 'STORIA',
       'colore': Colors.deepOrangeAccent,
-      'icona': MdiIcons.pillar, // or account_balance?
+      'icona': MdiIcons.pillar, // or account_balance
     },
   };
 

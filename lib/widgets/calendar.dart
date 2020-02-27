@@ -16,7 +16,7 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   DateTime _currentDay = DateTime.now();
   final PageController _controller = PageController(initialPage: 12);
-  static final Curve _curve = Curves.easeIn;
+  static final Curve _curve = Curves.bounceIn;
 
   set currentDay(DateTime currentDay) {
     setState(() => _currentDay = currentDay);
@@ -38,7 +38,7 @@ class _CalendarState extends State<Calendar> {
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () => _controller.previousPage(
-                        duration: Duration(seconds: 1), curve: _curve)),
+                        duration: Duration(milliseconds: 200), curve: _curve)),
                 Expanded(
                     child: Text(
                   DateFormat.yMMMM('it')
@@ -68,7 +68,7 @@ class _CalendarState extends State<Calendar> {
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () => _controller.nextPage(
-                        duration: Duration(seconds: 1), curve: _curve))
+                        duration: Duration(milliseconds: 200), curve: _curve))
               ],
             ),
           ),
@@ -130,10 +130,10 @@ class _CalendarState extends State<Calendar> {
             setState(() => currentDay = day);
             if (day.isBefore(firstDayOfMonth))
               _controller.previousPage(
-                  duration: Duration(seconds: 1), curve: _curve);
+                  duration: Duration(milliseconds: 250), curve: _curve);
             else if (day.month != month)
               _controller.nextPage(
-                  duration: Duration(seconds: 1), curve: _curve);
+                  duration: Duration(milliseconds: 250), curve: _curve);
           },
           child: Stack(children: [
             Center(

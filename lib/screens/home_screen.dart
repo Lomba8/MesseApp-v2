@@ -91,7 +91,7 @@ class _HomeState extends State<Home> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                        '${RegistroApi.agenda.data.getEvents(DateTime.now().add(Duration(days: 1))).length} eventi domani'), // FIXME
+                        '${RegistroApi.agenda.data.getEvents(DateTime.now().add(Duration(days: 1))).length} eventi domani'),
                   ),
                 ),
                 Card(
@@ -99,8 +99,8 @@ class _HomeState extends State<Home> {
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        'è attivo un nuovo sondaggio da parte dei rappre'),
+                    child:
+                        Text('è attivo un nuovo sondaggio da parte dei rappre'),
                   ),
                 ),
                 Card(
@@ -108,8 +108,7 @@ class _HomeState extends State<Home> {
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        'guarda le nuove magliette di istituto!'),
+                    child: Text('guarda le nuove magliette di istituto!'),
                   ),
                 ),
                 Card(
