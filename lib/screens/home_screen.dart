@@ -27,7 +27,7 @@ class _HomeState extends State<Home> {
               title: Text(
                 '${RegistroApi.nome} ${RegistroApi.cognome}',
                 textAlign: TextAlign
-                    .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                    .center,
                 style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.black

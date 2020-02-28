@@ -11,8 +11,8 @@ class AgendaRegistroData extends RegistroData {
 
   static String classe;
   static String _getSchoolYear(DateTime date) {
-    int year2 = int.parse(DateFormat.M().format(date)) >= 9 ? 1 : 0;
-    return '${DateFormat.y().format(date)}${DateFormat.M().format(date).padLeft(2, '0')}${DateFormat.d().format(date).padLeft(2, '0')}/${int.parse(DateFormat.y().format(date)) + year2}1231';
+    int year2 = int.parse(DateFormat.M().format(date)) < 9 ? 1 : 0;
+    return '${date.year - year2}0901/${date.year  + 1 - year2}0630';
   }
 
   AgendaRegistroData()
@@ -40,8 +40,8 @@ class AgendaRegistroData extends RegistroData {
             autore: m['authorName']);
 
         data2.add(evt.getDate(), evt);
-        eventiNewFlags2[m['evtId'].toString()] =
-            eventiNewFlags[m['evtId'].toString()] ?? true;
+        eventiNewFlags2[m['evtId'].toString()] = DateTime.now().isBefore(evt.getDate()) &&
+            (eventiNewFlags[m['evtId'].toString()] ?? true);
       });
 
       data = data2;
@@ -129,29 +129,4 @@ class Evento implements EventInterface {
       giornaliero: json['giornaliero'],
       autore: json['autore'],
       info: json['info']);
-
-  String getAutore() {
-    // TODO: implement getAutore
-    throw UnimplementedError();
-  }
-
-  DateTime getFine() {
-    // TODO: implement getFine
-    throw UnimplementedError();
-  }
-
-  bool getGiornaliero() {
-    // TODO: implement getGiornaliero
-    throw UnimplementedError();
-  }
-
-  DateTime getInizio() {
-    // TODO: implement getInizio
-    throw UnimplementedError();
-  }
-
-  bool getNuovo() {
-    // TODO: implement getNuovo
-    throw UnimplementedError();
-  }
 }

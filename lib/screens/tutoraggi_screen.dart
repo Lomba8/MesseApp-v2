@@ -31,7 +31,6 @@ class TutoraggiScreen extends StatefulWidget {
 }
 
 class _TutoraggiScreenState extends State<TutoraggiScreen> {
-  Scaffold _scaffold;
 
   @override
   Widget build(BuildContext context) {

@@ -31,7 +31,7 @@ class _MapScreenState extends State<MapScreen> {
                       ? Size(1000, 200)
                       : Size(MediaQuery.of(context).size.width,
                           MediaQuery.of(context).size.width * 3 / 5),
-                  painter: MapPainter(selectedClass, floor: _floor),
+                  painter: MapPainter(selectedClass, floor: _floor.toInt()),
                 ),
               ),
               Positioned(
@@ -43,33 +43,14 @@ class _MapScreenState extends State<MapScreen> {
                         borderRadius: BorderRadius.circular(10)),
                     child: Center(
                         child: Text(
-                      _floor.floor().toString(),
+                      _floor.toStringAsFixed(0),
                     )),
                   ),
                   top: 20,
                   left: 20),
-              Positioned(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color:
-                            Colors.black.withOpacity(_floor - _floor.floor()),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Center(
-                        child: Text(
-                      _floor.ceil().toString(),
-                      style: TextStyle(
-                          color: Colors.white
-                              .withOpacity(_floor - _floor.floor())),
-                    )),
-                  ),
-                  top: 20,
-                  left: 20)
             ]),
             Slider(
-              label: _floor.toStringAsFixed(0),
-
+              label: 'piano ${_floor.toStringAsFixed(0)}',
               divisions: 5,
               value: _floor,
               onChanged: (v) => setState(() => _floor = v),
@@ -169,7 +150,7 @@ class MapPainter extends CustomPainter {
     ..strokeWidth = 1;
 
   List<String> _selectedClass;
-  double floor;
+  int floor;
   MapPainter(this._selectedClass, {this.floor = 0});
 
   @override
@@ -181,23 +162,21 @@ class MapPainter extends CustomPainter {
     canvas.drawPaint(_paint);
     _paint.color = border;
 
-    _paintFloor(canvas, floors[floor.floor() + 2], 1, cropWidth, cropHeight,
+    _paintFloor(canvas, floors[floor + 2], cropWidth, cropHeight,
         size.width / size.height);
-    _paintFloor(canvas, floors[floor.ceil() + 2], floor - floor.floor(),
-        cropWidth, cropHeight, size.width / size.height);
   }
 
-  void _paintFloor(Canvas canvas, Floor floor, double opacity, double cropWidth,
+  void _paintFloor(Canvas canvas, Floor floor, double cropWidth,
       double cropHeight, double ratio) {
     Offset start = Offset(14, ratio == 5 ? 16 : 400);
 
     Path path = floor.school.create(
         cropWidth: cropWidth, cropHeight: cropHeight, translation: start);
 
-    _paint.color = Colors.lime[900].withOpacity(opacity); //.withAlpha(128);
+    _paint.color = Colors.lime[900]; //.withAlpha(128);
     _paint.style = PaintingStyle.fill;
     canvas.drawPath(path, _paint);
-    _paint.color = border.withOpacity(opacity);
+    _paint.color = border;
     _paint.style = PaintingStyle.stroke;
     canvas.drawPath(path, _paint);
 
@@ -209,13 +188,12 @@ class MapPainter extends CustomPainter {
               .translate(start.dx, start.dy));
       _paint
         ..color = _selectedClass.contains(aula) && data['selectable']
-            ? Colors.yellow[700].withOpacity(opacity)
+            ? Colors.yellow[700]
             : data['defaultColor']
-                .withOpacity(data['defaultColor'].opacity * opacity)
         ..style = PaintingStyle.fill;
       canvas.drawPath(path, _paint);
       _paint
-        ..color = border.withOpacity(opacity)
+        ..color = border
         ..style = PaintingStyle.stroke;
 
       canvas.drawPath(path, _paint);

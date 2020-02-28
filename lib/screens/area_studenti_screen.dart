@@ -58,8 +58,6 @@ class _AreaStudentiState extends State<AreaStudenti> {
     return null;
   }
 
-  DateTime _currentDate, _currentMonth = DateTime.now();
-
   _listaPanini() async {
     const url = 'https://pagni.altervista.org/istituto/lista.php';
     if (await canLaunch(url)) {
@@ -117,9 +115,9 @@ class _AreaStudentiState extends State<AreaStudenti> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: Text(
-              "Area Studenti",
+              "AREA STUDENTI",
               textAlign: TextAlign
-                  .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                  .center,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black

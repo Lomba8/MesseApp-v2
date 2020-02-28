@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 
 import '../registro/voti_registro_data.dart';
 
-//FIXME: grafico, dettaglio dei voti che rimangono aperti
+//FIXME: grafico
 
 class VotiDetails extends StatefulWidget {
   final List<Voto> voti;
@@ -20,7 +20,7 @@ class VotiDetails extends StatefulWidget {
 }
 
 class VotiDetailsState extends State<VotiDetails> {
-  Voto _selected;
+  Map<Voto, bool> _selected = {};
 
   @override
   Widget build(BuildContext context) => Material(
@@ -69,15 +69,15 @@ class VotiDetailsState extends State<VotiDetails> {
                         textAlign: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: mark == _selected
+                      subtitle: _selected[mark] ?? false
                           ? Text(
-                              mark.info,
+                              mark.info.isEmpty ? 'Nessuna descrizione' : mark.info,
                               style: Theme.of(context).textTheme.bodyText1,
                               textAlign: TextAlign.center,
                             )
                           : null,
                       onTap: () => setState(
-                          () => _selected = _selected == mark ? null : mark),
+                          () => _selected[mark] = !(_selected[mark] ?? false)),
                       leading: Stack(
                         children: <Widget>[
                           CircleAvatar(

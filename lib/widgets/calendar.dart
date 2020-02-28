@@ -16,7 +16,7 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   DateTime _currentDay = DateTime.now();
   final PageController _controller = PageController(initialPage: 12);
-  static final Curve _curve = Curves.bounceIn;
+  static final Curve _curve = Curves.easeIn;
 
   set currentDay(DateTime currentDay) {
     setState(() => _currentDay = currentDay);
@@ -58,7 +58,7 @@ class _CalendarState extends State<Calendar> {
                                       1) %
                                   12 +
                               1))
-                      .toUpperCase(), // TODO: cambio anno
+                      .toUpperCase(),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 )),
