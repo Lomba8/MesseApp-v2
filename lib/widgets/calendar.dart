@@ -127,7 +127,7 @@ class _CalendarState extends State<Calendar> {
           padding: EdgeInsets.all(0),
           clipBehavior: Clip.none,
           onPressed: () {
-            setState(() => currentDay = day);
+            currentDay = day;
             if (day.isBefore(firstDayOfMonth))
               _controller.previousPage(
                   duration: Duration(milliseconds: 250), curve: _curve);

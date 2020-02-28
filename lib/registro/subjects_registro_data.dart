@@ -10,7 +10,11 @@ class SubjectsRegistroData extends RegistroData {
       data.clear();
       for (Map<String, dynamic> sbj in json['subjects']) {
         for (Map<String, dynamic> teacher in sbj['teachers']) {
-          data[teacher['teacherName']] = sbj['description'];
+          if (data[teacher['teacherName']] == null)
+            data[teacher['teacherName']] = sbj['description'];
+          else if (data[teacher['teacherName']] is String)
+            data[teacher['teacherName']] = [data[teacher['teacherName']], sbj['description']];
+          else data[teacher['teacherName']].add(sbj['description']);
         }
       }
     } catch (e, stack) {
