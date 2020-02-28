@@ -13,9 +13,11 @@ class _OrariState extends State<Orari> {
   static String _selectedClass;
   String _selectedSbj;
 
-  @override
-  void initState() {
-    super.initState();
+  bool get _hasSaturday {
+    List orario = orariUtils.orari[_selectedClass];
+    if (orario == null) return true;
+    for (int i = 5; i < orario.length; i += 6) if (orario[i] != '') return true;
+    return false;
   }
 
   @override
@@ -33,6 +35,23 @@ class _OrariState extends State<Orari> {
                 fontSize: 30,
                 fontWeight: FontWeight.bold),
           ),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(
+                  Icons.file_download,
+                  color: Colors.white,
+                ),
+                onPressed: _selectedClass == null
+                    ? null
+                    : () => orariUtils.downloadOrario(_selectedClass).then(
+                        (path) => Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text(path == null
+                                  ? 'Errore durante il download'
+                                  : 'Immagine scaricata con successo nella posizione $path'),
+                              behavior: SnackBarBehavior.floating,
+                              duration: Duration(minutes: 1),
+                            ))))
+          ],
           pinned: true,
           backgroundColor: Colors.transparent,
           flexibleSpace: CustomPaint(
@@ -40,83 +59,138 @@ class _OrariState extends State<Orari> {
             size: Size.infinite,
           ),
           bottom: PreferredSize(
-              child: Container(
-                height: MediaQuery.of(context).size.height / 6,
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: DropdownButton(
-                          isExpanded: true,
-                          hint: Text('seleziona una classe...'),
-                          value: _selectedClass,
-                          items: orariUtils.orari.keys
-                              .where((cls) => !cls.endsWith('url'))
-                              .map((cls) => DropdownMenuItem<String>(
-                                    child: Text('    $cls'),
-                                    value: cls,
-                                  ))
-                              .toList()
-                                ..sort((d1, d2) => d1.value.compareTo(
-                                    d2.value)), // TODO: sort solo una volta
-                          onChanged: (cls) =>
-                              setState(() => _selectedClass = cls)),
-                    ),
-                    IconButton(
-                        icon: Icon(Icons.file_download),
-                        onPressed: _selectedClass == null
-                            ? null
-                            : () => orariUtils
-                                .downloadOrario(_selectedClass)
-                                .then((path) =>
-                                    Scaffold.of(context).showSnackBar(SnackBar(
-                                      content: Text(
-                                          'Immagine scaricata con successo nella posizione $path'),
-                                      behavior: SnackBarBehavior.floating,
-                                      duration: Duration(minutes: 1),
-                                    ))))
-                  ],
-                ),
-              ),
+              child: Container(),
               preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.height / 6)),
+                  Size.fromHeight(MediaQuery.of(context).size.height / 8)),
         ),
         SliverList(
-            delegate: SliverChildListDelegate(
-          [
-            if (_selectedClass != null)
-              GridView.count(
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 6,
-                childAspectRatio: 1.5,
-                shrinkWrap: true,
-                children: (orariUtils.orari[_selectedClass] ?? [])
-                    .map<Widget>((sbj) => GestureDetector(
-                          onTap: () => setState(() =>
-                              _selectedSbj = sbj == _selectedSbj ? null : sbj),
-                          child: Container(
-                            color: orariUtils.colors[sbj]?.withOpacity(
-                                    _selectedSbj == null || _selectedSbj == sbj
-                                        ? 1
-                                        : 0.5) ??
-                                Colors.transparent,
-                            child: Center(
-                              child: AutoSizeText(
-                                sbj,
-                                style: TextStyle(
-                                    color: _selectedSbj == null ||
-                                            _selectedSbj == sbj
-                                        ? Colors.black54
-                                        : Colors.white54),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ))
-                    .toList(),
-              )
-          ],
-        ))
+            delegate: SliverChildListDelegate([
+          GridView.count(
+              crossAxisCount: _hasSaturday ? 7 : 6,
+              childAspectRatio: 1.5,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: _children(context)),
+          _selectionChildren(context)
+        ])),
       ]);
+
+  List<Widget> _children(BuildContext context) {
+    List orario = orariUtils.orari[_selectedClass];
+    if (orario == null) return [];
+    bool saturday = _hasSaturday;
+    List<Widget> children = [Container()];
+    ['LUN', 'MAR', 'MER', 'GIO', 'VEN', if (saturday) 'SAB']
+        .forEach((d) => children.add(Center(
+              child: Text(
+                d,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            )));
+    for (int i = 0; i < orario.length; i++) {
+      if ((i + 1) % 6 == 0 && !saturday)
+        continue;
+      else if (i % 6 == 0)
+        children.add(Text(
+          '${(i ~/ 6 + 8).toString().padLeft(2, '0')}:00',
+          style: Theme.of(context).textTheme.bodyText1,
+          textAlign: TextAlign.center,
+        ));
+      children.add(GestureDetector(
+        onTap: () => setState(
+            () => _selectedSbj = orario[i] == _selectedSbj ? null : orario[i]),
+        child: Container(
+          color: orariUtils.colors[orario[i]]?.withOpacity(
+                  _selectedSbj == null || _selectedSbj == orario[i]
+                      ? 1
+                      : 0.1) ??
+              Colors.transparent,
+          child: Center(
+            child: AutoSizeText(
+              orario[i],
+              style: TextStyle(
+                  color: _selectedSbj == null || _selectedSbj == orario[i]
+                      ? Colors.black54
+                      : Colors.white10),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ));
+    }
+
+    return children;
+  }
+
+  GridView _selectionChildren(BuildContext context) {
+    TextStyle titleStyle = TextStyle(color: Colors.white54, fontSize: 16);
+    List<Widget> children = [
+      Text(
+        'I',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'II',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'III',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'IV',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'V',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      )
+    ];
+    String sezioni = 'ABCDEFGHILMNOPQRSTUVZ';
+    for (int sezione = 0; sezione < sezioni.length; sezione++) {
+      bool hasMore = false;
+      for (int anno = 1; anno <= 5; anno++) {
+        if (orariUtils.orari.containsKey('$anno${sezioni[sezione]}')) {
+          children.add(GestureDetector(
+            onTap: () =>
+                setState(() => _selectedClass = '$anno${sezioni[sezione]}'),
+            child: AnimatedContainer(
+              duration: Duration(seconds: 1),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: '$anno${sezioni[sezione]}' == _selectedClass
+                  ? Colors.white
+                  : Colors.transparent,
+              ),
+              child: Center(
+                child: Text(
+                  sezioni[sezione],
+                  style: TextStyle(
+                      color: '$anno${sezioni[sezione]}' == _selectedClass
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 16),
+                ),
+              ),
+            ),
+          ));
+          hasMore = true;
+        } else children.add(Container());
+      }
+      if (!hasMore) break;
+    }
+
+    return GridView.count(
+      physics: NeverScrollableScrollPhysics(),
+      crossAxisCount: 5,
+      childAspectRatio: 2,
+      children: children,
+      shrinkWrap: true,
+    );
+  }
 }

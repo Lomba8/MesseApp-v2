@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
@@ -113,8 +114,7 @@ class _AgendaState extends State<Agenda> {
                         children: <Widget>[
                           Text(
                             "AGENDA",
-                            textAlign: TextAlign
-                                .center,
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
@@ -330,19 +330,37 @@ class EventCard extends StatelessWidget {
               Container(
                 height: double.infinity,
                 decoration: BoxDecoration(
-                    color: (Globals.subjects[
-                                    RegistroApi.subjects.data[evento.autore]] ??
-                                {})['colore']
-                            ?.withOpacity(0.7) ??
-                        Colors.white10,
+                    color: RegistroApi.subjects.data[evento.autore] == null ||
+                            RegistroApi.subjects.data[evento.autore] is String
+                        ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
+                                    {})['colore']
+                                ?.withOpacity(0.7) ??
+                            Colors.white10
+                        : null,
+                    gradient: RegistroApi.subjects.data[evento.autore] is List ? LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                            colors: RegistroApi.subjects.data[evento.autore].reversed
+                                .map<Color>((sbj) =>
+                                    (Globals.subjects[sbj]['colore'] as Color))
+                                .toList()) : null,
                     borderRadius: BorderRadius.circular(10.0)),
                 child: Row(
                   children: <Widget>[
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
-                        children: [
+                        children: RegistroApi.subjects.data[evento.autore] is List
+                          ? RegistroApi.subjects.data[evento.autore].map<Widget>((sbj) => 
                           Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(
+                              Globals.subjects[sbj]['icona'] ??
+                                  MdiIcons.sleep,
+                              size: 25.0,
+                              color: Colors.black
+                            ),
+                          )).toList() : [Padding(
                             padding: EdgeInsets.all(8),
                             child: Icon(
                               (Globals.subjects[RegistroApi
@@ -350,14 +368,13 @@ class EventCard extends StatelessWidget {
                                       {})['icona'] ??
                                   MdiIcons.sleep,
                               size: 25.0,
-                              color: Globals.subjects[RegistroApi
-                                          .subjects.data[evento.autore]] !=
+                              color: RegistroApi.subjects.data[evento.autore] !=
                                       null
                                   ? Colors.black
                                   : Colors.white,
                             ),
-                          ),
-                        ]),
+                          )]
+                        ),
                   ],
                 ),
               ),
