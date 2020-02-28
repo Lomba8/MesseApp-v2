@@ -41,7 +41,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
-        body: screens[selected],
+        body: Builder(builder: (context) => screens[selected]),
         bottomNavigationBar: NavBarSotto(
           (pos) => setState(() => selected = pos),
         ));

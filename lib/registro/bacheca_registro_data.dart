@@ -26,6 +26,7 @@ class BachecaRegistroData extends RegistroData {
 
     data = data2..sort();
     bachecaNewFlags = bachecaNewFlags2;
+    return Result(true, true);
   }
 }
 

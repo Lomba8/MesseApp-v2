@@ -30,7 +30,7 @@ class _AgendaState extends State<Agenda> {
 
   List<Evento> dayEvents = List<Evento>();
 
-  double lunghezza_dash = 0;
+  double lunghezzaDash = 0;
 
   void initState() {
     _currentDate =
@@ -112,9 +112,9 @@ class _AgendaState extends State<Agenda> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            "Agenda",
+                            "AGENDA",
                             textAlign: TextAlign
-                                .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+                                .center,
                             style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
@@ -131,7 +131,7 @@ class _AgendaState extends State<Agenda> {
                                   dayEvents.forEach((event) => event.seen());
                                 dayEvents = events ?? [];
                                 _currentDate = day;
-                                lunghezza_dash = 0;
+                                lunghezzaDash = 0;
                               })),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -195,12 +195,8 @@ class _AgendaState extends State<Agenda> {
                                     size.width / 19.0,
                                     size.height / 50.0,
                                   ),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints.tight(Size(
-                                        double.infinity, size.height / 6.0)),
-                                    child: EventCard(
-                                      evento: evento,
-                                    ),
+                                  child: EventCard(
+                                    evento: evento,
                                   )),
                             ],
                           ))
@@ -243,7 +239,7 @@ class _AgendaState extends State<Agenda> {
                       dashColor: Colors.white54,
                       dashGap: 2,
                       dashThickness: 1.0,
-                      length: lunghezza_dash - 47,
+                      length: lunghezzaDash - 47,
                     ),
                     Expanded(
                       child: Container(
@@ -287,9 +283,9 @@ class _AgendaState extends State<Agenda> {
     if (inizio >= 24 * 60) return [];
     timelineStart = inizio ~/ 60;
     List<Widget> tr = [];
-    lunghezza_dash = 0;
+    lunghezzaDash = 0;
     for (int i = inizio ~/ 60 * 2; i < (fine + 30) ~/ 30; i++) {
-      lunghezza_dash += 70;
+      lunghezzaDash += 70;
       tr.add(SizedBox(
         height: 70,
         child: Text(
@@ -321,113 +317,115 @@ class EventCard extends StatelessWidget {
       child: Container(
         height: !evento.giornaliero
             ? 80 * evento.fine.difference(evento.inizio).inMinutes / 30
-            : 140.0,
-        child: Padding(
-          padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadiusDirectional.circular(20),
-                color: Colors.white10),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                        color: (Globals.subjects[RegistroApi
-                                        .subjects.data[evento.autore]] ??
-                                    {})['colore']
-                                ?.withOpacity(0.7) ??
-                            Colors.white10,
-                        borderRadius: BorderRadius.circular(10.0)),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          (Globals.subjects[RegistroApi
-                                      .subjects.data[evento.autore]] ??
-                                  {})['icona'] ??
-                              MdiIcons.sleep,
-                          size: 25.0,
-                          color: Globals.subjects[RegistroApi
-                                      .subjects.data[evento.autore]] !=
-                                  null
-                              ? Colors.black
-                              : Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          AutoSizeText(evento.autore,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              minFontSize: 10.0,
-                              maxFontSize: 15.0,
-                              softWrap: true,
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'CoreSans',
-                              )),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Expanded(
-                            child: AutoSizeText(evento.info,
-                                maxLines: 5,
-                                overflow: TextOverflow.ellipsis,
-                                minFontSize: 10.0,
-                                maxFontSize: 13.0,
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontFamily: 'CoreSans',
-                                )),
-                          ),
+            : MediaQuery.of(context).size.height / 5.5,
+        padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadiusDirectional.circular(20),
+              color: Colors.white10),
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                height: double.infinity,
+                decoration: BoxDecoration(
+                    color: (Globals.subjects[
+                                    RegistroApi.subjects.data[evento.autore]] ??
+                                {})['colore']
+                            ?.withOpacity(0.7) ??
+                        Colors.white10,
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: Row(
+                  children: <Widget>[
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
                           Padding(
-                            padding: EdgeInsets.only(bottom: 2.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.access_time,
-                                  size: 14.0,
-                                ),
-                                SizedBox(width: 5.0),
-                                Text(
-                                  !evento.giornaliero
-                                      ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
-                                      : 'Giornaliero',
-                                  style: TextStyle(fontSize: 11.0),
-                                ),
-                              ],
+                            padding: EdgeInsets.all(8),
+                            child: Icon(
+                              (Globals.subjects[RegistroApi
+                                          .subjects.data[evento.autore]] ??
+                                      {})['icona'] ??
+                                  MdiIcons.sleep,
+                              size: 25.0,
+                              color: Globals.subjects[RegistroApi
+                                          .subjects.data[evento.autore]] !=
+                                      null
+                                  ? Colors.black
+                                  : Colors.white,
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: evento.nuovo ?? true
-                        ? Icon(
-                            Icons.brightness_1,
-                            color: Colors.yellow,
-                            size: 15.0,
-                          )
-                        : SizedBox(),
-                  ),
-                ],
+                          ),
+                        ]),
+                  ],
+                ),
               ),
-            ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      AutoSizeText(evento.autore,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          minFontSize: 10.0,
+                          maxFontSize: 15.0,
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'CoreSans',
+                          )),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Expanded(
+                        child: AutoSizeText(evento.info,
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                            minFontSize: 10.0,
+                            maxFontSize: 13.0,
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontFamily: 'CoreSans',
+                            )),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 2.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(
+                              Icons.access_time,
+                              size: 14.0,
+                            ),
+                            SizedBox(width: 5.0),
+                            Text(
+                              !evento.giornaliero
+                                  ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
+                                  : 'Giornaliero',
+                              style: TextStyle(fontSize: 11.0),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Center(
+                child: evento.nuovo ?? true
+                    ? Icon(
+                        Icons.brightness_1,
+                        color: Colors.yellow,
+                        size: 15.0,
+                      )
+                    : SizedBox(),
+              ),
+            ],
           ),
         ),
       ),

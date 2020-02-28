@@ -14,6 +14,7 @@ int getFloor(String className) {
   for (int i = 0; i < floors.length; i++)
     if (floors[i].classes.containsKey(className) &&
         floors[i].classes[className]['selectable']) return i - 2;
+  return null;
 }
 
 /// school:[0|1]      la maschera del profilo della scuola
@@ -29,7 +30,7 @@ final List<Floor> floors = [
   '''school:0|BIBLIOTECA:class3&0,169|AULA 1:class1&156,0|AULA 2:class1&241,0|AULA 3:class2&103,121|
     AULA 4:class0&204,121|AULA 5:class2&278,121|AULA 6:class1&646,0|AULA 7:class1&731,0|
     AULA 8:class2&593,121|AULA 9:class0&694,121|AULA 10:class2&768,121|AULA INSEGNANTI:class3&869,169|
-    BAGNO1:bagno&0,0&false&A00000AA|BAGNO2:bagno&869,0&false&A0E427B3''', // floor 0 , TODO: sbaglio o non c'è più la biblioteca?
+    BAGNO1:bagno&0,0&false&A00000AA|BAGNO2:bagno&869,0&false&A0E427B3''', // floor 0 , TODO: fix biblioteca
 
   '''school:1|AULA AUDIOVISIVI:class3&0,169|AULA 11:class1&156,0|AULA 12:class1&241,0|AULA 13:class2&103,121|
     AULA 14:class0&204,121|AULA 15:class2&278,121|SEGRETERIA AMMINISTRATIVA:lab&379,169|
@@ -71,6 +72,20 @@ class Floor {
             : Colors.lime[800]
       };
     }
+
+    // TODO: dove li metto sti alberi?
+    int c = 0;
+    [Offset(200, -200), Offset(400, -100),
+    Offset(600,-300), Offset(800, -250),
+    Offset(700, -125), Offset(300, -275)]
+    .forEach((offset) {
+      classes['tree${c++}'] = {
+        'pathBuilder': pathBuilders['tree'],
+        'translation': offset,
+        'selectable': false,
+        'defaultColor': Color(0xFF004400)
+      };
+    });
   }
 
   List<String> get classesList {
@@ -88,6 +103,7 @@ final List<PathBuilder> scuole = [
       'v46h-7v50h7v73h103v-48h276v48h92v-30h30v30h92v-48h276v48h103v-73h7v-50h-7v-46')
 ];
 final Map<String, PathBuilder> pathBuilders = {
+  'tree': PathBuilder('q-10,-14,8,-16q0,-20,16,-16q10,-10,16,4q16,-2,14,12q14,10,0,20q8,16,-8,20q-12,28,-24,4q-20,8,-16,-12q-14,-4,-6,-16'),
   'lab': PathBuilder('h92v-73h-92'),
   'class0': PathBuilder('h74v-50h-74'),
   'class1': PathBuilder('h85v50h-85'),
@@ -147,7 +163,13 @@ class PathBuilder extends PathProxy {
   @override
   void cubicTo(
       double x1, double y1, double x2, double y2, double x3, double y3) {
-    // TODO: implement cubicTo
+    _path.cubicTo(
+        (x1 + _offset.dx) * _width,
+        (y1 + _offset.dy) * _height,
+        (x2 + _offset.dx) * _width,
+        (y2 + _offset.dy) * _height,
+        (x3 + _offset.dx) * _width,
+        (y3 + _offset.dy) * _height);
   }
 
   @override

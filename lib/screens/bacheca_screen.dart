@@ -1,4 +1,3 @@
-import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
