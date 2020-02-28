@@ -1,3 +1,4 @@
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
+bool _darkTheme = false;
 
 class _HomeState extends State<Home> {
   @override
@@ -47,6 +49,15 @@ class _HomeState extends State<Home> {
             SliverList(
                 delegate: SliverChildListDelegate(
               <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(child: Text('Tema scuro:')),
+                    Switch(value: _darkTheme, onChanged: (ok) {
+                      setState(() => _darkTheme = ok);
+                      setTheme(ok ? ThemeMode.dark : ThemeMode.light);
+                    })
+                  ],
+                ),
                 ListTile(
                   leading: Icon(Icons.warning, color: Colors.yellow[600]),
                   trailing: Icon(Icons.warning, color: Colors.yellow[600]),
@@ -62,7 +73,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -70,7 +81,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -78,7 +89,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -86,7 +97,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -95,7 +106,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -104,7 +115,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -112,7 +123,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Colors.white10,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

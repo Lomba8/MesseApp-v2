@@ -180,7 +180,7 @@ class _AgendaState extends State<Agenda> {
                                   style: TextStyle(
                                       fontSize: 16.0,
                                       fontFamily: 'CoreSans',
-                                      color: Colors.white),
+                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                                 ),
                               ),
                               Icon(
@@ -236,7 +236,7 @@ class _AgendaState extends State<Agenda> {
                     Dash(
                       direction: Axis.vertical,
                       dashBorderRadius: 0.0,
-                      dashColor: Colors.white54,
+                      dashColor: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54,
                       dashGap: 2,
                       dashThickness: 1.0,
                       length: lunghezzaDash - 47,
@@ -290,7 +290,7 @@ class _AgendaState extends State<Agenda> {
         height: 70,
         child: Text(
           '${(i ~/ 2).toString().padLeft(2, '0')}:${(i % 2 * 30).toString().padLeft(2, '0')}',
-          style: TextStyle(color: Colors.white60),
+          style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ?Colors.white60 : Colors.black54),
         ),
       ));
     }
@@ -307,143 +307,140 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-          top: !evento.giornaliero
-              ? 70 *
-                  ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
-                      evento.inizio.minute / 30)
-              : 0.0),
+    return Container(
+      margin: EdgeInsets.only(
+        top: !evento.giornaliero
+            ? 70 *
+                ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
+                    evento.inizio.minute / 30)
+            : 0.0),
+      padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
       child: Container(
         height: !evento.giornaliero
-            ? 80 * evento.fine.difference(evento.inizio).inMinutes / 30
-            : MediaQuery.of(context).size.height / 5.5,
-        padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadiusDirectional.circular(20),
-              color: Colors.white10),
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                decoration: BoxDecoration(
-                    color: RegistroApi.subjects.data[evento.autore] == null ||
-                            RegistroApi.subjects.data[evento.autore] is String
-                        ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
-                                    {})['colore']
-                                ?.withOpacity(0.7) ??
-                            Colors.white10
-                        : null,
-                    gradient: RegistroApi.subjects.data[evento.autore] is List ? LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                            colors: RegistroApi.subjects.data[evento.autore].reversed
-                                .map<Color>((sbj) =>
-                                    (Globals.subjects[sbj]['colore'] as Color))
-                                .toList()) : null,
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: Row(
+          ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
+          : MediaQuery.of(context).size.height / 5.5,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadiusDirectional.circular(20),
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              height: double.infinity,
+              decoration: BoxDecoration(
+                  color: RegistroApi.subjects.data[evento.autore] == null ||
+                          RegistroApi.subjects.data[evento.autore] is String
+                      ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
+                                  {})['colore']
+                              ?.withOpacity(0.7) ??
+                          (Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12)
+                      : null,
+                  gradient: RegistroApi.subjects.data[evento.autore] is List ? LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                          colors: RegistroApi.subjects.data[evento.autore].reversed
+                              .map<Color>((sbj) =>
+                                  (Globals.subjects[sbj]['colore'] as Color))
+                              .toList()) : null,
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: Row(
+                children: <Widget>[
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: RegistroApi.subjects.data[evento.autore] is List
+                        ? RegistroApi.subjects.data[evento.autore].map<Widget>((sbj) => 
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Icon(
+                            Globals.subjects[sbj]['icona'] ??
+                                MdiIcons.sleep,
+                            size: 25.0,
+                            color: Colors.black
+                          ),
+                        )).toList() : [Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Icon(
+                            (Globals.subjects[RegistroApi
+                                        .subjects.data[evento.autore]] ??
+                                    {})['icona'] ??
+                                MdiIcons.sleep,
+                            size: 25.0,
+                            color: RegistroApi.subjects.data[evento.autore] !=
+                                    null
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                        )]
+                      ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(left: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Column(
+                    AutoSizeText(evento.autore,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        minFontSize: 10.0,
+                        maxFontSize: 15.0,
+                        softWrap: true,
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'CoreSans',
+                        )),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Expanded(
+                      child: AutoSizeText(evento.info,
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                          minFontSize: 10.0,
+                          maxFontSize: 13.0,
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ?Colors.white54 : Colors.black54,
+                          )),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 2.0),
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: RegistroApi.subjects.data[evento.autore] is List
-                          ? RegistroApi.subjects.data[evento.autore].map<Widget>((sbj) => 
-                          Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(
-                              Globals.subjects[sbj]['icona'] ??
-                                  MdiIcons.sleep,
-                              size: 25.0,
-                              color: Colors.black
-                            ),
-                          )).toList() : [Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(
-                              (Globals.subjects[RegistroApi
-                                          .subjects.data[evento.autore]] ??
-                                      {})['icona'] ??
-                                  MdiIcons.sleep,
-                              size: 25.0,
-                              color: RegistroApi.subjects.data[evento.autore] !=
-                                      null
-                                  ? Colors.black
-                                  : Colors.white,
-                            ),
-                          )]
-                        ),
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Icon(
+                            Icons.access_time,
+                            size: 14.0,
+                          ),
+                          SizedBox(width: 5.0),
+                          Text(
+                            !evento.giornaliero
+                                ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
+                                : 'Giornaliero',
+                            style: TextStyle(fontSize: 11.0),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      AutoSizeText(evento.autore,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          minFontSize: 10.0,
-                          maxFontSize: 15.0,
-                          softWrap: true,
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'CoreSans',
-                          )),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Expanded(
-                        child: AutoSizeText(evento.info,
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            minFontSize: 10.0,
-                            maxFontSize: 13.0,
-                            style: TextStyle(
-                              color: Colors.white54,
-                              fontFamily: 'CoreSans',
-                            )),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 2.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Icon(
-                              Icons.access_time,
-                              size: 14.0,
-                            ),
-                            SizedBox(width: 5.0),
-                            Text(
-                              !evento.giornaliero
-                                  ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
-                                  : 'Giornaliero',
-                              style: TextStyle(fontSize: 11.0),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Center(
-                child: evento.nuovo ?? true
-                    ? Icon(
-                        Icons.brightness_1,
-                        color: Colors.yellow,
-                        size: 15.0,
-                      )
-                    : SizedBox(),
-              ),
-            ],
-          ),
+            ),
+            Center(
+              child: evento.nuovo ?? true
+                  ? Icon(
+                      Icons.brightness_1,
+                      color: Colors.yellow,
+                      size: 15.0,
+                    )
+                  : SizedBox(),
+            ),
+          ],
         ),
       ),
     );

@@ -44,6 +44,7 @@ class _MapScreenState extends State<MapScreen> {
                     child: Center(
                         child: Text(
                       _floor.toStringAsFixed(0),
+                      style: TextStyle(color: Colors.white),
                     )),
                   ),
                   top: 20,
@@ -66,7 +67,7 @@ class _MapScreenState extends State<MapScreen> {
                 children: <Widget>[
                   Icon(
                     Icons.warning,
-                    color: Colors.yellow,
+                    color: Colors.yellow[600],
                   ),
                   Expanded(
                       child: Text(
@@ -75,7 +76,7 @@ class _MapScreenState extends State<MapScreen> {
                   )),
                   Icon(
                     Icons.warning,
-                    color: Colors.yellow,
+                    color: Colors.yellow[600],
                   ),
                 ],
               ),

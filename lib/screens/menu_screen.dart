@@ -99,7 +99,7 @@ class BackgroundPainter extends CustomPainter {
         k * 82, size.height - k * 5, k * 100, size.height - k * 5);
     path.lineTo(size.width, 0);
     path.close();
-    p.color = _theme.brightness == Brightness.light ? Colors.teal[200] : Colors.grey[800];
+    p.color = _theme.brightness == Brightness.light ? Color(0xFFBDBDBD) : Colors.grey[800];
     canvas.drawPath(path, p);
   }
 

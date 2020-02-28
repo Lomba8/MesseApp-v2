@@ -80,7 +80,7 @@ class _CalendarState extends State<Calendar> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                           fontWeight: FontWeight.w600),
                     )))
                 .toList(),
@@ -142,10 +142,10 @@ class _CalendarState extends State<Calendar> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: day.month != month
-                        ? Colors.white24
+                        ? Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black26
                         : day.weekday == 7
                             ? Theme.of(context).primaryColor.withOpacity(0.7)
-                            : Colors.white70),
+                            : Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87),
               ),
             ),
             Padding(

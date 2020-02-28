@@ -207,8 +207,10 @@ class Section extends StatelessWidget {
                     context, MaterialPageRoute(builder: (c) => page))
             : action,
         child: Card(
-          color:
-              page == null && action == null ? Colors.white24 : Colors.white10,
+          elevation: 0,
+          color: Theme.of(context).brightness == Brightness.dark
+            ? page == null && action == null ? Colors.white24 : Colors.white10
+            : page == null && action == null ? Colors.black26 : Colors.black12,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Column(

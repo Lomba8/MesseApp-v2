@@ -41,7 +41,9 @@ class VotiDetailsState extends State<VotiDetails> {
             leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back_ios,
-                  color: Colors.white60,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white60
+                      : Colors.black54,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -71,7 +73,9 @@ class VotiDetailsState extends State<VotiDetails> {
                       ),
                       subtitle: _selected[mark] ?? false
                           ? Text(
-                              mark.info.isEmpty ? 'Nessuna descrizione' : mark.info,
+                              mark.info.isEmpty
+                                  ? 'Nessuna descrizione'
+                                  : mark.info,
                               style: Theme.of(context).textTheme.bodyText1,
                               textAlign: TextAlign.center,
                             )
@@ -86,10 +90,7 @@ class VotiDetailsState extends State<VotiDetails> {
                               child: Text(
                                 mark.votoStr,
                                 style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -124,11 +125,15 @@ class VotiDetailsState extends State<VotiDetails> {
         show: true,
         drawVerticalLine: true,
         getDrawingVerticalLine: (value) => FlLine(
-            color: value == 0 ? Colors.white70 : Colors.white10,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? value == 0 ? Colors.white70 : Colors.white10
+                : value == 0 ? Colors.black87 : Colors.black12,
             strokeWidth: value == 0 ? 2 : 1),
         drawHorizontalLine: true,
         getDrawingHorizontalLine: (value) => FlLine(
-            color: value == 0 ? Colors.white70 : Colors.white10,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? value == 0 ? Colors.white70 : Colors.white10
+                : value == 0 ? Colors.black87 : Colors.black12,
             strokeWidth: value == 0 ? 2 : 1),
       ),
       titlesData: FlTitlesData(
@@ -136,7 +141,7 @@ class VotiDetailsState extends State<VotiDetails> {
           leftTitles: SideTitles(
             reservedSize: 25,
             textStyle: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 15,
             ),

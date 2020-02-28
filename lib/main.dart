@@ -30,11 +30,10 @@ void main() {
     IosDeviceInfo iosInfo;
     AndroidDeviceInfo androidInfo;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    dynamic _mode;
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.getBool('DarkMode') == null) {
-      _mode = ThemeMode
+      _theme = ThemeMode
           .dark; // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
       /*try {
         if (Platform.isAndroid) {
@@ -54,22 +53,28 @@ void main() {
       }*/
     } else {
       prefs.getBool('DarkMode')
-          ? _mode = ThemeMode.dark
-          : _mode = ThemeMode.light;
+          ? _theme = ThemeMode.dark
+          : _theme = ThemeMode.light;
     }
-
-    print(_mode);
-
-    runApp(
-      ChangeNotifierProvider<Globals>(
-        create: (_) => Globals(_mode),
-        child: MaterialAppWithTheme(menu: menu, loginScreen: loginScreen),
-      ),
-    );
+    print(_theme);
+    runApp(MaterialAppWithTheme(menu: menu, loginScreen: loginScreen));
   });
 }
 
-class MaterialAppWithTheme extends StatelessWidget {
+ThemeMode _theme = ThemeMode.dark;
+void setTheme (ThemeMode theme) async {
+  _currentState.theme = _theme = theme;
+  final prefs = await SharedPreferences.getInstance();
+  switch (theme) {
+    case ThemeMode.dark: prefs.setBool('DarkMode', true); break;
+    case ThemeMode.light: prefs.setBool('DarkMode', false); break;
+    default: prefs.setBool('DarkMode', null);
+  }
+    print(theme.toString());
+}
+_MaterialAppWithThemeState _currentState;
+
+class MaterialAppWithTheme extends StatefulWidget {
   const MaterialAppWithTheme({
     Key key,
     @required this.menu,
@@ -80,22 +85,31 @@ class MaterialAppWithTheme extends StatelessWidget {
   final LoginScreen loginScreen;
 
   @override
+  State<StatefulWidget> createState() => _currentState = _MaterialAppWithThemeState(_theme);
+}
+
+class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
+  ThemeMode _theme;
+  _MaterialAppWithThemeState (this._theme);
+  set theme (ThemeMode theme) => setState(() => _theme = theme);
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<Globals>(context);
     return MaterialApp(
       theme: Globals.lightTheme,
       darkTheme: Globals.darkTheme,
-      themeMode: theme.getTheme(),
+      themeMode: _theme,
       debugShowCheckedModeBanner: false,
       title: 'Applicazione di prova',
       initialRoute: LoginScreen.id,
       routes: {
-        Menu.id: (context) => menu,
-        LoginScreen.id: (context) => loginScreen
+        Menu.id: (context) => widget.menu,
+        LoginScreen.id: (context) => widget.loginScreen
       },
       //home: MapScreen(),
     );
   }
+
 }
 
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page

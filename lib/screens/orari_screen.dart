@@ -24,6 +24,7 @@ class _OrariState extends State<Orari> {
   Widget build(BuildContext context) =>
       CustomScrollView(physics: ClampingScrollPhysics(), slivers: [
         SliverAppBar(
+          elevation: 0,
           centerTitle: true,
           title: Text(
             'ORARI',
@@ -39,7 +40,9 @@ class _OrariState extends State<Orari> {
             IconButton(
                 icon: Icon(
                   Icons.file_download,
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white,
                 ),
                 onPressed: _selectedClass == null
                     ? null
@@ -70,12 +73,12 @@ class _OrariState extends State<Orari> {
               childAspectRatio: 1.5,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              children: _children(context)),
-          _selectionChildren(context)
+              children: _children),
+          _selectionChildren
         ])),
       ]);
 
-  List<Widget> _children(BuildContext context) {
+  List<Widget> get _children {
     List orario = orariUtils.orari[_selectedClass];
     if (orario == null) return [];
     bool saturday = _hasSaturday;
@@ -97,8 +100,8 @@ class _OrariState extends State<Orari> {
           textAlign: TextAlign.center,
         ));
       children.add(GestureDetector(
-        onTap: () => setState(
-            () => _selectedSbj = orario[i] == _selectedSbj ? null : orario[i]),
+        onTap: () => setState(() => _selectedSbj =
+            (orario[i] == _selectedSbj || orario[i] == '') ? null : orario[i]),
         child: Container(
           color: orariUtils.colors[orario[i]]?.withOpacity(
                   _selectedSbj == null || _selectedSbj == orario[i]
@@ -118,12 +121,15 @@ class _OrariState extends State<Orari> {
         ),
       ));
     }
-
     return children;
   }
 
-  GridView _selectionChildren(BuildContext context) {
-    TextStyle titleStyle = TextStyle(color: Colors.white54, fontSize: 16);
+  GridView get _selectionChildren {
+    TextStyle titleStyle = TextStyle(
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.black54
+            : Colors.white54,
+        fontSize: 16);
     List<Widget> children = [
       Text(
         'I',
@@ -164,14 +170,15 @@ class _OrariState extends State<Orari> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: '$anno${sezioni[sezione]}' == _selectedClass
-                  ? Colors.white
-                  : Colors.transparent,
+                    ? Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black
+                    : Colors.transparent,
               ),
               child: Center(
                 child: Text(
                   sezioni[sezione],
                   style: TextStyle(
-                      color: '$anno${sezioni[sezione]}' == _selectedClass
+                      color: ('$anno${sezioni[sezione]}' == _selectedClass) !=
+                              (Theme.of(context).brightness == Brightness.light)
                           ? Colors.black
                           : Colors.white,
                       fontSize: 16),
@@ -180,7 +187,8 @@ class _OrariState extends State<Orari> {
             ),
           ));
           hasMore = true;
-        } else children.add(Container());
+        } else
+          children.add(Container());
       }
       if (!hasMore) break;
     }

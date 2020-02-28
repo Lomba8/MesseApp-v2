@@ -1,6 +1,7 @@
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                 leading: IconButton(
                     icon: Icon(
                       Icons.arrow_back_ios,
-                      color: Colors.white60,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : Colors.black54,
                     ),
                     onPressed: () {
                       Navigator.pop(context);
@@ -43,8 +44,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                   delegate: SliverChildListDelegate(
                 RegistroApi.bacheca.data
                     .map<Widget>((c) => ListTile(
-                          title: Text(c.title, textAlign: TextAlign.center),
-                          trailing: Icon(Icons.picture_as_pdf),
+                          title: Text(c.title, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis,),
+                          trailing: Icon(MdiIcons.filePdf),
                         ))
                     .toList(),
               ))
