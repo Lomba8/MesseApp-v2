@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 class Menuitem {
   final String name;
   final Color color;
+  Color lightColor;
   final double x;
 
   Menuitem({
     this.name,
     this.color,
+    this.lightColor,
     this.x,
-  });
+  }) {lightColor ??= color;}
 }
 
 class NavBarSotto extends StatefulWidget {
@@ -37,7 +39,9 @@ class _NavBarSottoState extends State<NavBarSotto> {
     Menuitem(
         x: 0.0,
         name: 'Home.flr' /*per home*/,
-        color: Color.fromRGBO(235, 235, 240, 1)), // rgb(235,235,240)
+        color: Color.fromRGBO(235, 235, 240, 1),
+        lightColor: Color.fromRGBO(20, 20, 15, 1)
+    ), // rgb(235,235,240)
     Menuitem(
         x: 0.5,
         name: 'Voti.flr' /*per voti*/,
@@ -59,7 +63,7 @@ class _NavBarSottoState extends State<NavBarSotto> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Row(
-          children: items.map((item) => _flare(item, context)).toList(),
+          children: items.map((item) => _flare(item)).toList(),
         ),
         AnimatedContainer(
           color: Theme.of(context).backgroundColor,
@@ -69,7 +73,7 @@ class _NavBarSottoState extends State<NavBarSotto> {
             duration: Duration(milliseconds: 500),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: items[active].color),
+                color: Theme.of(context).brightness == Brightness.dark ? items[active].color : items[active].lightColor),
             height: 8,
             width: MediaQuery.of(context).size.width * 0.2,
           ),
@@ -78,7 +82,7 @@ class _NavBarSottoState extends State<NavBarSotto> {
     );
   }
 
-  Widget _flare(Menuitem item, BuildContext contesto) {
+  Widget _flare(Menuitem item) {
     return Expanded(
       child: GestureDetector(
         child: Container(
@@ -90,6 +94,7 @@ class _NavBarSottoState extends State<NavBarSotto> {
               child: FlareActor(
                 'flare/${item.name}',
                 alignment: Alignment.center,
+                color: Theme.of(context).brightness == Brightness.dark ? item.color : item.lightColor,
                 fit: BoxFit.contain,
                 animation: item.name == items[active].name ? 'Go' : 'idle',
               ),

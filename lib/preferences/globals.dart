@@ -1,28 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class Globals with ChangeNotifier {
-  ThemeMode _themeMode;
-
-  Globals(this._themeMode);
-  getTheme() => _themeMode;
-  setTheme(ThemeMode mode) async {
-    _themeMode = mode;
-    final prefs = await SharedPreferences.getInstance();
-
-    (mode == ThemeMode.dark)
-        ? prefs.setBool('DarkMode', true)
-        : prefs.setBool('DarkMode', false);
-
-    if (mode == ThemeMode.system) prefs.setBool('DarkMode', null);
-
-    print(mode.toString());
-
-    notifyListeners();
-  }
+class Globals {
 
   static final ThemeData lightTheme = ThemeData(
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     pageTransitionsTheme: PageTransitionsTheme(builders: {
       TargetPlatform.android: CupertinoPageTransitionsBuilder(),
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
@@ -34,7 +17,7 @@ class Globals with ChangeNotifier {
 
     scaffoldBackgroundColor: Color.fromRGBO(239, 238, 245, 1),
 
-    primaryColor: Color.fromRGBO(105, 181, 201, 1), // rgb(105, 181, 201, 1)
+    primaryColor: Color.fromRGBO(52, 90, 100, 1), // rgb(105, 181, 201, 1)
     /*
     Color.fromRGBO(91, 34, 196,
         1),  (Globals.rosso,). Alternativa a 91,34,19662, 123, 150,)*/
@@ -55,6 +38,7 @@ class Globals with ChangeNotifier {
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(246, 232, 234, 1)),
+      bodyText1: TextStyle(color: Colors.black54),
       bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
@@ -232,7 +216,7 @@ class Globals with ChangeNotifier {
     },
     'verde': {
       'color': Color.fromRGBO(144, 237, 137, 0.7),
-      'textColor': Color.fromRGBO(144, 237, 137, 0.5),
+      'textColor': Color.fromRGBO(72, 118, 63, 1), // TODO: scegliere un colore, quello di prima non si vedeva con il tema chiaro
       'gradientColors': [
         Color.fromRGBO(21, 195, 65, 1.0),
         Color.fromRGBO(46, 208, 81, 1.0),
