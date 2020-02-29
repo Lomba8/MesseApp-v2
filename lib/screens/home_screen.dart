@@ -20,6 +20,7 @@ bool _darkTheme = false;
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) => LiquidPullToRefresh(
+        showChildOpacityTransition: false,
         onRefresh: () => RegistroApi.downloadAll((d) {}),
         child: CustomScrollView(
           slivers: <Widget>[

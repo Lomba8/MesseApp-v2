@@ -39,10 +39,16 @@ dependencies:
   url_launcher: ^5.4.2
   html: ^0.14.0+3
   scrapy: ^0.0.3
+<<<<<<< HEAD
   google_sign_in: ^4.1.4
   permission_handler: ^4.2.0+hotfix.3
   package_info: ^0.4.0+14
   android_intent: ^0.3.5+1
+=======
+  google_sign_in: 4.1.1
+  #flutter_photokit: ^0.1.1
+  image_downloader: ^0.19.1
+>>>>>>> bcb3f6fb29c431bae49caf77ed157db50157e21a
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -46,14 +46,7 @@ class _OrariState extends State<Orari> {
                 ),
                 onPressed: _selectedClass == null
                     ? null
-                    : () => orariUtils.downloadOrario(_selectedClass).then(
-                        (path) => Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text(path == null
-                                  ? 'Errore durante il download'
-                                  : 'Immagine scaricata con successo nella posizione $path'),
-                              behavior: SnackBarBehavior.floating,
-                              duration: Duration(minutes: 1),
-                            ))))
+                    : () => orariUtils.downloadOrario(_selectedClass))
           ],
           pinned: true,
           backgroundColor: Colors.transparent,
@@ -170,7 +163,9 @@ class _OrariState extends State<Orari> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: '$anno${sezioni[sezione]}' == _selectedClass
-                    ? Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black
+                    ? Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black
                     : Colors.transparent,
               ),
               child: Center(
