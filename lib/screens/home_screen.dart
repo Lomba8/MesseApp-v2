@@ -1,6 +1,7 @@
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
@@ -13,6 +14,7 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
+
 bool _darkTheme = false;
 
 class _HomeState extends State<Home> {
@@ -28,8 +30,7 @@ class _HomeState extends State<Home> {
               backgroundColor: Colors.transparent,
               title: Text(
                 '${RegistroApi.nome} ${RegistroApi.cognome}',
-                textAlign: TextAlign
-                    .center,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.black
@@ -37,6 +38,20 @@ class _HomeState extends State<Home> {
                     fontSize: 30,
                     fontWeight: FontWeight.bold),
               ),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(
+                      Icons.tune,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white54
+                          : Colors.black54,
+                    ),
+                    onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Preferences()),
+                        ))
+              ],
               bottom: PreferredSize(
                   child: Container(),
                   preferredSize:
@@ -52,10 +67,12 @@ class _HomeState extends State<Home> {
                 Row(
                   children: <Widget>[
                     Expanded(child: Text('Tema scuro:')),
-                    Switch(value: _darkTheme, onChanged: (ok) {
-                      setState(() => _darkTheme = ok);
-                      setTheme(ok ? ThemeMode.dark : ThemeMode.light);
-                    })
+                    Switch(
+                        value: _darkTheme,
+                        onChanged: (ok) {
+                          setState(() => _darkTheme = ok);
+                          setTheme(ok ? ThemeMode.dark : ThemeMode.light);
+                        })
                   ],
                 ),
                 ListTile(
@@ -73,7 +90,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -81,7 +100,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -89,7 +110,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -97,7 +120,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -106,7 +131,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -115,7 +142,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -123,7 +152,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

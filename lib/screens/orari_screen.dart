@@ -64,7 +64,7 @@ class _OrariState extends State<Orari> {
           bottom: PreferredSize(
               child: Container(),
               preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.height / 8)),
+                  Size.fromHeight(MediaQuery.of(context).size.width / 8)),
         ),
         SliverList(
             delegate: SliverChildListDelegate([
