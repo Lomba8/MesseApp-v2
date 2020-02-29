@@ -9,26 +9,33 @@ class TutoraggiScreenScrape extends StatelessWidget {
     Response response = await client.get(
         'https://www.messedaglia.edu.it/index.php/studenti/205-index/studenti/2050-tutoraggio-degli-studenti');
 
+    // var client = Client();
+    // Response response = await client.get('https://messe-app.herokuapp.com/');
+
     var document = parse(response.body);
 
-    dom.Element links = document.querySelector(
-        " .item-page > div:nth-child(3) > p:nth-child(3) > strong:nth-child(1)");
-    //debugPrint('${links.innerHtml}');
+    dom.Element links = document.querySelector(" .item-380 > a:nth-child(1)");
+    debugPrint('${links}');
 
     print('informatica');
     print('    1');
-    // print(response.body.lastIndexOf('INFORMATICA'));
+    // print(response.body.lastIndexOf('Giacomo Lombardi'));
 
-    //print('Amos' + response.body.substring(36637));
+    //print('Amos\n' + response.body.substring(36670));
     print('    2');
-    print('Brognara' + response.body.substring(36647));
 
     print('    3');
-    print(response.body.substring(36637));
+    //print(response.body.substring(36637));
 
     print('storia dell\'arte');
-    print(response.body.lastIndexOf('STORIA DELL\'ARTE:'));
-    print(response.body.substring(48834));
+    print('    1');
+    //print('REggiani' + response.body.substring(48834));
+
+    print('    2');
+
+    print('    3');
+
+    // print(response.body.lastIndexOf('STORIA DELL\'ARTE:'));
 
     // for (dom.Element link in links) {
     //   debugPrint('${link.innerHtml}');

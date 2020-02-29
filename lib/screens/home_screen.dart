@@ -13,11 +13,13 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
+
 bool _darkTheme = false;
 
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) => LiquidPullToRefresh(
+        showChildOpacityTransition: false,
         onRefresh: () => RegistroApi.downloadAll((d) {}),
         child: CustomScrollView(
           slivers: <Widget>[
@@ -28,8 +30,7 @@ class _HomeState extends State<Home> {
               backgroundColor: Colors.transparent,
               title: Text(
                 '${RegistroApi.nome} ${RegistroApi.cognome}',
-                textAlign: TextAlign
-                    .center,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.black
@@ -52,10 +53,12 @@ class _HomeState extends State<Home> {
                 Row(
                   children: <Widget>[
                     Expanded(child: Text('Tema scuro:')),
-                    Switch(value: _darkTheme, onChanged: (ok) {
-                      setState(() => _darkTheme = ok);
-                      setTheme(ok ? ThemeMode.dark : ThemeMode.light);
-                    })
+                    Switch(
+                        value: _darkTheme,
+                        onChanged: (ok) {
+                          setState(() => _darkTheme = ok);
+                          setTheme(ok ? ThemeMode.dark : ThemeMode.light);
+                        })
                   ],
                 ),
                 ListTile(
@@ -73,7 +76,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -81,7 +86,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -89,7 +96,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -97,7 +106,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -106,7 +117,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -115,7 +128,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -123,7 +138,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Card(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black12,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
