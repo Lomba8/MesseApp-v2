@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
@@ -5,7 +7,7 @@ import 'package:flutter/material.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
-import 'package:provider/provider.dart';
+import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
@@ -31,6 +33,14 @@ void main() {
     AndroidDeviceInfo androidInfo;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     final prefs = await SharedPreferences.getInstance();
+    final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
+    appName = pkgInfo.appName;
+    appVersion = pkgInfo.version;
+    platform = Platform.operatingSystem;
+    if (Platform.isAndroid)
+      osVersion = (await deviceInfo.androidInfo).version.baseOS;
+    else if (Platform.isIOS)
+      osVersion = (await deviceInfo.iosInfo).systemVersion;
 
     if (prefs.getBool('DarkMode') == null) {
       _theme = ThemeMode
@@ -111,6 +121,8 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
   }
 
 }
+
+String appName, appVersion, platform, osVersion;
 
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 

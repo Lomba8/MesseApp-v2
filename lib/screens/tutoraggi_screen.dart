@@ -1,5 +1,7 @@
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 
 final List<_Tutor> tutors = [
@@ -16,6 +18,9 @@ final List<_Tutor> tutors = [
   _Tutor('Emma', 'Caloi', '5D', 'INGLESE'),
   _Tutor('Cesare', 'Reggiani', '5G', "DISEGNO - ST. DELL'ARTE"),
 ];
+final String _defaultBody = '''Buona giornata,
+\nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
+\n${RegistroApi.nome} ${RegistroApi.cognome}''';
 
 class _Tutor {
   final String _nome, _cognome, classe, materia;
@@ -79,14 +84,11 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
                           ),
                         ),
                         trailing: Text(tutor.classe),
-                        onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            content: Text(
-                              'Questa SnackBar verrà sostituita dal link a gmail in un prossimo aggiornamento...',
-                            ))),
+                        onTap: () {
+                          AndroidIntent(action: 'action_view',
+                            data: 'mailto:${tutor.email}?subject=TUTORAGGIO&body=$_defaultBody'
+                          ).launch();
+                        },
                         subtitle: Text(
                           tutor.email,
                           textAlign: TextAlign.center,

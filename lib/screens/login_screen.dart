@@ -86,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: media.size.width * 0.6,
               child: FlareActor(
                 'flare/Splash.flr',
+                color: Theme.of(context).primaryColor,
                 animation: 'Go',
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
