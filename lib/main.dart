@@ -72,16 +72,22 @@ void main() {
 }
 
 ThemeMode _theme = ThemeMode.dark;
-void setTheme (ThemeMode theme) async {
+void setTheme(ThemeMode theme) async {
   _currentState.theme = _theme = theme;
   final prefs = await SharedPreferences.getInstance();
   switch (theme) {
-    case ThemeMode.dark: prefs.setBool('DarkMode', true); break;
-    case ThemeMode.light: prefs.setBool('DarkMode', false); break;
-    default: prefs.setBool('DarkMode', null);
+    case ThemeMode.dark:
+      prefs.setBool('DarkMode', true);
+      break;
+    case ThemeMode.light:
+      prefs.setBool('DarkMode', false);
+      break;
+    default:
+      prefs.setBool('DarkMode', null);
   }
-    print(theme.toString());
+  print(theme.toString());
 }
+
 _MaterialAppWithThemeState _currentState;
 
 class MaterialAppWithTheme extends StatefulWidget {
@@ -95,13 +101,14 @@ class MaterialAppWithTheme extends StatefulWidget {
   final LoginScreen loginScreen;
 
   @override
-  State<StatefulWidget> createState() => _currentState = _MaterialAppWithThemeState(_theme);
+  State<StatefulWidget> createState() =>
+      _currentState = _MaterialAppWithThemeState(_theme);
 }
 
 class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
   ThemeMode _theme;
-  _MaterialAppWithThemeState (this._theme);
-  set theme (ThemeMode theme) => setState(() => _theme = theme);
+  _MaterialAppWithThemeState(this._theme);
+  set theme(ThemeMode theme) => setState(() => _theme = theme);
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +126,6 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
       //home: MapScreen(),
     );
   }
-
 }
 
 String appName, appVersion, platform, osVersion;

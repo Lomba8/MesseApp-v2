@@ -5,24 +5,29 @@ import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   @override
   _OrariState createState() => _OrariState();
 }
 
 class _OrariState extends State<Orari> {
-  static String _selectedClass;
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   String _selectedSbj;
   double _progress = 0;
-  bool _downloading = true;
-  // bool has_already_selected_class = false;
-  var prefs;
+  bool _downloading = false;
+  var prefs = orariUtils.prefs;
 
   bool get _hasSaturday {
-    List orario = orariUtils.orari[_selectedClass];
+    List orario = orariUtils.orari[orariUtils.selectedClass];
     if (orario == null) return true;
     for (int i = 5; i < orario.length; i += 6) if (orario[i] != '') return true;
     return false;
@@ -58,19 +63,28 @@ class _OrariState extends State<Orari> {
     }
   }
 
-  // Future<void> getSelected() async {
-  //   prefs = await SharedPreferences.getInstance();
-  //   prefs.getBool('has_already_selected_class') == null
-  //       ? has_already_selected_class = false
-  //       : has_already_selected_class = true;
-  // }
+  void resetprefs() async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setBool('has_already_selected_class', false);
+    prefs.setString('selectedClass', '');
+  }
 
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   getSelected();
-    // });
+
+    var initializationSettingsAndroid =
+        new AndroidInitializationSettings('@mipmap/splash');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String payload) async {
+      if (payload != null) {
+        debugPrint('notification payload: ' + payload);
+      }
+    });
 
     ImageDownloader.callback(onProgressUpdate: (String imageId, int progress) {
       setState(() {
@@ -85,64 +99,101 @@ class _OrariState extends State<Orari> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      CustomScrollView(physics: ClampingScrollPhysics(), slivers: [
-        SliverAppBar(
-          elevation: 0,
-          centerTitle: true,
-          title: Text(
-            'ORARI',
-            textAlign: TextAlign.center,
-            style: TextStyle(
+  Widget build(BuildContext context) {
+    rebuildAllChildren(context);
+    return CustomScrollView(physics: ClampingScrollPhysics(), slivers: [
+      SliverAppBar(
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'ORARI',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.bold),
+        ),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(
+                Icons.file_download,
                 color: Theme.of(context).brightness == Brightness.light
                     ? Colors.black
                     : Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold),
-          ),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(
-                  Icons.file_download,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white,
-                ),
-                onPressed: _selectedClass == null
-                    ? null
-                    : () {
-                        downloadOrario(_selectedClass);
-                        setState(() {
-                          _downloading = true;
-                          _progress = 0;
-                        });
-                      })
-          ],
-          pinned: true,
-          backgroundColor: Colors.transparent,
-          flexibleSpace: CustomPaint(
-            painter: BackgroundPainter(Theme.of(context)),
-            size: Size.infinite,
-          ),
-          bottom: PreferredSize(
-              child: Container(),
-              preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+              ),
+              onPressed: orariUtils.selectedClass == null
+                  ? null
+                  : () {
+                      downloadOrario(orariUtils.selectedClass);
+                      _showNotificationWithDefaultSound(
+                          orariUtils.selectedClass);
+                      setState(() {
+                        _downloading = true;
+                        _progress = 0;
+                      });
+                    }),
+          IconButton(
+            icon: Icon(Icons.restore_page),
+            color: Colors.white,
+            onPressed: () {
+              resetprefs();
+              getSelected();
+              setState(() {});
+            },
+          )
+        ],
+        pinned: true,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: CustomPaint(
+          painter: BackgroundPainter(Theme.of(context)),
+          size: Size.infinite,
         ),
-        SliverList(
-            delegate: SliverChildListDelegate([
-          GridView.count(
-              crossAxisCount: _hasSaturday ? 7 : 6,
-              childAspectRatio: 1.5,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: _children),
-          _selectionChildren
-        ])),
-      ]);
+        bottom: PreferredSize(
+            child: Container(),
+            preferredSize:
+                Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+      ),
+      SliverList(
+          delegate: SliverChildListDelegate([
+        GridView.count(
+            crossAxisCount: _hasSaturday ? 7 : 6,
+            childAspectRatio: 1.5,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: _children),
+        _selectionChildren,
+        _downloading
+            ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                child: LinearProgressIndicator(
+                  value: _progress,
+                ),
+              )
+            : SizedBox(),
+      ])),
+    ]);
+  }
+
+  Future _showNotificationWithDefaultSound(String classe) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Immagine scaricata',
+      'Classe: $classe',
+      platformChannelSpecifics,
+      payload: '$classe',
+    );
+  }
 
   List<Widget> get _children {
-    List orario = orariUtils.orari[_selectedClass];
+    List orario = orariUtils.orari[orariUtils.selectedClass];
     if (orario == null) return [];
     bool saturday = _hasSaturday;
     List<Widget> children = [Container()];
@@ -226,13 +277,21 @@ class _OrariState extends State<Orari> {
       for (int anno = 1; anno <= 5; anno++) {
         if (orariUtils.orari.containsKey('$anno${sezioni[sezione]}')) {
           children.add(GestureDetector(
-            onTap: () =>
-                setState(() => _selectedClass = '$anno${sezioni[sezione]}'),
+            onTap: () => setState(
+                () => orariUtils.selectedClass = '$anno${sezioni[sezione]}'),
+            onDoubleTap: () {
+              orariUtils.selectedClass = '$anno${sezioni[sezione]}';
+              prefs.setBool('has_already_selected_class', true);
+              prefs.setString('selectedClass', orariUtils.selectedClass);
+              setState(() {
+                orariUtils.has_already_selected_class = true;
+              });
+            },
             child: AnimatedContainer(
-              duration: Duration(seconds: 1),
+              duration: Duration(milliseconds: 100),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: '$anno${sezioni[sezione]}' == _selectedClass
+                color: '$anno${sezioni[sezione]}' == orariUtils.selectedClass
                     ? Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
                         : Colors.black
@@ -242,7 +301,8 @@ class _OrariState extends State<Orari> {
                 child: Text(
                   sezioni[sezione],
                   style: TextStyle(
-                      color: ('$anno${sezioni[sezione]}' == _selectedClass) !=
+                      color: ('$anno${sezioni[sezione]}' ==
+                                  orariUtils.selectedClass) !=
                               (Theme.of(context).brightness == Brightness.light)
                           ? Colors.black
                           : Colors.white,
@@ -258,12 +318,27 @@ class _OrariState extends State<Orari> {
       if (!hasMore) break;
     }
 
-    return GridView.count(
-      physics: NeverScrollableScrollPhysics(),
-      crossAxisCount: 5,
-      childAspectRatio: 2,
-      children: children,
-      shrinkWrap: true,
-    );
+    return !orariUtils.has_already_selected_class
+        ? GridView.count(
+            physics: NeverScrollableScrollPhysics(),
+            crossAxisCount: 5,
+            childAspectRatio: 2,
+            children: children,
+            shrinkWrap: true,
+          )
+        : GridView.count(
+            crossAxisCount: 1,
+            children: <Widget>[SizedBox()],
+            shrinkWrap: true,
+          );
   }
+}
+
+void rebuildAllChildren(BuildContext context) {
+  void rebuild(Element el) {
+    el.markNeedsBuild();
+    el.visitChildren(rebuild);
+  }
+
+  (context as Element).visitChildren(rebuild);
 }

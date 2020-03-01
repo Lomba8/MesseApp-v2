@@ -3,7 +3,11 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
 //flare gia pronto per menu bar https://rive.app/a/akaaljotsingh/files/flare/drawer/preview
@@ -18,6 +22,51 @@ class Home extends StatefulWidget {
 bool _darkTheme = false;
 
 class _HomeState extends State<Home> {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  var androidPlatformChannelSpecifics,
+      iOSPlatformChannelSpecifics,
+      platformChannelSpecifics;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Show a notification every minute with the first appearance happening a minute after invoking the method
+    androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'repeating channel id',
+        'repeating channel name',
+        'repeating description');
+    iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      orariUtils.getSelected();
+      _repeatNotification();
+    });
+
+    print(
+        'init home screen ' + orariUtils.has_already_selected_class.toString());
+
+    print('init home screen ' + orariUtils.selectedClass.toString());
+  }
+
+  Future<void> _repeatNotification() async {
+    var prefs = await SharedPreferences.getInstance();
+    String compleanno = prefs.getString('compleanno');
+    var data = compleanno.split('-');
+    await flutterLocalNotificationsPlugin.schedule(
+        1,
+        'Tanti auguri🎉🎁',
+        '${RegistroApi.nome}', //FIXME: le notifiche non spuntano la data di compleanno
+        DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2])),
+        platformChannelSpecifics);
+    print(
+        'festeggerai il comple il: ${DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2]))}');
+  }
+
   @override
   Widget build(BuildContext context) => LiquidPullToRefresh(
         showChildOpacityTransition: false,
