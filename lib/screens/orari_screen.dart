@@ -6,7 +6,6 @@ import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_downloader/image_downloader.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';

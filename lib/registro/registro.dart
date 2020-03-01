@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
+import 'package:Messedaglia/registro/note_registro_data.dart';
 import 'package:Messedaglia/registro/subjects_registro_data.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class RegistroApi {
   static final AgendaRegistroData agenda = AgendaRegistroData();
   static final SubjectsRegistroData subjects = SubjectsRegistroData();
   static final BachecaRegistroData bacheca = BachecaRegistroData();
+  static final NoteRegistroData note = NoteRegistroData();
 
   static String _capitalize(String s) {
     List<String> parole = [];
@@ -89,18 +91,21 @@ class RegistroApi {
 
   static Future<void> downloadAll(void Function(double) callback) async {
     await load();
-    int N = 4;
+    int N = 5;
     int n = 0;
     voti.getData().then((ok) => callback(++n / N));
     agenda.getData().then((ok) => callback(++n / N));
     subjects.getData().then((ok) => callback(++n / N));
     bacheca.getData().then((on) => callback(++n / N));
+    note.getData().then((on) => callback(++n / N));
   }
 
   static void save() async {
     Map<String, dynamic> data = {
       'voti': voti,
-      'agenda': agenda
+      'agenda': agenda,
+      'subjects': subjects,
+      'bacheca': bacheca,
       // ecc...
     };
     String json = jsonEncode(data);
@@ -117,6 +122,8 @@ class RegistroApi {
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
     voti.fromJson(data['voti']);
     agenda.fromJson(data['agenda']);
+    subjects.fromJson(data['subjects']);
+    bacheca.fromJson(data['bacheca']);
   }
 }
 

@@ -26,12 +26,34 @@ class _MapScreenState extends State<MapScreen> {
               SingleChildScrollView(
                 // TODO:  con o senza scroll?
                 scrollDirection: Axis.horizontal,
-                child: CustomPaint(
-                  size: _scroll
-                      ? Size(1000, 200)
-                      : Size(MediaQuery.of(context).size.width,
-                          MediaQuery.of(context).size.width * 3 / 5),
-                  painter: MapPainter(selectedClass, floor: _floor.toInt()),
+                child: GestureDetector(
+                  onTapUp: (details) {
+                    print('click: ${details.localPosition}');
+                    final Offset start = Offset(14, _scroll ? 16 : 400);
+                    selectedClass = [];
+                    floors[_floor.toInt() + 2].classes.forEach((cls, data) {
+                      if (data.selectable &&
+                          data
+                              .getFill(
+                                  _scroll
+                                      ? 1
+                                      : MediaQuery.of(context).size.width /
+                                          1000,
+                                  Paint(),
+                                  translateX: start.dx,
+                                  translateY: start.dy)
+                              .contains(details.localPosition))
+                        selectedClass.add(cls);
+                    });
+                    setState(() {});
+                  },
+                  child: CustomPaint(
+                    size: _scroll
+                        ? Size(1000, 200)
+                        : Size(MediaQuery.of(context).size.width,
+                            MediaQuery.of(context).size.width * 3 / 5),
+                    painter: MapPainter(selectedClass, floor: _floor.toInt()),
+                  ),
                 ),
               ),
               Positioned(
@@ -60,40 +82,6 @@ class _MapScreenState extends State<MapScreen> {
               max: 3,
               //label: _floor.round().toString(),
               activeColor: Theme.of(context).primaryColor,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.warning,
-                    color: Colors.yellow[600],
-                  ),
-                  Expanded(
-                      child: Text(
-                    "WORK IN PROGRESS!",
-                    textAlign: TextAlign.center,
-                  )),
-                  Icon(
-                    Icons.warning,
-                    color: Colors.yellow[600],
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                    child: Text(
-                  "Qual è meglio?",
-                  style: TextStyle(fontWeight: FontWeight.normal),
-                )),
-                IconButton(
-                  icon:
-                      Icon(_scroll ? Icons.fullscreen : Icons.fullscreen_exit),
-                  onPressed: () => setState(() => _scroll = !_scroll),
-                ),
-              ],
             ),
             Row(
               children: <Widget>[
@@ -159,9 +147,9 @@ class MapPainter extends CustomPainter {
     // TODO: le porte?
     double cropWidth = size.width / 1000, cropHeight = size.height / 600;
     if (size.width / size.height == 5) cropHeight *= 3;
-    _paint.color = Colors.green[900];
+    /*_paint.color = Colors.grey[700];
     canvas.drawPaint(_paint);
-    _paint.color = border;
+    _paint.color = border;*/
 
     _paintFloor(canvas, floors[floor + 2], cropWidth, cropHeight,
         size.width / size.height);
@@ -169,7 +157,16 @@ class MapPainter extends CustomPainter {
 
   void _paintFloor(Canvas canvas, Floor floor, double cropWidth,
       double cropHeight, double ratio) {
-    Offset start = Offset(14, ratio == 5 ? 16 : 400);
+    final Offset start = Offset(14, ratio == 5 ? 16 : 400);
+
+    decorations.forEach((decoration) {
+      canvas.drawPath(
+          decoration.getFill(cropWidth, _paint, translateY: start.dy), _paint);
+      canvas.drawPath(
+          decoration.getStroke(cropWidth, _paint,
+              translateY: start.dy, defaultColor: border),
+          _paint);
+    });
 
     Path path = floor.school.create(
         cropWidth: cropWidth, cropHeight: cropHeight, translation: start);
@@ -182,22 +179,16 @@ class MapPainter extends CustomPainter {
     canvas.drawPath(path, _paint);
 
     floor.classes.forEach((aula, data) {
-      path = data['pathBuilder'].create(
-          cropWidth: cropWidth,
-          cropHeight: cropHeight,
-          translation: (data['translation'] ?? Offset(0, 0))
-              .translate(start.dx, start.dy));
-      _paint
-        ..color = _selectedClass.contains(aula) && data['selectable']
-            ? Colors.yellow[700]
-            : data['defaultColor']
-        ..style = PaintingStyle.fill;
-      canvas.drawPath(path, _paint);
-      _paint
-        ..color = border
-        ..style = PaintingStyle.stroke;
-
-      canvas.drawPath(path, _paint);
+      canvas.drawPath(
+          data.getFill(cropWidth, _paint,
+              translateX: start.dx,
+              translateY: start.dy,
+              color: _selectedClass.contains(aula) ? Colors.yellow[700] : null),
+          _paint);
+      canvas.drawPath(
+          data.getStroke(cropWidth, _paint,
+              translateX: start.dx, translateY: start.dy, defaultColor: border),
+          _paint);
     });
   }
 
