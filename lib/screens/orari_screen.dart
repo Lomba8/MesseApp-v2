@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:image_downloader/image_downloader.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
@@ -12,12 +17,72 @@ class Orari extends StatefulWidget {
 class _OrariState extends State<Orari> {
   static String _selectedClass;
   String _selectedSbj;
+  double _progress = 0;
+  bool _downloading = true;
+  // bool has_already_selected_class = false;
+  var prefs;
 
   bool get _hasSaturday {
     List orario = orariUtils.orari[_selectedClass];
     if (orario == null) return true;
     for (int i = 5; i < orario.length; i += 6) if (orario[i] != '') return true;
     return false;
+  }
+
+  Future<void> downloadOrario(String classe) async {
+    if (Platform.isAndroid) {
+      try {
+        // TODO: Pietro se vuoi fare i tuoui strani download per android
+        /*
+          await ImageDownloader.downloadImage(url,
+                                     destination: AndroidDestinationType.custom('sample')
+                                     ..inExternalFilesDir()
+                                     ..subDirectory("custom/sample.gif"),
+         );
+       */
+        var imageId =
+            await ImageDownloader.downloadImage(orari[classe + 'url']);
+      } catch (e) {
+        print(e);
+      }
+    } else if (Platform.isIOS) {
+      try {
+        try {
+          var imageId =
+              await ImageDownloader.downloadImage(orari[classe + 'url']);
+        } catch (e) {
+          print(e);
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
+  // Future<void> getSelected() async {
+  //   prefs = await SharedPreferences.getInstance();
+  //   prefs.getBool('has_already_selected_class') == null
+  //       ? has_already_selected_class = false
+  //       : has_already_selected_class = true;
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   getSelected();
+    // });
+
+    ImageDownloader.callback(onProgressUpdate: (String imageId, int progress) {
+      setState(() {
+        _progress = progress / 100;
+        print(progress);
+        if (_progress == 1) {
+          _downloading = false;
+          _progress = 0;
+        }
+      });
+    });
   }
 
   @override
@@ -46,7 +111,13 @@ class _OrariState extends State<Orari> {
                 ),
                 onPressed: _selectedClass == null
                     ? null
-                    : () => orariUtils.downloadOrario(_selectedClass))
+                    : () {
+                        downloadOrario(_selectedClass);
+                        setState(() {
+                          _downloading = true;
+                          _progress = 0;
+                        });
+                      })
           ],
           pinned: true,
           backgroundColor: Colors.transparent,
