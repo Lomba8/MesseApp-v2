@@ -36,7 +36,6 @@ class TutoraggiScreen extends StatefulWidget {
 }
 
 class _TutoraggiScreenState extends State<TutoraggiScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +46,9 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
               leading: IconButton(
                   icon: Icon(
                     Icons.arrow_back_ios,
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : Colors.black54,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white60
+                        : Colors.black54,
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -80,14 +81,19 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
                               .withOpacity(0.7),
                           child: Icon(
                             Globals.subjects[tutor.materia]['icona'],
-                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                           ),
                         ),
                         trailing: Text(tutor.classe),
                         onTap: () {
-                          AndroidIntent(action: 'action_view',
-                            data: 'mailto:${tutor.email}?subject=TUTORAGGIO&body=$_defaultBody'
-                          ).launch();
+                          AndroidIntent(
+                                  action: 'action_view',
+                                  data:
+                                      'mailto:${tutor.email}?subject=TUTORAGGIO&body=$_defaultBody')
+                              .launch();
                         },
                         subtitle: Text(
                           tutor.email,

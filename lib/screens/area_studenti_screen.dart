@@ -116,8 +116,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
             backgroundColor: Colors.transparent,
             title: Text(
               "AREA STUDENTI",
-              textAlign: TextAlign
-                  .center,
+              textAlign: TextAlign.center,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black
@@ -170,6 +169,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
                 page: TutoraggiScreen(),
               ),
               Section(
+                // FIXME: pietro quando hai finito tutto quello che devi fare sui tutoraggi io farei le cards ed integrerei il web scraping
                 sezione: 'Tutoraggi-scrape',
                 colore: 'rosso',
                 page: TutoraggiScreenScrape(),
@@ -209,8 +209,10 @@ class Section extends StatelessWidget {
         child: Card(
           elevation: 0,
           color: Theme.of(context).brightness == Brightness.dark
-            ? page == null && action == null ? Colors.white24 : Colors.white10
-            : page == null && action == null ? Colors.black26 : Colors.black12,
+              ? page == null && action == null ? Colors.white24 : Colors.white10
+              : page == null && action == null
+                  ? Colors.black26
+                  : Colors.black12,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Column(

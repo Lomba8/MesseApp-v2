@@ -323,8 +323,7 @@ packages:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.9.0"
+    version: "1.8.0+1"
   permission_handler:
     dependency: "direct main"
     description:
@@ -332,9 +331,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.3.0"
-=======
-    version: "1.8.0+1"
->>>>>>> bcb3f6fb29c431bae49caf77ed157db50157e21a
   petitparser:
     dependency: transitive
     description:
@@ -377,13 +373,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
-  scrapy:
-    dependency: "direct main"
-    description:
-      name: scrapy
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.3"
   shared_preferences:
     dependency: transitive
     description:
