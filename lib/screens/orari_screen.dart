@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
@@ -105,45 +106,79 @@ class _OrariState extends State<Orari> {
       SliverAppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text(
-          'ORARI',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.black
-                  : Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.bold),
+        title: Stack(
+          fit: StackFit.loose,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.restore_page),
+                  color: Colors.white,
+                  onPressed: () {
+                    resetprefs();
+                    getSelected();
+                    setState(() {});
+                  },
+                ),
+                Align(
+                  alignment: Alignment(0.5, 0.5),
+                  child: Row(
+                    children: <Widget>[
+                      _downloading
+                          ? SizedBox(
+                              height: 21.0,
+                              width: 21.0,
+                              child: CircularProgressIndicator(
+                                value: null,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : SizedBox(),
+                      _downloading
+                          ? SizedBox(
+                              width: 8.0,
+                            )
+                          : SizedBox(),
+                      Text(
+                        _downloading ? 'RARI' : 'ORARI',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                    icon: Icon(
+                      Icons.file_download,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                    onPressed: orariUtils.selectedClass == null
+                        ? null
+                        : () {
+                            downloadOrario(orariUtils.selectedClass);
+                            _showNotificationWithDefaultSound(
+                                orariUtils.selectedClass);
+                            setState(() {
+                              _downloading = true;
+                              _progress = 0;
+                            });
+                          }),
+              ],
+            ),
+          ],
         ),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(
-                Icons.file_download,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white,
-              ),
-              onPressed: orariUtils.selectedClass == null
-                  ? null
-                  : () {
-                      downloadOrario(orariUtils.selectedClass);
-                      _showNotificationWithDefaultSound(
-                          orariUtils.selectedClass);
-                      setState(() {
-                        _downloading = true;
-                        _progress = 0;
-                      });
-                    }),
-          IconButton(
-            icon: Icon(Icons.restore_page),
-            color: Colors.white,
-            onPressed: () {
-              resetprefs();
-              getSelected();
-              setState(() {});
-            },
-          )
-        ],
+        actions: [],
         pinned: true,
         backgroundColor: Colors.transparent,
         flexibleSpace: CustomPaint(
@@ -158,18 +193,51 @@ class _OrariState extends State<Orari> {
       SliverList(
           delegate: SliverChildListDelegate([
         GridView.count(
+            padding: EdgeInsets.only(right: 22.0),
             crossAxisCount: _hasSaturday ? 7 : 6,
-            childAspectRatio: 1.5,
+            childAspectRatio: 1.4,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             children: _children),
-        _selectionChildren,
-        _downloading
+        !orariUtils.has_already_selected_class
+            ? _selectionChildren
+            : SizedBox(),
+        orariUtils.has_already_selected_class
             ? Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                child: LinearProgressIndicator(
-                  value: _progress,
-                ),
+                padding:
+                    const EdgeInsets.only(left: 18.0, top: 15.0, bottom: 15.0),
+                child: RichText(
+                    text: TextSpan(
+                        text: 'Oggi ',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 35.0,
+                          fontFamily: 'CoreSans',
+                          letterSpacing: 2,
+                        ),
+                        children: <TextSpan>[
+                      TextSpan(
+                        text: '(${orariUtils.selectedClass})',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25.0,
+                          fontFamily: 'CoreSans',
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      )
+                    ])),
+              )
+            : SizedBox(),
+        orariUtils.has_already_selected_class
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(children: <Widget>[
+                  Row(children: oggi),
+                  Row(
+                    children: ore,
+                  )
+                ]),
               )
             : SizedBox(),
       ])),
@@ -192,6 +260,82 @@ class _OrariState extends State<Orari> {
     );
   }
 
+  List<Widget> get ore {
+    List<Widget> ore = [Container()];
+
+    for (int k = 1; k < oggi.length; k++) {
+      ore.add(Expanded(
+        child: AspectRatio(
+          aspectRatio: 1.5,
+          child: Padding(
+            padding: EdgeInsets.only(top: 10.0),
+            child: Text(
+              '$kª',
+              style: TextStyle(color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ));
+    }
+    return ore;
+  }
+
+  List<Widget> get oggi {
+    List<Widget> orario = [Container()];
+    for (int j = 0;
+        j < orariUtils.orari[orariUtils.selectedClass].length;
+        j++) {
+      if ((j + 1) % 6 == 0 && !_hasSaturday)
+        continue;
+      else if (j % 6 == 0) //FIXME sesta ora inesistente
+        orario.add(Expanded(
+          child: AspectRatio(
+            aspectRatio: 1.3,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedSbj =
+                    (orariUtils.orari[orariUtils.selectedClass][j] ==
+                                _selectedSbj ||
+                            orariUtils.orari[orariUtils.selectedClass][j] == '')
+                        ? null
+                        : orariUtils.orari[orariUtils.selectedClass][j]),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: orariUtils.colors[
+                                orariUtils.orari[orariUtils.selectedClass][j]]
+                            ?.withOpacity(_selectedSbj == null ||
+                                    _selectedSbj ==
+                                        orariUtils
+                                            .orari[orariUtils.selectedClass][j]
+                                ? 1
+                                : 0.1) ??
+                        Colors.transparent,
+                    borderRadius: BorderRadiusDirectional.circular(5),
+                  ),
+                  child: Center(
+                    child: AutoSizeText(
+                      orariUtils.orari[orariUtils.selectedClass][j],
+                      style: TextStyle(
+                          color: _selectedSbj == null ||
+                                  _selectedSbj ==
+                                      orariUtils.orari[orariUtils.selectedClass]
+                                          [j]
+                              ? Colors.black54
+                              : Colors.white10),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+    }
+    return orario;
+  }
+
   List<Widget> get _children {
     List orario = orariUtils.orari[orariUtils.selectedClass];
     if (orario == null) return [];
@@ -209,7 +353,7 @@ class _OrariState extends State<Orari> {
         continue;
       else if (i % 6 == 0)
         children.add(Text(
-          '${(i ~/ 6 + 8).toString().padLeft(2, '0')}:00',
+          '${(i ~/ 6 + 8).toString()}',
           style: Theme.of(context).textTheme.bodyText1,
           textAlign: TextAlign.center,
         ));
@@ -318,19 +462,13 @@ class _OrariState extends State<Orari> {
       if (!hasMore) break;
     }
 
-    return !orariUtils.has_already_selected_class
-        ? GridView.count(
-            physics: NeverScrollableScrollPhysics(),
-            crossAxisCount: 5,
-            childAspectRatio: 2,
-            children: children,
-            shrinkWrap: true,
-          )
-        : GridView.count(
-            crossAxisCount: 1,
-            children: <Widget>[SizedBox()],
-            shrinkWrap: true,
-          );
+    return GridView.count(
+      physics: NeverScrollableScrollPhysics(),
+      crossAxisCount: 5,
+      childAspectRatio: 2,
+      children: children,
+      shrinkWrap: true,
+    );
   }
 }
 
