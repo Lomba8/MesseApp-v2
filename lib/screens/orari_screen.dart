@@ -288,7 +288,9 @@ class _OrariState extends State<Orari> {
         j++) {
       if ((j + 1) % 6 == 0 && !_hasSaturday)
         continue;
-      else if (j % 6 == 0) //FIXME sesta ora inesistente
+      else if (j % 6 == 0 &&
+          orariUtils.orari[orariUtils.selectedClass][j] !=
+              '') //FIXME sesta ora inesistente
         orario.add(Expanded(
           child: AspectRatio(
             aspectRatio: 1.3,
