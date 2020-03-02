@@ -187,11 +187,13 @@ class _OrariState extends State<Orari> {
                   ))),
           child: Container(
             margin: EdgeInsets.only(
-                top: (prefs.getString('selectedClass') == '')
+                top: (prefs.getString('selectedClass') == '' &&
+                        prefs.getString('selectedClass') != null)
                     ? MediaQuery.of(context).size.height / 3
                     : 10.0),
             child: Text(
-                (prefs.getString('selectedClass') != '')
+                (prefs.getString('selectedClass') != '' &&
+                        prefs.getString('selectedClass') != null)
                     ? prefs.getString('selectedClass')
                     : 'Tocca per scegliere la classe',
                 textAlign: TextAlign.center),
@@ -205,7 +207,8 @@ class _OrariState extends State<Orari> {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             children: _children),
-        prefs.getString('selectedClass') != ''
+        (prefs.getString('selectedClass') != '' &&
+                prefs.getString('selectedClass') != null)
             ? Padding(
                 padding:
                     const EdgeInsets.only(left: 18.0, top: 15.0, bottom: 15.0),
@@ -232,7 +235,8 @@ class _OrariState extends State<Orari> {
                     ])),
               )
             : SizedBox(),
-        prefs.getString('selectedClass') != ''
+        (prefs.getString('selectedClass') != '' &&
+                prefs.getString('selectedClass') != null)
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(children: <Widget>[
@@ -249,8 +253,11 @@ class _OrariState extends State<Orari> {
 
   Future _showNotificationWithDefaultSound(String classe) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High);
+        'your channel id',
+        'your channel name',
+        'your channel description', //TODO: pietro cos'è sta roba?
+        importance: Importance.Max,
+        priority: Priority.High);
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
     var platformChannelSpecifics = new NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
@@ -309,6 +316,7 @@ class _OrariState extends State<Orari> {
                     : _selectedSbj =
                         orariUtils.orari[prefs.getString('selectedClass')][j]),
                 child: AnimatedContainer(
+                  margin: EdgeInsets.all(2.0),
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     color: orariUtils.colors[orariUtils
@@ -323,16 +331,20 @@ class _OrariState extends State<Orari> {
                     borderRadius: BorderRadiusDirectional.circular(5),
                   ),
                   child: Center(
-                    child: AutoSizeText(
-                      orariUtils.orari[prefs.getString('selectedClass')][j],
-                      style: TextStyle(
-                          color: _selectedSbj == null ||
-                                  _selectedSbj ==
-                                      orariUtils.orari[
-                                          prefs.getString('selectedClass')][j]
-                              ? Colors.black.withOpacity(0.75)
-                              : Colors.white10),
-                      textAlign: TextAlign.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 3.0),
+                      child: AutoSizeText(
+                        orariUtils.orari[prefs.getString('selectedClass')][j],
+                        style: TextStyle(
+                            letterSpacing: 0.0,
+                            color: _selectedSbj == null ||
+                                    _selectedSbj ==
+                                        orariUtils.orari[
+                                            prefs.getString('selectedClass')][j]
+                                ? Colors.black.withOpacity(0.75)
+                                : Colors.white10),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
@@ -369,20 +381,29 @@ class _OrariState extends State<Orari> {
         onTap: () => setState(() => _selectedSbj =
             (orario[i] == _selectedSbj || orario[i] == '') ? null : orario[i]),
         child: AnimatedContainer(
+          margin: EdgeInsets.all(1.0),
           duration: const Duration(milliseconds: 200),
-          color: orariUtils.colors[orario[i]]?.withOpacity(
-                  _selectedSbj == null || _selectedSbj == orario[i]
-                      ? 1
-                      : 0.1) ??
-              Colors.transparent,
-          child: Center(
-            child: AutoSizeText(
-              orario[i],
-              style: TextStyle(
-                  color: _selectedSbj == null || _selectedSbj == orario[i]
-                      ? Colors.black.withOpacity(0.75)
-                      : Colors.white10),
-              textAlign: TextAlign.center,
+          decoration: BoxDecoration(
+            color: orariUtils.colors[orario[i]]?.withOpacity(
+                    _selectedSbj == null || _selectedSbj == orario[i]
+                        ? 1
+                        : 0.1) ??
+                Colors.transparent,
+            borderRadius: BorderRadiusDirectional.circular(5),
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(top: 4.0),
+            child: Center(
+              child: AutoSizeText(
+                orario[i],
+                style: TextStyle(
+                    fontSize: 16,
+                    letterSpacing: 0.0,
+                    color: _selectedSbj == null || _selectedSbj == orario[i]
+                        ? Colors.black.withOpacity(0.75)
+                        : Colors.white10),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
@@ -396,12 +417,15 @@ class _OrariState extends State<Orari> {
         color: Theme.of(context).brightness == Brightness.light
             ? Colors.black.withOpacity(0.75)
             : Colors.white54,
-        fontSize: 16);
+        fontSize: 20);
     List<Widget> children = [
-      Text(
-        'I',
-        style: titleStyle,
-        textAlign: TextAlign.center,
+      AspectRatio(
+        aspectRatio: 2,
+        child: Text(
+          'I',
+          style: titleStyle,
+          textAlign: TextAlign.center,
+        ),
       ),
       Text(
         'II',
@@ -422,8 +446,44 @@ class _OrariState extends State<Orari> {
         'V',
         style: titleStyle,
         textAlign: TextAlign.center,
-      )
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '_ _ _ _ _ _ _',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
     ];
+
     String sezioni = 'ABCDEFGHILMNOPQRSTUVZ';
     for (int sezione = 0; sezione < sezioni.length; sezione++) {
       bool hasMore = false;
@@ -458,7 +518,8 @@ class _OrariState extends State<Orari> {
                               (Theme.of(context).brightness == Brightness.light)
                           ? Colors.black
                           : Colors.white,
-                      fontSize: 16),
+                      fontSize: 16,
+                      fontFamily: 'CoreSans'),
                 ),
               ),
             ),
