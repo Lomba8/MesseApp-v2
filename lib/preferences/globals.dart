@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Globals {
-
   static final ThemeData lightTheme = ThemeData(
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
@@ -78,9 +77,9 @@ class Globals {
         color: Color.fromRGBO(105, 181, 201, 1),
       ),
       headline6: TextStyle(
-          fontSize: 36.0,
-          fontStyle: FontStyle.italic,
-          color: Color.fromRGBO(40, 41, 60, 1)), // rgb(40, 41, 60, 1)
+          color: Colors.white,
+          fontSize: 30,
+          fontWeight: FontWeight.bold), // rgb(40, 41, 60, 1)
       bodyText1: TextStyle(color: Colors.white54),
       bodyText2: TextStyle(
           fontSize: 20.0,
@@ -216,7 +215,8 @@ class Globals {
     },
     'verde': {
       'color': Color.fromRGBO(144, 237, 137, 0.7),
-      'textColor': Color.fromRGBO(72, 118, 63, 1), // TODO: scegliere un colore, quello di prima non si vedeva con il tema chiaro
+      'textColor': Color.fromRGBO(72, 118, 63,
+          1), // TODO: scegliere un colore, quello di prima non si vedeva con il tema chiaro
       'gradientColors': [
         Color.fromRGBO(21, 195, 65, 1.0),
         Color.fromRGBO(46, 208, 81, 1.0),
