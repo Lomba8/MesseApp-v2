@@ -1,10 +1,10 @@
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/preferences/globals.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 
 import '../registro/registro.dart';
 import 'menu_screen.dart';
@@ -26,10 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
 
   double _progress = 0;
+  VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = VideoPlayerController.asset('videos/loading.mp4')
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
 
     SharedPreferences.getInstance().then((prefs) {
       _username = prefs.getString('username');
@@ -60,6 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _firstInputFocusNode?.dispose();
     _secondInputFocusNode?.dispose();
+    _controller.dispose();
+
     super.dispose();
   }
 
@@ -78,25 +87,40 @@ class _LoginScreenState extends State<LoginScreen> {
         : _loader = 'images/loading_light.gif';
 
     if (splash) {
+      _controller.play();
       return Scaffold(
           backgroundColor: Colors.black,
-          body: Center(
-            child: Container(
-              width: media.size.width * 0.6,
-              height: media.size.width * 0.6,
-              child: FlareActor(
-                'flare/Splash.flr',
-                color: Theme.of(context).primaryColor,
-                animation: 'Go',
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ),
-            ),
-          ),
+          body: _controller.value.initialized
+              ? Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        height: MediaQuery.of(context).size.width * 0.7,
+                        child: VideoPlayer(_controller),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(),
           bottomNavigationBar: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: LinearProgressIndicator(
-              value: _progress,
+            padding: const EdgeInsets.all(30.0),
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height * 0.05),
+              child: SizedBox(
+                height: 2.0,
+                child: LinearProgressIndicator(
+                  value: _progress,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Theme.of(context).accentColor),
+                ),
+              ),
             ),
           ));
     }
