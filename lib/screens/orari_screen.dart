@@ -22,6 +22,12 @@ class _OrariState extends State<Orari> {
   String _selectedSbj;
   double _progress = 0;
   bool _downloading = false;
+  var prefs = orariUtils.prefs;
+
+  void resetprefs() async {
+    prefs.setBool('has_already_selected_class', false);
+    prefs.setString('selectedClass', '');
+  }
 
   bool get _hasSaturday {
     List orario = orariUtils.orari[selectedClass];
@@ -53,6 +59,7 @@ class _OrariState extends State<Orari> {
   void initState() {
     super.initState();
 
+    print(prefs.getBool('has_already_selected_class'));
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('@mipmap/splash');
     var initializationSettingsIOS = new IOSInitializationSettings();
@@ -95,7 +102,8 @@ class _OrariState extends State<Orari> {
                   icon: Icon(Icons.restore_page),
                   color: Colors.white,
                   onPressed: () {
-                    setState(() => orariUtils.selectedClass = null);
+                    resetprefs();
+                    setState(() {});
                   },
                 ),
                 Align(
@@ -139,12 +147,12 @@ class _OrariState extends State<Orari> {
                           ? Colors.black
                           : Colors.white,
                     ),
-                    onPressed: orariUtils.selectedClass == null
+                    onPressed: prefs.getString('selectedClass') == null
                         ? null
                         : () {
-                            downloadOrario(orariUtils.selectedClass);
+                            downloadOrario(prefs.getString('selectedClass'));
                             _showNotificationWithDefaultSound(
-                                orariUtils.selectedClass);
+                                prefs.getString('selectedClass'));
                             setState(() {
                               _downloading = true;
                               _progress = 0;
@@ -180,7 +188,15 @@ class _OrariState extends State<Orari> {
                     child: _selectionChildren,
                   ))),
           child: Container(
-            child: Text(orariUtils.selectedClass ?? 'SELEZIONA UNA CLASSE', textAlign: TextAlign.center),
+            margin: EdgeInsets.only(
+                top: (!prefs.getBool('has_already_selected_class'))
+                    ? MediaQuery.of(context).size.height / 3
+                    : 10.0),
+            child: Text(
+                (prefs.getBool('has_already_selected_class'))
+                    ? prefs.getString('selectedClass')
+                    : 'Tocca per scegliere la classe',
+                textAlign: TextAlign.center),
             width: double.infinity,
           ),
         ),
@@ -191,7 +207,7 @@ class _OrariState extends State<Orari> {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             children: _children),
-        orariUtils.selectedClass != null
+        prefs.getBool('has_already_selected_class')
             ? Padding(
                 padding:
                     const EdgeInsets.only(left: 18.0, top: 15.0, bottom: 15.0),
@@ -206,7 +222,7 @@ class _OrariState extends State<Orari> {
                         ),
                         children: <TextSpan>[
                       TextSpan(
-                        text: '(${orariUtils.selectedClass})',
+                        text: prefs.getString('selectedClass'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 25.0,
@@ -218,7 +234,7 @@ class _OrariState extends State<Orari> {
                     ])),
               )
             : SizedBox(),
-        selectedClass != null && selectedClass.isNotEmpty
+        prefs.getBool('has_already_selected_class')
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(children: <Widget>[
@@ -273,12 +289,12 @@ class _OrariState extends State<Orari> {
   List<Widget> get oggi {
     List<Widget> orario = [Container()];
     for (int j = 0;
-        j < orariUtils.orari[orariUtils.selectedClass].length;
+        j < orariUtils.orari[prefs.getString('selectedClass')].length;
         j++) {
       if ((j + 1) % 6 == 0 && !_hasSaturday)
         continue;
       else if (j % 6 == 0 &&
-          orariUtils.orari[orariUtils.selectedClass][j] !=
+          orariUtils.orari[prefs.getString('selectedClass')][j] !=
               '') //FIXME sesta ora inesistente
         orario.add(Expanded(
           child: AspectRatio(
@@ -286,21 +302,23 @@ class _OrariState extends State<Orari> {
             child: Padding(
               padding: const EdgeInsets.all(2.0),
               child: GestureDetector(
-                onTap: () => setState(() => _selectedSbj =
-                    (orariUtils.orari[orariUtils.selectedClass][j] ==
-                                _selectedSbj ||
-                            orariUtils.orari[orariUtils.selectedClass][j] == '')
-                        ? null
-                        : orariUtils.orari[orariUtils.selectedClass][j]),
+                onTap: () => setState(() => (orariUtils
+                                .orari[prefs.getString('selectedClass')][j] ==
+                            _selectedSbj ||
+                        orariUtils.orari[prefs.getString('selectedClass')][j] ==
+                            '')
+                    ? _selectedSbj = null
+                    : _selectedSbj =
+                        orariUtils.orari[prefs.getString('selectedClass')][j]),
                 child: AnimatedContainer(
                   duration: const Duration(seconds: 1),
                   decoration: BoxDecoration(
-                    color: orariUtils.colors[
-                                orariUtils.orari[orariUtils.selectedClass][j]]
+                    color: orariUtils.colors[orariUtils
+                                .orari[prefs.getString('selectedClass')][j]]
                             ?.withOpacity(_selectedSbj == null ||
                                     _selectedSbj ==
-                                        orariUtils
-                                            .orari[orariUtils.selectedClass][j]
+                                        orariUtils.orari[
+                                            prefs.getString('selectedClass')][j]
                                 ? 1
                                 : 0.1) ??
                         Colors.transparent,
@@ -308,12 +326,12 @@ class _OrariState extends State<Orari> {
                   ),
                   child: Center(
                     child: AutoSizeText(
-                      orariUtils.orari[orariUtils.selectedClass][j],
+                      orariUtils.orari[prefs.getString('selectedClass')][j],
                       style: TextStyle(
                           color: _selectedSbj == null ||
                                   _selectedSbj ==
-                                      orariUtils.orari[orariUtils.selectedClass]
-                                          [j]
+                                      orariUtils.orari[
+                                          prefs.getString('selectedClass')][j]
                               ? Colors.black54
                               : Colors.white10),
                       textAlign: TextAlign.center,
@@ -329,7 +347,7 @@ class _OrariState extends State<Orari> {
   }
 
   List<Widget> get _children {
-    List orario = orariUtils.orari[orariUtils.selectedClass];
+    List orario = orariUtils.orari[prefs.getString('selectedClass')];
     if (orario == null) return [];
     bool saturday = _hasSaturday;
     List<Widget> children = [Container()];
@@ -416,13 +434,19 @@ class _OrariState extends State<Orari> {
           children.add(GestureDetector(
             onTap: () {
               Navigator.of(context, rootNavigator: true).pop();
-              setState(
-                  () => orariUtils.selectedClass = '$anno${sezioni[sezione]}');
+              prefs.setBool('has_already_selected_class', true);
+              prefs.setString('selectedClass', '$anno${sezioni[sezione]}');
+              setState(() {
+                setState(() {
+                  prefs;
+                });
+              });
             },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: '$anno${sezioni[sezione]}' == orariUtils.selectedClass
+                color: '$anno${sezioni[sezione]}' ==
+                        prefs.getString('selectedClass')
                     ? Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
                         : Colors.black
@@ -433,7 +457,7 @@ class _OrariState extends State<Orari> {
                   sezioni[sezione],
                   style: TextStyle(
                       color: ('$anno${sezioni[sezione]}' ==
-                                  orariUtils.selectedClass) !=
+                                  prefs.getString('selectedClass')) !=
                               (Theme.of(context).brightness == Brightness.light)
                           ? Colors.black
                           : Colors.white,
