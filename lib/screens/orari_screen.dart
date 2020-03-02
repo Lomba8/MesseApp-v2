@@ -25,7 +25,6 @@ class _OrariState extends State<Orari> {
   var prefs = orariUtils.prefs;
 
   void resetprefs() async {
-    prefs.setBool('has_already_selected_class', false);
     prefs.setString('selectedClass', '');
   }
 
@@ -59,7 +58,6 @@ class _OrariState extends State<Orari> {
   void initState() {
     super.initState();
 
-    print(prefs.getBool('has_already_selected_class'));
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('@mipmap/splash');
     var initializationSettingsIOS = new IOSInitializationSettings();
@@ -189,11 +187,11 @@ class _OrariState extends State<Orari> {
                   ))),
           child: Container(
             margin: EdgeInsets.only(
-                top: (!prefs.getBool('has_already_selected_class'))
+                top: (prefs.getString('selectedClass') == '')
                     ? MediaQuery.of(context).size.height / 3
                     : 10.0),
             child: Text(
-                (prefs.getBool('has_already_selected_class'))
+                (prefs.getString('selectedClass') != '')
                     ? prefs.getString('selectedClass')
                     : 'Tocca per scegliere la classe',
                 textAlign: TextAlign.center),
@@ -207,7 +205,7 @@ class _OrariState extends State<Orari> {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             children: _children),
-        prefs.getBool('has_already_selected_class')
+        prefs.getString('selectedClass') != ''
             ? Padding(
                 padding:
                     const EdgeInsets.only(left: 18.0, top: 15.0, bottom: 15.0),
@@ -234,7 +232,7 @@ class _OrariState extends State<Orari> {
                     ])),
               )
             : SizedBox(),
-        prefs.getBool('has_already_selected_class')
+        prefs.getString('selectedClass') != ''
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(children: <Widget>[
@@ -311,7 +309,7 @@ class _OrariState extends State<Orari> {
                     : _selectedSbj =
                         orariUtils.orari[prefs.getString('selectedClass')][j]),
                 child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
+                  duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     color: orariUtils.colors[orariUtils
                                 .orari[prefs.getString('selectedClass')][j]]
@@ -332,7 +330,7 @@ class _OrariState extends State<Orari> {
                                   _selectedSbj ==
                                       orariUtils.orari[
                                           prefs.getString('selectedClass')][j]
-                              ? Colors.black54
+                              ? Colors.black.withOpacity(0.75)
                               : Colors.white10),
                       textAlign: TextAlign.center,
                     ),
@@ -371,7 +369,7 @@ class _OrariState extends State<Orari> {
         onTap: () => setState(() => _selectedSbj =
             (orario[i] == _selectedSbj || orario[i] == '') ? null : orario[i]),
         child: AnimatedContainer(
-          duration: const Duration(seconds: 1),
+          duration: const Duration(milliseconds: 200),
           color: orariUtils.colors[orario[i]]?.withOpacity(
                   _selectedSbj == null || _selectedSbj == orario[i]
                       ? 1
@@ -382,7 +380,7 @@ class _OrariState extends State<Orari> {
               orario[i],
               style: TextStyle(
                   color: _selectedSbj == null || _selectedSbj == orario[i]
-                      ? Colors.black54
+                      ? Colors.black.withOpacity(0.75)
                       : Colors.white10),
               textAlign: TextAlign.center,
             ),
@@ -396,7 +394,7 @@ class _OrariState extends State<Orari> {
   GridView get _selectionChildren {
     TextStyle titleStyle = TextStyle(
         color: Theme.of(context).brightness == Brightness.light
-            ? Colors.black54
+            ? Colors.black.withOpacity(0.75)
             : Colors.white54,
         fontSize: 16);
     List<Widget> children = [
@@ -434,7 +432,6 @@ class _OrariState extends State<Orari> {
           children.add(GestureDetector(
             onTap: () {
               Navigator.of(context, rootNavigator: true).pop();
-              prefs.setBool('has_already_selected_class', true);
               prefs.setString('selectedClass', '$anno${sezioni[sezione]}');
               setState(() {
                 setState(() {
