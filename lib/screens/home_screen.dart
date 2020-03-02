@@ -43,12 +43,8 @@ class _HomeState extends State<Home> {
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      orariUtils.getSelected();
       _repeatNotification();
     });
-
-    print(
-        'init home screen ' + orariUtils.has_already_selected_class.toString());
 
     print('init home screen ' + orariUtils.selectedClass.toString());
   }

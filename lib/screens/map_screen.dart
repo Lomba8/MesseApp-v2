@@ -28,8 +28,7 @@ class _MapScreenState extends State<MapScreen> {
                 scrollDirection: Axis.horizontal,
                 child: GestureDetector(
                   onTapUp: (details) {
-                    print('click: ${details.localPosition}');
-                    final Offset start = Offset(14, _scroll ? 16 : 400);
+                    final Offset start = Offset(14, _scroll ? 16 : 800);
                     selectedClass = [];
                     floors[_floor.toInt() + 2].classes.forEach((cls, data) {
                       if (data.selectable &&
@@ -51,7 +50,7 @@ class _MapScreenState extends State<MapScreen> {
                     size: _scroll
                         ? Size(1000, 200)
                         : Size(MediaQuery.of(context).size.width,
-                            MediaQuery.of(context).size.width * 3 / 5),
+                            MediaQuery.of(context).size.width),
                     painter: MapPainter(selectedClass, floor: _floor.toInt()),
                   ),
                 ),
@@ -145,48 +144,35 @@ class MapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // TODO: le porte?
-    double cropWidth = size.width / 1000, cropHeight = size.height / 600;
-    if (size.width / size.height == 5) cropHeight *= 3;
-    /*_paint.color = Colors.grey[700];
+    double cropWidth = size.width / 1000;
+    _paint.color = Colors.grey[700];
     canvas.drawPaint(_paint);
-    _paint.color = border;*/
+    _paint.color = border;
 
-    _paintFloor(canvas, floors[floor + 2], cropWidth, cropHeight,
-        size.width / size.height);
+    _paintFloor(canvas, floors[floor + 2], cropWidth, size.width / size.height);
   }
 
-  void _paintFloor(Canvas canvas, Floor floor, double cropWidth,
-      double cropHeight, double ratio) {
-    final Offset start = Offset(14, ratio == 5 ? 16 : 400);
+  void _paintFloor(Canvas canvas, Floor floor, double crop, double ratio) {
+    final Offset start = Offset(14, ratio == 5 ? 16 : 800);
 
     decorations.forEach((decoration) {
       canvas.drawPath(
-          decoration.getFill(cropWidth, _paint, translateY: start.dy), _paint);
+          decoration.getFill(crop, _paint, translateY: start.dy), _paint);
       canvas.drawPath(
-          decoration.getStroke(cropWidth, _paint,
+          decoration.getStroke(crop, _paint,
               translateY: start.dy, defaultColor: border),
           _paint);
     });
 
-    Path path = floor.school.create(
-        cropWidth: cropWidth, cropHeight: cropHeight, translation: start);
-
-    _paint.color = Colors.lime[900]; //.withAlpha(128);
-    _paint.style = PaintingStyle.fill;
-    canvas.drawPath(path, _paint);
-    _paint.color = border;
-    _paint.style = PaintingStyle.stroke;
-    canvas.drawPath(path, _paint);
-
     floor.classes.forEach((aula, data) {
       canvas.drawPath(
-          data.getFill(cropWidth, _paint,
+          data.getFill(crop, _paint,
               translateX: start.dx,
               translateY: start.dy,
               color: _selectedClass.contains(aula) ? Colors.yellow[700] : null),
           _paint);
       canvas.drawPath(
-          data.getStroke(cropWidth, _paint,
+          data.getStroke(crop, _paint,
               translateX: start.dx, translateY: start.dy, defaultColor: border),
           _paint);
     });
