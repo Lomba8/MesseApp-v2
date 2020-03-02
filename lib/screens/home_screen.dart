@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 
@@ -44,7 +46,7 @@ class _HomeState extends State<Home> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       orariUtils.getSelected();
-      _repeatNotification();
+      //_repeatNotification();
     });
   }
 
@@ -52,7 +54,7 @@ class _HomeState extends State<Home> {
     var prefs = await SharedPreferences.getInstance();
     String compleanno = prefs.getString('compleanno');
     var data = compleanno.split('-');
-    await flutterLocalNotificationsPlugin.schedule(
+    flutterLocalNotificationsPlugin.schedule(
         1,
         'Tanti auguri🎉🎁',
         '${RegistroApi.nome}', //FIXME: le notifiche non spuntano la data di compleanno
@@ -69,6 +71,7 @@ class _HomeState extends State<Home> {
         child: CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
+              brightness: Theme.of(context).brightness,
               centerTitle: true,
               elevation: 0,
               pinned: true,

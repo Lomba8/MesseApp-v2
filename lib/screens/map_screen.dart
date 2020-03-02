@@ -1,6 +1,7 @@
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/utils/mapUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class MapScreen extends StatefulWidget {
   //final Map<String, List<String>> activities;   TODO: attualmente gestito internamente, deve essere lanciata la route con il parametro
@@ -21,6 +22,34 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) => Material(
         child: CustomScrollView(slivers: [
           SliverAppBar(
+            leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white60
+                      : Colors.black54,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white60
+                        : Colors.black54,
+                  ),
+                  onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                            child: SearchDialog()),
+                      )),
+            ],
+            brightness: Theme.of(context).brightness,
             elevation: 0,
             pinned: true,
             title: Text(
@@ -39,8 +68,9 @@ class _MapScreenState extends State<MapScreen> {
               size: Size.infinite,
             ),
           ),
-          SliverFillRemaining(
-            child: Stack(children: [
+          SliverList(
+              delegate: SliverChildListDelegate([
+            Stack(overflow: Overflow.clip, children: [
               GestureDetector(
                 onTapUp: (details) {
                   final Offset start = Offset(14, 800);
@@ -57,7 +87,8 @@ class _MapScreenState extends State<MapScreen> {
                   setState(() {});
                 },
                 child: CustomPaint(
-                  size: Size.infinite,
+                  size: Size.fromHeight(
+                      MediaQuery.of(context).size.width * 903 / 1000 + 80),
                   painter: MapPainter(selectedClass, floor: _floor.toInt()),
                 ),
               ),
@@ -66,20 +97,18 @@ class _MapScreenState extends State<MapScreen> {
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Center(
-                              child: Text(
-                            _floor.toStringAsFixed(0),
-                            style: TextStyle(color: Colors.white),
-                          )),
-                        ),
+                      Container(
+                        margin: const EdgeInsets.all(20),
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Center(
+                            child: Text(
+                          _floor.toStringAsFixed(0),
+                          style: TextStyle(color: Colors.white),
+                        )),
                       ),
                       Expanded(
                         child: Slider(
@@ -98,8 +127,80 @@ class _MapScreenState extends State<MapScreen> {
                     ]),
               ),
             ]),
-          )
+          ]))
         ]),
+      );
+}
+
+class SearchDialog extends StatefulWidget {
+  @override
+  _SearchDialogState createState() => _SearchDialogState();
+}
+
+class _SearchDialogState extends State<SearchDialog> {
+  TextEditingController _controller = TextEditingController();
+  List<String> _hints = [];
+
+  @override
+  void initState() {
+    super.initState();
+    floors.forEach((floor) => floor.classes.forEach((cls, data) {
+          if (data.selectable) _hints.add(cls);
+        }));
+  }
+
+  @override
+  Widget build(BuildContext context) => CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            pinned: true,
+            centerTitle: true,
+            title: TextField(
+              controller: _controller,
+              onChanged: (str) => setState(() {
+                _hints = [];
+                floors.forEach((floor) => floor.classes.forEach((cls, data) {
+                      if (data.selectable && cls.toUpperCase().contains(str.toUpperCase())) _hints.add(cls);
+                    }));
+              }),
+              style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.white
+                      : Colors.black),
+            ),
+            leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.white60
+                      : Colors.black54,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.clear,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.white60
+                      : Colors.black54,
+                ),
+                onPressed: () => _controller.clear(),
+              )
+            ],
+          ),
+          SliverList(
+              delegate: SliverChildListDelegate(_hints
+                  .map((cls) => Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          cls,
+                          textAlign: TextAlign.center,
+                        ),
+                      ))
+                  .toList()))
+        ],
       );
 }
 

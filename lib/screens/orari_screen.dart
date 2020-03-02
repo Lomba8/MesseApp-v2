@@ -87,6 +87,7 @@ class _OrariState extends State<Orari> {
   Widget build(BuildContext context) {
     return CustomScrollView(physics: ClampingScrollPhysics(), slivers: [
       SliverAppBar(
+        brightness: Theme.of(context).brightness,
         elevation: 0,
         centerTitle: true,
         title: Stack(
@@ -457,28 +458,28 @@ class _OrariState extends State<Orari> {
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '   _ _ _ _ _',
+          '_ _ _ _ _ _ _',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '   _ _ _ _ _',
+          '_ _ _ _ _ _ _',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '   _ _ _ _ _',
+          '_ _ _ _ _ _ _',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '   _ _ _ _ _',
+          '_ _ _ _ _ _ _',
           style: TextStyle(fontSize: 5.0),
         ),
       ),

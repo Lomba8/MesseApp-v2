@@ -43,6 +43,7 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
         builder: (context) => CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
+              brightness: Theme.of(context).brightness,
               leading: IconButton(
                   icon: Icon(
                     Icons.arrow_back_ios,

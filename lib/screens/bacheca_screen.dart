@@ -15,6 +15,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
           builder: (context) => CustomScrollView(
             slivers: <Widget>[
               SliverAppBar(
+                brightness: Theme.of(context).brightness,
                 leading: IconButton(
                     icon: Icon(
                       Icons.arrow_back_ios,

@@ -113,6 +113,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
           SliverAppBar(
+            brightness: Theme.of(context).brightness,
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: Text(
