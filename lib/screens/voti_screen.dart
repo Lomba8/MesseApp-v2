@@ -278,47 +278,14 @@ class _VotiState extends State<Voti> {
                                             .bodyText2
                                             .fontSize),
                               )),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.0),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  flex: (average * 10).round(),
-                                  child: AnimatedContainer(
-                                    duration: Duration(seconds: 1),
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            bottom: BorderSide(
-                                                width: 2,
-                                                color: average < 0 ||
-                                                        average.isNaN
-                                                    ? Colors.blue
-                                                    : average < 6
-                                                        ? Colors.deepOrange[900]
-                                                        : Colors.green))),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: (100 - average * 10).round(),
-                                  child: AnimatedContainer(
-                                    duration: Duration(seconds: 1),
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            bottom: BorderSide(
-                                                width: 2,
-                                                color: average < 0 ||
-                                                        average.isNaN
-                                                    ? Colors.blue.withAlpha(50)
-                                                    : average < 6
-                                                        ? Colors.deepOrange[900]
-                                                            .withAlpha(50)
-                                                        : Colors.green
-                                                            .withAlpha(50)))),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          Container(
+                              height: 2,
+                              padding: EdgeInsets.symmetric(horizontal: 25.0),
+                              child: LinearProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(Voto.getColor(average)),
+                                value: average / 10,
+                                backgroundColor: Voto.getColor(average).withAlpha(50)
+                              )),
                           SizedBox(
                             height: 20.0,
                           )

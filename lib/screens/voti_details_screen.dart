@@ -126,22 +126,24 @@ class VotiDetailsState extends State<VotiDetails> {
         drawVerticalLine: true,
         getDrawingVerticalLine: (value) => FlLine(
             color: Theme.of(context).brightness == Brightness.dark
-                ? value == 0 ? Colors.white70 : Colors.white10
-                : value == 0 ? Colors.black87 : Colors.black12,
-            strokeWidth: value == 0 ? 2 : 1),
+                ? Colors.white10
+                : Colors.black12,
+            strokeWidth: 1),
         drawHorizontalLine: true,
         getDrawingHorizontalLine: (value) => FlLine(
             color: Theme.of(context).brightness == Brightness.dark
-                ? value == 0 ? Colors.white70 : Colors.white10
-                : value == 0 ? Colors.black87 : Colors.black12,
-            strokeWidth: value == 0 ? 2 : 1),
+                ? Colors.white10
+                : Colors.black12,
+            strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
           bottomTitles: SideTitles(showTitles: false),
           leftTitles: SideTitles(
             reservedSize: 25,
             textStyle: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 15,
             ),
@@ -149,7 +151,19 @@ class VotiDetailsState extends State<VotiDetails> {
             showTitles: true,
             getTitles: (value) => value.toInt().toString(),
           )),
-      borderData: FlBorderData(show: false),
+      borderData: FlBorderData(
+          show: true,
+          border: Border(
+              left: BorderSide(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white70
+                      : Colors.black87,
+                  width: 2),
+              bottom: BorderSide(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white70
+                      : Colors.black87,
+                  width: 2))),
       lineBarsData: [
         LineChartBarData(
           gradientFrom: Offset(0.5, 0),

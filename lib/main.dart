@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
@@ -29,8 +30,6 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
     //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     //_signIn.signIn();
-    IosDeviceInfo iosInfo;
-    AndroidDeviceInfo androidInfo;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     final prefs = await SharedPreferences.getInstance();
     final PackageInfo pkgInfo = await PackageInfo.fromPlatform();

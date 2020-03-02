@@ -221,7 +221,7 @@ final List<PathData> scuole = [
   PathData(
     builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
     fillColor: Colors.lime[900],
-    offset: Offset(1000, -475),
+    offset: Offset(986, -475),
     selectable: false
   ),
   PathData(
@@ -229,7 +229,7 @@ final List<PathData> scuole = [
     stroke: PathBuilder('''h-513m0,-38h513m0,-38h-513m0,-38h513m0,-38h-114m-285,0h-114m0,-38h114m285,0h114m0,-38h-114m-285,0h-114
     v228m57,0v-228m57,0v228m57,0v-114m57,0v114m57,0v-114m57,0v114m57,0v-228m57,0v228m57,0v-228''', close: false),
     fillColor: Colors.lime[900],
-    offset: Offset(1000, -475),
+    offset: Offset(986, -475),
     selectable: false
   )
 ];
