@@ -73,7 +73,9 @@ class _MapScreenState extends State<MapScreen> {
             Stack(overflow: Overflow.clip, children: [
               GestureDetector(
                 onTapUp: (details) {
-                  final Offset start = Offset(14, 800);
+                  print(details.localPosition);
+                  final Offset start = Offset(14, 1000/MediaQuery.of(context).size.width * 80+703);
+                  print(start);
                   selectedClass = [];
                   floors[_floor.toInt() + 2].classes.forEach((cls, data) {
                     if (data.selectable &&
