@@ -122,8 +122,8 @@ class RegistroApi {
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
     voti.fromJson(data['voti']);
     agenda.fromJson(data['agenda']);
-    subjects.fromJson(data['subjects']);
-    bacheca.fromJson(data['bacheca']);
+    // subjects.fromJson(data['subjects']);
+    //   bacheca.fromJson(data['bacheca']);
   }
 }
 
