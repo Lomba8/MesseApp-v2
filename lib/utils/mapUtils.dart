@@ -109,7 +109,7 @@ final List<Floor> floors = [
   // 0
   Floor({
     'scuola': scuole[0],
-    'succursale': scuole[2].withColor(fillColor: Colors.white30),
+    'succursale': scuole[3].withColor(fillColor: Colors.white30),
     'BIBLIOTECA': class_3BIS,
     'AULA 1': class_1,
     'AULA 2': class_2,
@@ -128,7 +128,7 @@ final List<Floor> floors = [
   // 1
   Floor({
     'scuola': scuole[1],
-    'succursale': scuole[2].withColor(fillColor: Colors.white30),
+    'succursale': scuole[3].withColor(fillColor: Colors.white30),
     'AULA AUDIOVISIVI': class_3BIS,
     'AULA 11': class_1,
     'AULA 12': class_2,
@@ -149,7 +149,7 @@ final List<Floor> floors = [
   // 2
   Floor({
     'scuole': scuole[1],
-    'succursale': scuole[2].withColor(fillColor: Colors.white30),
+    'succursale': scuole[3].withColor(fillColor: Colors.white30),
     'LABORATORIO CHIMICA': class_3BIS,
     'AULA 21': class_1,
     'AULA 22': class_2,
@@ -165,12 +165,12 @@ final List<Floor> floors = [
     'AULA 30': class_3.getSymmetric(),
     'AULA 30 BIS': class_3BIS.getSymmetric(),
     'bagno1': bagnoM,
-    'bagno2': bagnoF.getSymmetric()
+    'bagno2': bagnoF.getSymmetric() 
   }),
   // 3
   Floor({
     'scuola': scuole[0],
-    'succursale': scuole[2].withColor(fillColor: Colors.white30),
+    'succursale': scuole[3].withColor(fillColor: Colors.white30),
     'BIBLIOTECA':
         PathData(builder: pathBuilders['biblio'], offset: Offset(379, 169)),
     'bagno1': bagnoF,
@@ -225,7 +225,9 @@ final List<PathData> scuole = [
     selectable: false
   ),
   PathData(
-    builder: PathBuilder('''v38h57.5''', close: false),
+    builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
+    stroke: PathBuilder('''h-513m0,-38h513m0,-38h-513m0,-38h513m0,-38h-114m-285,0h-114m0,-38h114m285,0h114m0,-38h-114m-285,0h-114
+    v228m57,0v-228m57,0v228m57,0v-114m57,0v114m57,0v-114m57,0v114m57,0v-228m57,0v228m57,0v-228''', close: false),
     fillColor: Colors.lime[900],
     offset: Offset(1000, -475),
     selectable: false
