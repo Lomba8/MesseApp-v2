@@ -46,8 +46,6 @@ class _HomeState extends State<Home> {
       orariUtils.getSelected();
       _repeatNotification();
     });
-
-    print('init home screen ' + orariUtils.selectedClass.toString());
   }
 
   Future<void> _repeatNotification() async {
