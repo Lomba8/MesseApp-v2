@@ -44,7 +44,7 @@ class RegistroApi {
       Map<String, String> headers = {
         'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
         'Content-Type': 'application/json',
-        'User-Agent': 'CVVS/std/1.7.9',
+        'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       };
       body["pass"] = password;
       body["uid"] = username;
@@ -140,7 +140,7 @@ abstract class RegistroData {
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
       'Content-Type': 'application/json',
-      'User-Agent': 'CVVS/std/1.7.9',
+      'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       'Z-Auth-Token': RegistroApi.token,
       'Z-If-None-Match': etag
     };

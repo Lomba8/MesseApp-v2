@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
 
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -25,10 +22,9 @@ class _OrariState extends State<Orari> {
   String _selectedSbj;
   double _progress = 0;
   bool _downloading = false;
-  var prefs = orariUtils.prefs;
 
   bool get _hasSaturday {
-    List orario = orariUtils.orari[orariUtils.selectedClass];
+    List orario = orariUtils.orari[selectedClass];
     if (orario == null) return true;
     for (int i = 5; i < orario.length; i += 6) if (orario[i] != '') return true;
     return false;
@@ -37,14 +33,7 @@ class _OrariState extends State<Orari> {
   Future<void> downloadOrario(String classe) async {
     if (Platform.isAndroid) {
       try {
-        // TODO: Pietro se vuoi fare i tuoui strani download per android
-        /*
-          await ImageDownloader.downloadImage(url,
-                                     destination: AndroidDestinationType.custom('sample')
-                                     ..inExternalFilesDir()
-                                     ..subDirectory("custom/sample.gif"),
-         );
-       */
+        // TODO: Pietro se vuoi fare i tuoi strani download per android
         var imageId =
             await ImageDownloader.downloadImage(orari[classe + 'url']);
       } catch (e) {
@@ -52,22 +41,12 @@ class _OrariState extends State<Orari> {
       }
     } else if (Platform.isIOS) {
       try {
-        try {
-          var imageId =
-              await ImageDownloader.downloadImage(orari[classe + 'url']);
-        } catch (e) {
-          print(e);
-        }
+        var imageId =
+            await ImageDownloader.downloadImage(orari[classe + 'url']);
       } catch (e) {
         print(e);
       }
     }
-  }
-
-  void resetprefs() async {
-    prefs = await SharedPreferences.getInstance();
-    prefs.setBool('has_already_selected_class', false);
-    prefs.setString('selectedClass', '');
   }
 
   @override
@@ -101,7 +80,6 @@ class _OrariState extends State<Orari> {
 
   @override
   Widget build(BuildContext context) {
-    rebuildAllChildren(context);
     return CustomScrollView(physics: ClampingScrollPhysics(), slivers: [
       SliverAppBar(
         elevation: 0,
@@ -117,9 +95,7 @@ class _OrariState extends State<Orari> {
                   icon: Icon(Icons.restore_page),
                   color: Colors.white,
                   onPressed: () {
-                    resetprefs();
-                    getSelected();
-                    setState(() {});
+                    setState(() => orariUtils.selectedClass = null);
                   },
                 ),
                 Align(
@@ -192,6 +168,22 @@ class _OrariState extends State<Orari> {
       ),
       SliverList(
           delegate: SliverChildListDelegate([
+        GestureDetector(
+          onTap: () => showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (context) => Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 15.0),
+                    child: _selectionChildren,
+                  ))),
+          child: Container(
+            child: Text(orariUtils.selectedClass ?? 'SELEZIONA UNA CLASSE', textAlign: TextAlign.center),
+            width: double.infinity,
+          ),
+        ),
         GridView.count(
             padding: EdgeInsets.only(right: 22.0),
             crossAxisCount: _hasSaturday ? 7 : 6,
@@ -199,10 +191,7 @@ class _OrariState extends State<Orari> {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             children: _children),
-        !orariUtils.has_already_selected_class
-            ? _selectionChildren
-            : SizedBox(),
-        orariUtils.has_already_selected_class
+        orariUtils.selectedClass != null
             ? Padding(
                 padding:
                     const EdgeInsets.only(left: 18.0, top: 15.0, bottom: 15.0),
@@ -229,7 +218,7 @@ class _OrariState extends State<Orari> {
                     ])),
               )
             : SizedBox(),
-        orariUtils.has_already_selected_class
+        selectedClass != null && selectedClass.isNotEmpty
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(children: <Widget>[
@@ -303,7 +292,8 @@ class _OrariState extends State<Orari> {
                             orariUtils.orari[orariUtils.selectedClass][j] == '')
                         ? null
                         : orariUtils.orari[orariUtils.selectedClass][j]),
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(seconds: 1),
                   decoration: BoxDecoration(
                     color: orariUtils.colors[
                                 orariUtils.orari[orariUtils.selectedClass][j]]
@@ -362,7 +352,8 @@ class _OrariState extends State<Orari> {
       children.add(GestureDetector(
         onTap: () => setState(() => _selectedSbj =
             (orario[i] == _selectedSbj || orario[i] == '') ? null : orario[i]),
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(seconds: 1),
           color: orariUtils.colors[orario[i]]?.withOpacity(
                   _selectedSbj == null || _selectedSbj == orario[i]
                       ? 1
@@ -423,18 +414,12 @@ class _OrariState extends State<Orari> {
       for (int anno = 1; anno <= 5; anno++) {
         if (orariUtils.orari.containsKey('$anno${sezioni[sezione]}')) {
           children.add(GestureDetector(
-            onTap: () => setState(
-                () => orariUtils.selectedClass = '$anno${sezioni[sezione]}'),
-            onDoubleTap: () {
-              orariUtils.selectedClass = '$anno${sezioni[sezione]}';
-              prefs.setBool('has_already_selected_class', true);
-              prefs.setString('selectedClass', orariUtils.selectedClass);
-              setState(() {
-                orariUtils.has_already_selected_class = true;
-              });
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              setState(
+                  () => orariUtils.selectedClass = '$anno${sezioni[sezione]}');
             },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 100),
+            child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: '$anno${sezioni[sezione]}' == orariUtils.selectedClass

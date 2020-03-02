@@ -21,10 +21,11 @@ final List<PathData> decorations = [
   PathData(
       builder: PathBuilder('M0,-182h1000v382h-2000'),
       offset: Offset(0, 0),
-      fillColor: Colors.lightGreen.withAlpha(100)),
+      fillColor: Colors.lightGreen.withAlpha(100),
+      strokeColor: Colors.transparent),
   PathData(
-      builder: PathBuilder('v-395l-292,75v320'),
-      stroke: PathBuilder('M0,-395l-126.6,32.5M-292,-182V-320l126.6,-32.5',
+      builder: PathBuilder('v-435h-1000V-182H-292v182', close: true, startFromOrigin: true),
+      stroke: PathBuilder('M0,-395l-126.6,32.5M-1000,-182H-292V-320l126.6,-32.5',
           close: false),
       offset: Offset(1000, 0),
       fillColor: Colors.grey),
@@ -55,7 +56,8 @@ final PathData classLab =
     PathData(builder: pathBuilders['class4'], offset: const Offset(103, 0));
 final PathData lab =
     PathData(builder: pathBuilders['lab'], offset: const Offset(379, 169));
-final PathData lab2 = PathData(builder: pathBuilders['lab2'], offset: const Offset(593, 169));
+final PathData lab2 =
+    PathData(builder: pathBuilders['lab2'], offset: const Offset(593, 169));
 
 final PathData bagnoM = PathData(
     builder: pathBuilders['bagno'],
@@ -73,14 +75,22 @@ final PathData bagnoF = PathData(
 /// [nome classe]:[maschera della classe]&[pos x],[pos y]{[selectable (true|false)]&[default fill color (HEX)]}
 final List<Floor> floors = [
   // -2
-  Floor(scuole[0],
-      {'PALESTRA 1': palestra1, 'PALESTRA 2': palestra1.getSymmetric()}),
+  Floor({
+    'scuola': scuole[0],
+    'succursale': scuole[2].withColor(fillColor: Colors.transparent),
+    'PALESTRA 1': palestra1,
+    'PALESTRA 2': palestra1.getSymmetric()
+  }),
   // -1
-  Floor(scuole[0], {
+  Floor({
+    'scuola': scuole[0],
+    'succursale': scuole[2],
     'PALESTRINA': class_3BIS,
     'LABORATORIO BIOLOGIA': classLab,
-    'LABORATORIO ROBOTICA':
-        PathData(builder: pathBuilders['class4'], offset: Offset(319, 0)),
+    'LABORATORIO ROBOTICA': PathData(
+        builder: pathBuilders['class4'],
+        stroke: pathBuilders['class4v2'],
+        offset: Offset(319, 0)),
     'AULA MAGNA':
         PathData(builder: pathBuilders['aulamgn'], offset: Offset(379, 169)),
     'LABORATORIO CHIMICA 3': classLab.getSymmetric(),
@@ -97,7 +107,9 @@ final List<Floor> floors = [
         selectable: false)
   }),
   // 0
-  Floor(scuole[0], {
+  Floor({
+    'scuola': scuole[0],
+    'succursale': scuole[2].withColor(fillColor: Colors.white30),
     'BIBLIOTECA': class_3BIS,
     'AULA 1': class_1,
     'AULA 2': class_2,
@@ -114,7 +126,9 @@ final List<Floor> floors = [
     'bagno2': bagnoF.getSymmetric()
   }),
   // 1
-  Floor(scuole[1], {
+  Floor({
+    'scuola': scuole[1],
+    'succursale': scuole[2].withColor(fillColor: Colors.white30),
     'AULA AUDIOVISIVI': class_3BIS,
     'AULA 11': class_1,
     'AULA 12': class_2,
@@ -133,7 +147,9 @@ final List<Floor> floors = [
     'bagno2': bagnoM.getSymmetric()
   }),
   // 2
-  Floor(scuole[1], {
+  Floor({
+    'scuole': scuole[1],
+    'succursale': scuole[2].withColor(fillColor: Colors.white30),
     'LABORATORIO CHIMICA': class_3BIS,
     'AULA 21': class_1,
     'AULA 22': class_2,
@@ -152,7 +168,9 @@ final List<Floor> floors = [
     'bagno2': bagnoF.getSymmetric()
   }),
   // 3
-  Floor(scuole[1], {
+  Floor({
+    'scuola': scuole[0],
+    'succursale': scuole[2].withColor(fillColor: Colors.white30),
     'BIBLIOTECA':
         PathData(builder: pathBuilders['biblio'], offset: Offset(379, 169)),
     'bagno1': bagnoF,
@@ -161,11 +179,9 @@ final List<Floor> floors = [
 ];
 
 class Floor {
-  PathBuilder school;
-  PathBuilder succursale;
   Map<String, PathData> classes;
 
-  Floor(this.school, this.classes, {this.succursale}) {
+  Floor(this.classes) {
     classes['decoration0'] = PathData(
         builder: pathBuilders['stairs'],
         offset: Offset(-7, 46),
@@ -188,11 +204,32 @@ class Floor {
   }
 }
 
-final List<PathBuilder> scuole = [
-  PathBuilder(
+final List<PathData> scuole = [
+  PathData(
+    builder: PathBuilder(
       'v46h-7v50h7v73h103v-48h276v48h214v-48h276v48h103v-73h7v-50h-7v-46'),
-  PathBuilder(
-      'v46h-7v50h7v73h103v-48h276v48h92v-30h30v30h92v-48h276v48h103v-73h7v-50h-7v-46')
+    fillColor: Colors.lime[900],
+    selectable: false,
+  ),
+  PathData(
+    builder: PathBuilder(
+      'v46h-7v50h7v73h103v-48h276v48h92v-30h30v30h92v-48h276v48h103v-73h7v-50h-7v-46'),
+    fillColor: Colors.lime[900],
+    selectable: false,
+  ),
+  // SUCCURSALE
+  PathData(
+    builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
+    fillColor: Colors.lime[900],
+    offset: Offset(1000, -475),
+    selectable: false
+  ),
+  PathData(
+    builder: PathBuilder('''v38h57.5''', close: false),
+    fillColor: Colors.lime[900],
+    offset: Offset(1000, -475),
+    selectable: false
+  )
 ];
 final Map<String, PathBuilder> pathBuilders = {
   'tree': PathBuilder(
@@ -203,7 +240,8 @@ final Map<String, PathBuilder> pathBuilders = {
   'class1': PathBuilder('M0,50h85v-50h-85v30', close: false),
   'class2': PathBuilder('M101,-40v40h-101v-50h81v10', close: false),
   'class3': PathBuilder('M103,-73v73h-103v-73h83', close: false),
-  'class4': PathBuilder('h60v121h-60'),
+  'class4': PathBuilder('M0,26v-26h60v121h-60v-75', close: false),
+  'class4v2': PathBuilder('M60,50v-50h-60v121h60v-51', close: false),
   'gym': PathBuilder('h216v121h-216'),
   'gym2': PathBuilder('h156v121h-156'),
   'stairs': PathBuilder(
@@ -279,6 +317,14 @@ class PathData {
       stroke: stroke,
       strokeColor: strokeColor,
       symmetric: !symmetric);
+  PathData withColor({Color fillColor, Color strokeColor}) => PathData(
+      builder: builder,
+      fillColor: fillColor ?? this.fillColor,
+      offset: offset,
+      selectable: selectable,
+      stroke: stroke,
+      strokeColor: strokeColor ?? this.strokeColor,
+      symmetric: symmetric);
 }
 
 class PathBuilder extends PathProxy {
