@@ -188,8 +188,8 @@ class _OrariState extends State<Orari> {
                   ))),
           child: Container(
             margin: EdgeInsets.only(
-                top: (prefs.getString('selectedClass') == '' &&
-                        prefs.getString('selectedClass') != null)
+                top: (prefs.getString('selectedClass') == '' ||
+                        prefs.getString('selectedClass') == null)
                     ? MediaQuery.of(context).size.height / 3
                     : 10.0),
             child: Text(
@@ -451,35 +451,35 @@ class _OrariState extends State<Orari> {
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '_ _ _ _ _ _ _',
+          '   _ _ _ _ _ ',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '_ _ _ _ _ _ _',
+          '   _ _ _ _ _ ',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '_ _ _ _ _ _ _',
+          '   _ _ _ _ _ ',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '_ _ _ _ _ _ _',
+          '   _ _ _ _ _ ',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
       Padding(
         padding: EdgeInsets.only(left: 3.0),
         child: Text(
-          '_ _ _ _ _ _ _',
+          '   _ _ _ _ _ ',
           style: TextStyle(fontSize: 5.0),
         ),
       ),
