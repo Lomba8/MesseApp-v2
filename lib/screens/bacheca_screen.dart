@@ -1,3 +1,4 @@
+import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ class BachecaScreen extends StatefulWidget {
 }
 
 class _BachecaScreenState extends State<BachecaScreen> {
+  Comunicazione _expanded;
+
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Builder(
@@ -19,7 +22,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                 leading: IconButton(
                     icon: Icon(
                       Icons.arrow_back_ios,
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : Colors.black54,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white60
+                          : Colors.black54,
                     ),
                     onPressed: () {
                       Navigator.pop(context);
@@ -42,14 +47,44 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         Size.fromHeight(MediaQuery.of(context).size.width / 8)),
               ),
               SliverList(
-                  delegate: SliverChildListDelegate(
-                RegistroApi.bacheca.data
-                    .map<Widget>((c) => ListTile(
-                          title: Text(c.title, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis,),
-                          trailing: Icon(MdiIcons.filePdf),
-                        ))
-                    .toList(),
-              ))
+                  delegate: SliverChildListDelegate([
+                ExpansionPanelList(
+                  expansionCallback: (panelIndex, isExpanded) => setState(() {
+                    setState(() {
+                      _expanded = isExpanded
+                          ? null
+                          : RegistroApi.bacheca.data[panelIndex];
+                      if (RegistroApi.bacheca.data[panelIndex].content == null)
+                        RegistroApi.bacheca.data[panelIndex]
+                            .loadContent(() => setState(() {}));
+                    });
+                  }),
+                  children: RegistroApi.bacheca.data
+                      .map<ExpansionPanel>((c) => ExpansionPanel(
+                            isExpanded: c == _expanded,
+                            headerBuilder: (context, isExpanded) => ListTile(
+                              title: Text(
+                                c.title,
+                                textAlign: TextAlign.center,
+                                maxLines: isExpanded ? 100 : 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              leading: Icon(MdiIcons.filePdf),
+                            ),
+                            body: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: c.content == null
+                                  ? LinearProgressIndicator(
+                                      value: null,
+                                    )
+                                  : Text(c.content,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1),
+                            ),
+                          ))
+                      .toList(),
+                )
+              ]))
             ],
           ),
         ),

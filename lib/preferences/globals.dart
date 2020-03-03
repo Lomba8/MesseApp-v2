@@ -57,6 +57,11 @@ class Globals {
     scaffoldBackgroundColor: Color.fromRGBO(28, 28, 39, 1),
 
     primaryColor: Color.fromRGBO(105, 181, 201, 1), // rgb(105, 181, 201, 1)
+
+    cardColor: Color.fromRGBO(28, 28, 39, 1),
+    cardTheme: CardTheme(
+      elevation: 0,
+    ),
     /*
     Color.fromRGBO(91, 34, 196,
         1),  (Globals.rosso,). Alternativa a 91,34,19662, 123, 150,)*/

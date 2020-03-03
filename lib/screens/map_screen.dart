@@ -1,7 +1,6 @@
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/utils/mapUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class MapScreen extends StatefulWidget {
   //final Map<String, List<String>> activities;   TODO: attualmente gestito internamente, deve essere lanciata la route con il parametro
@@ -9,12 +8,14 @@ class MapScreen extends StatefulWidget {
   MapScreen(/*{this.activities}*/);
 
   @override
-  _MapScreenState createState() => _MapScreenState();
+  _MapScreenState createState() => _state = _MapScreenState();
 }
+
+_MapScreenState _state;
 
 class _MapScreenState extends State<MapScreen> {
   List<String> selectedClass = [];
-  double _floor = 0;
+  double floor = 0;
 
   Map<String, List<String>> activities;
 
@@ -74,10 +75,11 @@ class _MapScreenState extends State<MapScreen> {
               GestureDetector(
                 onTapUp: (details) {
                   print(details.localPosition);
-                  final Offset start = Offset(14, 1000/MediaQuery.of(context).size.width * 80+703);
+                  final Offset start = Offset(
+                      14, 1000 / MediaQuery.of(context).size.width * 80 + 703);
                   print(start);
                   selectedClass = [];
-                  floors[_floor.toInt() + 2].classes.forEach((cls, data) {
+                  floors[floor.toInt() + 2].classes.forEach((cls, data) {
                     if (data.selectable &&
                         data
                             .getFill(MediaQuery.of(context).size.width / 1000,
@@ -91,7 +93,7 @@ class _MapScreenState extends State<MapScreen> {
                 child: CustomPaint(
                   size: Size.fromHeight(
                       MediaQuery.of(context).size.width * 903 / 1000 + 80),
-                  painter: MapPainter(selectedClass, floor: _floor.toInt()),
+                  painter: MapPainter(selectedClass, floor: floor.toInt()),
                 ),
               ),
               Container(
@@ -108,18 +110,18 @@ class _MapScreenState extends State<MapScreen> {
                             borderRadius: BorderRadius.circular(10)),
                         child: Center(
                             child: Text(
-                          _floor.toStringAsFixed(0),
+                          floor.toStringAsFixed(0),
                           style: TextStyle(color: Colors.white),
                         )),
                       ),
                       Expanded(
                         child: Slider(
-                          label: 'piano ${_floor.toStringAsFixed(0)}',
+                          label: 'piano ${floor.toStringAsFixed(0)}',
                           divisions: 5,
-                          value: _floor,
-                          onChanged: (v) => setState(() => _floor = v),
+                          value: floor,
+                          onChanged: (v) => setState(() => floor = v),
                           onChangeEnd: (v) =>
-                              setState(() => _floor = v.roundToDouble()),
+                              setState(() => floor = v.roundToDouble()),
                           min: -2,
                           max: 3,
                           //label: _floor.round().toString(),
@@ -146,9 +148,16 @@ class _SearchDialogState extends State<SearchDialog> {
   @override
   void initState() {
     super.initState();
+    _getHints('');
+  }
+
+  void _getHints(String str) {
+    _hints = [];
     floors.forEach((floor) => floor.classes.forEach((cls, data) {
-          if (data.selectable) _hints.add(cls);
+          if (data.selectable && cls.toUpperCase().contains(str.toUpperCase()))
+            _hints.add(cls);
         }));
+    _hints.sort();
   }
 
   @override
@@ -159,12 +168,9 @@ class _SearchDialogState extends State<SearchDialog> {
             centerTitle: true,
             title: TextField(
               controller: _controller,
-              onChanged: (str) => setState(() {
-                _hints = [];
-                floors.forEach((floor) => floor.classes.forEach((cls, data) {
-                      if (data.selectable && cls.toUpperCase().contains(str.toUpperCase())) _hints.add(cls);
-                    }));
-              }),
+              onChanged: (str) => setState(() => _getHints(str)),
+              onEditingComplete: () =>
+                  setState(() => _getHints(_controller.text)),
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.white
@@ -172,7 +178,7 @@ class _SearchDialogState extends State<SearchDialog> {
             ),
             leading: IconButton(
                 icon: Icon(
-                  Icons.arrow_back_ios,
+                  Icons.close,
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.white60
                       : Colors.black54,
@@ -180,25 +186,21 @@ class _SearchDialogState extends State<SearchDialog> {
                 onPressed: () {
                   Navigator.pop(context);
                 }),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white60
-                      : Colors.black54,
-                ),
-                onPressed: () => _controller.clear(),
-              )
-            ],
           ),
           SliverList(
               delegate: SliverChildListDelegate(_hints
-                  .map((cls) => Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          cls,
-                          textAlign: TextAlign.center,
+                  .map((cls) => GestureDetector(
+                        onTap: () => _state?.setState(() {
+                          _state.selectedClass = [cls];
+                          _state.floor = getFloor(cls).toDouble();
+                          Navigator.pop(context);
+                        }),
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            cls,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ))
                   .toList()))

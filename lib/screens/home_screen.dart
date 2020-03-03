@@ -163,7 +163,7 @@ class _HomeState extends State<Home> {
             SliverFillRemaining(
                 hasScrollBody: true,
                 child: PreloadPageView.builder(
-                  itemBuilder: (context, index) => Padding(
+                  itemBuilder: (context, index) {print(index); return Padding(
                     padding: const EdgeInsets.all(20),
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -174,7 +174,7 @@ class _HomeState extends State<Home> {
                       elevation: 0,
                       child: _pages[index](context),
                     ),
-                  ),
+                  );},
                   itemCount: _pages.length,
                   preloadPagesCount: 2,
                 )),
