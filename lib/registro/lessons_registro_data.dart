@@ -7,8 +7,6 @@ class LessonsRegistroData extends RegistroData {
       : super(
             'https://web.spaggiari.eu/rest/v1/students/%uid/lessons/${AgendaRegistroData.getSchoolYear(DateTime.now())}');
 
-  Map<int, bool> noteNewFlags = {};
-
   @override
   Result parseData(json) {
     json = json['lessons'];

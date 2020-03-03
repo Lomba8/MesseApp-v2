@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Messedaglia/registro/absences_registro_data.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
@@ -22,6 +23,7 @@ class RegistroApi {
   static final BachecaRegistroData bacheca = BachecaRegistroData();
   static final NoteRegistroData note = NoteRegistroData();
   static final LessonsRegistroData lessons = LessonsRegistroData();
+  static final AbsencesRegistroData absences = AbsencesRegistroData();
 
   static String _capitalize(String s) {
     List<String> parole = [];
@@ -94,7 +96,7 @@ class RegistroApi {
   static Future<void> downloadAll(void Function(double) callback) async {
     await load();
     final List<RegistroData> toDownload = [
-      voti, agenda, subjects, bacheca, note, lessons
+      voti, agenda, subjects, bacheca, note, lessons, absences
     ];
     int n = 0;
     toDownload.forEach((data) => data.getData().then((ok) => callback(++n / toDownload.length)));
