@@ -13,7 +13,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="tangerine_ui"
+        android:label="Messe App"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity

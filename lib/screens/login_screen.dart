@@ -1,13 +1,17 @@
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+import 'package:connectivity/connectivity.dart';
 
 import '../registro/registro.dart';
 import 'menu_screen.dart';
+import 'package:Messedaglia/main.dart' as main;
 
 class LoginScreen extends StatefulWidget {
   static final String id = 'login_screen';
@@ -27,10 +31,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   double _progress = 0;
   VideoPlayerController _controller;
+  var subscription;
 
   @override
   void initState() {
     super.initState();
+
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      //TODO: check connectivity globally and add alert for offline connectivity
+      print('connectivity changed');
+      setState(() {});
+    });
 
     _controller = VideoPlayerController.asset('videos/loading.mp4')
       ..initialize().then((_) {
@@ -68,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _firstInputFocusNode?.dispose();
     _secondInputFocusNode?.dispose();
     _controller.dispose();
+    subscription.cancel();
 
     super.dispose();
   }
@@ -86,7 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ? _loader = 'images/loading_dark.gif'
         : _loader = 'images/loading_light.gif';
 
-    if (splash) {
+    if (splash && main.connection != ConnectivityResult.none) {
+      print(main.connection);
       _controller.play();
       return Scaffold(
           backgroundColor: Colors.black,
@@ -123,6 +138,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ));
+    } else if (main.connection == ConnectivityResult.none) {
+      return Center(
+        child: FlareActor(
+          'flare/no_connection.flr',
+          alignment: Alignment.center,
+          animation: 'init',
+        ),
+      );
     }
 
     String _usernameMsg = 'L\'username deve essere lungo 9 caratteri';

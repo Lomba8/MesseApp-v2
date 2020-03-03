@@ -50,19 +50,19 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Future<void> _repeatNotification() async {
-    var prefs = await SharedPreferences.getInstance();
-    String compleanno = prefs.getString('compleanno');
-    var data = compleanno.split('-');
-    flutterLocalNotificationsPlugin.schedule(
-        1,
-        'Tanti auguri🎉🎁',
-        '${RegistroApi.nome}', //FIXME: le notifiche non spuntano la data di compleanno
-        DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2])),
-        platformChannelSpecifics);
-    print(
-        'festeggerai il comple il: ${DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2]))}');
-  }
+  // Future<void> _repeatNotification() async {
+  //   var prefs = await SharedPreferences.getInstance();
+  //   String compleanno = prefs.getString('compleanno');
+  //   var data = compleanno.split('-');
+  //   flutterLocalNotificationsPlugin.schedule(
+  //       1,
+  //       'Tanti auguri🎉🎁',
+  //       '${RegistroApi.nome}', //FIXME: le notifiche non spuntano la data di compleanno
+  //       DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2])),
+  //       platformChannelSpecifics);
+  //   print(
+  //       'festeggerai il comple il: ${DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2]))}');
+  // }
 
   @override
   Widget build(BuildContext context) => LiquidPullToRefresh(

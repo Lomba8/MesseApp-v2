@@ -10,6 +10,7 @@ import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
 
 //TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
 
@@ -40,10 +41,12 @@ void main() {
       osVersion = (await deviceInfo.androidInfo).version.baseOS;
     else if (Platform.isIOS)
       osVersion = (await deviceInfo.iosInfo).systemVersion;
+    connection = await (Connectivity().checkConnectivity());
 
     if (prefs.getBool('DarkMode') == null) {
       _theme = ThemeMode
           .dark; // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
+
       /*try {
         if (Platform.isAndroid) {
           androidInfo = await deviceInfo.androidInfo;
@@ -128,7 +131,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
 }
 
 String appName, appVersion, platform, osVersion;
-
+var connection;
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 
 //TODO: flare_spalsh_screen quando lutente e gia loggato
