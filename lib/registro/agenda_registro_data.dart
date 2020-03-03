@@ -10,14 +10,14 @@ class AgendaRegistroData extends RegistroData {
   Map<String, bool> eventiNewFlags = {};
 
   static String classe;
-  static String _getSchoolYear(DateTime date) {
+  static String getSchoolYear(DateTime date) {
     int year2 = int.parse(DateFormat.M().format(date)) < 9 ? 1 : 0;
     return '${date.year - year2}0901/${date.year  + 1 - year2}0630';
   }
 
   AgendaRegistroData()
       : super(
-            'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${_getSchoolYear(DateTime.now())}');
+            'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${getSchoolYear(DateTime.now())}');
 
   @override
   Result parseData(json) {
