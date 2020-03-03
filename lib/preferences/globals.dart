@@ -72,7 +72,7 @@ class Globals {
     // text styling for headlines, titles, bodies of text, and more.
     textTheme: TextTheme(
       headline5: TextStyle(
-        fontSize: 72.0,
+        fontSize: 75,
         fontWeight: FontWeight.bold,
         color: Color.fromRGBO(105, 181, 201, 1),
       ),

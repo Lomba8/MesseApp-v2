@@ -183,7 +183,7 @@ class _SearchDialogState extends State<SearchDialog> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(
-                  Icons.clear,
+                  Icons.close,
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.white60
                       : Colors.black54,

@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
@@ -21,8 +21,6 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-bool _darkTheme = false;
-
 class _HomeState extends State<Home> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -30,6 +28,59 @@ class _HomeState extends State<Home> {
   var androidPlatformChannelSpecifics,
       iOSPlatformChannelSpecifics,
       platformChannelSpecifics;
+
+  List<Widget Function(BuildContext)> _pages = [
+    (context) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('${RegistroApi.voti.newVotiTot} nuovi voti'),
+              Text('0 nuove comunicazioni'),
+              Text('nessuna supplenza per domani'),
+              Text(
+                  '${RegistroApi.agenda.data.getEvents(getDayFromDT(DateTime.now()).add(Duration(days: 1))).length} eventi domani'),
+            ],
+          ),
+        ),
+    (context) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: (RegistroApi.lessons.data['date'][
+                            getDayFromDT(DateTime.now())] ??
+                        [])
+                    .map<Widget>((lesson) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RichText(
+                              text: TextSpan(
+                                  text: '${lesson.sbj}: ',
+                                  style: TextStyle(color: Colors.white),
+                                  children: [
+                                TextSpan(
+                                    text: lesson.info ?? 'nessuna informazione',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1)
+                              ])),
+                        ))
+                    .toList()),
+          ),
+        ),
+    (context) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text('è attivo un nuovo sondaggio da parte dei rappre'),
+        ),
+    (context) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text('guarda le nuove magliette di istituto!'),
+        ),
+    (context) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+              'altre notizie varie ed eventuali (tipo borracce / foto di classe / balli / ecc...)'),
+        ),
+  ];
 
   @override
   void initState() {
@@ -98,7 +149,7 @@ class _HomeState extends State<Home> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Preferences()),
-                        ))
+                        )),
               ],
               bottom: PreferredSize(
                   child: Container(),
@@ -109,109 +160,24 @@ class _HomeState extends State<Home> {
                 size: Size.infinite,
               ),
             ),
-            SliverList(
-                delegate: SliverChildListDelegate(
-              <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(child: Text('Tema scuro:')),
-                    Switch(
-                        value: _darkTheme,
-                        onChanged: (ok) {
-                          setState(() => _darkTheme = ok);
-                          setTheme(ok ? ThemeMode.dark : ThemeMode.light);
-                        })
-                  ],
-                ),
-                ListTile(
-                  leading: Icon(Icons.warning, color: Colors.yellow[600]),
-                  trailing: Icon(Icons.warning, color: Colors.yellow[600]),
-                  title: Text(
-                    'WORK IN PROGRESS',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText2,
+            SliverFillRemaining(
+                hasScrollBody: true,
+                child: PreloadPageView.builder(
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white10
+                          : Colors.black12,
+                      elevation: 0,
+                      child: _pages[index](context),
+                    ),
                   ),
-                  subtitle: Text(
-                    'PS: la GUI è totalmente buttata a caso',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('${RegistroApi.voti.newVotiTot} nuovi voti'),
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('0 nuove comunicazioni'),
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('nessuna supplenza per domani'),
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        '${RegistroApi.agenda.data.getEvents(DateTime.now().add(Duration(days: 1))).length} eventi domani'),
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child:
-                        Text('è attivo un nuovo sondaggio da parte dei rappre'),
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('guarda le nuove magliette di istituto!'),
-                  ),
-                ),
-                Card(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black12,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        'altre notizie varie ed eventuali (tipo borracce / foto di classe / balli / ecc...)'),
-                  ),
-                ),
-              ],
-            ))
+                  itemCount: _pages.length,
+                  preloadPagesCount: 2,
+                )),
           ],
         ),
       );

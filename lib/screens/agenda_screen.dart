@@ -446,3 +446,5 @@ class EventCard extends StatelessWidget {
     );
   }
 }
+
+DateTime getDayFromDT (DateTime dt) => DateTime(dt.year, dt.month, dt.day);

@@ -1,3 +1,4 @@
+import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 
 class NoteRegistroData extends RegistroData {
@@ -31,16 +32,4 @@ class NoteRegistroData extends RegistroData {
     bachecaNewFlags = bachecaNewFlags2;
     return Result(true, true);*/
   }
-}
-
-class Comunicazione extends Comparable<Comunicazione> {
-  final int id;
-  final DateTime _date;
-  final bool valid;
-  final String title;
-  final List attachments;
-  Comunicazione(this.id, this._date, this.valid, this.title, this.attachments);
-
-  @override
-  int compareTo(Comunicazione other) => -_date.compareTo(other._date);
 }

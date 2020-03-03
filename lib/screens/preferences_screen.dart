@@ -3,6 +3,7 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Preferences extends StatelessWidget {
   final TapGestureRecognizer _websiteTap = TapGestureRecognizer()
@@ -11,7 +12,9 @@ class Preferences extends StatelessWidget {
         .launch();
   final TapGestureRecognizer _supportTap = TapGestureRecognizer()
     ..onTap = () => AndroidIntent(
-            action: 'action_view', data: 'mailto:messeapp@messedaglia.edu.it?subject=FEEDBACK MESSEAPP&body=$appName ($appVersion) running on $platform $osVersion')
+            action: 'action_view',
+            data:
+                'mailto:messeapp@messedaglia.edu.it?subject=FEEDBACK MESSEAPP&body=$appName ($appVersion) running on $platform $osVersion')
         .launch();
 
   @override
@@ -19,6 +22,7 @@ class Preferences extends StatelessWidget {
       color: Theme.of(context).backgroundColor,
       child: CustomScrollView(slivers: <Widget>[
         SliverAppBar(
+          brightness: Theme.of(context).brightness,
           centerTitle: true,
           backgroundColor: Colors.transparent,
           pinned: true,
@@ -32,6 +36,22 @@ class Preferences extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               }),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(
+                  MdiIcons.license,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white60
+                      : Colors.black54,
+                ),
+                onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LicensePage(
+                          applicationName: appName,
+                        )
+                      ),
+                    ))
+          ],
           title: Text(
             'IMPOSTAZIONI',
             style: Theme.of(context).textTheme.bodyText2,
@@ -107,7 +127,7 @@ class Preferences extends StatelessWidget {
                     RichText(
                         textAlign: TextAlign.end,
                         text: TextSpan(
-                          recognizer: _supportTap,
+                            recognizer: _supportTap,
                             text: 'messeapp@messedaglia.edu.it',
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
