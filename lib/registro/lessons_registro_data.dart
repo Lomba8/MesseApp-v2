@@ -35,7 +35,7 @@ class LessonsRegistroData extends RegistroData {
     for (Map lesson in json) {
       Lezione lezione = Lezione(
           date: DateTime.parse(lesson['evtDate']),
-          hour: lesson['evtHPos']-1,
+          hour: lesson['evtHPos'] - 1,
           duration: Duration(hours: lesson['evtDuration']),
           author: lesson['authorName'],
           sbj: lesson['subjectDesc'],
@@ -45,6 +45,28 @@ class LessonsRegistroData extends RegistroData {
       (data['date'][lezione.date] ??= <Lezione>[]).add(lezione);
     }
     return Result(true, true);
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> tr = super.toJson();
+    tr['data'] = [];
+    data['date'].forEach(
+        (date, list) => list.forEach((lesson) => tr['data'].add(lesson)));
+    return tr;
+  }
+
+  @override
+  void fromJson(Map<String, dynamic> json) {
+    super.fromJson(json);
+    List lezioni = json['data'];
+    data['sbj'] = <String, List<Lezione>>{};
+    data['date'] = <DateTime, List<Lezione>>{};
+    lezioni.forEach((lezione) {
+      Lezione l = Lezione.fromJson(lezione);
+      (data['sbj'][l.sbj] ??= <Lezione>[]).add(l);
+      (data['date'][l.date] ??= <Lezione>[]).add(l);
+    });
   }
 }
 
@@ -65,4 +87,23 @@ class Lezione {
       @required this.sbj,
       @required this.lessonType,
       @required this.info});
+
+  Map<String, dynamic> toJson() => {
+        'date': date.toIso8601String(),
+        'hour': hour,
+        'duration': duration.inHours,
+        'author': author,
+        'sbj': sbj,
+        'lessonType': lessonType,
+        'info': info
+      };
+
+  static Lezione fromJson(Map json) => Lezione(
+      date: DateTime.parse(json['date']),
+      hour: json['hour'],
+      duration: Duration(hours: json['duration']),
+      author: json['author'],
+      sbj: json['sbj'],
+      lessonType: json['lessonType'],
+      info: json['info']);
 }

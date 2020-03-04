@@ -51,12 +51,10 @@ class _BachecaScreenState extends State<BachecaScreen> {
                 ExpansionPanelList(
                   expansionCallback: (panelIndex, isExpanded) => setState(() {
                     setState(() {
-                      _expanded = isExpanded
-                          ? null
-                          : RegistroApi.bacheca.data[panelIndex];
-                      if (RegistroApi.bacheca.data[panelIndex].content == null)
-                        RegistroApi.bacheca.data[panelIndex]
-                            .loadContent(() => setState(() {}));
+                      Comunicazione c = RegistroApi.bacheca.data[panelIndex];
+                      _expanded = isExpanded ? null : c;
+                      if (c.content == null)
+                        c.loadContent(() => setState(() {}));
                     });
                   }),
                   children: RegistroApi.bacheca.data
@@ -69,17 +67,29 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 maxLines: isExpanded ? 100 : 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              leading: Icon(MdiIcons.filePdf),
+                              leading: IconButton(
+                                icon: Icon(MdiIcons.filePdf),
+                                onPressed: c.attachments.isEmpty
+                                    ? null
+                                    : () {/* TODO: download pdf */},
+                              ),
                             ),
                             body: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: c.content == null
-                                  ? LinearProgressIndicator(
-                                      value: null,
+                                  ? Container(
+                                      height: 2,
+                                      child: LinearProgressIndicator(
+                                        value: null,
+                                        backgroundColor: Colors.white10,
+                                        valueColor: AlwaysStoppedAnimation(
+                                            Colors.white),
+                                      ),
                                     )
                                   : Text(c.content,
-                                      style:
-                                          Theme.of(context).textTheme.bodyText1),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
                             ),
                           ))
                       .toList(),

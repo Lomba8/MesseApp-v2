@@ -108,6 +108,9 @@ class RegistroApi {
       'agenda': agenda,
       'subjects': subjects,
       'bacheca': bacheca,
+      // 'note': note, TODO
+      'lessons': lessons,
+      'absences': absences
       // ecc...
     };
     String json = jsonEncode(data);
@@ -124,8 +127,12 @@ class RegistroApi {
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
     voti.fromJson(data['voti']);
     agenda.fromJson(data['agenda']);
-    // subjects.fromJson(data['subjects']);
-    //   bacheca.fromJson(data['bacheca']);
+    
+    subjects.fromJson(data['subjects']);
+    bacheca.fromJson(data['bacheca']);
+    // note.fromJson(data['note']); TODO
+    lessons.fromJson(data['lessons']);
+    absences.fromJson(data['absences']);
   }
 }
 
@@ -161,6 +168,7 @@ abstract class RegistroData {
 
   @mustCallSuper
   void fromJson(Map<String, dynamic> json) {
+    if (json == null) return;
     lastUpdate = DateTime.parse(json['lastUpdate']);
     etag = json['etag'];
   }
