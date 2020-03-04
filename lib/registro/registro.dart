@@ -11,10 +11,10 @@ import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistroApi {
-  static String nome, cognome, scuola, compleanno;
+  static String nome, cognome, scuola, uname, pword;
+  static DateTime compleanno;
   static int usrId;
 
   static final VotiRegistroData voti = VotiRegistroData();
@@ -36,74 +36,110 @@ class RegistroApi {
     return capitalizzato.trim();
   }
 
-  static Map<String, String> body = {"ident": null, "pass": '', "uid": ''};
+  static Map<String, String> body = {'ident': null, 'pass': '', 'uid': ''};
 
   static final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
 
   static String token;
+  static DateTime tokenExpiration;
 
   static Future<bool> login(
-      String username, String password, bool check) async {
+      {String username,
+      String password,
+      bool check = true,
+      bool force = false}) async {
+    username ??= uname;
+    password ??= pword;
+    if (username == null || password == null) return false;
+    if (username == uname &&
+        password == pword &&
+        !force) if (DateTime.now().isBefore(tokenExpiration) && token != null)
+      return true;
+    print('logging $username');
     try {
       Map<String, String> headers = {
         'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
         'Content-Type': 'application/json',
         'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       };
-      body["pass"] = password;
-      body["uid"] = username;
-      var res =
-          await http.post(loginUrl, headers: headers, body: json.encode(body));
+      body['pass'] = password;
+      body['uid'] = username;
+      http.Response res =
+          await http.post(loginUrl, headers: headers, body: jsonEncode(body));
 
       if (res.statusCode != 200) return false;
-      token = json.decode(res.body)["token"];
-      final prefs = await SharedPreferences.getInstance();
-      if (!check) {
-        scuola = prefs.getString('scuola');
-        nome = prefs.getString('nome');
-        cognome = prefs.getString('cognome');
-        compleanno = prefs.getString('compleanno');
-        usrId = prefs.getInt('usrId');
-        return true;
-      }
+      Map json = jsonDecode(res.body);
+      token = json['token'];
+      tokenExpiration = DateTime.parse(json['expire']
+              .replaceFirst(':', '', json['expire'].lastIndexOf(':')))
+          .toLocal();
+      if (!check) return true;
       headers['Z-Auth-Token'] = token;
 
-      var card = await http.get(
+      res = await http.get(
           "https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
           headers: headers);
-      var data = json.decode(card.body)["card"];
-
-      if (data['schCode'].toString() == 'VRLS0003') {
-        prefs.setString('username', username);
-        prefs.setString('password', password);
-        prefs.setString(
-            'scuola',
-            scuola =
-                _capitalize("${data["schName"]} ${data["schDedication"]}"));
-        prefs.setString('nome', nome = _capitalize(data["firstName"]));
-        prefs.setString('cognome', cognome = _capitalize(data["lastName"]));
-        prefs.setString('compleanno', compleanno = data["birthDate"]);
-        prefs.setInt('usrId', usrId = data["usrId"]);
-        return true;
+      if (res.statusCode != HttpStatus.ok) {
+        token = tokenExpiration = null;
+        return false;
       }
+      json = jsonDecode(res.body)["card"];
+
+      if (json['schCode'].toString() != 'VRLS0003') {
+        token = tokenExpiration = null;
+        return false;
+      }
+      print(json['birthDate']);
+      uname = username;
+      pword = password;
+      scuola = _capitalize("${json["schName"]} ${json["schDedication"]}");
+      nome = _capitalize(json["firstName"]);
+      cognome = _capitalize(json["lastName"]);
+      compleanno = DateTime.parse(json["birthDate"]);
+      compleanno =
+          DateTime(DateTime.now().year, compleanno.month, compleanno.day);
+      if (compleanno.isBefore(DateTime.now()))
+        compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));
+      usrId = json["usrId"];
+      save();
+      return true;
     } catch (e, s) {
       print(e);
       print(s);
+      token = tokenExpiration = null;
     }
     return false;
   }
 
   static Future<void> downloadAll(void Function(double) callback) async {
-    await load();
     final List<RegistroData> toDownload = [
-      voti, agenda, subjects, bacheca, note, lessons, absences
+      voti,
+      agenda,
+      subjects,
+      bacheca,
+      note,
+      lessons,
+      absences
     ];
     int n = 0;
-    toDownload.forEach((data) => data.getData().then((ok) => callback(++n / toDownload.length)));
+    toDownload.forEach((data) =>
+        data.getData().then((ok) => callback(++n / toDownload.length)));
   }
 
   static void save() async {
     Map<String, dynamic> data = {
+      // il salvataggio delle credenziali e dei token è stato spostato qui dalle SharedPreferences
+      'auth': {
+        'nome': nome,
+        'cognome': cognome,
+        'scuola': scuola,
+        'compleanno': compleanno.toIso8601String(),
+        'usrId': usrId,
+        'uname': uname,
+        'pword': pword,
+        'token': token,
+        'tokenExpiration': tokenExpiration.toIso8601String()
+      },
       'voti': voti,
       'agenda': agenda,
       'subjects': subjects,
@@ -127,12 +163,23 @@ class RegistroApi {
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
     voti.fromJson(data['voti']);
     agenda.fromJson(data['agenda']);
-    
+
     subjects.fromJson(data['subjects']);
     bacheca.fromJson(data['bacheca']);
     // note.fromJson(data['note']); TODO
     lessons.fromJson(data['lessons']);
     absences.fromJson(data['absences']);
+
+    if (data['auth'] == null) return;
+    nome = data['auth']['nome'];
+    cognome = data['auth']['cognome'];
+    scuola = data['auth']['scuola'];
+    compleanno = DateTime.parse(data['auth']['compleanno']);
+    usrId = data['auth']['usrId'];
+    uname = data['auth']['uname'];
+    pword = data['auth']['pword'];
+    token = data['auth']['token'];
+    tokenExpiration = DateTime.parse(data['auth']['tokenExpiration']);
   }
 }
 
@@ -146,6 +193,8 @@ abstract class RegistroData {
   Future<Result> getData() async {
     if (_loading) return Result(true, false);
     _loading = true;
+    if (DateTime.now().isAfter(RegistroApi.tokenExpiration))
+      if (!await RegistroApi.login()) return Result(false, false);
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
       'Content-Type': 'application/json',
