@@ -7,15 +7,15 @@ class BachecaRegistroData extends RegistroData {
   BachecaRegistroData()
       : super('https://web.spaggiari.eu/rest/v1/students/%uid/noticeboard');
 
-  Map<int, bool> bachecaNewFlags = {};
+  Map<String, bool> bachecaNewFlags = {};
 
   @override
   Result parseData(json) {
     json = json['items'];
-    List<Comunicazione> data2 = [];
-    Map<int, bool> bachecaNewFlags2 = {};
-
+    List<Comunicazione> data2 = <Comunicazione>[];
+    Map<String, bool> bachecaNewFlags2 = {};
     json.forEach((c) {
+      if (c['cntStatus'] == 'deleted') return;
       data2.add(Comunicazione(
           c['evtCode'],
           c['pubId'],
@@ -25,13 +25,30 @@ class BachecaRegistroData extends RegistroData {
           c['cntValidInRange'],
           c['cntTitle'],
           c['attachments']));
-      bachecaNewFlags2[c['pubId']] =
-          bachecaNewFlags[c['pubId']] ?? c['readStatus'];
+      bachecaNewFlags2[c['pubId'].toString()] =
+          (bachecaNewFlags[c['pubId'].toString()] ?? !c['readStatus']) ||
+              c['cntHasChanged'];
     });
 
     data = data2..sort();
     bachecaNewFlags = bachecaNewFlags2;
     return Result(true, true);
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> tr = super.toJson();
+    tr['data'] = data;
+    tr['newFlags'] = bachecaNewFlags;
+    return tr;
+  }
+
+  @override
+  void fromJson(Map<String, dynamic> json) {
+    super.fromJson(json);
+    data = json['data'].map((c) => Comunicazione.fromJson(c)).toList();
+    bachecaNewFlags = json['newFlags']
+        .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
   }
 }
 
@@ -53,13 +70,33 @@ class Comunicazione extends Comparable<Comunicazione> {
         });
     Map json = jsonDecode(r.body);
     content = json['item']['text'];
-    callback ();
+    callback();
   }
 
   final List attachments;
   Comunicazione(
-      this.evt, this.id, this._date, this.valid, this.title, this.attachments);
+      this.evt, this.id, this._date, this.valid, this.title, this.attachments,
+      [this.content]);
 
   @override
   int compareTo(Comunicazione other) => -_date.compareTo(other._date);
+
+  Map<String, dynamic> toJson() => {
+        'evt': evt,
+        'id': id,
+        'date': _date.toIso8601String(),
+        'valid': valid,
+        'title': title,
+        'content': content,
+        'attachments': attachments
+      };
+
+  static Comunicazione fromJson(Map json) => Comunicazione(
+      json['evt'],
+      json['id'],
+      DateTime.parse(json['date']),
+      json['valid'],
+      json['title'],
+      json['attachments'],
+      json['content']);
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 
@@ -5,8 +7,6 @@ class AbsencesRegistroData extends RegistroData {
   AbsencesRegistroData()
       : super(
             'https://web.spaggiari.eu/rest/v1/students/%uid/absences/details');
-
-  Map<int, bool> noteNewFlags = {};
 
   @override
   Result parseData(json) {
@@ -22,6 +22,20 @@ class AbsencesRegistroData extends RegistroData {
     }
     return Result(true, true);
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> tr = super.toJson();
+    tr['data'] = data.map((date, absence) => MapEntry(date.toIso8601String(), absence));
+    return tr;
+  }
+
+  @override
+  void fromJson(Map<String, dynamic> json) {
+    super.fromJson(json);
+    data = json['data'].map(
+        (date, absence) => MapEntry(DateTime.parse(date), Assenza.fromJson(absence)));
+  }
 }
 
 class Assenza {
@@ -36,4 +50,16 @@ class Assenza {
     @required this.justified,
     @required this.justification,
   });
+
+  Map<String, dynamic> toJson() => {
+        'hour': hour,
+        'value': value,
+        'justified': justified,
+        'justification': justification
+      };
+  static Assenza fromJson(Map json) => Assenza(
+      hour: json['hour'],
+      value: json['value'],
+      justified: json['justified'],
+      justification: json['justification']);
 }

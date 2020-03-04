@@ -23,4 +23,16 @@ class SubjectsRegistroData extends RegistroData {
     }
     return Result(false, false);
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> tr = super.toJson();
+    tr['data'] = data;
+    return tr;
+  }
+  @override
+  void fromJson(Map<String, dynamic> json) {
+    super.fromJson(json);
+    data = json['data'];
+  }
 }
