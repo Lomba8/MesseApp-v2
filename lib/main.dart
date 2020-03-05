@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -27,9 +28,8 @@ import 'package:connectivity/connectivity.dart';
 
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
-    Menu menu = Menu();
-    LoginScreen loginScreen = LoginScreen();
     WidgetsFlutterBinding.ensureInitialized();
+    await RegistroApi.load();
     //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     //_signIn.signIn();
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -39,11 +39,11 @@ void main() {
     appVersion = pkgInfo.version;
     platform = Platform.operatingSystem;
     if (Platform.isAndroid)
-      osVersion = (await deviceInfo.androidInfo).version.baseOS;
+      osVersion = (await deviceInfo.androidInfo).version.codename;
     else if (Platform.isIOS)
       osVersion = (await deviceInfo.iosInfo).systemVersion;
     connection = await (Connectivity().checkConnectivity());
-
+    
     if (prefs.getBool('DarkMode') == null) {
       _theme = ThemeMode
           .dark; // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
@@ -69,8 +69,7 @@ void main() {
           ? _theme = ThemeMode.dark
           : _theme = ThemeMode.light;
     }
-    print(_theme);
-    runApp(MaterialAppWithTheme(menu: menu, loginScreen: loginScreen));
+    runApp(MaterialAppWithTheme());
   });
 }
 
@@ -94,14 +93,9 @@ void setTheme(ThemeMode theme) async {
 _MaterialAppWithThemeState _currentState;
 
 class MaterialAppWithTheme extends StatefulWidget {
-  const MaterialAppWithTheme({
-    Key key,
-    @required this.menu,
-    @required this.loginScreen,
-  }) : super(key: key);
 
-  final Menu menu;
-  final LoginScreen loginScreen;
+  final Menu menu = Menu();
+  final LoginScreen loginScreen = LoginScreen();
 
   @override
   State<StatefulWidget> createState() =>
@@ -132,7 +126,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
 }
 
 String appName, appVersion, platform, osVersion;
-var connection;
+ConnectivityResult connection;
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 
 //TODO: flare_spalsh_screen quando lutente e gia loggato
