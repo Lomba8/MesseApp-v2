@@ -6,6 +6,7 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -20,6 +21,7 @@ import '../registro/registro.dart';
 
 class Agenda extends StatefulWidget {
   static final String id = 'agenda_screen';
+
   @override
   _AgendaState createState() => _AgendaState();
 }
@@ -180,7 +182,10 @@ class _AgendaState extends State<Agenda> {
                                   style: TextStyle(
                                       fontSize: 16.0,
                                       fontFamily: 'CoreSans',
-                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                               ),
                               Icon(
@@ -236,7 +241,9 @@ class _AgendaState extends State<Agenda> {
                     Dash(
                       direction: Axis.vertical,
                       dashBorderRadius: 0.0,
-                      dashColor: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54,
+                      dashColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white54
+                          : Colors.black54,
                       dashGap: 2,
                       dashThickness: 1.0,
                       length: lunghezzaDash - 47,
@@ -290,7 +297,10 @@ class _AgendaState extends State<Agenda> {
         height: 70,
         child: Text(
           '${(i ~/ 2).toString().padLeft(2, '0')}:${(i % 2 * 30).toString().padLeft(2, '0')}',
-          style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ?Colors.white60 : Colors.black54),
+          style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white60
+                  : Colors.black54),
         ),
       ));
     }
@@ -309,19 +319,21 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(
-        top: !evento.giornaliero
-            ? 70 *
-                ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
-                    evento.inizio.minute / 30)
-            : 0.0),
+          top: !evento.giornaliero
+              ? 70 *
+                  ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
+                      evento.inizio.minute / 30)
+              : 0.0),
       padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
       child: Container(
         height: !evento.giornaliero
-          ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
-          : MediaQuery.of(context).size.height / 5.5,
+            ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
+            : MediaQuery.of(context).size.height / 5.5,
         decoration: BoxDecoration(
             borderRadius: BorderRadiusDirectional.circular(20),
-            color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white10
+                : Colors.black12),
         padding: const EdgeInsets.all(10.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,15 +346,19 @@ class EventCard extends StatelessWidget {
                       ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
                                   {})['colore']
                               ?.withOpacity(0.7) ??
-                          (Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12)
+                          (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white10
+                              : Colors.black12)
                       : null,
-                  gradient: RegistroApi.subjects.data[evento.autore] is List ? LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
+                  gradient: RegistroApi.subjects.data[evento.autore] is List
+                      ? LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
                           colors: RegistroApi.subjects.data[evento.autore].reversed
-                              .map<Color>((sbj) =>
-                                  (Globals.subjects[sbj]['colore'] as Color))
-                              .toList()) : null,
+                              .map<Color>(
+                                  (sbj) => (Globals.subjects[sbj]['colore'] as Color))
+                              .toList())
+                      : null,
                   borderRadius: BorderRadius.circular(10.0)),
               child: Row(
                 children: <Widget>[
@@ -350,30 +366,33 @@ class EventCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: RegistroApi.subjects.data[evento.autore] is List
-                        ? RegistroApi.subjects.data[evento.autore].map<Widget>((sbj) => 
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(
-                            Globals.subjects[sbj]['icona'] ??
-                                MdiIcons.sleep,
-                            size: 25.0,
-                            color: Colors.black
-                          ),
-                        )).toList() : [Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(
-                            (Globals.subjects[RegistroApi
-                                        .subjects.data[evento.autore]] ??
-                                    {})['icona'] ??
-                                MdiIcons.sleep,
-                            size: 25.0,
-                            color: RegistroApi.subjects.data[evento.autore] !=
-                                    null
-                                ? Colors.black
-                                : Colors.white,
-                          ),
-                        )]
-                      ),
+                          ? RegistroApi.subjects.data[evento.autore]
+                              .map<Widget>((sbj) => Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Icon(
+                                        Globals.subjects[sbj]['icona'] ??
+                                            MdiIcons.sleep,
+                                        size: 25.0,
+                                        color: Colors.black),
+                                  ))
+                              .toList()
+                          : [
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Icon(
+                                  (Globals.subjects[RegistroApi
+                                              .subjects.data[evento.autore]] ??
+                                          {})['icona'] ??
+                                      MdiIcons.sleep,
+                                  size: 25.0,
+                                  color: RegistroApi
+                                              .subjects.data[evento.autore] !=
+                                          null
+                                      ? Colors.black
+                                      : Colors.white,
+                                ),
+                              )
+                            ]),
                 ],
               ),
             ),
@@ -404,7 +423,10 @@ class EventCard extends StatelessWidget {
                           minFontSize: 10.0,
                           maxFontSize: 13.0,
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark ?Colors.white54 : Colors.black54,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white54
+                                    : Colors.black54,
                           )),
                     ),
                     Padding(
@@ -447,4 +469,4 @@ class EventCard extends StatelessWidget {
   }
 }
 
-DateTime getDayFromDT (DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+DateTime getDayFromDT(DateTime dt) => DateTime(dt.year, dt.month, dt.day);

@@ -4,6 +4,7 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
@@ -12,6 +13,7 @@ class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
   @override
   _OrariState createState() => _OrariState();
 }

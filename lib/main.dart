@@ -4,6 +4,7 @@ import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/offline.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
@@ -42,8 +43,9 @@ void main() {
       osVersion = (await deviceInfo.androidInfo).version.codename;
     else if (Platform.isIOS)
       osVersion = (await deviceInfo.iosInfo).systemVersion;
-    connection = await (Connectivity().checkConnectivity());
-    
+    connection_main = await (Connectivity().checkConnectivity());
+    //connection_main = Connectivity().onConnectivityChanged;
+
     if (prefs.getBool('DarkMode') == null) {
       _theme = ThemeMode
           .dark; // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
@@ -69,8 +71,41 @@ void main() {
           ? _theme = ThemeMode.dark
           : _theme = ThemeMode.light;
     }
-    runApp(MaterialAppWithTheme());
+    runApp(RestartWidget(
+      child: MaterialAppWithTheme(),
+    ));
   });
+}
+
+class RestartWidget extends StatefulWidget {
+  RestartWidget({this.child});
+
+  final Widget child;
+
+  static void restartApp(BuildContext context) {
+    context.findAncestorStateOfType<_RestartWidgetState>().restartApp();
+  }
+
+  @override
+  _RestartWidgetState createState() => _RestartWidgetState();
+}
+
+class _RestartWidgetState extends State<RestartWidget> {
+  Key key = UniqueKey();
+
+  void restartApp() {
+    setState(() {
+      key = UniqueKey();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: key,
+      child: widget.child,
+    );
+  }
 }
 
 ThemeMode _theme = ThemeMode.dark;
@@ -93,7 +128,6 @@ void setTheme(ThemeMode theme) async {
 _MaterialAppWithThemeState _currentState;
 
 class MaterialAppWithTheme extends StatefulWidget {
-
   final Menu menu = Menu();
   final LoginScreen loginScreen = LoginScreen();
 
@@ -106,11 +140,40 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
   ThemeMode _theme;
   _MaterialAppWithThemeState(this._theme);
   set theme(ThemeMode theme) => setState(() => _theme = theme);
+  final navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      print('NAVIGATOR ' + navigatorKey.currentWidget.toString());
+      connection_main = result;
+      if (route == 'login_screen') {
+        RestartWidget.restartApp(context);
+      } else {
+        if (result == ConnectivityResult.none) {
+          !alreadyPushed
+              ? navigatorKey.currentState
+                  .push(MaterialPageRoute(builder: (context) => Offline()))
+              : print(alreadyPushed);
+        } else {
+          if (alreadyPushed) {
+            alreadyPushed = false;
+            navigatorKey.currentState.pop(context);
+          } else
+            null;
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Globals.lightTheme,
+      navigatorKey: navigatorKey,
       darkTheme: Globals.darkTheme,
       themeMode: _theme,
       debugShowCheckedModeBanner: false,
@@ -125,8 +188,10 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
   }
 }
 
-String appName, appVersion, platform, osVersion;
-ConnectivityResult connection;
+String appName, appVersion, platform, osVersion, route;
+bool alreadyPushed = false;
+var subscription;
+dynamic connection_main;
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 
 //TODO: flare_spalsh_screen quando lutente e gia loggato

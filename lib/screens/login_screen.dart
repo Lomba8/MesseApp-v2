@@ -31,19 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   double _progress = 0;
   VideoPlayerController _controller;
-  var subscription;
 
   @override
   void initState() {
     super.initState();
 
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      //TODO: check connectivity globally and add alert for offline connectivity
-      print('connectivity changed');
-      setState(() {});
-    });
+    main.route = 'login_screen';
 
     _controller = VideoPlayerController.asset('videos/loading.mp4')
       ..initialize().then((_) {
@@ -51,17 +44,20 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {});
       });
 
-    RegistroApi.login().then((ok) {
-      if (ok)
-        RegistroApi.downloadAll((double progress) {
-          setState(() {
-            _progress = progress;
-            if (progress == 1) Navigator.pushReplacementNamed(context, Menu.id);
+    if (main.connection_main != ConnectivityResult.none) {
+      RegistroApi.login().then((ok) {
+        if (ok)
+          RegistroApi.downloadAll((double progress) {
+            setState(() {
+              _progress = progress;
+              if (progress == 1)
+                Navigator.pushReplacementNamed(context, Menu.id);
+            });
           });
-        });
-      else
-        setState(() => splash = false);
-    });
+        else
+          setState(() => splash = false);
+      });
+    }
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
   }
@@ -71,8 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _firstInputFocusNode?.dispose();
     _secondInputFocusNode?.dispose();
     _controller.dispose();
-    subscription.cancel();
-
+    main.route = '';
     super.dispose();
   }
 
@@ -87,8 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ? 'images/loading_dark.gif'
         : 'images/loading_light.gif';
 
-    if (splash && main.connection != ConnectivityResult.none) {
-      print(main.connection);
+    if (splash) {
       _controller.play();
       return Scaffold(
           backgroundColor: Colors.black,
@@ -118,14 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ));
-    } else if (main.connection == ConnectivityResult.none) {
-      return Center(
-        child: FlareActor(
-          'flare/no_connection.flr',
-          alignment: Alignment.center,
-          animation: 'init',
-        ),
-      );
     }
 
     void _submit(BuildContext context) async {

@@ -41,7 +41,7 @@ class RegistroApi {
   static final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
 
   static String token;
-  static DateTime tokenExpiration;
+  static DateTime tokenExpiration = null;
 
   static Future<bool> login(
       {String username,
@@ -65,8 +65,15 @@ class RegistroApi {
 
       body['pass'] = password;
       body['uid'] = username;
-      http.Response res =
-          await http.post(loginUrl, headers: headers, body: jsonEncode(body));
+      http.Response res;
+
+      try {
+        res =
+            await http.post(loginUrl, headers: headers, body: jsonEncode(body));
+      } catch (e) {
+        //print(e);
+        return false;
+      }
 
       if (res.statusCode != 200) return false;
       Map json = jsonDecode(res.body);
@@ -80,6 +87,7 @@ class RegistroApi {
       res = await http.get(
           "https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
           headers: headers);
+
       if (res.statusCode != HttpStatus.ok) {
         token = tokenExpiration = null;
         return false;
@@ -204,7 +212,15 @@ abstract class RegistroData {
       'Z-Auth-Token': RegistroApi.token,
       'Z-If-None-Match': etag
     };
-    http.Response r = await http.get(url, headers: headers);
+    http.Response r;
+
+    try {
+      r = await http.get(url, headers: headers);
+    } catch (e) {
+      //print(e);
+      return null;
+    }
+
     if (r.statusCode != HttpStatus.ok) {
       _loading = false;
       if (r.statusCode == HttpStatus.notModified) lastUpdate = DateTime.now();

@@ -8,6 +8,7 @@ import 'package:Messedaglia/screens/note_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen_scrape.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
@@ -22,6 +23,7 @@ import '../registro/registro.dart';
 
 class AreaStudenti extends StatefulWidget {
   static final String id = 'area_studenti_screen';
+
   @override
   _AreaStudentiState createState() => _AreaStudentiState();
 }
