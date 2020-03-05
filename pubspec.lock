@@ -200,27 +200,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  google_sign_in:
-    dependency: "direct main"
-    description:
-      name: google_sign_in
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.1.1"
-  google_sign_in_platform_interface:
-    dependency: transitive
-    description:
-      name: google_sign_in_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
-  google_sign_in_web:
-    dependency: transitive
-    description:
-      name: google_sign_in_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.8.3+2"
   html:
     dependency: "direct main"
     description:
@@ -263,13 +242,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.1+1"
   liquid_pull_to_refresh:
     dependency: "direct main"
     description:
@@ -347,13 +319,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0+1"
-  permission_handler:
-    dependency: "direct main"
-    description:
-      name: permission_handler
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.3.0"
   petitparser:
     dependency: transitive
     description:
@@ -382,13 +347,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.0"
-  preload_page_view:
-    dependency: "direct main"
-    description:
-      name: preload_page_view
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   provider:
     dependency: "direct main"
     description:
@@ -454,6 +412,13 @@ packages:
     dependency: transitive
     description:
       name: stream_channel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  stream_listener:
+    dependency: "direct main"
+    description:
+      name: stream_listener
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
@@ -549,5 +514,5 @@ packages:
     source: hosted
     version: "3.5.0"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.5.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"

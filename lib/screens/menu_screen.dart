@@ -9,6 +9,8 @@ import 'area_studenti_screen.dart';
 import 'home_screen.dart';
 import 'orari_screen.dart';
 
+import 'package:Messedaglia/main.dart' as main;
+
 class Menu extends StatefulWidget {
   static String id = "menu_screen";
   @override
@@ -22,19 +24,21 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-
     super.initState();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    main.subscription.cancel();
+
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print(state.toString());
+
     RegistroApi.save();
   }
 

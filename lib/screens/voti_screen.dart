@@ -5,6 +5,7 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/voti_details_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
+import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -14,6 +15,7 @@ import '../registro/registro.dart';
 
 class Voti extends StatefulWidget {
   static final String id = 'voti_screen';
+
   @override
   _VotiState createState() => _VotiState();
 }
@@ -282,10 +284,11 @@ class _VotiState extends State<Voti> {
                               height: 2,
                               padding: EdgeInsets.symmetric(horizontal: 25.0),
                               child: LinearProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Voto.getColor(average)),
-                                value: average / 10,
-                                backgroundColor: Voto.getColor(average).withAlpha(50)
-                              )),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Voto.getColor(average)),
+                                  value: average / 10,
+                                  backgroundColor:
+                                      Voto.getColor(average).withAlpha(50))),
                           SizedBox(
                             height: 20.0,
                           )
