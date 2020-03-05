@@ -52,9 +52,13 @@ class RegistroApi {
       };
       body["pass"] = password;
       body["uid"] = username;
-      var res =
-          await http.post(loginUrl, headers: headers, body: json.encode(body));
-
+      var res;
+      try {
+        res = await http.post(loginUrl,
+            headers: headers, body: json.encode(body));
+      } catch (e) {
+        print(e);
+      }
       if (res.statusCode != 200) return false;
       token = json.decode(res.body)["token"];
       final prefs = await SharedPreferences.getInstance();
@@ -96,10 +100,17 @@ class RegistroApi {
   static Future<void> downloadAll(void Function(double) callback) async {
     await load();
     final List<RegistroData> toDownload = [
-      voti, agenda, subjects, bacheca, note, lessons, absences
+      voti,
+      agenda,
+      subjects,
+      bacheca,
+      note,
+      lessons,
+      absences
     ];
     int n = 0;
-    toDownload.forEach((data) => data.getData().then((ok) => callback(++n / toDownload.length)));
+    toDownload.forEach((data) =>
+        data.getData().then((ok) => callback(++n / toDownload.length)));
   }
 
   static void save() async {
@@ -127,7 +138,7 @@ class RegistroApi {
     Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
     voti.fromJson(data['voti']);
     agenda.fromJson(data['agenda']);
-    
+
     subjects.fromJson(data['subjects']);
     bacheca.fromJson(data['bacheca']);
     // note.fromJson(data['note']); TODO
