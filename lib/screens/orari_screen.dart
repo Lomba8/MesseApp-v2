@@ -13,6 +13,7 @@ class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
   @override
   _OrariState createState() => _OrariState();
 }
@@ -109,19 +110,22 @@ class _OrariState extends State<Orari> {
                   child: Row(
                     children: <Widget>[
                       _downloading
-                          ? SizedBox(
-                              height: 21.0,
-                              width: 21.0,
-                              child: CircularProgressIndicator(
-                                value: null,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                          ? Padding(
+                              padding: EdgeInsets.only(bottom: 4),
+                              child: SizedBox(
+                                height: 18.0,
+                                width: 18.0,
+                                child: CircularProgressIndicator(
+                                  value: null,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
                               ),
                             )
                           : SizedBox(),
                       _downloading
                           ? SizedBox(
-                              width: 8.0,
+                              width: 02.0,
                             )
                           : SizedBox(),
                       Text(
@@ -147,9 +151,12 @@ class _OrariState extends State<Orari> {
                     ),
                     onPressed: selectedClass == null
                         ? null
-                        : () {
-                            downloadOrario(selectedClass);
-                            _showNotificationWithDefaultSound(selectedClass);
+                        : () async {
+                            downloadOrario(selectedClass)
+                                .then((_) {
+                              _showNotificationWithDefaultSound(selectedClass);
+                            });
+
                             setState(() {
                               _downloading = true;
                               _progress = 0;

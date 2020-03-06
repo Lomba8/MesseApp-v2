@@ -2,11 +2,13 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
+import 'package:Messedaglia/main.dart' as main;
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
 //flare gia pronto per menu bar https://rive.app/a/akaaljotsingh/files/flare/drawer/preview
@@ -45,8 +47,8 @@ class _HomeState extends State<Home> {
           child: SingleChildScrollView(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: (RegistroApi.lessons.data['date'][
-                            getDayFromDT(DateTime.now())] ??
+                children: (RegistroApi.lessons.data['date']
+                            [getDayFromDT(DateTime.now())] ??
                         [])
                     .map<Widget>((lesson) => Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -108,54 +110,65 @@ class _HomeState extends State<Home> {
   // }
 
   @override
-  Widget build(BuildContext context) => LiquidPullToRefresh(
-        showChildOpacityTransition: false,
-        onRefresh: () => RegistroApi.downloadAll((d) {}),
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              brightness: Theme.of(context).brightness,
-              centerTitle: true,
-              elevation: 0,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              title: Text(
-                '${RegistroApi.nome} ${RegistroApi.cognome}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black
-                        : Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold),
-              ),
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(
-                      Icons.tune,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white54
-                          : Colors.black54,
-                    ),
-                    onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Preferences()),
-                        )),
-              ],
-              bottom: PreferredSize(
-                  child: Container(),
-                  preferredSize:
-                      Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-              flexibleSpace: CustomPaint(
-                painter: BackgroundPainter(Theme.of(context)),
-                size: Size.infinite,
-              ),
+  Widget build(BuildContext context) {
+    if (main.connection_main == ConnectivityResult.none) {
+      return Center(
+        child: FlareActor(
+          'flare/no_connection.flr',
+          alignment: Alignment.center,
+          animation: 'init',
+        ),
+      );
+    }
+    return LiquidPullToRefresh(
+      showChildOpacityTransition: false,
+      onRefresh: () => RegistroApi.downloadAll((d) {}),
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            brightness: Theme.of(context).brightness,
+            centerTitle: true,
+            elevation: 0,
+            pinned: true,
+            backgroundColor: Colors.transparent,
+            title: Text(
+              '${RegistroApi.nome} ${RegistroApi.cognome}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold),
             ),
-            SliverFillRemaining(
-                hasScrollBody: true,
-                child: PreloadPageView.builder(
-                  itemBuilder: (context, index) {print(index); return Padding(
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(
+                    Icons.tune,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white54
+                        : Colors.black54,
+                  ),
+                  onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Preferences()),
+                      )),
+            ],
+            bottom: PreferredSize(
+                child: Container(),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+            flexibleSpace: CustomPaint(
+              painter: BackgroundPainter(Theme.of(context)),
+              size: Size.infinite,
+            ),
+          ),
+          SliverFillRemaining(
+              hasScrollBody: true,
+              child: PageView.builder(
+                itemBuilder: (context, index) {
+                  print(index);
+                  return Padding(
                     padding: const EdgeInsets.all(20),
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -166,11 +179,12 @@ class _HomeState extends State<Home> {
                       elevation: 0,
                       child: _pages[index](context),
                     ),
-                  );},
-                  itemCount: _pages.length,
-                  preloadPagesCount: 2,
-                )),
-          ],
-        ),
-      );
+                  );
+                },
+                itemCount: _pages.length,
+              )),
+        ],
+      ),
+    );
+  }
 }
