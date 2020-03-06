@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
@@ -94,11 +91,6 @@ class _HomeState extends State<Home> {
     iOSPlatformChannelSpecifics = IOSNotificationDetails();
     platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      orariUtils.getSelected();
-      //_repeatNotification();
-    });
   }
 
   // Future<void> _repeatNotification() async {

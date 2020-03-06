@@ -11,14 +11,15 @@ class AbsencesRegistroData extends RegistroData {
   @override
   Result parseData(json) {
     json = json['events'];
+    data = <DateTime, Assenza>{};
 
     for (Map absence in json) {
-      Assenza lezione = Assenza(
+      Assenza assenza = Assenza(
           hour: absence['evtHPos'],
           value: absence['evtValue'],
           justified: absence['isJustified'],
           justification: absence['justifyReasonDesc']);
-      data[DateTime.parse(absence['evtDate'])] = lezione;
+      data[DateTime.parse(absence['evtDate'])] = assenza;
     }
     return Result(true, true);
   }

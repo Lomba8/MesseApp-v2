@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:Messedaglia/main.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,16 +11,7 @@ final Map orari = jsonDecode(jsonData);
 
 String selectedClass;
 
-var prefs;
-
-Future<void> getSelected() async {
-  prefs = await SharedPreferences.getInstance();
-
-  if (prefs.getString('selectedClass') == null)
-    selectedClass = '';
-  else
-    selectedClass = prefs.getString('selectedClass');
-}
+void getSelected() => selectedClass = prefs.getString('selectedClass') ?? RegistroApi.cls;
 
 final Map<String, Color> colors = {
   'ITA': Colors.white,

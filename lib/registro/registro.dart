@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
@@ -10,10 +11,9 @@ import 'package:Messedaglia/registro/subjects_registro_data.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 class RegistroApi {
-  static String nome, cognome, scuola, uname, pword;
+  static String nome, cognome, scuola, uname, pword, cls;
   static DateTime compleanno;
   static int usrId;
 
@@ -73,7 +73,10 @@ class RegistroApi {
       tokenExpiration = DateTime.parse(json['expire']
               .replaceFirst(':', '', json['expire'].lastIndexOf(':')))
           .toLocal();
-      if (!check) return true;
+      if (!check) {
+        _saveAuth();
+        return true;
+      }
       headers['Z-Auth-Token'] = token;
 
       res = await http.get(
@@ -101,7 +104,7 @@ class RegistroApi {
       if (compleanno.isBefore(DateTime.now()))
         compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));
       usrId = json["usrId"];
-      save();
+      _saveAuth();
       return true;
     } catch (e, s) {
       print(e);
@@ -112,24 +115,25 @@ class RegistroApi {
   }
 
   static Future<void> downloadAll(void Function(double) callback) async {
-    final List<RegistroData> toDownload = [
-      voti,
-      agenda,
-      subjects,
-      bacheca,
-      note,
-      lessons,
-      absences
-    ];
+    final Map<String, RegistroData> toDownload = {
+      'voti': voti,
+      'agenda': agenda,
+      'subjects': subjects,
+      'bacheca': bacheca,
+      'note': note,
+      'lessons': lessons,
+      'absences': absences
+    };
     int n = 0;
-    toDownload.forEach((data) =>
-        data.getData().then((ok) => callback(++n / toDownload.length)));
+    toDownload.forEach((name, data) async {
+      dynamic json = await loadData(name);
+      if (json != null) data.fromJson(json);
+      await data.getData();
+      callback(++n / toDownload.length);
+    });
   }
 
-  static void save() async {
-    Map<String, dynamic> data = {
-      // il salvataggio delle credenziali e dei token è stato spostato qui dalle SharedPreferences
-      'auth': {
+  static void _saveAuth () => saveData({
         'nome': nome,
         'cognome': cognome,
         'scuola': scuola,
@@ -138,55 +142,56 @@ class RegistroApi {
         'uname': uname,
         'pword': pword,
         'token': token,
-        'tokenExpiration': tokenExpiration.toIso8601String()
-      },
-      'voti': voti,
-      'agenda': agenda,
-      'subjects': subjects,
-      'bacheca': bacheca,
-      // 'note': note, TODO
-      'lessons': lessons,
-      'absences': absences
-      // ecc...
-    };
-    String json = jsonEncode(data);
-    Directory dataDir = await getApplicationSupportDirectory();
-    File file = File('${dataDir.path}/data.json');
-    if (!file.existsSync()) file.createSync();
-    file.writeAsStringSync(json, flush: true);
+        'tokenExpiration': tokenExpiration.toIso8601String(),
+        'cls': cls
+      }, 'auth');
+  static Future loadAuth () async {
+    Map data = await loadData('auth');
+    if (data == null) return;
+    nome = data['nome'];
+    cognome = data['cognome'];
+    scuola = data['scuola'];
+    compleanno = DateTime.parse(data['compleanno']);
+    usrId = data['usrId'];
+    uname = data['uname'];
+    pword = data['pword'];
+    token = data['token'];
+    tokenExpiration = DateTime.parse(data['tokenExpiration']);
+    cls = data['cls'];
   }
+  
 
+  static void save() async {
+    _saveAuth();
+    saveData(voti, 'voti');
+    saveData(agenda, 'agenda');
+    saveData(subjects, 'subjects');
+    saveData(bacheca, 'bacheca');
+    saveData(lessons, 'lessons');
+    saveData(absences, 'absences');
+  }
+ 
   static Future<void> load() async {
-    Directory dataDir = await getApplicationSupportDirectory();
-    File file = File('${dataDir.path}/data.json');
-    if (!file.existsSync()) return;
-    Map<String, dynamic> data = jsonDecode(file.readAsStringSync());
-    voti.fromJson(data['voti']);
-    agenda.fromJson(data['agenda']);
-
-    subjects.fromJson(data['subjects']);
-    bacheca.fromJson(data['bacheca']);
-    // note.fromJson(data['note']); TODO
-    lessons.fromJson(data['lessons']);
-    absences.fromJson(data['absences']);
-
-    if (data['auth'] == null) return;
-    nome = data['auth']['nome'];
-    cognome = data['auth']['cognome'];
-    scuola = data['auth']['scuola'];
-    compleanno = DateTime.parse(data['auth']['compleanno']);
-    usrId = data['auth']['usrId'];
-    uname = data['auth']['uname'];
-    pword = data['auth']['pword'];
-    token = data['auth']['token'];
-    tokenExpiration = DateTime.parse(data['auth']['tokenExpiration']);
+    await loadAuth();
+    dynamic data = await loadData('voti');
+    if (data != null) voti.fromJson(data);
+    data = await loadData('agenda');
+    if (data != null) agenda.fromJson(data);
+    data = await loadData('subjects');
+    if (data != null) subjects.fromJson(data);
+    data = await loadData('bacheca');
+    if (data != null) bacheca.fromJson(data);
+    data = await loadData('lessons');
+    if (data != null) lessons.fromJson(data);
+    data = await loadData('absences');
+    if (data != null) absences.fromJson(data);
   }
 }
 
 abstract class RegistroData {
   DateTime lastUpdate;
   String etag;
-  dynamic data = {};
+  dynamic data = <String, dynamic>{};
   final String _url;
   bool _loading = false;
 
@@ -218,13 +223,13 @@ abstract class RegistroData {
   @mustCallSuper
   void fromJson(Map<String, dynamic> json) {
     if (json == null) return;
-    lastUpdate = DateTime.parse(json['lastUpdate']);
+    lastUpdate = json['lastUpdate'] == null ? null : DateTime.parse(json['lastUpdate']);
     etag = json['etag'];
   }
 
   @mustCallSuper
   Map<String, dynamic> toJson() => {
-        'lastUpdate': lastUpdate.toIso8601String(),
+        'lastUpdate': lastUpdate?.toIso8601String(),
         'etag': etag,
       }; // delegates data save to the derivate class
 
