@@ -8,6 +8,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
+import 'package:intl/intl.dart';
 
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
@@ -84,177 +85,184 @@ class _OrariState extends State<Orari> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        brightness: Theme.of(context).brightness,
-        elevation: 0,
-        centerTitle: true,
-        title: Stack(
-          fit: StackFit.loose,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.restore_page),
-                  color: Colors.white,
-                  onPressed: () {
-                    resetprefs();
-                    setState(() {});
-                  },
-                ),
-                Align(
-                  alignment: Alignment(0.5, 0.5),
-                  child: Row(
+  Widget build(BuildContext context) => PageView(children: [
+        GestureDetector(
+          onTap: () => setState(() => _selectedSbj = null),
+          child: CustomScrollView(slivers: [
+            SliverAppBar(
+              pinned: true,
+              brightness: Theme.of(context).brightness,
+              elevation: 0,
+              centerTitle: true,
+              title: Stack(
+                fit: StackFit.loose,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      _downloading
-                          ? Padding(
-                              padding: EdgeInsets.only(bottom: 4),
-                              child: SizedBox(
-                                height: 18.0,
-                                width: 18.0,
-                                child: CircularProgressIndicator(
-                                  value: null,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
-                                ),
-                              ),
-                            )
-                          : SizedBox(),
-                      _downloading
-                          ? SizedBox(
-                              width: 02.0,
-                            )
-                          : SizedBox(),
-                      Text(
-                        _downloading ? 'RARI' : 'ORARI',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                      IconButton(
+                        icon: Icon(Icons.restore_page),
+                        color: Colors.white,
+                        onPressed: () {
+                          resetprefs();
+                          setState(() {});
+                        },
+                      ),
+                      Align(
+                        alignment: Alignment(0.5, 0.5),
+                        child: Row(
+                          children: <Widget>[
+                            _downloading
+                                ? Padding(
+                                    padding: EdgeInsets.only(bottom: 4),
+                                    child: SizedBox(
+                                      height: 18.0,
+                                      width: 18.0,
+                                      child: CircularProgressIndicator(
+                                        value: null,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox(),
+                            _downloading
+                                ? SizedBox(
+                                    width: 02.0,
+                                  )
+                                : SizedBox(),
+                            Text(
+                              _downloading ? 'RARI' : 'ORARI',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black
+                                      : Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                          icon: Icon(
+                            Icons.file_download,
                             color:
                                 Theme.of(context).brightness == Brightness.light
                                     ? Colors.black
                                     : Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
-                      ),
+                          ),
+                          onPressed: selectedClass == null
+                              ? null
+                              : () async {
+                                  downloadOrario(selectedClass).then((_) {
+                                    _showNotificationWithDefaultSound(
+                                        selectedClass);
+                                  });
+
+                                  setState(() {
+                                    _downloading = true;
+                                    _progress = 0;
+                                  });
+                                }),
                     ],
                   ),
-                ),
-                IconButton(
-                    icon: Icon(
-                      Icons.file_download,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                    ),
-                    onPressed: selectedClass == null
-                        ? null
-                        : () async {
-                            downloadOrario(selectedClass)
-                                .then((_) {
-                              _showNotificationWithDefaultSound(selectedClass);
-                            });
-
-                            setState(() {
-                              _downloading = true;
-                              _progress = 0;
-                            });
-                          }),
-              ],
-            ),
-          ],
-        ),
-        actions: [],
-        backgroundColor: Colors.transparent,
-        flexibleSpace: CustomPaint(
-          painter: BackgroundPainter(Theme.of(context)),
-          size: Size.infinite,
-        ),
-        bottom: PreferredSize(
-            child: Container(),
-            preferredSize:
-                Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-      ),
-      body: PageView(children: [
-        SingleChildScrollView(  // FIXME: taglia il contenuto
-          child: Column(children: <Widget>[
-            GestureDetector(
-              onTap: () => showDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  builder: (context) => Dialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.0, right: 8.0, top: 15.0),
-                        child: _selectionChildren,
-                      ))),
-              child: Container(
-                margin: EdgeInsets.only(
-                    top: (selectedClass == '' || selectedClass == null)
-                        ? MediaQuery.of(context).size.height / 3
-                        : 10.0),
-                child: Text(
-                    (selectedClass != '' && selectedClass != null)
-                        ? selectedClass
-                        : 'Tocca per scegliere la classe',
-                    textAlign: TextAlign.center),
-                width: double.infinity,
+                ],
               ),
+              actions: [],
+              backgroundColor: Colors.transparent,
+              flexibleSpace: CustomPaint(
+                painter: BackgroundPainter(Theme.of(context)),
+                size: Size.infinite,
+              ),
+              bottom: PreferredSize(
+                  child: Container(),
+                  preferredSize:
+                      Size.fromHeight(MediaQuery.of(context).size.width / 8)),
             ),
-            GridView.count(
-                padding: EdgeInsets.only(right: 22.0),
-                crossAxisCount: _hasSaturday ? 7 : 6,
-                childAspectRatio: 1.4,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: _children),
-            (selectedClass != '' && selectedClass != null)
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                        left: 18.0, top: 15.0, bottom: 15.0),
-                    child: RichText(
-                        text: TextSpan(
-                            text: 'Oggi ',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 35.0,
-                              fontFamily: 'CoreSans',
-                              letterSpacing: 2,
-                            ),
-                            children: <TextSpan>[
-                          TextSpan(
-                            text: selectedClass,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25.0,
-                              fontFamily: 'CoreSans',
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          )
-                        ])),
-                  )
-                : SizedBox(),
-            (selectedClass != '' && selectedClass != null)
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(children: <Widget>[
-                      Row(children: oggi),
-                      Row(
-                        children: ore,
+            SliverList(
+              delegate: SliverChildListDelegate([
+                GestureDetector(
+                  onTap: () => showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (context) => Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 8.0, right: 8.0, top: 15.0),
+                            child: _selectionChildren,
+                          ))),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: (selectedClass == '' || selectedClass == null)
+                            ? MediaQuery.of(context).size.height / 3
+                            : 10.0),
+                    child: Text(
+                        (selectedClass != '' && selectedClass != null)
+                            ? selectedClass
+                            : 'Tocca per scegliere la classe',
+                        textAlign: TextAlign.center),
+                    width: double.infinity,
+                  ),
+                ),
+                GridView.count(
+                    padding: EdgeInsets.only(right: 22.0),
+                    crossAxisCount: _hasSaturday ? 7 : 6,
+                    childAspectRatio: 1.4,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: _children),
+                (selectedClass != '' && selectedClass != null)
+                    ? Padding(
+                        padding: const EdgeInsets.only(
+                            left: 18.0, top: 15.0, bottom: 15.0),
+                        child: RichText(
+                            text: TextSpan(
+                                text: DateTime.now().hour >= 14 ? 'Domani ' : 'Oggi ',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'CoreSans',
+                                  letterSpacing: 2,
+                                ),
+                                children: <TextSpan>[
+                              TextSpan(
+                                text:
+                                    '(${DateFormat(DateFormat.WEEKDAY, 'it').format(DateTime.now().add(Duration(days: DateTime.now().hour >= 14 ? 1 : 0)))})',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 25.0,
+                                  fontFamily: 'CoreSans',
+                                  letterSpacing: 2,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              )
+                            ])),
                       )
-                    ]),
-                  )
-                : SizedBox(),
+                    : SizedBox(),
+                (selectedClass != '' && selectedClass != null)
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(children: <Widget>[
+                          Row(children: oggi),
+                          Row(
+                            children: ore,
+                          )
+                        ]),
+                      )
+                    : SizedBox(),
+              ]),
+            ),
           ]),
-        )
-      ]),
-    );
-  }
+        ),
+      ]);
 
   Future _showNotificationWithDefaultSound(String classe) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
@@ -278,6 +286,7 @@ class _OrariState extends State<Orari> {
   List<Widget> get ore {
     List<Widget> ore = [];
     int day = DateTime.now().weekday - 1;
+    if (DateTime.now().hour >= 14) day = (day+1)%7;
     if (day == 6 || (day == 5 && !_hasSaturday)) return [];
     for (int i = day; i < orari[selectedClass].length; i += 6)
       if (orari[selectedClass][i] != '')
@@ -302,8 +311,9 @@ class _OrariState extends State<Orari> {
   List<Widget> get oggi {
     List<Widget> orario = [];
     int day = DateTime.now().weekday - 1;
+    if (DateTime.now().hour >= 14) day = (day+1)%7;
     if (day == 6 || (day == 5 && !_hasSaturday))
-      return [Text("oggi non c'è lezione")]; // TODO: styling
+      return [Text("non c'è lezione")]; // TODO: styling
     for (int i = day; i < orari[selectedClass].length; i += 6)
       // TODO: per i giorni con 4 ore i riquadri diventano troppo larghi... Meglio con lo spazio bianco o grandi? (magari possiamo mettere una height costante invece dell'aspect ratio)
       if (orari[selectedClass][i] != '')
