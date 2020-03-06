@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +10,7 @@ import 'registro.dart';
 class VotiRegistroData extends RegistroData {
   List<String> periods = ['TOTALE', 'TRIMESTRE', 'PENTAMESTRE'];
 
-  Map<String, bool> votiNewFlags = {};
+  Map<String, bool> votiNewFlags = <String, bool>{};
 
   VotiRegistroData()
       : super('https://web.spaggiari.eu/rest/v1/students/%uid/grades2');
@@ -45,7 +48,7 @@ class VotiRegistroData extends RegistroData {
 
       data = data2;
       votiNewFlags = votiNewFlags2;
-
+      saveData(this, 'voti');
       return Result(true, true);
     } catch (e, stack) {
       print(e);

@@ -9,7 +9,6 @@ import 'registro.dart';
 class AgendaRegistroData extends RegistroData {
   Map<String, bool> eventiNewFlags = {};
 
-  static String classe;
   static String getSchoolYear(DateTime date) {
     int year2 = int.parse(DateFormat.M().format(date)) < 9 ? 1 : 0;
     return '${date.year - year2}0901/${date.year  + 1 - year2}0630';
@@ -27,7 +26,7 @@ class AgendaRegistroData extends RegistroData {
       Map<String, bool> eventiNewFlags2 = {};
 
       json.forEach((m) {
-        classe = m['classDesc'];
+        RegistroApi.cls = m['classDesc'].substring(0, m['classDesc'].indexOf(RegExp(r'\W')));
         Evento evt = Evento(m['evtId'].toString(),
             inizio: DateTime.parse(m['evtDatetimeBegin'].replaceFirst(
                     ':', '', m['evtDatetimeBegin'].lastIndexOf(':')))

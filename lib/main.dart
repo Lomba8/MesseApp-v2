@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
@@ -29,11 +30,20 @@ import 'package:connectivity/connectivity.dart';
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     WidgetsFlutterBinding.ensureInitialized();
-    await RegistroApi.load();
+    await RegistroApi.loadAuth();
     //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     //_signIn.signIn();
+    notificationsPlugin.initialize(
+      InitializationSettings(AndroidInitializationSettings('@mipmap/splash'),
+          IOSInitializationSettings()),
+      onSelectNotification: (payload) async {
+        if (notificationCallbacks[payload] == null) return;
+        await notificationCallbacks.remove(payload)();
+      },
+    );
+
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    final prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
     appName = pkgInfo.appName;
     appVersion = pkgInfo.version;
@@ -43,7 +53,7 @@ void main() {
     else if (Platform.isIOS)
       osVersion = (await deviceInfo.iosInfo).systemVersion;
     connection = await (Connectivity().checkConnectivity());
-    
+
     if (prefs.getBool('DarkMode') == null) {
       _theme = ThemeMode
           .dark; // TODO: temporaneamente il cambio tema è stato soppresso per futuro spostamento nelle impostazioni
@@ -93,7 +103,6 @@ void setTheme(ThemeMode theme) async {
 _MaterialAppWithThemeState _currentState;
 
 class MaterialAppWithTheme extends StatefulWidget {
-
   final Menu menu = Menu();
   final LoginScreen loginScreen = LoginScreen();
 
@@ -124,6 +133,25 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
     );
   }
 }
+
+void saveData(dynamic json, String path) async {
+  json = jsonEncode(json);
+  Directory dataDir = await getApplicationSupportDirectory();
+  File file = File('${dataDir.path}/$path.json');
+  if (!file.existsSync()) file.createSync();
+  file.writeAsStringSync(json, flush: true);
+}
+Future<dynamic> loadData (String path) async {
+  Directory dataDir = await getApplicationSupportDirectory();
+    File file = File('${dataDir.path}/$path.json');
+    if (!file.existsSync()) return null;
+    return jsonDecode(file.readAsStringSync());
+}
+
+final FlutterLocalNotificationsPlugin notificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+final Map<String, Future<dynamic> Function()> notificationCallbacks = {};
+SharedPreferences prefs;
 
 String appName, appVersion, platform, osVersion;
 ConnectivityResult connection;

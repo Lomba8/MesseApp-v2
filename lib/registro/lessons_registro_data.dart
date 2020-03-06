@@ -33,6 +33,7 @@ class LessonsRegistroData extends RegistroData {
     // Interrogazione e spiegazione
 
     for (Map lesson in json) {
+      RegistroApi.cls = lesson['classDesc'].substring(0, lesson['classDesc'].indexOf(RegExp(r'\W')));
       Lezione lezione = Lezione(
           date: DateTime.parse(lesson['evtDate']),
           hour: lesson['evtHPos'] - 1,
