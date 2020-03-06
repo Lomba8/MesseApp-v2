@@ -1,6 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:path_parsing/path_parsing.dart';
 
+final Map<String, List<String>> testClassesMask = {
+  // TODO: aggiungere quelli in succursale
+  '2A': ['AULA 1'],
+  '2B': ['AULA 10'],
+  '2C': ['AULA 4'],
+  // 2D
+  '2E': ['AULA 6'],
+  '2F': ['AULA 3 BIS'],
+  '2G': ['AULA 8'],
+  // 2H
+  '2I': ['AULA 3'],
+  '2L': ['AULA 2'],
+  '2M': ['AULA 9'],
+  '2N': ['AULA 7'],
+  '3A': ['AULA 15'],
+  '3B': ['AULA 20 BIS'],
+  '3C': ['AULA 14'],
+  '3D': ['AULA 13 BIS'],
+  '3E': ['AULA 18'],
+  '3F': ['AULA 17'],
+  '3G': ['AULA 11'],
+  '3H': ['AULA 5'],
+  '3I': ['AULA 20'],
+  '3L': ['AULA 19'],
+  '4A': ['AULA 28'],
+  '4B': ['AULA 27'],
+  '4C': ['AULA 26'],
+  '4D': ['AULA 12'],
+  '4E': ['AULA 16'],
+  '4F': ['AULA 30 BIS'],
+  '4G': ['AULA 30'],
+  '4H': ['AULA 13'],
+  '5A': ['AULA 33'],
+  '5B': ['AULA 23'],
+  '5C': ['AULA 32'],
+  '5D': ['AULA 25'],
+  '5E': ['AULA 29'],
+  '5F': ['AULA 36'],
+  '5G': ['AULA 21'],
+  '5H': ['AULA 35'],
+  '5I': ['AULA 31'],
+  '5L': ['AULA 34'],
+  '5M': ['AULA 24'],
+  '5N': ['AULA 22'],
+};  // file json sul server
+
 final Map<String, List<String>> testActivitiesMask = {
   'JUST DANCE': ['AULA MAGNA'],
   'SIMPOSIO': ['AULA 11', 'AULA 13', 'AULA 18', 'AULA 20'],
@@ -110,7 +156,7 @@ final List<Floor> floors = [
   Floor({
     'scuola': scuole[0],
     'succursale': scuole[3].withColor(fillColor: Colors.white30),
-    'BIBLIOTECA': class_3BIS,
+    'AULA 3 BIS': class_3BIS,
     'AULA 1': class_1,
     'AULA 2': class_2,
     'AULA 3': class_3,
@@ -129,7 +175,7 @@ final List<Floor> floors = [
   Floor({
     'scuola': scuole[1],
     'succursale': scuole[3].withColor(fillColor: Colors.white30),
-    'AULA AUDIOVISIVI': class_3BIS,
+    'AULA 13 BIS': class_3BIS,
     'AULA 11': class_1,
     'AULA 12': class_2,
     'AULA 13': class_3,

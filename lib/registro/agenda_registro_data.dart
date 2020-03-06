@@ -26,7 +26,7 @@ class AgendaRegistroData extends RegistroData {
       Map<String, bool> eventiNewFlags2 = {};
 
       json.forEach((m) {
-        RegistroApi.cls = m['classDesc'].substring(0, m['classDesc'].indexOf(RegExp(r'\W')));
+        RegistroApi.cls = m['classDesc'].substring(0, m['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
         Evento evt = Evento(m['evtId'].toString(),
             inizio: DateTime.parse(m['evtDatetimeBegin'].replaceFirst(
                     ':', '', m['evtDatetimeBegin'].lastIndexOf(':')))
