@@ -1,59 +1,118 @@
 import 'package:flutter/material.dart';
 import 'package:path_parsing/path_parsing.dart';
 
-final Map<String, List<String>> testClassesMask = {
-  // TODO: aggiungere quelli in succursale
-  '2A': ['AULA 1'],
-  '2B': ['AULA 10'],
-  '2C': ['AULA 4'],
-  // 2D
-  '2E': ['AULA 6'],
-  '2F': ['AULA 3 BIS'],
-  '2G': ['AULA 8'],
-  // 2H
-  '2I': ['AULA 3'],
-  '2L': ['AULA 2'],
-  '2M': ['AULA 9'],
-  '2N': ['AULA 7'],
-  '3A': ['AULA 15'],
-  '3B': ['AULA 20 BIS'],
-  '3C': ['AULA 14'],
-  '3D': ['AULA 13 BIS'],
-  '3E': ['AULA 18'],
-  '3F': ['AULA 17'],
-  '3G': ['AULA 11'],
-  '3H': ['AULA 5'],
-  '3I': ['AULA 20'],
-  '3L': ['AULA 19'],
-  '4A': ['AULA 28'],
-  '4B': ['AULA 27'],
-  '4C': ['AULA 26'],
-  '4D': ['AULA 12'],
-  '4E': ['AULA 16'],
-  '4F': ['AULA 30 BIS'],
-  '4G': ['AULA 30'],
-  '4H': ['AULA 13'],
-  '5A': ['AULA 33'],
-  '5B': ['AULA 23'],
-  '5C': ['AULA 32'],
-  '5D': ['AULA 25'],
-  '5E': ['AULA 29'],
-  '5F': ['AULA 36'],
-  '5G': ['AULA 21'],
-  '5H': ['AULA 35'],
-  '5I': ['AULA 31'],
-  '5L': ['AULA 34'],
-  '5M': ['AULA 24'],
-  '5N': ['AULA 22'],
-};  // file json sul server
-
-final Map<String, List<String>> testActivitiesMask = {
-  'JUST DANCE': ['AULA MAGNA'],
-  'SIMPOSIO': ['AULA 11', 'AULA 13', 'AULA 18', 'AULA 20'],
-  'QUIZ': ['AULA 22', 'AULA 24'],
-  'VIDEOGAMES': ['AULA 29'],
-  'BUBBLE FOOTBALL': ['PALESTRA 1', 'PALESTRA 2'],
-  // 'CINEFORUM': ['AULA 32', 'AULA 33', 'AULA 34', 'AULA 35'] TODO: aule
+final Map<String, Map<String, List<String>>> masks = {
+  'aule': {
+    'PALESTRA 1': ['PALESTRA 1'],
+    'PALESTRA 2': ['PALESTRA 2'],
+    'PALESTRINA': ['PALESTRINA'],
+    'LABORATORIO BIOLOGIA': ['LABORATORIO BIOLOGIA'],
+    'LABORATORIO ROBOTICA': ['LABORATORIO ROBOTICA'],
+    'AULA MAGNA': ['AULA MAGNA'],
+    'LABORATORIO CHIMICA 3': ['LABORATORIO CHIMICA 3'],
+    'LABORATORIO FISICA': ['LABORATORIO FISICA'],
+    'AULA 3 BIS': ['AULA 3 BIS'],
+    'AULA 1': ['AULA 1'],
+    'AULA 2': ['AULA 2'],
+    'AULA 3': ['AULA 3'],
+    'AULA 4': ['AULA 4'],
+    'AULA 5': ['AULA 5'],
+    'AULA 6': ['AULA 6'],
+    'AULA 7': ['AULA 7'],
+    'AULA 8': ['AULA 8'],
+    'AULA 9': ['AULA 9'],
+    'AULA 10': ['AULA 10'],
+    'AULA INSEGNANTI': ['AULA INSEGNANTI'],
+    'AULA 13 BIS': ['AULA 13 BIS'],
+    'AULA 11': ['AULA 11'],
+    'AULA 12': ['AULA 12'],
+    'AULA 13': ['AULA 13'],
+    'AULA 14': ['AULA 14'],
+    'AULA 15': ['AULA 15'],
+    'SEGRETERIA AMMINISTRATIVA': ['SEGRETERIA AMMINISTRATIVA'],
+    'PRESIDENZA': ['PRESIDENZA'],
+    'AULA 16': ['AULA 16'],
+    'AULA 17': ['AULA 17'],
+    'AULA 18': ['AULA 18'],
+    'AULA 19': ['AULA 19'],
+    'AULA 20': ['AULA 20'],
+    'AULA 20 BIS': ['AULA 20 BIS'],
+    'LABORATORIO CHIMICA': ['LABORATORIO CHIMICA'],
+    'AULA 21': ['AULA 21'],
+    'AULA 22': ['AULA 22'],
+    'AULA 23': ['AULA 23'],
+    'AULA 24': ['AULA 24'],
+    'AULA 25': ['AULA 25'],
+    'LABORATORIO LINGUE': ['LABORATORIO LINGUE'],
+    'LABORATORIO INFO': ['LABORATORIO INFO'],
+    'AULA 26': ['AULA 26'],
+    'AULA 27': ['AULA 27'],
+    'AULA 28': ['AULA 28'],
+    'AULA 29': ['AULA 29'],
+    'AULA 30': ['AULA 30'],
+    'AULA 30 BIS': ['AULA 30 BIS'],
+    'BIBLIOTECA': ['BIBLIOTECA'],
+    'AULA 31': ['AULA 31'],
+    'AULA 32': ['AULA 32'],
+    'AULA 33': ['AULA 33'],
+    'AULA 34': ['AULA 34'],
+    'AULA 35': ['AULA 35'],
+    'AULA 36': ['AULA 36'],
+  },
+  'classi': {
+    // TODO: aggiungere quelli in succursale
+    '2A': ['AULA 1'],
+    '2B': ['AULA 10'],
+    '2C': ['AULA 4'],
+    // 2D
+    '2E': ['AULA 6'],
+    '2F': ['AULA 3 BIS'],
+    '2G': ['AULA 8'],
+    // 2H
+    '2I': ['AULA 3'],
+    '2L': ['AULA 2'],
+    '2M': ['AULA 9'],
+    '2N': ['AULA 7'],
+    '3A': ['AULA 15'],
+    '3B': ['AULA 20 BIS'],
+    '3C': ['AULA 14'],
+    '3D': ['AULA 13 BIS'],
+    '3E': ['AULA 18'],
+    '3F': ['AULA 17'],
+    '3G': ['AULA 11'],
+    '3H': ['AULA 5'],
+    '3I': ['AULA 20'],
+    '3L': ['AULA 19'],
+    '4A': ['AULA 28'],
+    '4B': ['AULA 27'],
+    '4C': ['AULA 26'],
+    '4D': ['AULA 12'],
+    '4E': ['AULA 16'],
+    '4F': ['AULA 30 BIS'],
+    '4G': ['AULA 30'],
+    '4H': ['AULA 13'],
+    '5A': ['AULA 33'],
+    '5B': ['AULA 23'],
+    '5C': ['AULA 32'],
+    '5D': ['AULA 25'],
+    '5E': ['AULA 29'],
+    '5F': ['AULA 36'],
+    '5G': ['AULA 21'],
+    '5H': ['AULA 35'],
+    '5I': ['AULA 31'],
+    '5L': ['AULA 34'],
+    '5M': ['AULA 24'],
+    '5N': ['AULA 22'],
+    // TODO: le classi sopra alla 30 BIS non sono state ancora create => crash
+  },
+  'autogestione': {
+    'JUST DANCE': ['AULA MAGNA'],
+    'SIMPOSIO': ['AULA 11', 'AULA 13', 'AULA 18', 'AULA 20'],
+    'QUIZ': ['AULA 22', 'AULA 24'],
+    'VIDEOGAMES': ['AULA 29'],
+    'BUBBLE FOOTBALL': ['PALESTRA 1', 'PALESTRA 2'],
+    // 'CINEFORUM': ['AULA 32', 'AULA 33', 'AULA 34', 'AULA 35'] TODO: aule
+  }
 };
 
 int getFloor(String className) {
@@ -70,8 +129,10 @@ final List<PathData> decorations = [
       fillColor: Colors.lightGreen.withAlpha(100),
       strokeColor: Colors.transparent),
   PathData(
-      builder: PathBuilder('v-435h-1000V-182H-292v182', close: true, startFromOrigin: true),
-      stroke: PathBuilder('M0,-395l-126.6,32.5M-1000,-182H-292V-320l126.6,-32.5',
+      builder: PathBuilder('v-435h-1000V-182H-292v182',
+          close: true, startFromOrigin: true),
+      stroke: PathBuilder(
+          'M0,-395l-126.6,32.5M-1000,-182H-292V-320l126.6,-32.5',
           close: false),
       offset: Offset(1000, 0),
       fillColor: Colors.grey),
@@ -104,6 +165,14 @@ final PathData lab =
     PathData(builder: pathBuilders['lab'], offset: const Offset(379, 169));
 final PathData lab2 =
     PathData(builder: pathBuilders['lab2'], offset: const Offset(593, 169));
+final PathData class31 =
+    PathData(builder: pathBuilders['class6'], offset: const Offset(103, 20));
+final PathData class32 = PathData(
+    builder: pathBuilders['class6'],
+    offset: const Offset(259, 20),
+    symmetric: true);
+final PathData class33 =
+    PathData(builder: pathBuilders['class5'], offset: const Offset(259, 20));
 
 final PathData bagnoM = PathData(
     builder: pathBuilders['bagno'],
@@ -116,21 +185,19 @@ final PathData bagnoF = PathData(
     fillColor: const Color(0xA0E427B3),
     selectable: false);
 
-/// school:[0|1]      la maschera del profilo della scuola
-/// |                       separatore per le classi
-/// [nome classe]:[maschera della classe]&[pos x],[pos y]{[selectable (true|false)]&[default fill color (HEX)]}
 final List<Floor> floors = [
   // -2
   Floor({
-    'scuola': scuole[0],
-    'succursale': scuole[2].withColor(fillColor: Colors.transparent),
+    'scuola': scuole['sede1'],
+    'succursale':
+        scuole['succursale1'].withColor(fillColor: Colors.transparent),
     'PALESTRA 1': palestra1,
     'PALESTRA 2': palestra1.getSymmetric()
   }),
   // -1
   Floor({
-    'scuola': scuole[0],
-    'succursale': scuole[2],
+    'scuola': scuole['sede1'],
+    'succursale': scuole['succursale1'],
     'PALESTRINA': class_3BIS,
     'LABORATORIO BIOLOGIA': classLab,
     'LABORATORIO ROBOTICA': PathData(
@@ -154,8 +221,8 @@ final List<Floor> floors = [
   }),
   // 0
   Floor({
-    'scuola': scuole[0],
-    'succursale': scuole[3].withColor(fillColor: Colors.white30),
+    'scuola': scuole['sede1'],
+    'succursale': scuole['succursale2'].withColor(fillColor: Colors.white30),
     'AULA 3 BIS': class_3BIS,
     'AULA 1': class_1,
     'AULA 2': class_2,
@@ -173,8 +240,8 @@ final List<Floor> floors = [
   }),
   // 1
   Floor({
-    'scuola': scuole[1],
-    'succursale': scuole[3].withColor(fillColor: Colors.white30),
+    'scuola': scuole['sede2'],
+    'succursale': scuole['succursale2'].withColor(fillColor: Colors.white30),
     'AULA 13 BIS': class_3BIS,
     'AULA 11': class_1,
     'AULA 12': class_2,
@@ -194,8 +261,8 @@ final List<Floor> floors = [
   }),
   // 2
   Floor({
-    'scuole': scuole[1],
-    'succursale': scuole[3].withColor(fillColor: Colors.white30),
+    'scuole': scuole['sede2'],
+    'succursale': scuole['succursale2'].withColor(fillColor: Colors.white30),
     'LABORATORIO CHIMICA': class_3BIS,
     'AULA 21': class_1,
     'AULA 22': class_2,
@@ -211,16 +278,26 @@ final List<Floor> floors = [
     'AULA 30': class_3.getSymmetric(),
     'AULA 30 BIS': class_3BIS.getSymmetric(),
     'bagno1': bagnoM,
-    'bagno2': bagnoF.getSymmetric() 
+    'bagno2': bagnoF.getSymmetric()
   }),
   // 3
   Floor({
-    'scuola': scuole[0],
-    'succursale': scuole[3].withColor(fillColor: Colors.white30),
+    'scuola': scuole['sede3'], // TODO: fix rientro in alto
+    'succursale': scuole['succursale2'].withColor(fillColor: Colors.white30),
+    'AULA 31': class31,
+    'AULA 32': class32,
+    'AULA 33': class33,
     'BIBLIOTECA':
         PathData(builder: pathBuilders['biblio'], offset: Offset(379, 169)),
+    'AULA 34': class33.getSymmetric(),
+    'AULA 35': class32.getSymmetric(),
+    'AULA 36': class31.getSymmetric(),
     'bagno1': bagnoF,
-    'bagno2': bagnoM.getSymmetric()
+    'bagno2': bagnoM.getSymmetric(),
+    'lab chimica': class_3BIS.withColor(
+        fillColor: Color(0x50000000), strokeColor: Colors.transparent),
+    'aula 30bis': class_3BIS.getSymmetric().withColor(
+        fillColor: Color(0x50000000), strokeColor: Colors.transparent)
   })
 ];
 
@@ -250,35 +327,40 @@ class Floor {
   }
 }
 
-final List<PathData> scuole = [
-  PathData(
+final Map<String, PathData> scuole = {
+  'sede1': PathData(
     builder: PathBuilder(
-      'v46h-7v50h7v73h103v-48h276v48h214v-48h276v48h103v-73h7v-50h-7v-46'),
+        'v46h-7v50h7v73h103v-48h276v48h214v-48h276v48h103v-73h7v-50h-7v-46'),
     fillColor: Colors.lime[900],
     selectable: false,
   ),
-  PathData(
+  'sede2': PathData(
     builder: PathBuilder(
-      'v46h-7v50h7v73h103v-48h276v48h92v-30h30v30h92v-48h276v48h103v-73h7v-50h-7v-46'),
+        'v46h-7v50h7v73h103v-48h276v48h92v-30h30v30h92v-48h276v48h103v-73h7v-50h-7v-46'),
     fillColor: Colors.lime[900],
     selectable: false,
   ),
-  // SUCCURSALE
-  PathData(
-    builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
+  'sede3': PathData(
+    builder: PathBuilder(
+        'v46h-7v50h7v73h103v-73v25h276v48h214v-48h276v-25v73h103v-73h7v-50h-7v-46h-103v20h-276v-20h-214v20h-276v-20'),
     fillColor: Colors.lime[900],
-    offset: Offset(986, -475),
-    selectable: false
+    selectable: false,
   ),
-  PathData(
-    builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
-    stroke: PathBuilder('''h-513m0,-38h513m0,-38h-513m0,-38h513m0,-38h-114m-285,0h-114m0,-38h114m285,0h114m0,-38h-114m-285,0h-114
-    v228m57,0v-228m57,0v228m57,0v-114m57,0v114m57,0v-114m57,0v114m57,0v-228m57,0v228m57,0v-228''', close: false),
-    fillColor: Colors.lime[900],
-    offset: Offset(986, -475),
-    selectable: false
-  )
-];
+  'succursale1': PathData(
+      builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
+      fillColor: Colors.lime[900],
+      offset: Offset(986, -475),
+      selectable: false),
+  'succursale2': PathData(
+      builder: PathBuilder('h-513v-228h114v114h285v-114h114', close: true),
+      stroke: PathBuilder(
+          '''h-513m0,-38h513m0,-38h-513m0,-38h513m0,-38h-114m-285,0h-114m0,-38h114m285,0h114m0,-38h-114m-285,0h-114
+    v228m57,0v-228m57,0v228m57,0v-114m57,0v114m57,0v-114m57,0v114m57,0v-228m57,0v228m57,0v-228''',
+          close: false),
+      fillColor: Colors.lime[900],
+      offset: Offset(986, -475),
+      selectable: false)
+};
 final Map<String, PathBuilder> pathBuilders = {
   'tree': PathBuilder(
       'q-10,-14,8,-16q0,-20,16,-16q10,-10,16,4q16,-2,14,12q14,10,0,20q8,16,-8,20q-12,28,-24,4q-20,8,-16,-12q-14,-4,-6,-16'),
@@ -290,6 +372,8 @@ final Map<String, PathBuilder> pathBuilders = {
   'class3': PathBuilder('M103,-73v73h-103v-73h83', close: false),
   'class4': PathBuilder('M0,26v-26h60v121h-60v-75', close: false),
   'class4v2': PathBuilder('M60,50v-50h-60v121h60v-51', close: false),
+  'class5': PathBuilder('M86,0h-86v61h86v-41', close: false),
+  'class6': PathBuilder('M78,51v-51h-78v61h58,v-10', close: false),
   'gym': PathBuilder('h216v121h-216'),
   'gym2': PathBuilder('h156v121h-156'),
   'stairs': PathBuilder(
