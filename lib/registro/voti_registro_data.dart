@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';

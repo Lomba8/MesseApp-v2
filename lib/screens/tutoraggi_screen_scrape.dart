@@ -15,7 +15,7 @@ class TutoraggiScreenScrape extends StatelessWidget {
     var document = parse(response.body);
 
     dom.Element links = document.querySelector(" .item-380 > a:nth-child(1)");
-    debugPrint('${links}');
+    debugPrint(links.toString());
 
     print('informatica');
     print('    1');

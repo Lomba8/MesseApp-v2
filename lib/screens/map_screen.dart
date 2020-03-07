@@ -4,9 +4,8 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
-  //final Map<String, List<String>> activities;   TODO: attualmente gestito internamente, deve essere lanciata la route con il parametro
 
-  MapScreen(/*{this.activities}*/);
+  MapScreen();
 
   @override
   _MapScreenState createState() => _MapScreenState();

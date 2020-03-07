@@ -6,7 +6,6 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

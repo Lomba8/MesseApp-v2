@@ -1,4 +1,3 @@
-import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 
 class NoteRegistroData extends RegistroData {
@@ -29,7 +28,7 @@ class NoteRegistroData extends RegistroData {
     });
 
     data = data2..sort();
-    bachecaNewFlags = bachecaNewFlags2;
-    return Result(true, true);*/
+    bachecaNewFlags = bachecaNewFlags2;*/
+    return Result(true, true);
   }
 }

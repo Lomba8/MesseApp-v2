@@ -186,7 +186,7 @@ class VotiDetailsState extends State<VotiDetails> {
         )
       ]);
 
-  LineChartData _averageData() {
+  /*LineChartData _averageData() {
     return null;
-  }
+  }*/
 }
