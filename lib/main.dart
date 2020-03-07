@@ -169,12 +169,9 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
               ? navigatorKey.currentState
                   .push(MaterialPageRoute(builder: (context) => Offline()))
               : print(alreadyPushed);
-        } else {
-          if (alreadyPushed) {
-            alreadyPushed = false;
-            navigatorKey.currentState.pop(context);
-          } else
-            null;
+        } else if (alreadyPushed) {
+          alreadyPushed = false;
+          navigatorKey.currentState.pop(context);
         }
       }
     });
@@ -206,11 +203,12 @@ void saveData(dynamic json, String path) async {
   if (!file.existsSync()) file.createSync();
   file.writeAsStringSync(json, flush: true);
 }
-Future<dynamic> loadData (String path) async {
+
+Future<dynamic> loadData(String path) async {
   Directory dataDir = await getApplicationSupportDirectory();
-    File file = File('${dataDir.path}/$path.json');
-    if (!file.existsSync()) return null;
-    return jsonDecode(file.readAsStringSync());
+  File file = File('${dataDir.path}/$path.json');
+  if (!file.existsSync()) return null;
+  return jsonDecode(file.readAsStringSync());
 }
 
 final FlutterLocalNotificationsPlugin notificationsPlugin =
