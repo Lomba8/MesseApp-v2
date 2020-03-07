@@ -7,7 +7,6 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
 import 'package:Messedaglia/main.dart' as main;
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
