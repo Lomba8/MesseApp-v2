@@ -1,9 +1,5 @@
 import 'package:Messedaglia/main.dart' as main;
-import 'package:Messedaglia/preferences/globals.dart';
-import 'package:Messedaglia/registro/registro.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class Offline extends StatelessWidget {

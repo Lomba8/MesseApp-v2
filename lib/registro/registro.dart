@@ -41,7 +41,7 @@ class RegistroApi {
   static final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
 
   static String token;
-  static DateTime tokenExpiration = null;
+  static DateTime tokenExpiration;
 
   static Future<bool> login(
       {String username,

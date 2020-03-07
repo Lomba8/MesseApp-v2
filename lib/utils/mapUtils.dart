@@ -103,7 +103,6 @@ final Map<String, Map<String, List<String>>> masks = {
     '5L': ['AULA 34'],
     '5M': ['AULA 24'],
     '5N': ['AULA 22'],
-    // TODO: le classi sopra alla 30 BIS non sono state ancora create => crash
   },
   'autogestione': {
     'JUST DANCE': ['AULA MAGNA'],
@@ -111,7 +110,7 @@ final Map<String, Map<String, List<String>>> masks = {
     'QUIZ': ['AULA 22', 'AULA 24'],
     'VIDEOGAMES': ['AULA 29'],
     'BUBBLE FOOTBALL': ['PALESTRA 1', 'PALESTRA 2'],
-    // 'CINEFORUM': ['AULA 32', 'AULA 33', 'AULA 34', 'AULA 35'] TODO: aule
+    'CINEFORUM': ['AULA 32', 'AULA 33', 'AULA 34', 'AULA 35']
   }
 };
 

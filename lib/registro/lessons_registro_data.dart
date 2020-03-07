@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,8 @@ class LessonsRegistroData extends RegistroData {
     // Interrogazione e spiegazione
 
     for (Map lesson in json) {
-      RegistroApi.cls = lesson['classDesc'].substring(0, lesson['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
+      RegistroApi.cls = lesson['classDesc']
+          .substring(0, lesson['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
       Lezione lezione = Lezione(
           date: DateTime.parse(lesson['evtDate']),
           hour: lesson['evtHPos'] - 1,
@@ -42,8 +45,13 @@ class LessonsRegistroData extends RegistroData {
           sbj: lesson['subjectDesc'],
           lessonType: lesson['lessonType'],
           info: lesson['lessonArg'].isEmpty ? null : lesson['lessonArg']);
-      (data['sbj'][lezione.sbj] ??= <Lezione>[]).add(lezione);
-      (data['date'][lezione.date] ??= <Lezione>[]).add(lezione);
+      if (data['date'][lezione.date] != null &&
+          data['date'][lezione.date].last.isCompatible(lezione))
+        data['date'][lezione.date].last.join(lezione);
+      else {
+        (data['sbj'][lezione.sbj] ??= <Lezione>[]).add(lezione);
+        (data['date'][lezione.date] ??= <Lezione>[]).add(lezione);
+      }
     }
     return Result(true, true);
   }
@@ -73,12 +81,25 @@ class LessonsRegistroData extends RegistroData {
 
 class Lezione {
   final DateTime date;
-  final int hour;
-  final Duration duration;
+  int hour;
+  Duration duration;
   final String author;
   final String sbj;
   final String lessonType;
   final String info;
+
+  bool isCompatible(Lezione l2) =>
+      date == l2.date &&
+      author == l2.author &&
+      sbj == l2.sbj &&
+      lessonType == l2.lessonType &&
+      info == l2.info &&
+      (l2.hour - hour).abs() == duration.inHours;
+
+  void join(Lezione l2) {
+    hour = min(hour, l2.hour);
+    duration = Duration(hours: duration.inHours + l2.duration.inHours);
+  }
 
   Lezione(
       {@required this.date,

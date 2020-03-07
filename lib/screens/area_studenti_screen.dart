@@ -8,7 +8,6 @@ import 'package:Messedaglia/screens/note_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen_scrape.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
@@ -29,7 +28,7 @@ class AreaStudenti extends StatefulWidget {
 }
 
 class _AreaStudentiState extends State<AreaStudenti> {
-  String _passedTime() {
+  /*String _passedTime() {
     if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
         DateTime.now().difference(RegistroApi.agenda.lastUpdate);
@@ -48,7 +47,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
-  }
+  }*/
 
   void _setStateIfAlive() {
     if (mounted) setState(() {});

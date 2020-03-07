@@ -5,7 +5,6 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/voti_details_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
-import 'package:connectivity_platform_interface/src/enums.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
