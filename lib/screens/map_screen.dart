@@ -4,7 +4,6 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
-
   MapScreen();
 
   @override
@@ -19,9 +18,9 @@ class _MapScreenState extends State<MapScreen> {
   String mask = 'aule';
   String selectedKey;
 
-  String reversePicker(String aula) => masks[mask]
+  String reversePicker(String aula) => mapData[mask]['mask']
       .keys
-      .firstWhere((key) => masks[mask][key].contains(aula), orElse: () => null);
+      .singleWhere((key) => mapData[mask]['mask'][key].contains(aula) as bool, orElse: () => null);
 
   @override
   Widget build(BuildContext context) => Material(
@@ -89,11 +88,11 @@ class _MapScreenState extends State<MapScreen> {
                       AutoCompleteTextField<String>(
                         itemSubmitted: (item) {
                           setState(() => floor =
-                              getFloor(masks[mask][item]?.first).toDouble());
+                              getFloor(mapData[mask]['mask'][item]?.first, mask).toDouble());
                           selectedKey = item;
                         },
                         key: _autocompleteKey,
-                        suggestions: masks[mask].keys.toList(),
+                        suggestions: mapData[mask]['mask'].keys.toList(),
                         itemBuilder: (context, suggestion) => Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(suggestion),
@@ -112,7 +111,7 @@ class _MapScreenState extends State<MapScreen> {
                       DropdownButton<String>(
                         isExpanded: true,
                         value: mask,
-                        items: masks.keys
+                        items: mapData.keys
                             .map((key) => DropdownMenuItem<String>(
                                 value: key, child: Text(key)))
                             .toList(),
@@ -132,7 +131,7 @@ class _MapScreenState extends State<MapScreen> {
           GestureDetector(
             onTapUp: (details) {
               final Offset start = Offset(14, 703);
-              floors[floor.toInt() + 2].classes.forEach((cls, data) {
+              Function (String, dynamic) picker = (cls, data) {
                 if (data.selectable &&
                     data
                         .getFill(
@@ -141,14 +140,17 @@ class _MapScreenState extends State<MapScreen> {
                         .contains(details.localPosition))
                   _autocompleteController.text =
                       selectedKey = reversePicker(cls) ?? selectedKey;
-              });
+              };
+              floors[floor.toInt() + 2].classes.forEach(picker);
+              if (mapData[mask]['classes'].length > floor+2)
+                mapData[mask]['classes'][floor.toInt()+2].forEach(picker);
               setState(() {});
             },
             child: CustomPaint(
               size: Size.fromHeight(
                   MediaQuery.of(context).size.width * 903 / 1000),
               painter:
-                  MapPainter(masks[mask][selectedKey], floor: floor.toInt()),
+                  MapPainter(mapData[mask]['mask'][selectedKey], mask, floor: floor.toInt()),
             ),
           ),
           Container(
@@ -166,7 +168,6 @@ class _MapScreenState extends State<MapScreen> {
         ]),
       ])));
 }
-
 class MapPainter extends CustomPainter {
   static final Color border = Colors.black;
 
@@ -175,9 +176,10 @@ class MapPainter extends CustomPainter {
     ..style = PaintingStyle.stroke
     ..strokeWidth = 1;
 
-  List<String> _selectedClass;
+  List _selectedClass;
+  String _mask;
   int floor;
-  MapPainter(this._selectedClass, {this.floor = 0});
+  MapPainter(this._selectedClass, this._mask, {this.floor = 0});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -192,7 +194,7 @@ class MapPainter extends CustomPainter {
 
   void _paintFloor(
       Canvas canvas, Floor floor, double crop, final Offset start) {
-    decorations.forEach((decoration) {
+    decorations.followedBy(mapData[_mask]['decorations']).forEach((decoration) {
       canvas.drawPath(
           decoration.getFill(crop, _paint, translateY: start.dy), _paint);
       canvas.drawPath(
@@ -201,7 +203,7 @@ class MapPainter extends CustomPainter {
           _paint);
     });
 
-    floor.classes.forEach((aula, data) {
+    Function (String, dynamic) drawer = (aula, data) {
       canvas.drawPath(
           data.getFill(crop, _paint,
               translateX: start.dx,
@@ -214,7 +216,11 @@ class MapPainter extends CustomPainter {
           data.getStroke(crop, _paint,
               translateX: start.dx, translateY: start.dy, defaultColor: border),
           _paint);
-    });
+    };
+
+    floor.classes.forEach(drawer); // join delle due mappe
+    if (mapData[_mask]['classes'].length > this.floor+2)
+      mapData[_mask]['classes'][this.floor+2].forEach(drawer);
   }
 
   @override
