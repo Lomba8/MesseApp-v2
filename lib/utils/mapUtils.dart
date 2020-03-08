@@ -1,123 +1,530 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:path_parsing/path_parsing.dart';
 
-final Map<String, Map<String, List<String>>> masks = {
-  'aule': {
-    'PALESTRA 1': ['PALESTRA 1'],
-    'PALESTRA 2': ['PALESTRA 2'],
-    'PALESTRINA': ['PALESTRINA'],
-    'LABORATORIO BIOLOGIA': ['LABORATORIO BIOLOGIA'],
-    'LABORATORIO ROBOTICA': ['LABORATORIO ROBOTICA'],
-    'AULA MAGNA': ['AULA MAGNA'],
-    'LABORATORIO CHIMICA 3': ['LABORATORIO CHIMICA 3'],
-    'LABORATORIO FISICA': ['LABORATORIO FISICA'],
-    'AULA 3 BIS': ['AULA 3 BIS'],
-    'AULA 1': ['AULA 1'],
-    'AULA 2': ['AULA 2'],
-    'AULA 3': ['AULA 3'],
-    'AULA 4': ['AULA 4'],
-    'AULA 5': ['AULA 5'],
-    'AULA 6': ['AULA 6'],
-    'AULA 7': ['AULA 7'],
-    'AULA 8': ['AULA 8'],
-    'AULA 9': ['AULA 9'],
-    'AULA 10': ['AULA 10'],
-    'AULA INSEGNANTI': ['AULA INSEGNANTI'],
-    'AULA 13 BIS': ['AULA 13 BIS'],
-    'AULA 11': ['AULA 11'],
-    'AULA 12': ['AULA 12'],
-    'AULA 13': ['AULA 13'],
-    'AULA 14': ['AULA 14'],
-    'AULA 15': ['AULA 15'],
-    'SEGRETERIA AMMINISTRATIVA': ['SEGRETERIA AMMINISTRATIVA'],
-    'PRESIDENZA': ['PRESIDENZA'],
-    'AULA 16': ['AULA 16'],
-    'AULA 17': ['AULA 17'],
-    'AULA 18': ['AULA 18'],
-    'AULA 19': ['AULA 19'],
-    'AULA 20': ['AULA 20'],
-    'AULA 20 BIS': ['AULA 20 BIS'],
-    'LABORATORIO CHIMICA': ['LABORATORIO CHIMICA'],
-    'AULA 21': ['AULA 21'],
-    'AULA 22': ['AULA 22'],
-    'AULA 23': ['AULA 23'],
-    'AULA 24': ['AULA 24'],
-    'AULA 25': ['AULA 25'],
-    'LABORATORIO LINGUE': ['LABORATORIO LINGUE'],
-    'LABORATORIO INFO': ['LABORATORIO INFO'],
-    'AULA 26': ['AULA 26'],
-    'AULA 27': ['AULA 27'],
-    'AULA 28': ['AULA 28'],
-    'AULA 29': ['AULA 29'],
-    'AULA 30': ['AULA 30'],
-    'AULA 30 BIS': ['AULA 30 BIS'],
-    'BIBLIOTECA': ['BIBLIOTECA'],
-    'AULA 31': ['AULA 31'],
-    'AULA 32': ['AULA 32'],
-    'AULA 33': ['AULA 33'],
-    'AULA 34': ['AULA 34'],
-    'AULA 35': ['AULA 35'],
-    'AULA 36': ['AULA 36'],
+final String _rawMapData = '''{
+  "aule": {
+    "mask": {
+      "PALESTRA 1": [
+        "PALESTRA 1"
+      ],
+      "PALESTRA 2": [
+        "PALESTRA 2"
+      ],
+      "PALESTRINA": [
+        "PALESTRINA"
+      ],
+      "LABORATORIO BIOLOGIA": [
+        "LABORATORIO BIOLOGIA"
+      ],
+      "LABORATORIO ROBOTICA": [
+        "LABORATORIO ROBOTICA"
+      ],
+      "AULA MAGNA": [
+        "AULA MAGNA"
+      ],
+      "LABORATORIO CHIMICA 3": [
+        "LABORATORIO CHIMICA 3"
+      ],
+      "LABORATORIO FISICA": [
+        "LABORATORIO FISICA"
+      ],
+      "AULA 3 BIS": [
+        "AULA 3 BIS"
+      ],
+      "AULA 1": [
+        "AULA 1"
+      ],
+      "AULA 2": [
+        "AULA 2"
+      ],
+      "AULA 3": [
+        "AULA 3"
+      ],
+      "AULA 4": [
+        "AULA 4"
+      ],
+      "AULA 5": [
+        "AULA 5"
+      ],
+      "AULA 6": [
+        "AULA 6"
+      ],
+      "AULA 7": [
+        "AULA 7"
+      ],
+      "AULA 8": [
+        "AULA 8"
+      ],
+      "AULA 9": [
+        "AULA 9"
+      ],
+      "AULA 10": [
+        "AULA 10"
+      ],
+      "AULA INSEGNANTI": [
+        "AULA INSEGNANTI"
+      ],
+      "AULA 13 BIS": [
+        "AULA 13 BIS"
+      ],
+      "AULA 11": [
+        "AULA 11"
+      ],
+      "AULA 12": [
+        "AULA 12"
+      ],
+      "AULA 13": [
+        "AULA 13"
+      ],
+      "AULA 14": [
+        "AULA 14"
+      ],
+      "AULA 15": [
+        "AULA 15"
+      ],
+      "SEGRETERIA AMMINISTRATIVA": [
+        "SEGRETERIA AMMINISTRATIVA"
+      ],
+      "PRESIDENZA": [
+        "PRESIDENZA"
+      ],
+      "AULA 16": [
+        "AULA 16"
+      ],
+      "AULA 17": [
+        "AULA 17"
+      ],
+      "AULA 18": [
+        "AULA 18"
+      ],
+      "AULA 19": [
+        "AULA 19"
+      ],
+      "AULA 20": [
+        "AULA 20"
+      ],
+      "AULA 20 BIS": [
+        "AULA 20 BIS"
+      ],
+      "LABORATORIO CHIMICA": [
+        "LABORATORIO CHIMICA"
+      ],
+      "AULA 21": [
+        "AULA 21"
+      ],
+      "AULA 22": [
+        "AULA 22"
+      ],
+      "AULA 23": [
+        "AULA 23"
+      ],
+      "AULA 24": [
+        "AULA 24"
+      ],
+      "AULA 25": [
+        "AULA 25"
+      ],
+      "LABORATORIO LINGUE": [
+        "LABORATORIO LINGUE"
+      ],
+      "LABORATORIO INFO": [
+        "LABORATORIO INFO"
+      ],
+      "AULA 26": [
+        "AULA 26"
+      ],
+      "AULA 27": [
+        "AULA 27"
+      ],
+      "AULA 28": [
+        "AULA 28"
+      ],
+      "AULA 29": [
+        "AULA 29"
+      ],
+      "AULA 30": [
+        "AULA 30"
+      ],
+      "AULA 30 BIS": [
+        "AULA 30 BIS"
+      ],
+      "BIBLIOTECA": [
+        "BIBLIOTECA"
+      ],
+      "AULA 31": [
+        "AULA 31"
+      ],
+      "AULA 32": [
+        "AULA 32"
+      ],
+      "AULA 33": [
+        "AULA 33"
+      ],
+      "AULA 34": [
+        "AULA 34"
+      ],
+      "AULA 35": [
+        "AULA 35"
+      ],
+      "AULA 36": [
+        "AULA 36"
+      ]
+    },
+    "decorations": [],
+    "classes": []
   },
-  'classi': {
-    // TODO: aggiungere quelli in succursale
-    '2A': ['AULA 1'],
-    '2B': ['AULA 10'],
-    '2C': ['AULA 4'],
-    // 2D
-    '2E': ['AULA 6'],
-    '2F': ['AULA 3 BIS'],
-    '2G': ['AULA 8'],
-    // 2H
-    '2I': ['AULA 3'],
-    '2L': ['AULA 2'],
-    '2M': ['AULA 9'],
-    '2N': ['AULA 7'],
-    '3A': ['AULA 15'],
-    '3B': ['AULA 20 BIS'],
-    '3C': ['AULA 14'],
-    '3D': ['AULA 13 BIS'],
-    '3E': ['AULA 18'],
-    '3F': ['AULA 17'],
-    '3G': ['AULA 11'],
-    '3H': ['AULA 5'],
-    '3I': ['AULA 20'],
-    '3L': ['AULA 19'],
-    '4A': ['AULA 28'],
-    '4B': ['AULA 27'],
-    '4C': ['AULA 26'],
-    '4D': ['AULA 12'],
-    '4E': ['AULA 16'],
-    '4F': ['AULA 30 BIS'],
-    '4G': ['AULA 30'],
-    '4H': ['AULA 13'],
-    '5A': ['AULA 33'],
-    '5B': ['AULA 23'],
-    '5C': ['AULA 32'],
-    '5D': ['AULA 25'],
-    '5E': ['AULA 29'],
-    '5F': ['AULA 36'],
-    '5G': ['AULA 21'],
-    '5H': ['AULA 35'],
-    '5I': ['AULA 31'],
-    '5L': ['AULA 34'],
-    '5M': ['AULA 24'],
-    '5N': ['AULA 22'],
+  "classi": {
+    "mask": {
+      "2A": [
+        "AULA 1"
+      ],
+      "2B": [
+        "AULA 10"
+      ],
+      "2C": [
+        "AULA 4"
+      ],
+      "2E": [
+        "AULA 6"
+      ],
+      "2F": [
+        "AULA 3 BIS"
+      ],
+      "2G": [
+        "AULA 8"
+      ],
+      "2I": [
+        "AULA 3"
+      ],
+      "2L": [
+        "AULA 2"
+      ],
+      "2M": [
+        "AULA 9"
+      ],
+      "2N": [
+        "AULA 7"
+      ],
+      "3A": [
+        "AULA 15"
+      ],
+      "3B": [
+        "AULA 20 BIS"
+      ],
+      "3C": [
+        "AULA 14"
+      ],
+      "3D": [
+        "AULA 13 BIS"
+      ],
+      "3E": [
+        "AULA 18"
+      ],
+      "3F": [
+        "AULA 17"
+      ],
+      "3G": [
+        "AULA 11"
+      ],
+      "3H": [
+        "AULA 5"
+      ],
+      "3I": [
+        "AULA 20"
+      ],
+      "3L": [
+        "AULA 19"
+      ],
+      "4A": [
+        "AULA 28"
+      ],
+      "4B": [
+        "AULA 27"
+      ],
+      "4C": [
+        "AULA 26"
+      ],
+      "4D": [
+        "AULA 12"
+      ],
+      "4E": [
+        "AULA 16"
+      ],
+      "4F": [
+        "AULA 30 BIS"
+      ],
+      "4G": [
+        "AULA 30"
+      ],
+      "4H": [
+        "AULA 13"
+      ],
+      "5A": [
+        "AULA 33"
+      ],
+      "5B": [
+        "AULA 23"
+      ],
+      "5C": [
+        "AULA 32"
+      ],
+      "5D": [
+        "AULA 25"
+      ],
+      "5E": [
+        "AULA 29"
+      ],
+      "5F": [
+        "AULA 36"
+      ],
+      "5G": [
+        "AULA 21"
+      ],
+      "5H": [
+        "AULA 35"
+      ],
+      "5I": [
+        "AULA 31"
+      ],
+      "5L": [
+        "AULA 34"
+      ],
+      "5M": [
+        "AULA 24"
+      ],
+      "5N": [
+        "AULA 22"
+      ]
+    },
+    "decorations": [],
+    "classes": []
   },
-  'autogestione': {
-    'JUST DANCE': ['AULA MAGNA'],
-    'SIMPOSIO': ['AULA 11', 'AULA 13', 'AULA 18', 'AULA 20'],
-    'QUIZ': ['AULA 22', 'AULA 24'],
-    'VIDEOGAMES': ['AULA 29'],
-    'BUBBLE FOOTBALL': ['PALESTRA 1', 'PALESTRA 2'],
-    'CINEFORUM': ['AULA 32', 'AULA 33', 'AULA 34', 'AULA 35']
+  "autogestione": {
+    "mask": {
+      "JUST DANCE": [
+        "AULA MAGNA"
+      ],
+      "SIMPOSIO": [
+        "AULA 11",
+        "AULA 13",
+        "AULA 18",
+        "AULA 20"
+      ],
+      "QUIZ": [
+        "AULA 22",
+        "AULA 24"
+      ],
+      "VIDEOGAMES": [
+        "AULA 29"
+      ],
+      "BUBBLE FOOTBALL": [
+        "PALESTRA 1",
+        "PALESTRA 2"
+      ],
+      "CINEFORUM": [
+        "AULA 32",
+        "AULA 33",
+        "AULA 34",
+        "AULA 35"
+      ],
+      "BADMINGTON": [
+        "BADMINGTON 1",
+        "BADMINGTON 2",
+        "BADMINGTON 3"
+      ]
+    },
+    "decorations": [
+      {
+        "builder": "M24.3,40.02L11.73,27.48M7.05,22.77 7.05,15.18 11.73,10.5L32.79,31.5L24.3,40.02M44.64,34.59L40.23,39.0L60.87,59.64L56.64,63.87L36.0,43.23L15.36,63.87L11.13,59.64L40.41,30.36C38.28,25.77 39.78,19.32 44.55,14.55C50.28,8.79 58.5,7.71 62.88,12.09C67.29,16.5 66.21,24.72 60.45,30.45C55.68,35.22 49.23,36.72 44.64,34.59M0.0,0.0M24.3,40.02L11.73,27.48C7.05,22.77 7.05,15.18 11.73,10.5L32.79,31.5L24.3,40.02M44.64,34.59L40.23,39.0L60.87,59.64L56.64,63.87L36.0,43.23L15.36,63.87L11.13,59.64L40.41,30.36C38.28,25.77 39.78,19.32 44.55,14.55C50.28,8.79 58.5,7.71 62.88,12.09C67.29,16.5 66.21,24.72 60.45,30.45C55.68,35.22 49.23,36.72 44.64,34.59Z",
+        "offsetX": 800,
+        "offsetY": -200,
+        "fillColor": 4279060385,
+        "strokeColor": 4279060385,
+        "selectable": false
+      }
+    ],
+    "classes": [
+      {
+        "BADMINGTON 1": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 550,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 2": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 400,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 3": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 250,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        }
+      },
+      {
+        "BADMINGTON 1": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 550,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 2": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 400,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 3": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 250,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        }
+      },
+      {
+        "BADMINGTON 1": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 550,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 2": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 400,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 3": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 250,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        }
+      },
+      {
+        "BADMINGTON 1": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 550,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 2": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 400,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 3": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 250,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        }
+      },
+      {
+        "BADMINGTON 1": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 550,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 2": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 400,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 3": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 250,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        }
+      },
+      {
+        "BADMINGTON 1": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 550,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 2": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 400,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        },
+        "BADMINGTON 3": {
+          "builder": "M0,0v60h100v-60z",
+          "stroke": "M0,0v60h100v-60zM50,0v60",
+          "offsetX": 250,
+          "offsetY": -175,
+          "fillColor": 0,
+          "strokeColor": -1
+        }
+      }
+    ]
   }
-};
+}'''; // TODO: deve essere restituito dal server
+// FIXME: comprimere i floor uguali
 
-int getFloor(String className) {
+final Map<String, dynamic> mapData = jsonDecode(_rawMapData)
+  ..forEach((key, data) {
+    data['decorations'] = data['decorations']
+        .map<PathData>((pathData) => PathData.parse(pathData))
+        .toList();
+    data['classes'] = data['classes']
+        .map((floor) => floor.map<String, PathData>(
+            (String key, data) => MapEntry(key, PathData.parse(data))))
+        .toList();
+  });
+
+int getFloor(String className, String mask) {
   for (int i = 0; i < floors.length; i++)
     if (floors[i].classes.containsKey(className) &&
         floors[i].classes[className].selectable) return i - 2;
+  for (int i = 0; i < mapData[mask]['classes'].length; i++)
+    if (mapData[mask]['classes'][i].containsKey(className) &&
+        mapData[mask]['classes'][i][className].selectable) return i - 2;
   return null;
 }
 
@@ -426,6 +833,18 @@ class PathData {
         symm: symmetric);
   }
 
+  static PathData parse(Map data) => PathData(
+      builder:
+          PathBuilder(data['builder'], close: false, startFromOrigin: false),
+      stroke: PathBuilder(data['stroke'] ?? data['builder'],
+          close: false, startFromOrigin: false),
+      offset: Offset(
+          data['offsetX'].toDouble() ?? 0.0, data['offsetY'].toDouble() ?? 0.0),
+      selectable: data['selectable'] ?? true,
+      symmetric: data['symmetric'] ?? false,
+      fillColor: Color(data['fillColor'] ?? 0),
+      strokeColor: Color(data['strokeColor'] ?? 0));
+
   Path getStroke(double crop, Paint paint,
       {Color defaultColor = Colors.transparent,
       double translateX = 0,
@@ -482,6 +901,9 @@ class PathBuilder extends PathProxy {
     writeSvgPathDataToPath(_svg, this);
     return _path;
   }
+
+  @override
+  String toString() => _svg;
 
   @override
   void close() {
