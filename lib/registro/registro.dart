@@ -71,7 +71,7 @@ class RegistroApi {
         res =
             await http.post(loginUrl, headers: headers, body: jsonEncode(body));
       } catch (e) {
-        //print(e);
+        print(e);
         return false;
       }
 

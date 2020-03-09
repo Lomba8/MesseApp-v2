@@ -67,7 +67,7 @@ class _OrariSectionState extends State<OrariSection> {
             leading: Padding(
               padding: const EdgeInsets.only(left: 20),
               child: IconButton(
-                icon: Icon(Icons.restore_page),
+                icon: Icon(Icons.settings_backup_restore),
                 color: Colors.white,
                 onPressed: () {
                   resetprefs();
