@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
@@ -31,6 +32,7 @@ class _AgendaState extends State<Agenda> {
   EventList<Evento> get e => RegistroApi.agenda.data;
 
   List<Evento> dayEvents = List<Evento>();
+  List<Lezione> dayLessons = List<Lezione>();
   Evento _onTop;
 
   double lunghezzaDash = 0;
@@ -132,6 +134,7 @@ class _AgendaState extends State<Agenda> {
                                 if (dayEvents != null && dayEvents.isNotEmpty)
                                   dayEvents.forEach((event) => event.seen());
                                 dayEvents = events ?? [];
+                                dayLessons = RegistroApi.lessons.data['date'][day];
                                 _currentDate = day;
                                 lunghezzaDash = 0;
                               })),
@@ -156,6 +159,28 @@ class _AgendaState extends State<Agenda> {
                       ),
                     ),
                   ),
+                ),
+                if (dayLessons != null) Column (  // TODO: per ora lo piazzo qui
+                  children: dayLessons.map((l) => ListTile(
+                      title: Text(l.sbj),
+                      subtitle: Text(
+                        (RegistroApi.subjects.data[l.author] == l.sbj ||
+                                    (RegistroApi.subjects.data[l.author]
+                                            ?.contains(l.sbj) ??
+                                        false)
+                                ? ''
+                                : '(${l.author})\n') +
+                            l.lessonType,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      leading: CircleAvatar(
+                        child: Text('${l.hour + 1}ª', style: TextStyle(color: Colors.white,)),
+                        backgroundColor: (Globals.subjects[l.sbj] ?? {})['colore']?.withOpacity(0.3) ?? Colors.white24,
+                      ),
+                      trailing: CircleAvatar(
+                          child: Text('${l.duration.inHours} h', style: TextStyle(color: Colors.white,)),
+                          backgroundColor: (Globals.subjects[l.sbj] ?? {})['colore']?.withOpacity(0.3) ?? Colors.white24),
+                    )).toList(),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -257,14 +282,13 @@ class _AgendaState extends State<Agenda> {
                           children: dayEvents
                               .where((event) =>
                                   !event.giornaliero && event != _onTop)
-                              .map<Widget>((oggi) {
-                            _onTop = null;
-                            return EventCard(
-                              evento: oggi,
-                              onTap: () => setState(() => _onTop = oggi),
-                            );
-                          }).followedBy([
-                            if (_onTop != null) EventCard(evento: _onTop)
+                              .map<Widget>((oggi) => EventCard(
+                                    evento: oggi,
+                                    onTap: () => setState(() => _onTop = oggi),
+                                  ))
+                              .followedBy([
+                            if (_onTop != null && dayEvents.contains(_onTop))
+                              EventCard(evento: _onTop)
                           ]).toList(),
                         ),
                       ),
@@ -340,7 +364,7 @@ class EventCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black87.withOpacity(0.15),
+                    color: Colors.black26,
                     blurRadius: 3.0,
                     spreadRadius: 4.5)
               ],
