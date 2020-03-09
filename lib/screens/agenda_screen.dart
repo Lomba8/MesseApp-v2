@@ -311,6 +311,18 @@ class _AgendaState extends State<Agenda> {
     );
   }
 
+  bool overflow(List<Evento> eventi) {
+    eventi.removeWhere((evento) => evento.giornaliero == true);
+    eventi.sort((a, b) => a.inizio.compareTo(b.inizio));
+    for (int i = 0; i < eventi.length; i++) {
+      if ((i + 1) == eventi.length) break;
+      if (eventi[i].fine.isAfter(eventi[i + 1].inizio)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   List<Widget> _orariList() {
     int inizio = 24 * 60, fine = 0;
     dayEvents.where((event) => !event.giornaliero).forEach((event) {
