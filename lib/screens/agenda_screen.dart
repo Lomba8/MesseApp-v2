@@ -258,10 +258,16 @@ class _AgendaState extends State<Agenda> {
                               .where((event) =>
                                   !event.giornaliero && event != _onTop)
                               .map<Widget>((oggi) {
-                            _onTop = null;
+                            dayEvents.contains(_onTop) ? null : _onTop = null;
                             return EventCard(
                               evento: oggi,
-                              onTap: () => setState(() => _onTop = oggi),
+                              onTap: () {
+                                if (overflow(dayEvents)) {
+                                  setState(() => _onTop = oggi);
+                                  print(_onTop);
+                                }
+                                return null;
+                              },
                             );
                           }).followedBy([
                             if (_onTop != null) EventCard(evento: _onTop)
@@ -285,6 +291,18 @@ class _AgendaState extends State<Agenda> {
         ],
       ), // scroll view
     );
+  }
+
+  bool overflow(List<Evento> eventi) {
+    eventi.removeWhere((evento) => evento.giornaliero == true);
+    eventi.sort((a, b) => a.inizio.compareTo(b.inizio));
+    for (int i = 0; i < eventi.length; i++) {
+      if ((i + 1) == eventi.length) break;
+      if (eventi[i].fine.isAfter(eventi[i + 1].inizio)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   List<Widget> _orariList() {
