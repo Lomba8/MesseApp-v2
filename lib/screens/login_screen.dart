@@ -236,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             textInputAction: TextInputAction.next,
                             autocorrect: false,
                             validator: (input) => input.length < 9
-                                ? "L'username deve essere lungo 9 caratteri"
+                                ? "L'username deve essere lungo 9 caratteri" //FIXME ci si puo loggare anche con la email
                                 : input[0].toUpperCase() != 'G' &&
                                         input[0].toUpperCase() != 'S'
                                     ? 'Solo accettati solo gli account studente (S) e genitore (G)'
