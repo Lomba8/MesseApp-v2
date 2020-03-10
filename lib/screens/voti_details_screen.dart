@@ -1,4 +1,5 @@
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -20,11 +21,10 @@ class VotiDetails extends StatefulWidget {
 }
 
 class VotiDetailsState extends State<VotiDetails> {
-  Map<Voto, bool> _selected = {};
-
   @override
   Widget build(BuildContext context) => Material(
-          child: CustomScrollView(
+      color: Theme.of(context).backgroundColor,
+      child: CustomScrollView(
         slivers: [
           SliverAppBar(
             elevation: 0,
@@ -64,24 +64,22 @@ class VotiDetailsState extends State<VotiDetails> {
                   child: LineChart(_votiData()),
                 ),
               ),
-            ]..addAll(
-                (widget.voti ?? []).reversed.map<Widget>((mark) => ListTile(
+            ]..addAll((widget.voti ?? [])
+                .reversed
+                .map<Widget>((mark) => CustomExpansionTile(
                       title: Text(
                         mark.data,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: _selected[mark] ?? false
-                          ? Text(
-                              mark.info.isEmpty
-                                  ? 'Nessuna descrizione'
-                                  : mark.info,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              textAlign: TextAlign.center,
-                            )
-                          : null,
-                      onTap: () => setState(
-                          () => _selected[mark] = !(_selected[mark] ?? false)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          mark.info.isEmpty ? 'Nessuna descrizione' : mark.info,
+                          style: Theme.of(context).textTheme.bodyText1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                       leading: Stack(
                         children: <Widget>[
                           CircleAvatar(
