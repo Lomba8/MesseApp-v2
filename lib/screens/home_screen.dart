@@ -47,7 +47,7 @@ class _HomeState extends State<Home> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: (RegistroApi.lessons.data['date']
-                            [/*getDayFromDT(DateTime.now())*/DateTime(2020,2,14)] ??
+                            [getDayFromDT(DateTime.now())] ??
                         [])
                     .map<Widget>((lesson) => Padding(
                           padding: const EdgeInsets.all(8.0),
