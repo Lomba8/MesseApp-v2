@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
@@ -52,7 +51,7 @@ class RegistroApi {
     username ??= uname;
     password ??= pword;
     if (username == null || password == null)
-      return 'Username e/o passowrd non validi';
+      return 'Username e/o password non validi';
     if (username == uname && password == pword && !force) if (token != null &&
         DateTime.now().isBefore(tokenExpiration)) return '';
     print('logging $username');
@@ -96,7 +95,7 @@ class RegistroApi {
       }
       if (res.statusCode != HttpStatus.ok) {
         token = tokenExpiration = null;
-        return res.reasonPhrase.toString();
+        return res.reasonPhrase;
       }
       json = jsonDecode(res.body)["card"];
 
