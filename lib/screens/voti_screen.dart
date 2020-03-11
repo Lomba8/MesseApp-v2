@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/voti_details_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
+import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -20,6 +20,8 @@ class Voti extends StatefulWidget {
 }
 
 class _VotiState extends State<Voti> {
+  bool _value = false;
+
   @override
   void initState() {
     super.initState();
@@ -66,139 +68,24 @@ class _VotiState extends State<Voti> {
 
   @override
   Widget build(BuildContext context) {
-    int newVotiCount = RegistroApi.voti.newVotiPeriodCount;
     return LiquidPullToRefresh(
       onRefresh: () => _refresh(),
       showChildOpacityTransition: false,
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
+          ExpansionSliver(ExpansionSliverDelegate(context,
+              title: RegistroApi.voti.periods[0],
+              body: _Header(
+                  (period) => setState(() {
+                    _value = !_value;
+                    RegistroApi.voti.period = period;
+                  }),
+                  _passedTime),
+              value: _value)),
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                CustomPaint(
-                  painter: BackgroundPainter(Theme.of(context)),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).padding.top + 8),
-                        child: Text(
-                          RegistroApi.voti.periods[0],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Center(
-                                    child: MarkView(
-                                        RegistroApi.voti.averagePeriodo(0)),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        AspectRatio(
-                                            aspectRatio: 2,
-                                            child: MaterialButton(
-                                              onPressed: () => setState(() =>
-                                                  RegistroApi.voti.period = 1),
-                                              child: Text(
-                                                RegistroApi.voti.periods[1],
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              shape: Border(
-                                                  bottom: BorderSide(
-                                                      color: Voto.getColor(
-                                                          RegistroApi.voti
-                                                              .averagePeriodo(
-                                                                  2)),
-                                                      width: 5)),
-                                            )),
-                                        AspectRatio(
-                                          aspectRatio: 2,
-                                          child: MaterialButton(
-                                            onPressed: () => setState(() =>
-                                                RegistroApi.voti.period = 2),
-                                            shape: Border(
-                                                bottom: BorderSide(
-                                                    color: Voto.getColor(
-                                                        RegistroApi.voti
-                                                            .averagePeriodo(2)),
-                                                    width: 5)),
-                                            child: Text(
-                                              RegistroApi.voti.periods[2],
-                                              textAlign: TextAlign.center,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 20.0,
-                                  bottom:
-                                      MediaQuery.of(context).size.width / 8),
-                              child: ListTile(
-                                title: Text(
-                                  '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${_passedTime()}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      //fontFamily: 'CoreSans',
-                                      ),
-                                ),
-                                leading: newVotiCount > 0
-                                    ? Icon(
-                                        Icons.brightness_1,
-                                        color: Colors.yellow,
-                                      )
-                                    : null,
-                                trailing: newVotiCount > 0
-                                    ? IconButton(
-                                        icon: Icon(Icons.clear_all),
-                                        onPressed: () => setState(
-                                            () => RegistroApi.voti.allSeen()))
-                                    : null,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 Padding(
                     padding: EdgeInsets.all(30.0 - 15.0),
                     child: Column(
@@ -303,10 +190,128 @@ class _VotiState extends State<Voti> {
   }
 }
 
+class _Header extends ResizableWidget {
+  final void Function(int) onPeriodChangedCallback;
+  final String Function() passedTime;
+
+  _Header(this.onPeriodChangedCallback, this.passedTime);
+
+  @override
+  Widget build(BuildContext context, double heightFactor) {
+    double average = RegistroApi.voti.averagePeriodo(0);
+    int newVotiCount = RegistroApi.voti.newVotiPeriodCount;
+    return Container(
+        height: (maxExtent(context) - minExtent(context)) * heightFactor +
+            minExtent(context),
+        child: Stack(overflow: Overflow.clip, children: <Widget>[
+          Positioned(
+              top: 20 * heightFactor,
+              left: 20,
+              width: interpolate(kToolbarHeight,
+                  (MediaQuery.of(context).size.width - 40) / 2, heightFactor),
+              height: interpolate(kToolbarHeight,
+                  (MediaQuery.of(context).size.width - 40) / 2, heightFactor),
+              child: MarkView(
+                voto: average,
+                angle: interpolate(10.0, average, heightFactor),
+                background: interpolate(
+                    Voto.getColor(average), Colors.transparent, heightFactor),
+              )),
+          Positioned(
+            top: 20 * heightFactor,
+            right: 30,
+            width: (MediaQuery.of(context).size.width - 40) / 2 - 20,
+            height: interpolate(kToolbarHeight, (MediaQuery.of(context).size.width - 40) / 4, heightFactor),
+            child: Opacity(
+              opacity: heightFactor,
+              child: MaterialButton(
+                onPressed: () => onPeriodChangedCallback(1),
+                child: Text(
+                  RegistroApi.voti.periods[1],
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                shape: Border(
+                    bottom: BorderSide(
+                        color:
+                            Voto.getColor(RegistroApi.voti.averagePeriodo(2)),
+                        width: 5)),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: interpolate(20.0, 20.0 + kToolbarHeight, heightFactor),
+            right: 30,
+            width: (MediaQuery.of(context).size.width - 40) / 2 - 20,
+            height: interpolate(kToolbarHeight, (MediaQuery.of(context).size.width - 40) / 4, heightFactor),
+            child: Opacity(
+              opacity: heightFactor,
+              child: MaterialButton(
+                onPressed: () => onPeriodChangedCallback(2),
+                shape: Border(
+                    bottom: BorderSide(
+                        color:
+                            Voto.getColor(RegistroApi.voti.averagePeriodo(2)),
+                        width: 5)),
+                child: Text(
+                  RegistroApi.voti.periods[2],
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: interpolate(40+kToolbarHeight, 0.0, heightFactor),
+            right: 0,
+            height: kToolbarHeight,
+            child: ListTile(
+              title: Text(
+                '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${passedTime()}',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    //fontFamily: 'CoreSans',
+                    ),
+              ),
+              leading: newVotiCount > 0
+                  ? Icon(
+                      Icons.brightness_1,
+                      color: Colors.yellow,
+                    )
+                  : null,
+              trailing: newVotiCount > 0
+                  ? IconButton(
+                      icon: Icon(Icons.clear_all),
+                      onPressed: () {
+                        RegistroApi.voti.allSeen();
+                        onPeriodChangedCallback(0);
+                      })
+                  : null,
+            ),
+          ),
+        ]));
+  }
+
+  @override
+  double maxExtent(BuildContext context) =>
+      (MediaQuery.of(context).size.width - 40) / 2 + 40 + kToolbarHeight;
+
+  @override
+  double minExtent(BuildContext context) => kToolbarHeight + 20;
+}
+
 class MarkView extends StatefulWidget {
   final double _voto;
+  final double _angle;
+  final Color _background;
 
-  MarkView([this._voto = -1]);
+  MarkView({double voto, double angle, Color background})
+      : _voto = voto ?? -1,
+        _angle = angle ?? voto ?? -1,
+        _background = background ?? Colors.transparent;
 
   @override
   MarkViewState createState() => MarkViewState();
@@ -339,7 +344,11 @@ class MarkViewState extends State<MarkView>
     return AspectRatio(
       aspectRatio: 1,
       child: CustomPaint(
-        painter: MarkPainter(Theme.of(context), widget._voto, animation.value),
+        painter: MarkPainter(Theme.of(context),
+            mark: widget._voto,
+            progress: animation.value,
+            arcAngle: widget._angle,
+            backgroundColor: widget._background),
       ),
     );
   }
@@ -353,21 +362,29 @@ class MarkPainter extends CustomPainter {
   Color startColor, endColor;
   double _mark;
   double _progress;
+  double _arcAngle;
   ThemeData _theme;
+  Color _backgroundColor;
 
-  MarkPainter(this._theme, [this._mark = -1, this._progress = 1]) {
+  MarkPainter(this._theme,
+      {double mark, double progress, double arcAngle, Color backgroundColor})
+      : _mark = mark ?? -1,
+        _progress = progress ?? 1,
+        _arcAngle = arcAngle ?? mark ?? -1,
+        _backgroundColor = backgroundColor ?? Colors.transparent {
     if (_mark == null || _mark.isNaN)
-      startColor = endColor = Colors.blue;
-    else if (_mark < 6)
-      startColor = endColor = Colors.deepOrange[900];
-    else {
+      startColor = Colors.blue;
+    else
       startColor = Colors.deepOrange[900];
-      endColor = Colors.green;
-    }
+    endColor = Voto.getColor(mark);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
+    p.color = _backgroundColor;
+    p.style = PaintingStyle.fill;
+    canvas.drawOval(Rect.fromLTRB(5, 5, size.width - 5, size.height - 5), p);
+    p.style = PaintingStyle.stroke;
     p.color = Color.fromARGB(
         255,
         ((endColor.red - startColor.red) * _progress + startColor.red).round(),
@@ -375,17 +392,16 @@ class MarkPainter extends CustomPainter {
             .round(),
         ((endColor.blue - startColor.blue) * _progress + startColor.blue)
             .round());
-    if (_mark != null && !_mark.isNaN) {
-      canvas.drawArc(
-          Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
-          -math.pi / 2,
-          _progress * math.pi * (_mark == null || _mark.isNaN ? 10 : _mark) / 5,
-          false,
-          p);
+    if (_arcAngle != null && !_arcAngle.isNaN) {
+      if (_arcAngle != 10)
+        canvas.drawArc(Rect.fromLTRB(5, 5, size.width - 5, size.height - 5),
+            -math.pi / 2, _progress * math.pi * _arcAngle / 5, false, p);
+      else
+        canvas.drawOval(
+            Rect.fromLTRB(5, 5, size.width - 5, size.height - 5), p);
     }
     p.color = p.color.withAlpha(50);
-    canvas.drawCircle(size.center(Offset.zero),
-        (math.min(size.width, size.height) - 10) / 2, p);
+    canvas.drawOval(Rect.fromLTRB(5, 5, size.width - 5, size.height - 5), p);
 
     TextPainter painter = TextPainter(
         text: TextSpan(
