@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (main.connection_main != ConnectivityResult.none) {
       RegistroApi.login().then((ok) {
-        if (ok)
+        if (ok == '')
           RegistroApi.downloadAll((double progress) {
             setState(() {
               _progress = progress;
@@ -121,9 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
-
-        if (await RegistroApi.login(
-            username: _username, password: _password, check: true)) {
+        var req = await RegistroApi.login(
+            username: _username, password: _password, check: true);
+        if (req == '') {
           setState(() {
             splash = true;
           });
@@ -138,8 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
           if (Platform.isAndroid)
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 3),
-              content: Text(
-                  "Username o password errate! Reinserire le credenziali."),
+              content: Text(req + '/n' + req != 'Service Unavailable'
+                  ? 'Reinserire le credenziali'
+                  : 'Riprova piu tardi'),
             ));
           else
             Flushbar(
@@ -170,8 +171,10 @@ class _LoginScreenState extends State<LoginScreen> {
               dismissDirection: FlushbarDismissDirection.HORIZONTAL,
               // The default curve is Curves.easeOut
               forwardAnimationCurve: Curves.fastOutSlowIn,
-              title: 'Username o password errati',
-              message: 'Reinserire le credenziali',
+              title: req,
+              message: req != 'Service Unavailable'
+                  ? 'Reinserire le credenziali'
+                  : 'Riprova piu tardi',
             ).show(context);
         }
       }

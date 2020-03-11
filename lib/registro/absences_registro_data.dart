@@ -65,5 +65,6 @@ class Assenza {
       hour: json['hour'],
       value: json['value'],
       justified: json['justified'],
-      justification: json['justification']);
+      justification: json['justification'],
+      type: null);
 }

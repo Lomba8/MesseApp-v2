@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
@@ -43,18 +44,17 @@ class RegistroApi {
   static String token;
   static DateTime tokenExpiration;
 
-  static Future<bool> login(
+  static Future<String> login(
       {String username,
       String password,
       bool check = true,
       bool force = false}) async {
     username ??= uname;
     password ??= pword;
-    if (username == null || password == null) return false;
-    if (username == uname &&
-        password == pword &&
-        !force) if (DateTime.now().isBefore(tokenExpiration) && token != null)
-      return true;
+    if (username == null || password == null)
+      return 'Username e/o passowrd non validi';
+    if (username == uname && password == pword && !force) if (token != null &&
+        DateTime.now().isBefore(tokenExpiration)) return '';
     print('logging $username');
     try {
       Map<String, String> headers = {
@@ -72,10 +72,10 @@ class RegistroApi {
             await http.post(loginUrl, headers: headers, body: jsonEncode(body));
       } catch (e) {
         print(e);
-        return false;
+        return res.reasonPhrase.toString();
       }
 
-      if (res.statusCode != 200) return false;
+      if (res.statusCode != 200) return res.reasonPhrase;
       Map json = jsonDecode(res.body);
       token = json['token'];
       tokenExpiration = DateTime.parse(json['expire']
@@ -83,23 +83,26 @@ class RegistroApi {
           .toLocal();
       if (!check) {
         _saveAuth();
-        return true;
+        return '';
       }
       headers['Z-Auth-Token'] = token;
 
-      res = await http.get(
-          "https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
-          headers: headers);
-
+      try {
+        res = await http.get(
+            "https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
+            headers: headers);
+      } catch (e) {
+        print(e);
+      }
       if (res.statusCode != HttpStatus.ok) {
         token = tokenExpiration = null;
-        return false;
+        return res.reasonPhrase.toString();
       }
       json = jsonDecode(res.body)["card"];
 
       if (json['schCode'].toString() != 'VRLS0003') {
         token = tokenExpiration = null;
-        return false;
+        return 'Haha ci hai provato';
       }
       print(json['birthDate']);
       uname = username;
@@ -114,13 +117,13 @@ class RegistroApi {
         compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));
       usrId = json["usrId"];
       _saveAuth();
-      return true;
+      return '';
     } catch (e, s) {
       print(e);
       print(s);
       token = tokenExpiration = null;
     }
-    return false;
+    return 'Errore durante il login';
   }
 
   static Future<void> downloadAll(void Function(double) callback) async {
@@ -142,7 +145,7 @@ class RegistroApi {
     });
   }
 
-  static void _saveAuth () => saveData({
+  static void _saveAuth() => saveData({
         'nome': nome,
         'cognome': cognome,
         'scuola': scuola,
@@ -154,7 +157,7 @@ class RegistroApi {
         'tokenExpiration': tokenExpiration.toIso8601String(),
         'cls': cls
       }, 'auth');
-  static Future loadAuth () async {
+  static Future loadAuth() async {
     Map data = await loadData('auth');
     if (data == null) return;
     nome = data['nome'];
@@ -168,7 +171,6 @@ class RegistroApi {
     tokenExpiration = DateTime.parse(data['tokenExpiration']);
     cls = data['cls'];
   }
-  
 
   static void save() async {
     _saveAuth();
@@ -179,7 +181,7 @@ class RegistroApi {
     saveData(lessons, 'lessons');
     saveData(absences, 'absences');
   }
- 
+
   static Future<void> load() async {
     await loadAuth();
     dynamic data = await loadData('voti');
@@ -207,8 +209,8 @@ abstract class RegistroData {
   Future<Result> getData() async {
     if (_loading) return Result(true, false);
     _loading = true;
-    if (DateTime.now()
-        .isAfter(RegistroApi.tokenExpiration)) if (!await RegistroApi.login())
+    if (DateTime.now().isAfter(
+        RegistroApi.tokenExpiration)) if (await RegistroApi.login() != '')
       return Result(false, false);
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
@@ -241,7 +243,8 @@ abstract class RegistroData {
   @mustCallSuper
   void fromJson(Map<String, dynamic> json) {
     if (json == null) return;
-    lastUpdate = json['lastUpdate'] == null ? null : DateTime.parse(json['lastUpdate']);
+    lastUpdate =
+        json['lastUpdate'] == null ? null : DateTime.parse(json['lastUpdate']);
     etag = json['etag'];
   }
 
