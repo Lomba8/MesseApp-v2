@@ -9,6 +9,7 @@ import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:intl/intl.dart';
+import 'package:Messedaglia/main.dart' as main;
 
 class OrariSection extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _OrariSectionState extends State<OrariSection> {
   Map<String, String> downloads = {};
 
   void resetprefs() async =>
-      prefs.setString('selectedClass', selectedClass = RegistroApi.cls);
+      main.prefs.setString('selectedClass', selectedClass = RegistroApi.cls);
 
   @override
   void initState() {
@@ -459,7 +460,7 @@ class _OrariSectionState extends State<OrariSection> {
           children.add(GestureDetector(
             onTap: () {
               Navigator.of(context, rootNavigator: true).pop();
-              prefs.setString(
+              main.prefs.setString(
                   'selectedClass', selectedClass = '$anno${sezioni[sezione]}');
               setState(() {});
             },
