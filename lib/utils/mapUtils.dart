@@ -504,7 +504,7 @@ final String _rawMapData = '''{
       }
     ]
   }
-}'''; // TODO: deve essere restituito dal server
+}'''; // TODO: CAMBIARE SOLO da: dopo l'uguale al punto e virgola //compreso
 // FIXME: comprimere i floor uguali
 
 final Map<String, dynamic> mapData = jsonDecode(_rawMapData)
