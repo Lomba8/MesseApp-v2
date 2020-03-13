@@ -99,6 +99,7 @@ class _LessonsDetailsState extends State<LessonsDetails> {
               icon: Icon(Icons.arrow_back_ios),
               onPressed: () => Navigator.pop(
                   context), // TODO: come facciamo per cambiare il giorno? una pageView non ci sta... e se facessimo una sezione a parte per le lezioni? (magari non in area studenti...)
+              // FIXME che ne dici di un calendario resizable con un pulsante che fa vedere o la esttimana o il mese + una icona per per un time selecotr ( flutter ha i widget sia per ios e android)
               color: Colors.white54,
             ),
             backgroundColor: Colors.transparent,
