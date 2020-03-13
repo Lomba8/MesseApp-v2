@@ -79,9 +79,9 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
               vsync: this,
               body: _Header(
                   (period) => setState(() {
-                    _value = !_value;
-                    RegistroApi.voti.period = period;
-                  }),
+                        _value = !_value;
+                        RegistroApi.voti.period = period;
+                      }),
                   _passedTime),
               value: _value)),
           SliverList(
@@ -223,7 +223,8 @@ class _Header extends ResizableWidget {
             top: 20 * heightFactor,
             right: 30,
             width: (MediaQuery.of(context).size.width - 40) / 2 - 20,
-            height: interpolate(kToolbarHeight, (MediaQuery.of(context).size.width - 40) / 4, heightFactor),
+            height: interpolate(kToolbarHeight,
+                (MediaQuery.of(context).size.width - 40) / 4, heightFactor),
             child: Opacity(
               opacity: heightFactor,
               child: MaterialButton(
@@ -246,7 +247,8 @@ class _Header extends ResizableWidget {
             bottom: interpolate(20.0, 20.0 + kToolbarHeight, heightFactor),
             right: 30,
             width: (MediaQuery.of(context).size.width - 40) / 2 - 20,
-            height: interpolate(kToolbarHeight, (MediaQuery.of(context).size.width - 40) / 4, heightFactor),
+            height: interpolate(kToolbarHeight,
+                (MediaQuery.of(context).size.width - 40) / 4, heightFactor),
             child: Opacity(
               opacity: heightFactor,
               child: MaterialButton(
@@ -267,7 +269,7 @@ class _Header extends ResizableWidget {
           ),
           Positioned(
             bottom: 20,
-            left: interpolate(40+kToolbarHeight, 0.0, heightFactor),
+            left: interpolate(40 + kToolbarHeight, 0.0, heightFactor),
             right: 0,
             height: kToolbarHeight,
             child: ListTile(

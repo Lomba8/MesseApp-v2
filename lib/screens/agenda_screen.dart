@@ -325,18 +325,23 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      onLongPress: () => showDialog(
+      onDoubleTap: () => showDialog(
         context: context,
-        builder: (context) => Dialog(
-            backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? Color(0xFF33333D)
-                : Colors.black12,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _buildContent(context),
-            )),
+        builder: (context) => Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: MediaQuery.of(context).size.height / 6),
+          child: Dialog(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Color(0xFF33333D)
+                  : Colors.black12,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: _buildContent(context, true),
+              )),
+        ),
       ),
       child: Container(
         margin: EdgeInsets.only(
@@ -362,12 +367,12 @@ class EventCard extends StatelessWidget {
                     : Colors
                         .black12), // TODO: fix light theme per avere sfondo opaco
             padding: const EdgeInsets.all(10.0),
-            child: _buildContent(context)),
+            child: _buildContent(context, false)),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context) => Row(
+  Widget _buildContent(BuildContext context, bool grande) => Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Container(
@@ -444,22 +449,38 @@ class EventCard extends StatelessWidget {
                         fontFamily: 'CoreSans',
                       )),
                   SizedBox(
-                    height: 5.0,
+                    height: 10.0,
                   ),
                   Expanded(
-                    child: AutoSizeText(evento.info,
-                        overflow: TextOverflow.ellipsis,
-                        minFontSize: 10.0,
-                        maxFontSize: 13.0,
-                        maxLines: 100,
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white54
-                              : Colors.black54,
-                        )),
+                    child: grande
+                        ? SingleChildScrollView(
+                            child: AutoSizeText(evento.info,
+                                overflow: TextOverflow.ellipsis,
+                                minFontSize: 13.0,
+                                maxFontSize: 16.0,
+                                maxLines: 100,
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white54
+                                      : Colors.black54,
+                                )),
+                          )
+                        : AutoSizeText(evento.info,
+                            overflow: TextOverflow.ellipsis,
+                            minFontSize: 13.0,
+                            maxFontSize: 15.0,
+                            maxLines: 6,
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white54
+                                  : Colors.black54,
+                            )),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(bottom: 2.0),
+                    padding:
+                        EdgeInsets.only(bottom: 2.0, top: grande ? 10.0 : 0.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -473,7 +494,7 @@ class EventCard extends StatelessWidget {
                           !evento.giornaliero
                               ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
                               : 'Giornaliero',
-                          style: TextStyle(fontSize: 11.0),
+                          style: TextStyle(fontSize: grande ? 14 : 11.0),
                         ),
                       ],
                     ),

@@ -159,7 +159,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-          if (connection_main == result) return;
+      if (connection_main == result) return;
       print('NAVIGATOR ' + navigatorKey.currentWidget.toString());
       connection_main = result;
       if (route == 'login_screen') {
