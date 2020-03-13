@@ -2,24 +2,37 @@ import 'dart:math';
 
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class ExpansionSliver extends StatelessWidget {
   final ExpansionSliverDelegate delegate;
   ExpansionSliver(this.delegate);
 
   @override
-  Widget build(BuildContext context) =>
-      SliverPersistentHeader(delegate: delegate, pinned: true);
+  Widget build(BuildContext context) => SliverPersistentHeader(
+        delegate: delegate,
+        pinned: true,
+        floating: true,
+      );
 }
 
 class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final ResizableWidget body;
   final dynamic value;
+  final FloatingHeaderSnapConfiguration _snapConfiguration; //FIXME: come funziona lo snap ?!?!?!
   BuildContext _context;
 
   ExpansionSliverDelegate(this._context,
-      {@required this.title, this.body, this.value});
+      {@required this.title,
+      @required TickerProvider vsync,
+      this.body,
+      this.value})
+      : _snapConfiguration = FloatingHeaderSnapConfiguration(
+          vsync: vsync,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 200),
+        );
 
   @override
   Widget build(
@@ -70,12 +83,16 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(ExpansionSliverDelegate oldDelegate) =>
       value != oldDelegate.value;
+
+  @override
+  FloatingHeaderSnapConfiguration get snapConfiguration => _snapConfiguration;
 }
 
-abstract class ResizableWidget {
+abstract class ResizableWidget<T extends StatefulWidget> extends State<T> {
   double maxExtent(BuildContext context);
   double minExtent(BuildContext context);
-  Widget build(BuildContext context, double heigthFactor);
+  @override
+  Widget build(BuildContext context, [double heigthFactor]);
 
   dynamic interpolate(dynamic start, dynamic end, double factor) {
     if (start is double && end is double) return (end - start) * factor + start;

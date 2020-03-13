@@ -19,7 +19,7 @@ class Voti extends StatefulWidget {
   _VotiState createState() => _VotiState();
 }
 
-class _VotiState extends State<Voti> {
+class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
   bool _value = false;
 
   @override
@@ -76,6 +76,7 @@ class _VotiState extends State<Voti> {
         slivers: <Widget>[
           ExpansionSliver(ExpansionSliverDelegate(context,
               title: RegistroApi.voti.periods[0],
+              vsync: this,
               body: _Header(
                   (period) => setState(() {
                     _value = !_value;
@@ -140,6 +141,7 @@ class _VotiState extends State<Voti> {
                                                   sbj['voti'],
                                                   sbj['subjectDesc'])))
                                       .then((value) {
+                                    _value = !_value;
                                     sbj['voti'].forEach((v) => v.seen());
                                     _setStateIfAlive();
                                   }),
@@ -197,7 +199,7 @@ class _Header extends ResizableWidget {
   _Header(this.onPeriodChangedCallback, this.passedTime);
 
   @override
-  Widget build(BuildContext context, double heightFactor) {
+  Widget build(BuildContext context, [double heightFactor]) {
     double average = RegistroApi.voti.averagePeriodo(0);
     int newVotiCount = RegistroApi.voti.newVotiPeriodCount;
     return Container(
