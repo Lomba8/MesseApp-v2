@@ -2,6 +2,8 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+import 'package:flutter_flip_view/flutter_flip_view.dart';
+
 class CustomIcons {
   static const IconData menu = IconData(0xe900, fontFamily: "CustomIcons");
   static const IconData option = IconData(0xe902, fontFamily: "CustomIcons");
@@ -198,12 +200,48 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
   }
 }
 
-class CardScrollWidget extends StatelessWidget {
+class CardScrollWidget extends StatefulWidget {
   var currentPage;
-  var padding = 20.0;
-  var verticalInset = 20.0;
 
   CardScrollWidget(this.currentPage);
+
+  @override
+  _CardScrollWidgetState createState() => _CardScrollWidgetState();
+}
+
+class _CardScrollWidgetState extends State<CardScrollWidget>
+    with SingleTickerProviderStateMixin {
+  var padding = 20.0;
+
+  var verticalInset = 20.0;
+
+  AnimationController _animationController;
+  Animation<double> _curvedAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
+    _curvedAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _flip(bool reverse) {
+    if (_animationController.isAnimating) return;
+    if (reverse) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +263,7 @@ class CardScrollWidget extends StatelessWidget {
         List<Widget> cardList = new List();
 
         for (var i = 0; i < numero_tutor; i++) {
-          var delta = i - currentPage;
+          var delta = i - widget.currentPage;
           bool isOnRight = delta > 0;
 
           var start = padding +
@@ -247,17 +285,27 @@ class CardScrollWidget extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: <Widget>[
-                      FlipCard(
-                        flipOnTouch: true, // lo é di default ma non va
-                        onFlipDone: (status) => print(status),
-                        speed: 1000,
-                        front: _backgroung(),
+                      // FlipCard(
+                      //   flipOnTouch: true, // lo é di default ma non va
+                      //   onFlipDone: (status) => print(status),
+                      //   speed: 1000,
+                      //   front: _backgroung(),
+                      //   back: Transform(
+                      //     alignment: Alignment.center,
+                      //     transform: Matrix4.rotationY(math.pi),
+                      //     child: _backgroung(),
+                      //   ),
+                      // ),
+                      FlipView(
+                        animationController: _curvedAnimation,
+                        front: _backgroung(() => _flip(true)),
                         back: Transform(
                           alignment: Alignment.center,
                           transform: Matrix4.rotationY(math.pi),
-                          child: _backgroung(),
+                          child: _backgroung(() => _flip(false)),
                         ),
                       ),
+
                       Padding(
                         padding:
                             EdgeInsets.only(top: 50.0, left: 20.0, right: 30.0),
@@ -414,79 +462,82 @@ class CardScrollWidget extends StatelessWidget {
     );
   }
 
-  Widget _backgroung() {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Flexible(
-          flex: 1,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                color: colore2,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                  ),
-                  color: colore1,
-                ),
-              )
-            ],
-          ),
-        ),
-        Flexible(
-          flex: 1,
-          child: Stack(
-            children: [
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      color: colore3,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: colore1,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                    topRight: Radius.circular(50),
-                  ),
+  Widget _backgroung(GestureTapCallback _onTap) {
+    return GestureDetector(
+      onTap: _onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Flexible(
+            flex: 1,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
                   color: colore2,
                 ),
-              ),
-            ],
-          ),
-        ),
-        Flexible(
-          flex: 1,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                color: colore2,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(50),
-                      topRight: Radius.circular(50)),
-                  color: colore3,
-                ),
-              )
-            ],
+                    ),
+                    color: colore1,
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+          Flexible(
+            flex: 1,
+            child: Stack(
+              children: [
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        color: colore3,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        color: colore1,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                      topRight: Radius.circular(50),
+                    ),
+                    color: colore2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  color: colore2,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(50),
+                        topRight: Radius.circular(50)),
+                    color: colore3,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
