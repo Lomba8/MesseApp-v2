@@ -1,6 +1,7 @@
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -47,54 +48,46 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         Size.fromHeight(MediaQuery.of(context).size.width / 8)),
               ),
               SliverList(
-                  delegate: SliverChildListDelegate([
-                ExpansionPanelList(
-                  expansionCallback: (panelIndex, isExpanded) => setState(() {
-                    setState(() {
-                      Comunicazione c = RegistroApi.bacheca.data[panelIndex];
-                      _expanded = isExpanded ? null : c;
-                      if (c.content == null)
-                        c.loadContent(() => setState(() {}));
-                    });
-                  }),
-                  children: RegistroApi.bacheca.data
-                      .map<ExpansionPanel>((c) => ExpansionPanel(
-                            isExpanded: c == _expanded,
-                            headerBuilder: (context, isExpanded) => ListTile(
-                              title: Text(
-                                c.title,
-                                textAlign: TextAlign.center,
-                                maxLines: isExpanded ? 100 : 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              leading: IconButton(
-                                icon: Icon(MdiIcons.filePdf),
-                                onPressed: c.attachments.isEmpty
-                                    ? null
-                                    : () {/* TODO: download pdf */},
-                              ),
-                            ),
-                            body: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: c.content == null
-                                  ? Container(
-                                      height: 2,
-                                      child: LinearProgressIndicator(
-                                        value: null,
-                                        backgroundColor: Colors.white10,
-                                        valueColor: AlwaysStoppedAnimation(
-                                            Colors.white),
-                                      ),
-                                    )
-                                  : Text(c.content,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
-                            ),
-                          ))
-                      .toList(),
-                )
-              ]))
+                  delegate: SliverChildListDelegate(
+                RegistroApi.bacheca.data
+                    .map<Widget>((c) => CustomExpansionTile(
+                          onExpansionChanged: (isExpanded) => setState(() {
+                            setState(() {
+                              if (c.content == null)  // TODO: check not in progress
+                                c.loadContent(() => setState(() {}));
+                            });
+                          }),
+                          title: Text(
+                            c.title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2, //TODO: isExpanded ? 100 : 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          leading: IconButton(
+                            icon: Icon(MdiIcons.filePdf),
+                            onPressed: c.attachments.isEmpty
+                                ? null
+                                : () {/* TODO: download pdf */},
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: c.content == null
+                                ? Container(
+                                    height: 2,
+                                    child: LinearProgressIndicator(
+                                      value: null,
+                                      backgroundColor: Colors.white10,
+                                      valueColor:
+                                          AlwaysStoppedAnimation(Colors.white),
+                                    ),
+                                  )
+                                : Text(c.content,
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
+                          ),
+                        ))
+                    .toList(),
+              ))
             ],
           ),
         ),
