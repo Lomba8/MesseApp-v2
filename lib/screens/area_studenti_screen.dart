@@ -5,7 +5,6 @@ import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
-import 'package:Messedaglia/screens/tutoraggi_screen_scrape.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -158,7 +157,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
               Section(
                 sezione: 'Note',
                 colore: 'rosa',
-                page: null,//NoteScreen(),
+                page: null, //NoteScreen(),
               ),
               Section(
                 sezione: 'App Panini',
@@ -169,12 +168,6 @@ class _AreaStudentiState extends State<AreaStudenti> {
                 sezione: 'Tutoraggi',
                 colore: 'rosso',
                 page: TutoraggiScreen(),
-              ),
-              Section(
-                // FIXME: pietro quando hai finito tutto quello che devi fare sui tutoraggi io farei le cards ed integrerei il web scraping
-                sezione: 'Tutoraggi-scrape',
-                colore: 'rosso',
-                page: TutoraggiScreenScrape(),
               ),
             ],
           )
