@@ -27,6 +27,7 @@ class VotiDetailsState extends State<VotiDetails> {
       child: CustomScrollView(
         slivers: [
           SliverAppBar(
+            brightness: Theme.of(context).brightness,
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: Text(

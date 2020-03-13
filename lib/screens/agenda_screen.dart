@@ -6,6 +6,7 @@ import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
+import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class Agenda extends StatefulWidget {
   _AgendaState createState() => _AgendaState();
 }
 
-class _AgendaState extends State<Agenda> {
+class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   DateTime _currentDate;
 
   EventList<Evento> get e => RegistroApi.agenda.data;
@@ -104,63 +105,22 @@ class _AgendaState extends State<Agenda> {
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
+          ExpansionSliver(ExpansionSliverDelegate(
+            context,
+            title: 'AGENDA',
+            vsync: this,
+            body: Calendar((day, events) => setState(() {
+                  if (dayEvents != null && dayEvents.isNotEmpty)
+                    dayEvents.forEach((event) => event.seen());
+                  dayEvents = events ?? [];
+                  dayLessons = RegistroApi.lessons.data['date'][day];
+                  _currentDate = day;
+                  lunghezzaDash = 0;
+                })),
+          )),
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                CustomPaint(
-                  painter: BackgroundPainter(Theme.of(context)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 50),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: size.height / 100, top: size.height / 18),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "AGENDA",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.black
-                                    : Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Calendar((day, events) => setState(() {
-                                if (dayEvents != null && dayEvents.isNotEmpty)
-                                  dayEvents.forEach((event) => event.seen());
-                                dayEvents = events ?? [];
-                                dayLessons =
-                                    RegistroApi.lessons.data['date'][day];
-                                _currentDate = day;
-                                lunghezzaDash = 0;
-                              })),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15.0),
-                            child: SizedBox(
-                              width: size.width,
-                              child: Text(
-                                '\n${_passedTime()}',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? Colors.black
-                                        : Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
                 if (dayLessons != null)
                   Column(
                     // TODO: per ora lo piazzo qui
@@ -365,17 +325,19 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      onLongPress: () => showDialog(context: context, builder: (context) => Dialog(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? Color(0xFF33333D)
-                  : Colors
-                      .black12,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _buildContent(context),
-        )
-      ),),
+      onLongPress: () => showDialog(
+        context: context,
+        builder: (context) => Dialog(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Color(0xFF33333D)
+                : Colors.black12,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: _buildContent(context),
+            )),
+      ),
       child: Container(
         margin: EdgeInsets.only(
             top: !evento.giornaliero
@@ -388,153 +350,149 @@ class EventCard extends StatelessWidget {
             : MediaQuery.of(context).size.height / 5.5,
         padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
         child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black26, blurRadius: 3.0, spreadRadius: 4.5)
-              ],
-              //border: Border.all(color: Colors.white24),
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Color(0xFF33333D)
-                  : Colors
-                      .black12), // TODO: fix light theme per avere sfondo opaco
-          padding: const EdgeInsets.all(10.0),
-          child: _buildContent(context)
-        ),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26, blurRadius: 3.0, spreadRadius: 4.5)
+                ],
+                //border: Border.all(color: Colors.white24),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Color(0xFF33333D)
+                    : Colors
+                        .black12), // TODO: fix light theme per avere sfondo opaco
+            padding: const EdgeInsets.all(10.0),
+            child: _buildContent(context)),
       ),
     );
   }
 
-  Widget _buildContent (BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: <Widget>[
-      Container(
-        decoration: BoxDecoration(
-            color: RegistroApi.subjects.data[evento.autore] == null ||
-                    RegistroApi.subjects.data[evento.autore] is String
-                ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
-                            {})['colore']
-                        ?.withOpacity(0.7) ??
-                    (Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white10
-                        : Colors.black12)
-                : null,
-            gradient: RegistroApi.subjects.data[evento.autore] is List
-                ? LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: RegistroApi
-                        .subjects.data[evento.autore].reversed
-                        .map<Color>((sbj) => (Globals.subjects[sbj]['colore'] as Color))
-                        .toList())
-                : null,
-            borderRadius: BorderRadius.circular(10.0)),
-        child: Row(
-          children: <Widget>[
-            Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: RegistroApi.subjects.data[evento.autore]
-                        is List
-                    ? RegistroApi.subjects.data[evento.autore]
-                        .map<Widget>((sbj) => Padding(
+  Widget _buildContent(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                color: RegistroApi.subjects.data[evento.autore] == null ||
+                        RegistroApi.subjects.data[evento.autore] is String
+                    ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
+                                {})['colore']
+                            ?.withOpacity(0.7) ??
+                        (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white10
+                            : Colors.black12)
+                    : null,
+                gradient: RegistroApi.subjects.data[evento.autore] is List
+                    ? LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: RegistroApi.subjects.data[evento.autore].reversed
+                            .map<Color>(
+                                (sbj) => (Globals.subjects[sbj]['colore'] as Color))
+                            .toList())
+                    : null,
+                borderRadius: BorderRadius.circular(10.0)),
+            child: Row(
+              children: <Widget>[
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: RegistroApi.subjects.data[evento.autore] is List
+                        ? RegistroApi.subjects.data[evento.autore]
+                            .map<Widget>((sbj) => Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Icon(
+                                      Globals.subjects[sbj]['icona'] ??
+                                          MdiIcons.sleep,
+                                      size: 25.0,
+                                      color: Colors.black),
+                                ))
+                            .toList()
+                        : [
+                            Padding(
                               padding: EdgeInsets.all(8),
                               child: Icon(
-                                  Globals.subjects[sbj]['icona'] ??
-                                      MdiIcons.sleep,
-                                  size: 25.0,
-                                  color: Colors.black),
-                            ))
-                        .toList()
-                    : [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(
-                            (Globals.subjects[RegistroApi.subjects
-                                        .data[evento.autore]] ??
-                                    {})['icona'] ??
-                                MdiIcons.sleep,
-                            size: 25.0,
-                            color: RegistroApi.subjects
-                                        .data[evento.autore] !=
-                                    null
-                                ? Colors.black
-                                : Colors.white,
-                          ),
-                        )
-                      ]),
-          ],
-        ),
-      ),
-      Expanded(
-        child: Padding(
-          padding: EdgeInsets.only(left: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              AutoSizeText(evento.autore,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  minFontSize: 10.0,
-                  maxFontSize: 15.0,
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'CoreSans',
-                  )),
-              SizedBox(
-                height: 5.0,
-              ),
-              Expanded(
-                child: AutoSizeText(evento.info,
-                    overflow: TextOverflow.ellipsis,
-                    minFontSize: 10.0,
-                    maxFontSize: 13.0,
-                    maxLines: 100,
-                    style: TextStyle(
-                      color: Theme.of(context).brightness ==
-                              Brightness.dark
-                          ? Colors.white54
-                          : Colors.black54,
-                    )),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 2.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Icon(
-                      Icons.access_time,
-                      size: 14.0,
-                    ),
-                    SizedBox(width: 5.0),
-                    Text(
-                      !evento.giornaliero
-                          ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
-                          : 'Giornaliero',
-                      style: TextStyle(fontSize: 11.0),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                                (Globals.subjects[RegistroApi
+                                            .subjects.data[evento.autore]] ??
+                                        {})['icona'] ??
+                                    MdiIcons.sleep,
+                                size: 25.0,
+                                color:
+                                    RegistroApi.subjects.data[evento.autore] !=
+                                            null
+                                        ? Colors.black
+                                        : Colors.white,
+                              ),
+                            )
+                          ]),
+              ],
+            ),
           ),
-        ),
-      ),
-      Center(
-        child: evento.nuovo ?? true
-            ? Icon(
-                Icons.brightness_1,
-                color: Colors.yellow,
-                size: 15.0,
-              )
-            : SizedBox(),
-      ),
-    ],
-  );
-
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  AutoSizeText(evento.autore,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      minFontSize: 10.0,
+                      maxFontSize: 15.0,
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'CoreSans',
+                      )),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Expanded(
+                    child: AutoSizeText(evento.info,
+                        overflow: TextOverflow.ellipsis,
+                        minFontSize: 10.0,
+                        maxFontSize: 13.0,
+                        maxLines: 100,
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white54
+                              : Colors.black54,
+                        )),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Icon(
+                          Icons.access_time,
+                          size: 14.0,
+                        ),
+                        SizedBox(width: 5.0),
+                        Text(
+                          !evento.giornaliero
+                              ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
+                              : 'Giornaliero',
+                          style: TextStyle(fontSize: 11.0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Center(
+            child: evento.nuovo ?? true
+                ? Icon(
+                    Icons.brightness_1,
+                    color: Colors.yellow,
+                    size: 15.0,
+                  )
+                : SizedBox(),
+          ),
+        ],
+      );
 }
 
 DateTime getDayFromDT(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
