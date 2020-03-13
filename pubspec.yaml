@@ -52,6 +52,7 @@ dependencies:
   ext_storage: ^1.0.2
   stream_listener: ^2.0.0
   autocomplete_textfield: ^1.7.3
+  flutter_flip_view: ^1.0.3
   flip_card: ^0.4.4
 
   # The following adds the Cupertino Icons font to your application.
