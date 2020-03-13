@@ -1,5 +1,6 @@
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
@@ -10,7 +11,9 @@ const int _pagesCount = 2000;
 class Calendar extends ResizableWidget {
   final void Function(DateTime day, List<Evento> events) _onDayChanged;
 
-  Calendar([this._onDayChanged]);
+  Calendar([this._currentDay, this._onDayChanged]) {
+    _currentDay ??= getDayFromDT(DateTime.now());
+  }
 
   DateTime _currentDay = DateTime.now();
   final PageController _controller =
@@ -19,8 +22,8 @@ class Calendar extends ResizableWidget {
   static final Curve _curve = Curves.easeIn;
 
   set currentDay(DateTime currentDay) {
-    setState(() => _currentDay = currentDay);
-    _onDayChanged(currentDay, RegistroApi.agenda.data.getEvents(currentDay));
+    _onDayChanged(_currentDay = currentDay,
+        RegistroApi.agenda.data.getEvents(currentDay));
   }
 
   @override
@@ -79,8 +82,10 @@ class Calendar extends ResizableWidget {
                     heightFactor), // il massimo numero di righe è 6, il massimo numero di colonne è 7: i giorni sono in un aspect ratio di 1:1
             child: PageView.builder(
               itemCount: _pagesCount,
-              onPageChanged: (value) =>
-                  setState(() => _page = value - _pagesCount ~/ 2),
+              onPageChanged: (value) {
+                _page = value - _pagesCount ~/ 2;
+                currentDay = _currentDay;
+              },
               controller: _controller,
               itemBuilder: (context, i) => Stack(
                 children: _children(context, i - _pagesCount ~/ 2, heightFactor)
@@ -91,6 +96,10 @@ class Calendar extends ResizableWidget {
         ],
       );
 
+  // TODO: fix [firstDayOfWeek] and [lastDayOfWeek]
+  // TODO: fix chiusura completa dell'header quando ci sono pochi eventi
+  // TODO: fix gestione dei tocchi quando chiuso (non arriva ai buttons attivi)
+  // TODO: fix bottom margin
   Iterable<Widget> _children(BuildContext context, int index,
       [double heightFactor = 0]) sync* {
     // TODO: se il giorno selezionato è in un altro mese, che settimana prendiamo?
@@ -102,7 +111,7 @@ class Calendar extends ResizableWidget {
         ? _currentDay
         : firstDayOfMonth);
     firstDayOfWeek =
-        firstDayOfWeek.subtract(Duration(days: firstDayOfWeek.weekday ));
+        firstDayOfWeek.subtract(Duration(days: firstDayOfWeek.weekday));
     DateTime lastDayOfWeek = firstDayOfWeek.add(Duration(days: 7));
     int month = firstDayOfMonth.month;
     DateTime firstDayRendered;
@@ -131,15 +140,21 @@ class Calendar extends ResizableWidget {
             child: MaterialButton(
               padding: EdgeInsets.all(0),
               clipBehavior: Clip.none,
-              onPressed: () {
-                currentDay = day;
-                if (day.isBefore(firstDayOfMonth))
-                  _controller.previousPage(
-                      duration: Duration(milliseconds: 250), curve: _curve);
-                else if (day.month != month)
-                  _controller.nextPage(
-                      duration: Duration(milliseconds: 250), curve: _curve);
-              },
+              onPressed: heightFactor < 0.5 &&
+                      (day.isBefore(firstDayOfWeek) ||
+                      day.isAfter(lastDayOfWeek))
+                  ? null
+                  : () {
+                      currentDay = day;
+                      if (day.isBefore(firstDayOfMonth))
+                        _controller.previousPage(
+                            duration: Duration(milliseconds: 250),
+                            curve: _curve);
+                      else if (day.month != month)
+                        _controller.nextPage(
+                            duration: Duration(milliseconds: 250),
+                            curve: _curve);
+                    },
               child: Stack(children: [
                 Center(
                   child: Text(

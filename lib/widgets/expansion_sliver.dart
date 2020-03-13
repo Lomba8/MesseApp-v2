@@ -20,7 +20,8 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final ResizableWidget body;
   final dynamic value;
-  final FloatingHeaderSnapConfiguration _snapConfiguration; //FIXME: come funziona lo snap ?!?!?!
+  final FloatingHeaderSnapConfiguration
+      _snapConfiguration; //FIXME: come funziona lo snap ?!?!?!
   BuildContext _context;
 
   ExpansionSliverDelegate(this._context,
@@ -88,10 +89,9 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   FloatingHeaderSnapConfiguration get snapConfiguration => _snapConfiguration;
 }
 
-abstract class ResizableWidget<T extends StatefulWidget> extends State<T> {
+abstract class ResizableWidget {
   double maxExtent(BuildContext context);
   double minExtent(BuildContext context);
-  @override
   Widget build(BuildContext context, [double heigthFactor]);
 
   dynamic interpolate(dynamic start, dynamic end, double factor) {

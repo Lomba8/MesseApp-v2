@@ -29,6 +29,7 @@ class Agenda extends StatefulWidget {
 
 class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   DateTime _currentDate;
+  bool _value = false;
 
   EventList<Evento> get e => RegistroApi.agenda.data;
 
@@ -62,7 +63,8 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
     if (mounted) setState(() {});
   }
 
-  String _passedTime() {
+  // TODO: ripristinare lastUpdate
+  /*String _passedTime() {
     if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
         DateTime.now().difference(RegistroApi.agenda.lastUpdate);
@@ -81,7 +83,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
-  }
+  }*/
 
   Future<void> _refresh() async {
     RegistroApi.agenda.getData().then((r) {
@@ -109,14 +111,16 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
             context,
             title: 'AGENDA',
             vsync: this,
-            body: Calendar((day, events) => setState(() {
+            body: Calendar(_currentDate, (day, events) => setState(() {
                   if (dayEvents != null && dayEvents.isNotEmpty)
                     dayEvents.forEach((event) => event.seen());
                   dayEvents = events ?? [];
                   dayLessons = RegistroApi.lessons.data['date'][day];
                   _currentDate = day;
                   lunghezzaDash = 0;
+                  _value = !_value;
                 })),
+            value: _value
           )),
           SliverList(
             delegate: SliverChildListDelegate(
