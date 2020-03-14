@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (Platform.isAndroid)
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 3),
-              content: Text(req + '/n' + (req != 'Service Unavailable'
+              content: Text(req + '\n' + (req != 'Service Unavailable'
                   ? 'Reinserire le credenziali'
                   : 'Riprova piu tardi')),
             ));
