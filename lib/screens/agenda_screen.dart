@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';

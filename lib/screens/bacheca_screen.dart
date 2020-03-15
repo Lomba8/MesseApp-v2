@@ -53,7 +53,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                     .map<Widget>((c) => CustomExpansionTile(
                           onExpansionChanged: (isExpanded) => setState(() {
                             setState(() {
-                              if (c.content == null)  // TODO: check not in progress
+                              if (c.content ==
+                                  null) // TODO: check not in progress
                                 c.loadContent(() => setState(() {}));
                             });
                           }),
@@ -65,6 +66,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           ),
                           leading: IconButton(
                             icon: Icon(MdiIcons.filePdf),
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             onPressed: c.attachments.isEmpty
                                 ? null
                                 : () {/* TODO: download pdf */},
@@ -76,9 +78,16 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     height: 2,
                                     child: LinearProgressIndicator(
                                       value: null,
-                                      backgroundColor: Colors.white10,
-                                      valueColor:
-                                          AlwaysStoppedAnimation(Colors.white),
+                                      backgroundColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white10
+                                              : Colors.black12,
+                                      valueColor: AlwaysStoppedAnimation(
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black),
                                     ),
                                   )
                                 : Text(c.content,
