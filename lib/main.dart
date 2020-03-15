@@ -135,6 +135,7 @@ void setTheme(ThemeMode theme) async {
   }
   print(theme.toString());
 }
+ThemeMode get theme => _theme;
 
 _MaterialAppWithThemeState _currentState;
 

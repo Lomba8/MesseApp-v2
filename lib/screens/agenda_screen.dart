@@ -110,7 +110,6 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
           ExpansionSliver(ExpansionSliverDelegate(
             context,
             title: 'AGENDA',
-            vsync: this,
             body: Calendar(_currentDate, (day, events) => setState(() {
                   if (dayEvents != null && dayEvents.isNotEmpty)
                     dayEvents.forEach((event) => event.seen());
@@ -119,7 +118,8 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                   _currentDate = day;
                   lunghezzaDash = 0;
                   _value = !_value;
-                })),
+                }),
+                'agenda'),
             value: _value
           )),
           SliverList(
@@ -144,22 +144,22 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                               leading: CircleAvatar(
                                 child: Text('${l.hour + 1}ª',
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                                     )),
                                 backgroundColor:
                                     (Globals.subjects[l.sbj] ?? {})['colore']
-                                            ?.withOpacity(0.3) ??
-                                        Colors.white24,
+                                            ?.withOpacity(0.5) ??
+                                        (Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black26),
                               ),
                               trailing: CircleAvatar(
                                   child: Text('${l.duration.inHours} h',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                                       )),
                                   backgroundColor:
                                       (Globals.subjects[l.sbj] ?? {})['colore']
-                                              ?.withOpacity(0.3) ??
-                                          Colors.white24),
+                                              ?.withOpacity(0.5) ??
+                                          (Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black26)),
                             ))
                         .toList(),
                   ),
@@ -338,7 +338,7 @@ class EventCard extends StatelessWidget {
           child: Dialog(
               backgroundColor: Theme.of(context).brightness == Brightness.dark
                   ? Color(0xFF33333D)
-                  : Colors.black12,
+                  : Color(0xFFD2D1D7),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               child: Padding(
@@ -368,8 +368,7 @@ class EventCard extends StatelessWidget {
                 //border: Border.all(color: Colors.white24),
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Color(0xFF33333D)
-                    : Colors
-                        .black12), // TODO: fix light theme per avere sfondo opaco
+                    : Color(0xFFD2D1D7)),
             padding: const EdgeInsets.all(10.0),
             child: _buildContent(context, false)),
       ),

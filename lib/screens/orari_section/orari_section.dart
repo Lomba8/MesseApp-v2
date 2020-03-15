@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
@@ -69,7 +67,9 @@ class _OrariSectionState extends State<OrariSection> {
               padding: const EdgeInsets.only(left: 20),
               child: IconButton(
                 icon: Icon(Icons.settings_backup_restore),
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white54
+                    : Colors.black54,
                 onPressed: () {
                   resetprefs();
                   setState(() {});
@@ -113,8 +113,8 @@ class _OrariSectionState extends State<OrariSection> {
                     icon: Icon(
                       Icons.file_download,
                       color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
+                          ? Colors.black54
+                          : Colors.white54,
                     ),
                     onPressed: selectedClass == null
                         ? null
@@ -185,7 +185,10 @@ class _OrariSectionState extends State<OrariSection> {
                                   ? 'Domani '
                                   : 'Oggi ',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontSize: 25.0,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'CoreSans',
@@ -196,7 +199,10 @@ class _OrariSectionState extends State<OrariSection> {
                               text:
                                   '(${DateFormat(DateFormat.WEEKDAY, 'it').format(DateTime.now().add(Duration(days: DateTime.now().hour >= 14 ? 1 : 0)))})',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontSize: 25.0,
                                 fontFamily: 'CoreSans',
                                 letterSpacing: 2,

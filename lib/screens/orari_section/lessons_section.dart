@@ -96,11 +96,15 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                   fontWeight: FontWeight.bold),
             ),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
+              icon: Icon(
+                Icons.arrow_back_ios,
+              ),
               onPressed: () => Navigator.pop(
                   context), // TODO: come facciamo per cambiare il giorno? una pageView non ci sta... e se facessimo una sezione a parte per le lezioni? (magari non in area studenti...)
               // FIXME che ne dici di un calendario resizable con un pulsante che fa vedere o la esttimana o il mese + una icona per per un time selecotr ( flutter ha i widget sia per ios e android)
-              color: Colors.white54,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white54
+                  : Colors.black54,
             ),
             backgroundColor: Colors.transparent,
             flexibleSpace: CustomPaint(
@@ -140,21 +144,27 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                       leading: CircleAvatar(
                         child: Text('${l.hour + 1}ª',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
                             )),
                         backgroundColor:
                             ((Globals.subjects[l.sbj] ?? {})['colore'] ??
-                                    Colors.white)
+                                    (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black))
                                 .withOpacity(0.3),
                       ),
                       trailing: CircleAvatar(
                           child: Text('${l.duration.inHours} h',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
                               )),
                           backgroundColor:
                               ((Globals.subjects[l.sbj] ?? {})['colore'] ??
-                                      Colors.white)
+                                      (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black))
                                   .withOpacity(0.3)),
                     ),
                   )
