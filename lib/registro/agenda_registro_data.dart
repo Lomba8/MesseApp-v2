@@ -101,9 +101,9 @@ class Evento implements EventInterface {
   }
 
   @override
-  Widget getDot() => Container(
+  Widget getDot([double opacity]) => Container(
         margin: EdgeInsets.symmetric(horizontal: 1.0),
-        color: nuovo ?? true ? Colors.red : Colors.lightBlueAccent,
+        color: (nuovo ?? true ? Colors.red : Colors.lightBlueAccent).withOpacity(opacity),
         height: 5.0,
         width: 5.0,
       );

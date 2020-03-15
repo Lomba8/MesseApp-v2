@@ -76,7 +76,6 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
         slivers: <Widget>[
           ExpansionSliver(ExpansionSliverDelegate(context,
               title: RegistroApi.voti.periods[0],
-              vsync: this,
               body: _Header(
                   (period) => setState(() {
                         _value = !_value;

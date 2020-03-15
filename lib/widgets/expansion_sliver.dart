@@ -12,7 +12,6 @@ class ExpansionSliver extends StatelessWidget {
   Widget build(BuildContext context) => SliverPersistentHeader(
         delegate: delegate,
         pinned: true,
-        floating: true,
       );
 }
 
@@ -20,20 +19,18 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final ResizableWidget body;
   final dynamic value;
-  final FloatingHeaderSnapConfiguration
-      _snapConfiguration; //FIXME: come funziona lo snap ?!?!?!
+  final IconData leading, action;
+  final Function leadingCallback, actionCallback;
   BuildContext _context;
 
   ExpansionSliverDelegate(this._context,
       {@required this.title,
-      @required TickerProvider vsync,
       this.body,
-      this.value})
-      : _snapConfiguration = FloatingHeaderSnapConfiguration(
-          vsync: vsync,
-          curve: Curves.easeOut,
-          duration: const Duration(milliseconds: 200),
-        );
+      this.value,
+      this.leading,
+      this.action,
+      this.leadingCallback,
+      this.actionCallback});
 
   @override
   Widget build(
@@ -45,17 +42,42 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
         Container(
           margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           height: kToolbarHeight,
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            if (leading != null || action != null)
+              IconButton(
+                  icon: Icon(
+                    leading ?? Icons.adb,
+                    color: leading == null
+                        ? Colors.transparent
+                        : Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white54
+                            : Colors.black54,
+                  ),
+                  onPressed: leadingCallback),
+            Expanded(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
+            if (leading != null || action != null)
+              IconButton(
+                  icon: Icon(
+                    action ?? Icons.adb,
+                    color: action == null
+                        ? Colors.transparent
+                        : Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white54
+                            : Colors.black54,
+                  ),
+                  onPressed: actionCallback)
+          ]),
         ),
         if (body != null)
           body.build(
@@ -84,9 +106,6 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(ExpansionSliverDelegate oldDelegate) =>
       value != oldDelegate.value;
-
-  @override
-  FloatingHeaderSnapConfiguration get snapConfiguration => _snapConfiguration;
 }
 
 abstract class ResizableWidget {
