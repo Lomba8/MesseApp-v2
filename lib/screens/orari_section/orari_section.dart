@@ -1,6 +1,7 @@
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/orari_section/absences_section.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
@@ -175,54 +176,57 @@ class _OrariSectionState extends State<OrariSection> {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   children: _children),
-              (selectedClass != '' && selectedClass != null)
-                  ? Padding(
-                      padding: const EdgeInsets.only(
-                          left: 18.0, top: 15.0, bottom: 15.0),
-                      child: RichText(
-                          text: TextSpan(
-                              text: DateTime.now().hour >= 14
-                                  ? 'Domani '
-                                  : 'Oggi ',
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
+              if (selectedClass != null &&
+                  (DateTime date) {
+                    int weekday = date.weekday - (date.hour < 14 ? 1 : 0);
+                    if (weekday == 6 || (weekday == 5 && !_hasSaturday))
+                      return false;
+                    return true;
+                  }(DateTime.now()))
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 18.0, top: 15.0, bottom: 15.0),
+                  child: RichText(
+                      text: TextSpan(
+                          text: DateTime.now().hour >= 14 ? 'Domani ' : 'Oggi ',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
                                     : Colors.black,
-                                fontSize: 25.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'CoreSans',
-                                letterSpacing: 2,
-                              ),
-                              children: <TextSpan>[
-                            TextSpan(
-                              text:
-                                  '(${DateFormat(DateFormat.WEEKDAY, 'it').format(DateTime.now().add(Duration(days: DateTime.now().hour >= 14 ? 1 : 0)))})',
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'CoreSans',
+                            letterSpacing: 2,
+                          ),
+                          children: <TextSpan>[
+                        TextSpan(
+                          text:
+                              '(${DateFormat(DateFormat.WEEKDAY, 'it').format(DateTime.now().add(Duration(days: DateTime.now().hour >= 14 ? 1 : 0)))})',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
                                     : Colors.black,
-                                fontSize: 25.0,
-                                fontFamily: 'CoreSans',
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            )
-                          ])),
-                    )
-                  : SizedBox(),
-              (selectedClass != '' && selectedClass != null)
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Column(children: <Widget>[
-                        Row(children: oggi),
-                        Row(
-                          children: ore,
+                            fontSize: 25.0,
+                            fontFamily: 'CoreSans',
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.w300,
+                          ),
                         )
-                      ]),
+                      ])),
+                ),
+              if (selectedClass != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Column(children: <Widget>[
+                    Row(children: oggi),
+                    Row(
+                      children: ore,
                     )
-                  : SizedBox(),
+                  ]),
+                ),
+              if (selectedClass != null) Text('${countRemainingHours(sbj: _selectedSbj)} ${_selectedSbj == null ? 'giorni' : 'ore'} rimanenti')
             ]),
           ),
         ]),
@@ -261,7 +265,10 @@ class _OrariSectionState extends State<OrariSection> {
               padding: EdgeInsets.only(top: 10.0),
               child: Text(
                 '${i ~/ 6 + 1}ª',
-                style: TextStyle(color: Colors.white70),
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black87),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -277,14 +284,7 @@ class _OrariSectionState extends State<OrariSection> {
     int day = DateTime.now().weekday - 1;
     if (DateTime.now().hour >= 14) day = (day + 1) % 7;
     if (day == 6 || (day == 5 && !_hasSaturday))
-      return [
-        Expanded(
-            child: Text(
-          "non c'è lezione",
-          style: Theme.of(context).textTheme.bodyText1,
-          textAlign: TextAlign.center,
-        ))
-      ]; // TODO: skip giornate senza lezione
+      return []; // TODO: skip giornate senza lezione
     for (int i = day; i < orari[selectedClass].length; i += 6)
       if (orari[selectedClass][i] != '')
         orario.add(Expanded(
@@ -307,6 +307,9 @@ class _OrariSectionState extends State<OrariSection> {
                             : 0.1) ??
                     Colors.transparent,
                 borderRadius: BorderRadiusDirectional.circular(5),
+                boxShadow: [
+                  if (Theme.of(context).brightness == Brightness.light && (_selectedSbj == null || _selectedSbj == orari[selectedClass][i])) BoxShadow(blurRadius: 5, offset: Offset(3,3))
+                ]
               ),
               child: Center(
                 child: Padding(
@@ -363,7 +366,14 @@ class _OrariSectionState extends State<OrariSection> {
                         ? 1
                         : 0.1) ??
                 Colors.transparent,
-            borderRadius: BorderRadiusDirectional.circular(5),
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              if (Theme.of(context).brightness == Brightness.light &&
+                  orario[i] != '' &&
+                  (_selectedSbj == null || _selectedSbj == orario[i]))
+                BoxShadow(blurRadius: 5, offset: Offset(3, 3))
+            ],
+            //border: Theme.of(context).brightness == Brightness.light && orario[i] != '' ? Border.all(color: Colors.black45, width: 1) : null
           ),
           child: Padding(
             padding: EdgeInsets.only(top: 4.0),

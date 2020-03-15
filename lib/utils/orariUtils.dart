@@ -14,6 +14,13 @@ String selectedClass = RegistroApi.cls;
 void getSelected() =>
     selectedClass = main.prefs.getString('selectedClass') ?? RegistroApi.cls;
 
+Iterable<String> getSbjs (int day, [String cls]) sync* {
+  cls ??= selectedClass;
+  if (selectedClass == null) return;
+  for (int i = day; i < orari[cls].length; i+=6)
+    if (orari[cls][i] != '') yield orari[cls][i];
+}
+
 final Map<String, Color> colors = {
   'ITA': Colors.white,
   'FIS': Color(0xFF95AABF),

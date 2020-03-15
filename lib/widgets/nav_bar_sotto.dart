@@ -66,7 +66,7 @@ class _NavBarSottoState extends State<NavBarSotto> {
             children: items.map((item) => _flare(item)).toList(),
           ),
           AnimatedContainer(
-            color: Theme.of(context).backgroundColor,
+            //color: Theme.of(context).backgroundColor,
             duration: Duration(milliseconds: 200),
             alignment: Alignment(items[active].x, -1),
             child: AnimatedContainer(

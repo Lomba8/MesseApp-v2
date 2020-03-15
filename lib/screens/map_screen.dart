@@ -17,10 +17,11 @@ class _MapScreenState extends State<MapScreen> {
 
   String mask = 'aule';
   String selectedKey;
+  bool showSearch = false;
 
-  String reversePicker(String aula) => mapData[mask]['mask']
-      .keys
-      .singleWhere((key) => mapData[mask]['mask'][key].contains(aula) as bool, orElse: () => null);
+  String reversePicker(String aula) => mapData[mask]['mask'].keys.singleWhere(
+      (key) => mapData[mask]['mask'][key].contains(aula) as bool,
+      orElse: () => null);
 
   @override
   Widget build(BuildContext context) => Material(
@@ -57,71 +58,86 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ),
                       IconButton(
-                        // per centrare il titolo
-                        icon: Icon(Icons.arrow_forward_ios),
-                        onPressed: null,
-                        disabledColor: Colors.transparent,
+                        icon: Icon(Icons.search),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white60
+                            : Colors.black54,
+                        onPressed: () =>
+                            setState(() => showSearch = !showSearch),
                       )
                     ],
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                      top: 20,
-                      left: 20,
-                      right: 20,
                       bottom: 20 + MediaQuery.of(context).size.width / 8),
                   child: Column(
                     children: <Widget>[
-                      Slider(
-                        label: 'piano ${floor.toStringAsFixed(0)}',
-                        divisions: 5,
-                        value: floor,
-                        onChanged: (v) => setState(() => floor = v),
-                        onChangeEnd: (v) =>
-                            setState(() => floor = v.roundToDouble()),
-                        min: -2,
-                        max: 3,
-                        //label: _floor.round().toString(),
-                        activeColor: Theme.of(context).primaryColor,
+                      Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(
+                            right: 20.0, left: showSearch ? 20 : 0),
+                        child: showSearch
+                            ? AutoCompleteTextField<String>(
+                                itemSubmitted: (item) {
+                                  setState(() => floor = getFloor(
+                                          mapData[mask]['mask'][item]?.first,
+                                          mask)
+                                      .toDouble());
+                                  selectedKey = item;
+                                },
+                                key: _autocompleteKey,
+                                suggestions:
+                                    mapData[mask]['mask'].keys.toList(),
+                                itemBuilder: (context, suggestion) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(suggestion),
+                                ),
+                                itemSorter: (a, b) => a.compareTo(b),
+                                itemFilter: (suggestion, query) {
+                                  query = query.toUpperCase();
+                                  List<String> split = query.split(' ');
+                                  return split.every((s) =>
+                                      suggestion.toUpperCase().contains(s));
+                                },
+                                clearOnSubmit: false,
+                                controller: _autocompleteController,
+                                suggestionsAmount: 10,
+                                decoration: InputDecoration(
+                                    icon: Icon(Icons.search),
+                                    filled: true,
+                                    hintText: 'cerca ${mapData[mask]['item']}'),
+                              )
+                            : Row(children: [
+                                Expanded(
+                                  child: Slider(
+                                    label: 'piano ${floor.toStringAsFixed(0)}',
+                                    divisions: 5,
+                                    value: floor,
+                                    onChanged: (v) => setState(() => floor = v),
+                                    onChangeEnd: (v) => setState(
+                                        () => floor = v.roundToDouble()),
+                                    min: -2,
+                                    max: 3,
+                                    //label: _floor.round().toString(),
+                                    activeColor: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                DropdownButton<String>(
+                                  value: mask,
+                                  items: mapData.keys
+                                      .map((key) => DropdownMenuItem<String>(
+                                          value: key, child: Text(key)))
+                                      .toList(),
+                                  onChanged: (value) => setState(() {
+                                    mask = value;
+                                    _autocompleteKey = GlobalKey();
+                                    _autocompleteController.clear();
+                                    selectedKey = null;
+                                  }),
+                                ),
+                              ]),
                       ),
-                      AutoCompleteTextField<String>(
-                        itemSubmitted: (item) {
-                          setState(() => floor =
-                              getFloor(mapData[mask]['mask'][item]?.first, mask).toDouble());
-                          selectedKey = item;
-                        },
-                        key: _autocompleteKey,
-                        suggestions: mapData[mask]['mask'].keys.toList(),
-                        itemBuilder: (context, suggestion) => Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(suggestion),
-                        ),
-                        itemSorter: (a, b) => a.compareTo(b),
-                        itemFilter: (suggestion, query) {
-                          query = query.toUpperCase();
-                          List<String> split = query.split(' ');
-                          return split.every(
-                              (s) => suggestion.toUpperCase().contains(s));
-                        },
-                        clearOnSubmit: false,
-                        controller: _autocompleteController,
-                        suggestionsAmount: 10,
-                      ),
-                      DropdownButton<String>(
-                        isExpanded: true,
-                        value: mask,
-                        items: mapData.keys
-                            .map((key) => DropdownMenuItem<String>(
-                                value: key, child: Text(key)))
-                            .toList(),
-                        onChanged: (value) => setState(() {
-                          mask = value;
-                          _autocompleteKey = GlobalKey();
-                          _autocompleteController.clear();
-                          selectedKey = null;
-                        }),
-                      )
                     ],
                   ),
                 ),
@@ -131,7 +147,7 @@ class _MapScreenState extends State<MapScreen> {
           GestureDetector(
             onTapUp: (details) {
               final Offset start = Offset(14, 703);
-              Function (String, dynamic) picker = (cls, data) {
+              Function(String, dynamic) picker = (cls, data) {
                 if (data.selectable &&
                     data
                         .getFill(
@@ -142,15 +158,15 @@ class _MapScreenState extends State<MapScreen> {
                       selectedKey = reversePicker(cls) ?? selectedKey;
               };
               floors[floor.toInt() + 2].classes.forEach(picker);
-              if (mapData[mask]['classes'].length > floor+2)
-                mapData[mask]['classes'][floor.toInt()+2].forEach(picker);
+              if (mapData[mask]['classes'].length > floor + 2)
+                mapData[mask]['classes'][floor.toInt() + 2].forEach(picker);
               setState(() {});
             },
             child: CustomPaint(
               size: Size.fromHeight(
                   MediaQuery.of(context).size.width * 903 / 1000),
-              painter:
-                  MapPainter(mapData[mask]['mask'][selectedKey], mask, floor: floor.toInt()),
+              painter: MapPainter(mapData[mask]['mask'][selectedKey], mask,
+                  floor: floor.toInt()),
             ),
           ),
           Container(
@@ -168,6 +184,7 @@ class _MapScreenState extends State<MapScreen> {
         ]),
       ])));
 }
+
 class MapPainter extends CustomPainter {
   static final Color border = Colors.black;
 
@@ -203,7 +220,7 @@ class MapPainter extends CustomPainter {
           _paint);
     });
 
-    Function (String, dynamic) drawer = (aula, data) {
+    Function(String, dynamic) drawer = (aula, data) {
       canvas.drawPath(
           data.getFill(crop, _paint,
               translateX: start.dx,
@@ -219,8 +236,8 @@ class MapPainter extends CustomPainter {
     };
 
     floor.classes.forEach(drawer); // join delle due mappe
-    if (mapData[_mask]['classes'].length > this.floor+2)
-      mapData[_mask]['classes'][this.floor+2].forEach(drawer);
+    if (mapData[_mask]['classes'].length > this.floor + 2)
+      mapData[_mask]['classes'][this.floor + 2].forEach(drawer);
   }
 
   @override

@@ -36,6 +36,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
   }
 
   void _setStateIfAlive() {
+    _value = !_value;
     if (mounted) setState(() {});
   }
 
@@ -140,7 +141,6 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                                                   sbj['voti'],
                                                   sbj['subjectDesc'])))
                                       .then((value) {
-                                    _value = !_value;
                                     sbj['voti'].forEach((v) => v.seen());
                                     _setStateIfAlive();
                                   }),

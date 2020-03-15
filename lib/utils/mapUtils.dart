@@ -5,6 +5,7 @@ import 'package:path_parsing/path_parsing.dart';
 
 final String _rawMapData = '''{
   "aule": {
+    "item": "un'aula",
     "mask": {
       "PALESTRA 1": [
         "PALESTRA 1"
@@ -176,6 +177,7 @@ final String _rawMapData = '''{
     "classes": []
   },
   "classi": {
+    "item": "una classe",
     "mask": {
       "2A": [
         "AULA 1"
@@ -302,6 +304,7 @@ final String _rawMapData = '''{
     "classes": []
   },
   "autogestione": {
+    "item": "un'attività",
     "mask": {
       "JUST DANCE": [
         "AULA MAGNA"
