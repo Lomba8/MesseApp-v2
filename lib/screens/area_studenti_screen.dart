@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:Messedaglia/preferences/globals.dart';
-import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
@@ -8,14 +9,13 @@ import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar_carousel/classes/event_list.dart';
-import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:http/http.dart' as http;
+import 'package:Messedaglia/main.dart' as main;
 
 import 'package:flutter/cupertino.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../registro/agenda_registro_data.dart';
 import '../registro/registro.dart';
 
 class AreaStudenti extends StatefulWidget {
@@ -99,9 +99,19 @@ class _AreaStudentiState extends State<AreaStudenti> {
     }
   }
 
-  EventList<Evento> get e => RegistroApi.agenda.data;
+  Future<void> _getTutor() async {
+    dynamic r;
+    r = await http.get('https://app.messe.dev/tutor');
+    await main.prefs.setString('tutor', r.body);
+  }
 
-  List<Evento> dayEvents = List<Evento>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getTutor();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

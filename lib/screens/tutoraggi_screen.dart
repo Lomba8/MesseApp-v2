@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:Messedaglia/preferences/globals.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:Messedaglia/main.dart' as main;
 import 'dart:math' as math;
 
-import 'package:preload_page_view/preload_page_view.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:positioned_tap_detector/positioned_tap_detector.dart';
 
 class CustomIcons {
   static const IconData menu = IconData(0xe900, fontFamily: "CustomIcons");
@@ -17,24 +22,24 @@ class TutoraggiScreen extends StatefulWidget {
 var cardAspectRatio = 12.0 / 16.0;
 var widgetAspectRatio = cardAspectRatio * 1.2;
 
-const int numero_tutor = 4; // FIXME da implementare coi dati del server
+//const int numero_tutor = 4; // FIXME da implementare coi dati del server
 
-List<String> tutor = [
-  "Amos Lo Verde",
-  "Giacomo Brognara",
-  "Pietro Cipriani",
-];
+// List<String> tutor = [
+//   "Amos Lo Verde",
+//   "Giacomo Brognara",
+//   "Pietro Cipriani",
+// ];
 
-List<String> classe = [
-  "5N",
-  "4F",
-  "4G",
-];
-List<String> email = [
-  "amos.loverde@messedaglia.edu.it",
-  "giacomo.brognara@messedaglia.edu.it",
-  "pietro.cipriani@messedaglia.edu.it",
-];
+// List<String> classe = [
+//   "5N",
+//   "4F",
+//   "4G",
+// ];
+// List<String> email = [
+//   "amos.loverde@messedaglia.edu.it",
+//   "giacomo.brognara@messedaglia.edu.it",
+//   "pietro.cipriani@messedaglia.edu.it",
+// ];
 
 Color colore1 = Color.fromRGBO(212, 127, 166, 1.0); //(120, 213, 215, 1),
 Color colore2 = Color.fromRGBO(138, 86, 172, 1.0); //(4, 110, 143, 1),
@@ -44,16 +49,39 @@ Color colore1_ombra = Color.fromRGBO(196, 117, 153, 1.0);
 Color colore2_ombra = Color.fromRGBO(127, 79, 159, 1.0);
 Color colore3_ombra = Color.fromRGBO(60, 45, 73, 1.0);
 
-class _TutoraggiScreenState extends State<TutoraggiScreen> {
-  var currentPage = numero_tutor - 1.0;
-  var alpha = 0.0;
-  bool flipped = false;
-  int _index = 0;
+class _TutoraggiScreenState extends State<TutoraggiScreen>
+    with SingleTickerProviderStateMixin {
+  var currentPage;
+  var angle;
+  var tutor;
+
+  Animation<double> animation;
+  AnimationController animationController;
+
+  @override
+  void initState() {
+    tutor = json.decode(main.prefs.getString('tutor'));
+    currentPage = tutor.length - 1.0;
+    super.initState();
+    animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    animation =
+        Tween<double>(begin: 0, end: math.pi).animate(animationController)
+          ..addListener(() {
+            setState(() {});
+          });
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    PreloadPageController controller =
-        PreloadPageController(initialPage: numero_tutor - 1);
+    PageController controller = PageController(initialPage: tutor.length - 1);
     controller.addListener(() {
       setState(() {
         currentPage = controller.page;
@@ -85,148 +113,96 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: EdgeInsets.symmetric(horizontal: 35.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Tutor",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 46.0,
+                        fontFamily: "CoreSansRounded",
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    Column(
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            MdiIcons.informationVariant,
+                            size: 50.0,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => animationController.isCompleted
+                              ? animationController.reverse()
+                              : animationController.forward(),
+                        ),
+                        SizedBox(height: 30.0),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              PositionedTapDetector(
+                onTap: (position) =>
+                    print('tap' + position.relative.toString()),
+                child: Stack(
+                  children: <Widget>[
+                    CardScrollWidget(
+                        currentPage.round(), animation.value, tutor),
+                    Positioned.fill(
+                      child: PageView.builder(
+                        itemCount: tutor.length,
+                        controller: controller,
+                        reverse: true,
+                        itemBuilder: (context, index) {
+                          print(currentPage);
+                          return Container();
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 35.0, vertical: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text("Tutor",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 46.0,
-                          fontFamily: "CoreSans",
-                          letterSpacing: 1.0,
-                        )),
+                    Flexible(
+                      child: RichText(
+                        textAlign: TextAlign.left,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Cosa sono i tutor ?",
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 30.0,
+                                fontFamily: "CoreSansRounded",
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '\n\n' +
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce viverra scelerisque arcu. Aliquam erat volutpat. Donec eleifend enim in est faucibus viverra. Fusce vel ex sapien. Nam pretium eros ligula, ac hendrerit odio fermentum vitae. Nam sit amet ex sed ex malesuada lacinia vitae ac libero. Phasellus feugiat metus in est faucibus tempor. Phasellus nec ipsum faucibus, luctus lorem vitae, convallis augue. Nulla eleifend libero sem, a congue nibh molestie eget. Vivamus sed turpis eget dui tincidunt rhoncus. Morbi scelerisque purus non enim auctor egestas.',
+                              style: TextStyle(
+                                height: 1.3,
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 15.0,
+                                fontFamily: "CoreSansRounded",
+                                letterSpacing: 1.0,
+                              ),
+                            )
+                          ],
+                        ), // agiungere sotto rispost6e a cosa sono e perché uno dovrebbe provarli/qualki sono in= vantaggi rispetto ad un help/ripetizioni
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFFff6e6e),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Center(
-                        child: FlatButton(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 22.0, vertical: 6.0),
-                          onPressed: () {
-                            setState(() {
-                              if (flipped) {
-                                flipped = false;
-                                alpha = 0.0;
-                              } else {
-                                flipped = true;
-                                alpha = math.pi;
-                              }
-                            });
-                          },
-                          child: Text("Animated",
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 15.0,
-                    ),
-                    Text("25+ Stories",
-                        style: TextStyle(color: Colors.blueAccent))
-                  ],
-                ),
-              ),
-              Stack(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                    height: 500,
-                    child: PreloadPageView.builder(
-                      itemCount: tutor.length,
-                      controller: controller,
-                      preloadPagesCount: 4,
-                      itemBuilder: (context, index) {
-                        // return CardWidget(
-                        //     page: index,
-                        //     currentPage: currentPosition,
-                        // );
-                        return Container(
-                          color: index == 0 ? Colors.red : Colors.blue,
-                          child: CardScrollWidget(
-                              page: controller.page, currentPage: index),
-                        );
-                      },
-                    ),
-                  )
-                  // CardScrollWidget(currentPage),
-                  // Positioned.fill(
-                  //   child: PageView.builder(
-                  //     itemCount: numero_tutor,
-                  //     controller: controller,
-                  //     reverse: true,
-                  //     itemBuilder: (context, index) {
-                  //       return Container();
-                  //     },
-                  //   ),
-                  // ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text("Cosa sono i tutor?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30.0,
-                          fontFamily: "Calibre-Semibold",
-                          letterSpacing: 1.0,
-                        )),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent,
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 22.0, vertical: 6.0),
-                          child: Text("Latest",
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 15.0,
-                    ),
-                    Text("9+ Stories",
-                        style: TextStyle(color: Colors.blueAccent))
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 18.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: Image.asset("images/logo.png",
-                          width: 296.0, height: 222.0),
-                    ),
-                  )
-                ],
-              )
             ],
           ),
         ),
@@ -235,293 +211,354 @@ class _TutoraggiScreenState extends State<TutoraggiScreen> {
   }
 }
 
-class CardScrollWidget extends StatelessWidget {
-  var page;
-  var currentPage;
-  var padding = 20.0;
-  var verticalInset = 20.0;
+class CardScrollWidget extends StatefulWidget {
+  int currentPage;
+  var angle;
+  var tutor;
 
-  CardScrollWidget({this.page, this.currentPage});
+  CardScrollWidget(this.currentPage, this.angle, this.tutor);
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, contraints) {
-      // var width = contraints.maxWidth;
-      // var height = contraints.maxHeight;
-
-      // var safeWidth = width - 2 * padding;
-      // var safeHeight = height - 2 * padding;
-
-      // var heightOfPrimaryCard = safeHeight;
-      // var widthOfPrimaryCard = heightOfPrimaryCard * cardAspectRatio;
-
-      // var primaryCardLeft = safeWidth - widthOfPrimaryCard;
-      // var horizontalInset = primaryCardLeft / 2;
-
-      // int i = currentPage;
-
-      // var delta = i - currentPage;
-      // bool isOnRight = delta > 0;
-
-      // var start = padding +
-      //     math.max(
-      //         primaryCardLeft - horizontalInset * -delta * (isOnRight ? 15 : 1),
-      //         0.0);
-
-      var delta = currentPage - page;
-      var start = padding * delta.abs() * 10;
-
-      var top = padding + padding * math.max(-delta, 0.0);
-      var bottom = padding + padding * math.max(-delta, 0.0);
-
-      var cardItem = ClipRect(
-        child: Transform.translate(
-          // top: padding + verticalInset * math.max(-delta, 0.0),
-          // bottom: padding + verticalInset * math.max(-delta, 0.0),
-          // start: start,
-          offset: Offset(-start, 0),
-          child: Padding(
-            padding: EdgeInsets.only(top: top, bottom: bottom),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50.0), //prima era 16
-              child: TutorCard(),
-            ),
-          ),
-        ),
-      );
-
-      return cardItem;
-    });
-  }
+  _CardScrollWidgetState createState() => _CardScrollWidgetState();
 }
 
-class TutorCard extends StatelessWidget {
-  const TutorCard({
-    Key key,
-  }) : super(key: key);
+class _CardScrollWidgetState extends State<CardScrollWidget> {
+  var padding = 20.0;
+
+  var verticalInset = 20.0;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: AspectRatio(
-        aspectRatio: cardAspectRatio,
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Flexible(
-                  flex: 1,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Container(
-                        color: colore2,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(50),
-                          ),
-                          color: colore1,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Stack(
-                    children: [
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Container(
-                              color: colore3,
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              color: colore1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(50),
-                            topRight: Radius.circular(50),
-                          ),
-                          color: colore2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Container(
-                        color: colore2,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(50),
-                              topRight: Radius.circular(50)),
-                          color: colore3,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 50.0, left: 20.0, right: 30.0),
-              child: Align(
-                alignment: Alignment(-1.0, -1.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return new AspectRatio(
+      aspectRatio: widgetAspectRatio,
+      child: LayoutBuilder(builder: (context, contraints) {
+        var width = contraints.maxWidth;
+        var height = contraints.maxHeight;
+
+        var safeWidth = width - 2 * padding;
+        var safeHeight = height - 2 * padding;
+
+        var heightOfPrimaryCard = safeHeight;
+        var widthOfPrimaryCard = heightOfPrimaryCard * cardAspectRatio;
+
+        var primaryCardLeft = safeWidth - widthOfPrimaryCard;
+        var horizontalInset = primaryCardLeft / 2;
+
+        List<Widget> cardList = new List();
+
+        for (var i = 0; i < widget.tutor.length; i++) {
+          var key = widget.tutor[i].keys.first;
+          var delta = i - widget.currentPage;
+          bool isOnRight = delta > 0;
+
+          var start = padding +
+              math.max(
+                  primaryCardLeft -
+                      horizontalInset * -delta * (isOnRight ? 15 : 1),
+                  0.0);
+
+          var cardItem = Positioned.directional(
+            top: padding + verticalInset * math.max(-delta, 0.0),
+            bottom: padding + verticalInset * math.max(-delta, 0.0),
+            start: start,
+            textDirection: TextDirection.rtl,
+            child: Transform(
+              origin: Offset(172, 1),
+              transform: Matrix4.rotationY(widget.angle),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50.0), //prima era 16
+                child: Container(
+                  child: AspectRatio(
+                    aspectRatio: cardAspectRatio,
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: <Widget>[
-                        Text(
-                          tutor[0],
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.0,
-                              fontFamily: "CoreSans"),
-                          overflow: TextOverflow.clip,
+                        _backgroung(),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 50.0, left: 20.0, right: 30.0),
+                          child: Align(
+                            alignment: Alignment(-1.0, -1.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Stack(
+                                        children: [
+                                          _text(
+                                              widget.tutor[i][key][0]['nome'],
+                                              widget.tutor[i][key][0]['mail'],
+                                              widget.angle,
+                                              15.0),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 6.0,
+                                      ),
+                                      Text(
+                                        widget.angle == 0.0
+                                            ? widget.tutor[i][key][0]['classe']
+                                            : '',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15.0,
+                                            fontFamily: "CoreSans"),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: widget.angle == 0.0
+                                      ? Icon(
+                                          Globals.subjects[key]['icona'],
+                                          size: 45.0,
+                                          color: colore1_ombra,
+                                        )
+                                      : Offstage(),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        SizedBox(
-                          height: 6.0,
-                        ),
-                        Text(
-                          classe[0],
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.0,
-                              fontFamily: "CoreSans"),
-                        ),
+                        if (widget.tutor[i][key].length > 1)
+                          Padding(
+                            padding: EdgeInsets.only(left: 20.0, right: 30.0),
+                            child: Align(
+                              alignment: Alignment(-1.0, 0.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Stack(
+                                          children: [
+                                            _text(
+                                                widget.tutor[i][key][1]['nome'],
+                                                widget.tutor[i][key][1]['mail'],
+                                                widget.angle,
+                                                15.0),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 6.0,
+                                        ),
+                                        Text(
+                                          widget.angle == 0.0
+                                              ? widget.tutor[i][key][1]
+                                                  ['classe']
+                                              : '',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15.0,
+                                              fontFamily: "CoreSans"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: widget.angle == 0.0
+                                        ? Icon(
+                                            Globals.subjects[key]['icona'],
+                                            size: 45.0,
+                                            color: colore2_ombra,
+                                          )
+                                        : Offstage(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          Offstage(),
+                        widget.tutor[i][key].length > 2
+                            ? Padding(
+                                padding: EdgeInsets.only(
+                                    bottom: 50.0, left: 20.0, right: 30.0),
+                                child: Align(
+                                  alignment: Alignment(-1.0, 1.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Stack(
+                                              children: [
+                                                _text(
+                                                    widget.tutor[i][key][2]
+                                                        ['nome'],
+                                                    widget.tutor[i][key][2]
+                                                        ['mail'],
+                                                    widget.angle,
+                                                    15.0),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 6.0,
+                                            ),
+                                            Text(
+                                              widget.angle == 0.0
+                                                  ? widget.tutor[i][key][2]
+                                                      ['classe']
+                                                  : '',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.0,
+                                                  fontFamily: "CoreSans"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: widget.angle == 0.0
+                                            ? Icon(
+                                                Globals.subjects[key]['icona'],
+                                                size: 45.0,
+                                                color: colore3_ombra,
+                                              )
+                                            : Offstage(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Offstage(),
                       ],
                     ),
-                    Expanded(
-                      child: Icon(
-                        Icons.computer,
-                        size: 45.0,
-                        color: colore1_ombra,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            if (tutor.length > 1)
-              Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 30.0),
-                child: Align(
-                  alignment: Alignment(-1.0, 0.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            tutor[1],
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.0,
-                                fontFamily: "CoreSans"),
-                            overflow: TextOverflow.clip,
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          Text(
-                            classe[1],
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.0,
-                                fontFamily: "CoreSans"),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: Icon(
-                          Icons.computer,
-                          size: 45.0,
-                          color: colore2_ombra,
-                        ),
-                      ),
-                    ],
+          );
+          cardList.add(cardItem);
+        }
+        return Stack(
+          children: cardList,
+        );
+      }),
+    );
+  }
+
+  Widget _text(String nome, String email, double angle, double FontSize) {
+    return Transform(
+      transform: Matrix4.rotationY(widget.angle == 0.0 ? 0.0 : math.pi),
+      origin: Offset(120, 0),
+      child: Text(
+        ((() {
+          if (angle == 0.0)
+            return nome;
+          else if (angle == math.pi)
+            return '\n' + email.split('@')[0] + '@...';
+          else
+            return '';
+        }())),
+        softWrap: false,
+        style: TextStyle(
+            color: Colors.white, fontSize: FontSize, fontFamily: "CoreSans"),
+        overflow: TextOverflow.visible,
+      ),
+    );
+  }
+
+  Widget _backgroung() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Flexible(
+          flex: 1,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                color: colore2,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
                   ),
+                  color: colore1,
                 ),
               )
-            else
-              Offstage(),
-            tutor.length > 2
-                ? Padding(
-                    padding:
-                        EdgeInsets.only(bottom: 50.0, left: 20.0, right: 30.0),
-                    child: Align(
-                      alignment: Alignment(-1.0, 1.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                tutor[2],
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20.0,
-                                    fontFamily: "CoreSans"),
-                                overflow: TextOverflow.clip,
-                              ),
-                              SizedBox(
-                                height: 6.0,
-                              ),
-                              Text(
-                                classe[2],
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15.0,
-                                    fontFamily: "CoreSans"),
-                              ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Icon(
-                              Icons.computer,
-                              size: 45.0,
-                              color: colore3_ombra,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : Offstage(),
-          ],
+            ],
+          ),
         ),
-      ),
+        Flexible(
+          flex: 1,
+          child: Stack(
+            children: [
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      color: colore3,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: colore1,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
+                  ),
+                  color: colore2,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                color: colore2,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                      topRight: Radius.circular(50)),
+                  color: colore3,
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

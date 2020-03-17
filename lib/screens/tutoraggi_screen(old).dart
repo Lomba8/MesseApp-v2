@@ -3,6 +3,7 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
+import '';
 
 final List<_Tutor> tutors = [
   _Tutor('Amos', 'Lo Verde', '5N', 'INFORMATICA'),

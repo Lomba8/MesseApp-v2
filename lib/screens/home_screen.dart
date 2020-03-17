@@ -57,7 +57,8 @@ class _HomeState extends State<Home> {
                                   style: TextStyle(color: Colors.white),
                                   children: [
                                 TextSpan(
-                                    text: lesson.info ?? 'nessuna informazione',
+                                    text:
+                                        lesson.angle ?? 'nessuna informazione',
                                     style:
                                         Theme.of(context).textTheme.bodyText1)
                               ])),
