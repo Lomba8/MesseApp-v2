@@ -27,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _username, _password;
   bool splash = true;
   bool _loading = false;
+  bool finished = false;
 
   double _progress = 0;
   VideoPlayerController _controller;
@@ -42,6 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
+    _controller.addListener(() {
+      if (_controller.value.isPlaying != true) {
+        finished = true;
+      }
+    });
 
     if (main.connection_main != ConnectivityResult.none) {
       RegistroApi.login().then((ok) {
@@ -59,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
+    finished = false;
   }
 
   @override
@@ -83,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (splash) {
       _controller.play();
+
       return Scaffold(
           backgroundColor: Colors.black,
           body: _controller.value.initialized
@@ -90,7 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.7,
                     height: MediaQuery.of(context).size.width * 0.7,
-                    child: VideoPlayer(_controller),
+                    child: !finished
+                        ? VideoPlayer(_controller)
+                        : Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: ExactAssetImage(
+                                    'images/gif-2.gif'), //FIXME con materiali di nico ma l'idea c'é
+                              ),
+                            ),
+                          ),
                   ),
                 )
               : Container(),
@@ -138,9 +156,11 @@ class _LoginScreenState extends State<LoginScreen> {
           if (Platform.isAndroid)
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 3),
-              content: Text(req + '\n' + (req != 'Service Unavailable'
-                  ? 'Reinserire le credenziali'
-                  : 'Riprova piu tardi')),
+              content: Text(req +
+                  '\n' +
+                  (req != 'Service Unavailable'
+                      ? 'Reinserire le credenziali'
+                      : 'Riprova piu tardi')),
             ));
           else
             Flushbar(
