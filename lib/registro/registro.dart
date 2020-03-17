@@ -125,7 +125,7 @@ class RegistroApi {
     return 'Errore durante il login';
   }
 
-  static Future<void> downloadAll(void Function(double) callback) async {
+  static Future<void> downloadAll(void Function(double) callback, {List<Future Function()> downloaders = const []}) async {
     final Map<String, RegistroData> toDownload = {
       'voti': voti,
       'agenda': agenda,
@@ -140,7 +140,11 @@ class RegistroApi {
       dynamic json = await loadData(name);
       if (json != null) data.fromJson(json);
       await data.getData();
-      callback(++n / toDownload.length);
+      callback(++n / (toDownload.length + downloaders.length));
+    });
+    downloaders.forEach((downloader) async {
+      await downloader();
+      callback(++n / (toDownload.length + downloaders.length));
     });
   }
 
