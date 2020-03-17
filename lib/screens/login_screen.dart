@@ -11,6 +11,7 @@ import 'package:video_player/video_player.dart';
 import '../registro/registro.dart';
 import 'menu_screen.dart';
 import 'package:Messedaglia/main.dart' as main;
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   static final String id = 'login_screen';
@@ -46,13 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (main.connection_main != ConnectivityResult.none) {
       RegistroApi.login().then((ok) {
         if (ok == '')
-          RegistroApi.downloadAll((double progress) {
-            setState(() {
-              _progress = progress;
-              if (progress == 1)
-                Navigator.pushReplacementNamed(context, Menu.id);
-            });
-          });
+          downloadAll();
         else
           setState(() => splash = false);
       });
@@ -68,6 +63,89 @@ class _LoginScreenState extends State<LoginScreen> {
     _controller.dispose();
     main.route = '';
     super.dispose();
+  }
+
+  void downloadAll() => RegistroApi.downloadAll(
+          (double progress) => setState(() {
+                _progress = progress;
+                if (progress == 1)
+                  Navigator.of(this.context).pushReplacementNamed(Menu.id);
+              }),
+          downloaders: [
+            () async {
+              dynamic r;
+              r = await http.get('https://app.messe.dev/tutor');
+              await main.prefs.setString('tutor', '');
+              await main.prefs.setString('tutor', r.body);
+            }
+          ]);
+
+  void _submit(BuildContext context) async {
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    setState(() {
+      _loading = true;
+    });
+
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      var req = await RegistroApi.login(
+          username: _username, password: _password, check: true);
+      if (req == '') {
+        setState(() {
+          splash = true;
+        });
+        downloadAll();
+      } else {
+        _formKey.currentState.reset();
+
+        if (Platform.isAndroid)
+          Scaffold.of(context).showSnackBar(SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(req +
+                '\n' +
+                (req != 'Service Unavailable'
+                    ? 'Reinserire le credenziali'
+                    : 'Riprova piu tardi')),
+          ));
+        else
+          Flushbar(
+            padding: EdgeInsets.all(20),
+            borderRadius: 20,
+            backgroundGradient: LinearGradient(
+              colors: [Globals.bluScolorito, Theme.of(context).accentColor],
+              stops: [0.3, 1],
+            ),
+            boxShadows: [
+              BoxShadow(
+                color: Colors.black45,
+                offset: Offset(3, 3),
+                blurRadius: 6,
+              ),
+            ],
+            duration: Duration(seconds: 3),
+            isDismissible: true,
+            icon: Icon(
+              Icons.error_outline,
+              size: 35,
+              color: Theme.of(context).backgroundColor,
+            ),
+            shouldIconPulse: true,
+            animationDuration: Duration(seconds: 1),
+            // All of the previous Flushbars could be dismissed by swiping down
+            // now we want to swipe to the sides
+            dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+            // The default curve is Curves.easeOut
+            forwardAnimationCurve: Curves.fastOutSlowIn,
+            title: req,
+            message: req != 'Service Unavailable'
+                ? 'Reinserire le credenziali'
+                : 'Riprova piu tardi',
+          ).show(context);
+      }
+    }
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
@@ -111,76 +189,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ));
-    }
-
-    void _submit(BuildContext context) async {
-      SystemChannels.textInput.invokeMethod('TextInput.hide');
-      setState(() {
-        _loading = true;
-      });
-
-      if (_formKey.currentState.validate()) {
-        _formKey.currentState.save();
-        var req = await RegistroApi.login(
-            username: _username, password: _password, check: true);
-        if (req == '') {
-          setState(() {
-            splash = true;
-          });
-          RegistroApi.downloadAll((double progress) => setState(() {
-                _progress = progress;
-                if (progress == 1)
-                  Navigator.of(this.context).pushReplacementNamed(Menu.id);
-              }));
-        } else {
-          _formKey.currentState.reset();
-
-          if (Platform.isAndroid)
-            Scaffold.of(context).showSnackBar(SnackBar(
-              duration: Duration(seconds: 3),
-              content: Text(req + '\n' + (req != 'Service Unavailable'
-                  ? 'Reinserire le credenziali'
-                  : 'Riprova piu tardi')),
-            ));
-          else
-            Flushbar(
-              padding: EdgeInsets.all(20),
-              borderRadius: 20,
-              backgroundGradient: LinearGradient(
-                colors: [Globals.bluScolorito, Theme.of(context).accentColor],
-                stops: [0.3, 1],
-              ),
-              boxShadows: [
-                BoxShadow(
-                  color: Colors.black45,
-                  offset: Offset(3, 3),
-                  blurRadius: 6,
-                ),
-              ],
-              duration: Duration(seconds: 3),
-              isDismissible: true,
-              icon: Icon(
-                Icons.error_outline,
-                size: 35,
-                color: Theme.of(context).backgroundColor,
-              ),
-              shouldIconPulse: true,
-              animationDuration: Duration(seconds: 1),
-              // All of the previous Flushbars could be dismissed by swiping down
-              // now we want to swipe to the sides
-              dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-              // The default curve is Curves.easeOut
-              forwardAnimationCurve: Curves.fastOutSlowIn,
-              title: req,
-              message: req != 'Service Unavailable'
-                  ? 'Reinserire le credenziali'
-                  : 'Riprova piu tardi',
-            ).show(context);
-        }
-      }
-      setState(() {
-        _loading = false;
-      });
     }
 
     return Scaffold(

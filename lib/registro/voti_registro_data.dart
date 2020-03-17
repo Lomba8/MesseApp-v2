@@ -11,7 +11,9 @@ class VotiRegistroData extends RegistroData {
   Map<String, bool> votiNewFlags = <String, bool>{};
 
   VotiRegistroData()
-      : super('https://web.spaggiari.eu/rest/v1/students/%uid/grades2');
+      : super('https://web.spaggiari.eu/rest/v1/students/%uid/grades2') {
+        period = DateTime.now().month < 8 ? 2 : 1;
+      }
 
   @override
   Result parseData(json) {
