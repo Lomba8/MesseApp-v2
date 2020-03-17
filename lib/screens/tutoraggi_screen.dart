@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/registro.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;
 import 'dart:math' as math;
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:positioned_tap_detector/positioned_tap_detector.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomIcons {
   static const IconData menu = IconData(0xe900, fontFamily: "CustomIcons");
@@ -23,6 +26,7 @@ var cardAspectRatio = 12.0 / 16.0;
 var widgetAspectRatio = cardAspectRatio * 1.2;
 
 //const int numero_tutor = 4; // FIXME da implementare coi dati del server
+List<String> keys = new List();
 
 // List<String> tutor = [
 //   "Amos Lo Verde",
@@ -40,6 +44,10 @@ var widgetAspectRatio = cardAspectRatio * 1.2;
 //   "giacomo.brognara@messedaglia.edu.it",
 //   "pietro.cipriani@messedaglia.edu.it",
 // ];
+
+final String _defaultBody = '''Buona giornata,
+\nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
+\n${RegistroApi.nome} ${RegistroApi.cognome}''';
 
 Color colore1 = Color.fromRGBO(212, 127, 166, 1.0); //(120, 213, 215, 1),
 Color colore2 = Color.fromRGBO(138, 86, 172, 1.0); //(4, 110, 143, 1),
@@ -70,6 +78,42 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
           ..addListener(() {
             setState(() {});
           });
+  }
+
+  _sendMail(String url) async {
+    if (await canLaunch(Uri.encodeFull(url))) {
+      await launch(Uri.encodeFull(url));
+    } else {
+      Flushbar(
+        padding: EdgeInsets.all(10),
+        borderRadius: 20,
+        backgroundGradient: LinearGradient(
+          colors: Globals.sezioni['viola']['gradientColors'],
+          stops: [0.3, 0.6, 1],
+        ),
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black45,
+            offset: Offset(3, 3),
+            blurRadius: 6,
+          ),
+        ],
+        duration: Duration(seconds: 5),
+        isDismissible: true,
+        icon: Icon(
+          Icons.error_outline,
+          size: 35,
+          color: Theme.of(context).backgroundColor,
+        ),
+        shouldIconPulse: true,
+        animationDuration: Duration(seconds: 1),
+        dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+        // The default curve is Curves.easeOut
+        forwardAnimationCurve: Curves.fastOutSlowIn,
+        title: 'Errore nell\'aprire l\'url:',
+        message: '$url',
+      ).show(context);
+    }
   }
 
   @override
@@ -146,19 +190,40 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
                 ),
               ),
               PositionedTapDetector(
-                onTap: (position) =>
-                    print('tap' + position.relative.toString()),
+                onTap: (position) async {
+                  if (position.relative.dx >= 22 &&
+                      position.relative.dx <= 336 &&
+                      position.relative.dy >= 24 &&
+                      position.relative.dy <= 442) {
+                    if (position.relative.dy <= 162) {
+                      _sendMail(
+                          'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][0]['mail']}?subject=Tutoraggio&body=$_defaultBody');
+                    } else if (position.relative.dy >= 303) {
+                      if (tutor[controller.page.round()]
+                                  [keys[controller.page.round()]]
+                              .length >
+                          2)
+                        _sendMail(
+                            'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][2]['mail']}?subject=Tutoraggio&body=$_defaultBody');
+                    } else {
+                      if (tutor[controller.page.round()]
+                                  [keys[controller.page.round()]]
+                              .length >
+                          1)
+                        _sendMail(
+                            'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][1]['mail']}?subject=Tutoraggio&body=$_defaultBody');
+                    }
+                  }
+                },
                 child: Stack(
                   children: <Widget>[
-                    CardScrollWidget(
-                        currentPage.round(), animation.value, tutor),
+                    CardScrollWidget(currentPage, animation.value, tutor),
                     Positioned.fill(
                       child: PageView.builder(
                         itemCount: tutor.length,
                         controller: controller,
                         reverse: true,
                         itemBuilder: (context, index) {
-                          print(currentPage);
                           return Container();
                         },
                       ),
@@ -212,7 +277,7 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
 }
 
 class CardScrollWidget extends StatefulWidget {
-  int currentPage;
+  double currentPage;
   var angle;
   var tutor;
 
@@ -247,7 +312,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
         List<Widget> cardList = new List();
 
         for (var i = 0; i < widget.tutor.length; i++) {
-          var key = widget.tutor[i].keys.first;
+          keys.add(widget.tutor[i].keys.first);
           var delta = i - widget.currentPage;
           bool isOnRight = delta > 0;
 
@@ -294,8 +359,10 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                       Stack(
                                         children: [
                                           _text(
-                                              widget.tutor[i][key][0]['nome'],
-                                              widget.tutor[i][key][0]['mail'],
+                                              widget.tutor[i][keys[i]][0]
+                                                  ['nome'],
+                                              widget.tutor[i][keys[i]][0]
+                                                  ['mail'],
                                               widget.angle,
                                               15.0),
                                         ],
@@ -305,7 +372,8 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                       ),
                                       Text(
                                         widget.angle == 0.0
-                                            ? widget.tutor[i][key][0]['classe']
+                                            ? widget.tutor[i][keys[i]][0]
+                                                ['classe']
                                             : '',
                                         style: TextStyle(
                                             color: Colors.white,
@@ -319,7 +387,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                   flex: 1,
                                   child: widget.angle == 0.0
                                       ? Icon(
-                                          Globals.subjects[key]['icona'],
+                                          Globals.subjects[keys[i]]['icona'],
                                           size: 45.0,
                                           color: colore1_ombra,
                                         )
@@ -329,7 +397,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                             ),
                           ),
                         ),
-                        if (widget.tutor[i][key].length > 1)
+                        if (widget.tutor[i][keys[i]].length > 1)
                           Padding(
                             padding: EdgeInsets.only(left: 20.0, right: 30.0),
                             child: Align(
@@ -350,8 +418,10 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                         Stack(
                                           children: [
                                             _text(
-                                                widget.tutor[i][key][1]['nome'],
-                                                widget.tutor[i][key][1]['mail'],
+                                                widget.tutor[i][keys[i]][1]
+                                                    ['nome'],
+                                                widget.tutor[i][keys[i]][1]
+                                                    ['mail'],
                                                 widget.angle,
                                                 15.0),
                                           ],
@@ -361,7 +431,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                         ),
                                         Text(
                                           widget.angle == 0.0
-                                              ? widget.tutor[i][key][1]
+                                              ? widget.tutor[i][keys[i]][1]
                                                   ['classe']
                                               : '',
                                           style: TextStyle(
@@ -376,7 +446,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                     flex: 1,
                                     child: widget.angle == 0.0
                                         ? Icon(
-                                            Globals.subjects[key]['icona'],
+                                            Globals.subjects[keys[i]]['icona'],
                                             size: 45.0,
                                             color: colore2_ombra,
                                           )
@@ -388,7 +458,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                           )
                         else
                           Offstage(),
-                        widget.tutor[i][key].length > 2
+                        widget.tutor[i][keys[i]].length > 2
                             ? Padding(
                                 padding: EdgeInsets.only(
                                     bottom: 50.0, left: 20.0, right: 30.0),
@@ -410,9 +480,9 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                             Stack(
                                               children: [
                                                 _text(
-                                                    widget.tutor[i][key][2]
+                                                    widget.tutor[i][keys[i]][2]
                                                         ['nome'],
-                                                    widget.tutor[i][key][2]
+                                                    widget.tutor[i][keys[i]][2]
                                                         ['mail'],
                                                     widget.angle,
                                                     15.0),
@@ -423,7 +493,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                             ),
                                             Text(
                                               widget.angle == 0.0
-                                                  ? widget.tutor[i][key][2]
+                                                  ? widget.tutor[i][keys[i]][2]
                                                       ['classe']
                                                   : '',
                                               style: TextStyle(
@@ -438,7 +508,8 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                         flex: 1,
                                         child: widget.angle == 0.0
                                             ? Icon(
-                                                Globals.subjects[key]['icona'],
+                                                Globals.subjects[keys[i]]
+                                                    ['icona'],
                                                 size: 45.0,
                                                 color: colore3_ombra,
                                               )
@@ -472,7 +543,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
       child: Text(
         ((() {
           if (angle == 0.0)
-            return nome;
+            return nome == 'Pietro Cipriani' ? nome + ' 🔌' : nome; // or ★ ?
           else if (angle == math.pi)
             return '\n' + email.split('@')[0] + '@...';
           else

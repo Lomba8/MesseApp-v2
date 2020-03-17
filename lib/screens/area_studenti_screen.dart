@@ -102,6 +102,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
   Future<void> _getTutor() async {
     dynamic r;
     r = await http.get('https://app.messe.dev/tutor');
+    await main.prefs.setString('tutor', '');
     await main.prefs.setString('tutor', r.body);
   }
 
