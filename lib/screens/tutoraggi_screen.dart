@@ -6,6 +6,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:positioned_tap_detector/positioned_tap_detector.dart';
@@ -48,13 +49,13 @@ final String _defaultBody = '''Buona giornata,
 \nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
 \n${RegistroApi.nome} ${RegistroApi.cognome}''';
 
-Color colore1 = Color.fromRGBO(212, 127, 166, 1.0); //(120, 213, 215, 1),
-Color colore2 = Color.fromRGBO(138, 86, 172, 1.0); //(4, 110, 143, 1),
-Color colore3 = Color.fromRGBO(36, 19, 50, 1.0); //(0, 169, 216, 1),
+Color colore1 = Color(0xff6b0e82);
+Color colore2 = Color(0xffb231b2);
+Color colore3 = Color(0xffd455bb);
 
-Color colore1_ombra = Color.fromRGBO(196, 117, 153, 1.0);
-Color colore2_ombra = Color.fromRGBO(127, 79, 159, 1.0);
-Color colore3_ombra = Color.fromRGBO(60, 45, 73, 1.0);
+Color colore1_ombra = Color(0xff86248f);
+Color colore2_ombra = Color(0xff943294);
+Color colore3_ombra = Color(0xffa84895);
 
 class _TutoraggiScreenState extends State<TutoraggiScreen>
     with SingleTickerProviderStateMixin {
