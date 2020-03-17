@@ -103,6 +103,12 @@ class Globals {
       'colore': Colors.red,
       'icona': Icons.brush,
     },
+    "STORIA DELL'ARTE": {
+      // per i tutor perche non sono capaci di usare gli stessi nomi che hanno dato a classe viva
+
+      'colore': Colors.red,
+      'icona': Icons.brush,
+    },
     'FILOSOFIA': {
       'colore': Colors.blue,
       'icona': MdiIcons.yinYang, //yinYang
@@ -146,6 +152,11 @@ class Globals {
       'icona': MdiIcons.basketball,
     },
     'SCIENZE NATURALI': {
+      'colore': Colors.tealAccent,
+      'icona': MdiIcons.flask, // or dna,
+    },
+    'SCIENZE': {
+      // per i tutor perche non sono capaci di usare gli stessi nomi che hanno dato a classe viva
       'colore': Colors.tealAccent,
       'icona': MdiIcons.flask, // or dna,
     },
