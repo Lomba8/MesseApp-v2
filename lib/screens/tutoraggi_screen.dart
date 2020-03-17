@@ -63,6 +63,7 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
   var currentPage;
   var angle;
   var tutor;
+  bool info = false;
 
   Animation<double> animation;
   AnimationController animationController;
@@ -72,13 +73,6 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
     tutor = json.decode(main.prefs.getString('tutor'));
     currentPage = tutor.length - 1.0;
     super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    animation =
-        Tween<double>(begin: 0, end: math.pi).animate(animationController)
-          ..addListener(() {
-            setState(() {});
-          });
   }
 
   _sendMail(String url) async {
@@ -180,9 +174,11 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
                             size: 50.0,
                             color: Colors.white,
                           ),
-                          onPressed: () => animationController.isCompleted
-                              ? animationController.reverse()
-                              : animationController.forward(),
+                          onPressed: () {
+                            setState(() {
+                              info ? info = false : info = true;
+                            });
+                          },
                         ),
                         SizedBox(height: 30.0),
                       ],
@@ -218,7 +214,7 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
                 },
                 child: Stack(
                   children: <Widget>[
-                    CardScrollWidget(currentPage, animation.value, tutor),
+                    CardScrollWidget(currentPage, info, tutor),
                     Positioned.fill(
                       child: PageView.builder(
                         itemCount: tutor.length,
@@ -279,10 +275,10 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
 
 class CardScrollWidget extends StatefulWidget {
   double currentPage;
-  var angle;
+  bool info;
   var tutor;
 
-  CardScrollWidget(this.currentPage, this.angle, this.tutor);
+  CardScrollWidget(this.currentPage, this.info, this.tutor);
 
   @override
   _CardScrollWidgetState createState() => _CardScrollWidgetState();
@@ -328,30 +324,29 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
             bottom: padding + verticalInset * math.max(-delta, 0.0),
             start: start,
             textDirection: TextDirection.rtl,
-            child: Transform(
-              origin: Offset(172, 1),
-              transform: Matrix4.rotationY(widget.angle),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50.0), //prima era 16
-                child: Container(
-                  child: AspectRatio(
-                    aspectRatio: cardAspectRatio,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: <Widget>[
-                        _backgroung(),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              top: 50.0, left: 20.0, right: 30.0),
-                          child: Align(
-                            alignment: Alignment(-1.0, -1.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 2,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50.0), //prima era 16
+              child: Container(
+                child: AspectRatio(
+                  aspectRatio: cardAspectRatio,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      _backgroung(),
+                      Padding(
+                        padding:
+                            EdgeInsets.only(top: 50.0, left: 20.0, right: 30.0),
+                        child: Align(
+                          alignment: Alignment(-1.0, -1.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 2,
+                                child: Align(
+                                  alignment: Alignment.topLeft,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
@@ -364,7 +359,6 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                                   ['nome'],
                                               widget.tutor[i][keys[i]][0]
                                                   ['mail'],
-                                              widget.angle,
                                               15.0),
                                         ],
                                       ),
@@ -372,10 +366,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                         height: 6.0,
                                       ),
                                       Text(
-                                        widget.angle == 0.0
-                                            ? widget.tutor[i][keys[i]][0]
-                                                ['classe']
-                                            : '',
+                                        widget.tutor[i][keys[i]][0]['classe'],
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 15.0,
@@ -384,33 +375,70 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 1,
-                                  child: widget.angle == 0.0
-                                      ? Icon(
-                                          Globals.subjects[keys[i]]['icona'],
-                                          size: 45.0,
-                                          color: colore1_ombra,
-                                        )
-                                      : Offstage(),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: AnimatedCrossFade(
+                                  crossFadeState: !widget.info
+                                      ? CrossFadeState.showFirst
+                                      : CrossFadeState.showSecond,
+                                  layoutBuilder: (Widget topChild,
+                                      Key topChildKey,
+                                      Widget bottomChild,
+                                      Key bottomChildKey) {
+                                    // Stacks size themselves according to the non-positioned child.
+                                    return Stack(
+                                      overflow: Overflow.visible,
+                                      children: <Widget>[
+                                        // This is the positioned child (because left, top, right are non-null).
+                                        // bottomChild is the one _from which_ we are animating.
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          key: bottomChildKey,
+                                          child: bottomChild,
+                                        ),
+                                        // This is the non-positioned child, according to which the Stack will size itself.
+                                        // The Positioned is used only because of the Key. Since the left / right / etc.
+                                        // arguments are null, stack considers it non-positioned.
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          key: topChildKey,
+                                          child: topChild,
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  firstCurve: Curves.easeOutQuad,
+                                  secondCurve: Curves.easeInQuad,
+                                  duration: Duration(milliseconds: 350),
+                                  firstChild: Icon(
+                                    Globals.subjects[keys[i]]['icona'],
+                                    size: 45.0,
+                                  ),
+                                  secondChild: Icon(
+                                    Icons.mail_outline,
+                                    size: 45.0,
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                        if (widget.tutor[i][keys[i]].length > 1)
-                          Padding(
-                            padding: EdgeInsets.only(left: 20.0, right: 30.0),
-                            child: Align(
-                              alignment: Alignment(-1.0, 0.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
+                      ),
+                      if (widget.tutor[i][keys[i]].length > 1)
+                        Padding(
+                          padding: EdgeInsets.only(left: 20.0, right: 30.0),
+                          child: Align(
+                            alignment: Alignment(-1.0, 0.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 2,
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
@@ -423,7 +451,6 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                                     ['nome'],
                                                 widget.tutor[i][keys[i]][1]
                                                     ['mail'],
-                                                widget.angle,
                                                 15.0),
                                           ],
                                         ),
@@ -431,10 +458,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                           height: 6.0,
                                         ),
                                         Text(
-                                          widget.angle == 0.0
-                                              ? widget.tutor[i][keys[i]][1]
-                                                  ['classe']
-                                              : '',
+                                          widget.tutor[i][keys[i]][1]['classe'],
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 15.0,
@@ -443,86 +467,155 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: widget.angle == 0.0
-                                        ? Icon(
-                                            Globals.subjects[keys[i]]['icona'],
-                                            size: 45.0,
-                                            color: colore2_ombra,
-                                          )
-                                        : Offstage(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        else
-                          Offstage(),
-                        widget.tutor[i][keys[i]].length > 2
-                            ? Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: 50.0, left: 20.0, right: 30.0),
-                                child: Align(
-                                  alignment: Alignment(-1.0, 1.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 2,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Stack(
-                                              children: [
-                                                _text(
-                                                    widget.tutor[i][keys[i]][2]
-                                                        ['nome'],
-                                                    widget.tutor[i][keys[i]][2]
-                                                        ['mail'],
-                                                    widget.angle,
-                                                    15.0),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 6.0,
-                                            ),
-                                            Text(
-                                              widget.angle == 0.0
-                                                  ? widget.tutor[i][keys[i]][2]
-                                                      ['classe']
-                                                  : '',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15.0,
-                                                  fontFamily: "CoreSans"),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: widget.angle == 0.0
-                                            ? Icon(
-                                                Globals.subjects[keys[i]]
-                                                    ['icona'],
-                                                size: 45.0,
-                                                color: colore3_ombra,
-                                              )
-                                            : Offstage(),
-                                      ),
-                                    ],
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: AnimatedCrossFade(
+                                    crossFadeState: !widget.info
+                                        ? CrossFadeState.showFirst
+                                        : CrossFadeState.showSecond,
+                                    layoutBuilder: (Widget topChild,
+                                        Key topChildKey,
+                                        Widget bottomChild,
+                                        Key bottomChildKey) {
+                                      // Stacks size themselves according to the non-positioned child.
+                                      return Stack(
+                                        overflow: Overflow.visible,
+                                        children: <Widget>[
+                                          // This is the positioned child (because left, top, right are non-null).
+                                          // bottomChild is the one _from which_ we are animating.
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            key: bottomChildKey,
+                                            child: bottomChild,
+                                          ),
+                                          // This is the non-positioned child, according to which the Stack will size itself.
+                                          // The Positioned is used only because of the Key. Since the left / right / etc.
+                                          // arguments are null, stack considers it non-positioned.
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            key: topChildKey,
+                                            child: topChild,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                    firstCurve: Curves.easeOutQuad,
+                                    secondCurve: Curves.easeInQuad,
+                                    duration: Duration(milliseconds: 350),
+                                    firstChild: Icon(
+                                      Globals.subjects[keys[i]]['icona'],
+                                      size: 45.0,
+                                    ),
+                                    secondChild: Icon(
+                                      Icons.mail_outline,
+                                      size: 45.0,
+                                    ),
                                   ),
                                 ),
-                              )
-                            : Offstage(),
-                      ],
-                    ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        Offstage(),
+                      widget.tutor[i][keys[i]].length > 2
+                          ? Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 50.0, left: 20.0, right: 30.0),
+                              child: Align(
+                                alignment: Alignment(-1.0, 1.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 2,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Stack(
+                                            children: [
+                                              _text(
+                                                  widget.tutor[i][keys[i]][2]
+                                                      ['nome'],
+                                                  widget.tutor[i][keys[i]][2]
+                                                      ['mail'],
+                                                  15.0),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 6.0,
+                                          ),
+                                          Text(
+                                            widget.tutor[i][keys[i]][2]
+                                                ['classe'],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.0,
+                                                fontFamily: "CoreSans"),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: AnimatedCrossFade(
+                                        layoutBuilder: (Widget topChild,
+                                            Key topChildKey,
+                                            Widget bottomChild,
+                                            Key bottomChildKey) {
+                                          // Stacks size themselves according to the non-positioned child.
+                                          return Stack(
+                                            overflow: Overflow.visible,
+                                            children: <Widget>[
+                                              // This is the positioned child (because left, top, right are non-null).
+                                              // bottomChild is the one _from which_ we are animating.
+                                              Align(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                key: bottomChildKey,
+                                                child: bottomChild,
+                                              ),
+                                              // This is the non-positioned child, according to which the Stack will size itself.
+                                              // The Positioned is used only because of the Key. Since the left / right / etc.
+                                              // arguments are null, stack considers it non-positioned.
+                                              Align(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                key: topChildKey,
+                                                child: topChild,
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                        alignment: Alignment.center,
+                                        crossFadeState: !widget.info
+                                            ? CrossFadeState.showFirst
+                                            : CrossFadeState.showSecond,
+                                        firstCurve: Curves.easeInQuad,
+                                        secondCurve: Curves.decelerate,
+                                        duration: Duration(milliseconds: 350),
+                                        firstChild: Icon(
+                                          Globals.subjects[keys[i]]['icona'],
+                                          size: 45.0,
+                                        ),
+                                        secondChild: Icon(
+                                          Icons.mail_outline,
+                                          size: 45.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Offstage(),
+                    ],
                   ),
                 ),
               ),
@@ -537,24 +630,15 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
     );
   }
 
-  Widget _text(String nome, String email, double angle, double FontSize) {
-    return Transform(
-      transform: Matrix4.rotationY(widget.angle == 0.0 ? 0.0 : math.pi),
-      origin: Offset(120, 0),
-      child: Text(
-        ((() {
-          if (angle == 0.0)
-            return nome == 'Pietro Cipriani' ? nome + ' 🔌' : nome; // or ★ ?
-          else if (angle == math.pi)
-            return '\n' + email.split('@')[0] + '@...';
-          else
-            return '';
-        }())),
-        softWrap: false,
-        style: TextStyle(
-            color: Colors.white, fontSize: FontSize, fontFamily: "CoreSans"),
-        overflow: TextOverflow.visible,
-      ),
+  Widget _text(String nome, String email, double FontSize) {
+    return Text(
+      ((() {
+        return nome == 'Pietro Cipriani' ? nome + ' 🔌' : nome; // or ★ ?
+      }())),
+      softWrap: false,
+      style: TextStyle(
+          color: Colors.white, fontSize: FontSize, fontFamily: "CoreSans"),
+      overflow: TextOverflow.visible,
     );
   }
 
