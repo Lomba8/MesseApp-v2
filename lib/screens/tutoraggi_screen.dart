@@ -50,13 +50,13 @@ final String _defaultBody = '''Buona giornata,
 \nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
 \n${RegistroApi.nome} ${RegistroApi.cognome}''';
 
-Color colore1 = Color(0x8500a6); //(120, 213, 215, 1),
-Color colore2 = Color(0xb231b2); //(4, 110, 143, 1),
-Color colore3 = Color(0xd455bb); //(0, 169, 216, 1),
+Color colore1 = Color(0xff6b0e82);
+Color colore2 = Color(0xffb231b2);
+Color colore3 = Color(0xffd455bb);
 
-Color colore1_ombra = Color.fromRGBO(196, 117, 153, 1.0); //0x5A0E6D
-Color colore2_ombra = Color.fromRGBO(127, 79, 159, 1.0);
-Color colore3_ombra = Color.fromRGBO(60, 45, 73, 1.0);
+Color colore1_ombra = Color(0xff86248f);
+Color colore2_ombra = Color(0xff943294);
+Color colore3_ombra = Color(0xffa84895);
 
 class _TutoraggiScreenState extends State<TutoraggiScreen>
     with SingleTickerProviderStateMixin {
