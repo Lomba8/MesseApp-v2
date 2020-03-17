@@ -172,12 +172,12 @@ class _AreaStudentiState extends State<AreaStudenti> {
               ),
               Section(
                 sezione: 'App Panini',
-                colore: 'viola',
+                colore: 'rosso',
                 action: _listaPanini,
               ),
               Section(
                 sezione: 'Tutoraggi',
-                colore: 'rosso',
+                colore: 'viola',
                 page: TutoraggiScreen(),
               ),
             ],
