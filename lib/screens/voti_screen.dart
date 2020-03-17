@@ -191,6 +191,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
   }
 }
 
+GlobalKey _key = GlobalKey();
 class _Header extends ResizableWidget {
   final void Function(int) onPeriodChangedCallback;
   final String Function() passedTime;
@@ -213,6 +214,7 @@ class _Header extends ResizableWidget {
               height: interpolate(kToolbarHeight,
                   (MediaQuery.of(context).size.width - 40) / 2, heightFactor),
               child: MarkView(
+                key: _key,
                 voto: average,
                 angle: interpolate(10.0, average, heightFactor),
                 background: interpolate(
@@ -227,7 +229,10 @@ class _Header extends ResizableWidget {
             child: Opacity(
               opacity: heightFactor,
               child: MaterialButton(
-                onPressed: () => onPeriodChangedCallback(1),
+                onPressed: () {
+                  _key = GlobalKey();
+                  onPeriodChangedCallback(1);
+                },
                 child: Text(
                   RegistroApi.voti.periods[1],
                   textAlign: TextAlign.center,
@@ -251,7 +256,10 @@ class _Header extends ResizableWidget {
             child: Opacity(
               opacity: heightFactor,
               child: MaterialButton(
-                onPressed: () => onPeriodChangedCallback(2),
+                onPressed: () {
+                  _key = GlobalKey();
+                  onPeriodChangedCallback(2);
+                },
                 shape: Border(
                     bottom: BorderSide(
                         color:
@@ -311,10 +319,11 @@ class MarkView extends StatefulWidget {
   final double _angle;
   final Color _background;
 
-  MarkView({double voto, double angle, Color background})
+  MarkView({Key key, double voto, double angle, Color background})
       : _voto = voto ?? -1,
         _angle = angle ?? voto ?? -1,
-        _background = background ?? Colors.transparent;
+        _background = background ?? Colors.transparent,
+        super(key: key);
 
   @override
   MarkViewState createState() => MarkViewState();

@@ -226,7 +226,9 @@ class _OrariSectionState extends State<OrariSection> {
                     )
                   ]),
                 ),
-              if (selectedClass != null) Text('${countRemainingHours(sbj: _selectedSbj)} ${_selectedSbj == null ? 'giorni' : 'ore'} rimanenti')
+              if (selectedClass != null)
+                Text(
+                    '${countRemainingHours(sbj: _selectedSbj)} ${_selectedSbj == null ? 'giorni' : 'ore'} rimanenti')
             ]),
           ),
         ]),
@@ -300,17 +302,23 @@ class _OrariSectionState extends State<OrariSection> {
               margin: EdgeInsets.all(4.0),
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
-                color: colors[orari[selectedClass][i]]?.withOpacity(
-                        _selectedSbj == null ||
-                                _selectedSbj == orari[selectedClass][i]
-                            ? 1
-                            : 0.1) ??
-                    Colors.transparent,
-                borderRadius: BorderRadiusDirectional.circular(5),
-                boxShadow: [
-                  if (Theme.of(context).brightness == Brightness.light && (_selectedSbj == null || _selectedSbj == orari[selectedClass][i])) BoxShadow(blurRadius: 5, offset: Offset(3,3))
-                ]
-              ),
+                  color: colors[orari[selectedClass][i]]?.withOpacity(
+                          _selectedSbj == null ||
+                                  _selectedSbj == orari[selectedClass][i]
+                              ? 1
+                              : 0.1) ??
+                      Colors.transparent,
+                  borderRadius: BorderRadiusDirectional.circular(5),
+                  boxShadow: [
+                    if (Theme.of(context).brightness == Brightness.light)
+                      BoxShadow(
+                          blurRadius: 5,
+                          offset: Offset(3, 3),
+                          color: (_selectedSbj == null ||
+                                  _selectedSbj == orari[selectedClass][i])
+                              ? Colors.black
+                              : Colors.transparent)
+                  ]),
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 3.0),
@@ -369,9 +377,13 @@ class _OrariSectionState extends State<OrariSection> {
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               if (Theme.of(context).brightness == Brightness.light &&
-                  orario[i] != '' &&
-                  (_selectedSbj == null || _selectedSbj == orario[i]))
-                BoxShadow(blurRadius: 5, offset: Offset(3, 3))
+                  orario[i] != '')
+                BoxShadow(
+                    blurRadius: 5,
+                    offset: Offset(3, 3),
+                    color: (_selectedSbj == null || _selectedSbj == orario[i])
+                        ? Colors.black
+                        : Colors.transparent)
             ],
             //border: Theme.of(context).brightness == Brightness.light && orario[i] != '' ? Border.all(color: Colors.black45, width: 1) : null
           ),
