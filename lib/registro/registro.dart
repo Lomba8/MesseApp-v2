@@ -122,10 +122,12 @@ class RegistroApi {
       print(s);
       token = tokenExpiration = null;
     }
+
     return 'Errore durante il login';
   }
 
-  static Future<void> downloadAll(void Function(double) callback, {List<Future Function()> downloaders = const []}) async {
+  static Future<void> downloadAll(void Function(double) callback,
+      {List<Future Function()> downloaders = const []}) async {
     final Map<String, RegistroData> toDownload = {
       'voti': voti,
       'agenda': agenda,

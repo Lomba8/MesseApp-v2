@@ -19,9 +19,8 @@ class BachecaRegistroData extends RegistroData {
       data2.add(Comunicazione(
           c['evtCode'],
           c['pubId'],
-          DateTime.parse(
-                  c['pubDT'].replaceFirst(':', '', c['pubDT'].lastIndexOf(':')))
-              .toLocal(),
+          DateTime.parse(c['cntValidFrom']).toLocal(),
+          DateTime.parse(c['cntValidTo']).toLocal(),
           c['cntValidInRange'],
           c['cntTitle'],
           c['attachments']));
@@ -55,7 +54,7 @@ class BachecaRegistroData extends RegistroData {
 class Comunicazione extends Comparable<Comunicazione> {
   final String evt;
   final int id;
-  final DateTime _date;
+  final DateTime start_date, end_date;
   final bool valid;
   final String title;
   String content;
@@ -74,17 +73,18 @@ class Comunicazione extends Comparable<Comunicazione> {
   }
 
   final List attachments;
-  Comunicazione(
-      this.evt, this.id, this._date, this.valid, this.title, this.attachments,
+  Comunicazione(this.evt, this.id, this.start_date, this.end_date, this.valid,
+      this.title, this.attachments,
       [this.content]);
 
   @override
-  int compareTo(Comunicazione other) => -_date.compareTo(other._date);
+  int compareTo(Comunicazione other) => -start_date.compareTo(other.start_date);
 
   Map<String, dynamic> toJson() => {
         'evt': evt,
         'id': id,
-        'date': _date.toIso8601String(),
+        'start_date': start_date.toIso8601String(),
+        'end_date': end_date.toIso8601String(),
         'valid': valid,
         'title': title,
         'content': content,
@@ -94,7 +94,8 @@ class Comunicazione extends Comparable<Comunicazione> {
   static Comunicazione fromJson(Map json) => Comunicazione(
       json['evt'],
       json['id'],
-      DateTime.parse(json['date']),
+      DateTime.parse(json['start_date']),
+      DateTime.parse(json['end_date']),
       json['valid'],
       json['title'],
       json['attachments'],
