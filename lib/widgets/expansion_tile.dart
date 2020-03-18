@@ -87,22 +87,26 @@ class _ExpansionTileState extends State<CustomExpansionTile>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTileTheme.merge(
-            child: ListTile(
-              onTap: _handleTap,
-              leading: widget.leading,
-              title: widget.title,
-              subtitle: widget.subtitle,
-              trailing: widget.trailing ??
-                  AnimatedCrossFade(
-                    duration: Duration(milliseconds: 200),
-                    crossFadeState: !_isExpanded
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    firstCurve: Curves.easeInQuad,
-                    secondCurve: Curves.decelerate,
-                    firstChild: Icon(MdiIcons.eye),
-                    secondChild: Icon(MdiIcons.eyeOffOutline),
-                  ),
+            child: Container(
+              color: Colors.white10,
+              margin: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 1.0),
+              child: ListTile(
+                onTap: _handleTap,
+                leading: widget.leading,
+                title: widget.title,
+                subtitle: widget.subtitle,
+                trailing: widget.trailing ??
+                    AnimatedCrossFade(
+                      duration: Duration(milliseconds: 200),
+                      crossFadeState: !_isExpanded
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                      firstCurve: Curves.easeInQuad,
+                      secondCurve: Curves.decelerate,
+                      firstChild: Icon(MdiIcons.eye),
+                      secondChild: Icon(MdiIcons.eyeOffOutline),
+                    ),
+              ),
             ),
           ),
           ClipRect(
