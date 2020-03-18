@@ -350,7 +350,6 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                       children: [
                                         _text(
                                             widget.tutor[i][keys[i]][0]['nome'],
-                                            widget.tutor[i][keys[i]][0]['mail'],
                                             15.0),
                                       ],
                                     ),
@@ -405,13 +404,11 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                   secondCurve: Curves.easeInQuad,
                                   duration: Duration(milliseconds: 350),
                                   firstChild: Icon(
-                                    Globals.subjects[keys[i]]['icona'],
-                                    size: 45.0,
-                                  ),
-                                  secondChild: Icon(
-                                    Icons.mail_outline,
-                                    size: 45.0,
-                                  ),
+                                      Globals.subjects[keys[i]]['icona'],
+                                      size: 45.0,
+                                      color: colore1_ombra),
+                                  secondChild: Icon(Icons.mail_outline,
+                                      size: 45.0, color: colore1_ombra),
                                 ),
                               ),
                             ],
@@ -440,8 +437,6 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                           _text(
                                               widget.tutor[i][keys[i]][1]
                                                   ['nome'],
-                                              widget.tutor[i][keys[i]][1]
-                                                  ['mail'],
                                               15.0),
                                         ],
                                       ),
@@ -496,13 +491,11 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                     secondCurve: Curves.easeInQuad,
                                     duration: Duration(milliseconds: 350),
                                     firstChild: Icon(
-                                      Globals.subjects[keys[i]]['icona'],
-                                      size: 45.0,
-                                    ),
-                                    secondChild: Icon(
-                                      Icons.mail_outline,
-                                      size: 45.0,
-                                    ),
+                                        Globals.subjects[keys[i]]['icona'],
+                                        size: 45.0,
+                                        color: colore2_ombra),
+                                    secondChild: Icon(Icons.mail_outline,
+                                        size: 45.0, color: colore2_ombra),
                                   ),
                                 ),
                               ],
@@ -535,8 +528,6 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                               _text(
                                                   widget.tutor[i][keys[i]][2]
                                                       ['nome'],
-                                                  widget.tutor[i][keys[i]][2]
-                                                      ['mail'],
                                                   15.0),
                                             ],
                                           ),
@@ -593,13 +584,11 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                         secondCurve: Curves.decelerate,
                                         duration: Duration(milliseconds: 350),
                                         firstChild: Icon(
-                                          Globals.subjects[keys[i]]['icona'],
-                                          size: 45.0,
-                                        ),
-                                        secondChild: Icon(
-                                          Icons.mail_outline,
-                                          size: 45.0,
-                                        ),
+                                            Globals.subjects[keys[i]]['icona'],
+                                            size: 45.0,
+                                            color: colore3_ombra),
+                                        secondChild: Icon(Icons.mail_outline,
+                                            size: 45.0, color: colore3_ombra),
                                       ),
                                     ),
                                   ],
@@ -622,7 +611,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
     );
   }
 
-  Widget _text(String nome, String email, double FontSize) {
+  Widget _text(String nome, double FontSize) {
     return Text(
       ((() {
         return nome == 'Pietro Cipriani' ? nome + ' 🔌' : nome; // or ★ ?

@@ -55,6 +55,7 @@ void main() {
     else if (Platform.isIOS)
       osVersion = (await deviceInfo.iosInfo).systemVersion;
     connection_main = await (Connectivity().checkConnectivity());
+
     //connection_main = Connectivity().onConnectivityChanged;
 
     if (prefs.getBool('DarkMode') == null) {
@@ -135,6 +136,7 @@ void setTheme(ThemeMode theme) async {
   }
   print(theme.toString());
 }
+
 ThemeMode get theme => _theme;
 
 _MaterialAppWithThemeState _currentState;

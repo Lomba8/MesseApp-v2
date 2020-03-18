@@ -1,6 +1,7 @@
 // PS: è un copia incolla
 
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 const Duration _kExpand = Duration(milliseconds: 200);
 
@@ -35,12 +36,9 @@ class _ExpansionTileState extends State<CustomExpansionTile>
       CurveTween(curve: Curves.easeOut);
   static final Animatable<double> _easeInTween =
       CurveTween(curve: Curves.easeIn);
-  static final Animatable<double> _halfTween =
-      Tween<double>(begin: 0.0, end: 0.5);
   final ColorTween _backgroundColorTween = ColorTween();
 
   AnimationController _controller;
-  Animation<double> _iconTurns;
   Animation<double> _heightFactor;
   Animation<Color> _backgroundColor;
 
@@ -51,7 +49,6 @@ class _ExpansionTileState extends State<CustomExpansionTile>
     super.initState();
     _controller = AnimationController(duration: _kExpand, vsync: this);
     _heightFactor = _controller.drive(_easeInTween);
-    _iconTurns = _controller.drive(_halfTween.chain(_easeInTween));
     _backgroundColor =
         _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
@@ -96,9 +93,15 @@ class _ExpansionTileState extends State<CustomExpansionTile>
               title: widget.title,
               subtitle: widget.subtitle,
               trailing: widget.trailing ??
-                  RotationTransition(
-                    turns: _iconTurns,
-                    child: const Icon(Icons.expand_more),
+                  AnimatedCrossFade(
+                    duration: Duration(milliseconds: 200),
+                    crossFadeState: !_isExpanded
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    firstCurve: Curves.easeInQuad,
+                    secondCurve: Curves.decelerate,
+                    firstChild: Icon(MdiIcons.eye),
+                    secondChild: Icon(MdiIcons.eyeOffOutline),
                   ),
             ),
           ),
