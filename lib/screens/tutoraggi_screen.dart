@@ -112,8 +112,6 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
 
   @override
   void dispose() {
-    animationController.dispose();
-
     super.dispose();
   }
 
@@ -344,35 +342,29 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                             children: <Widget>[
                               Expanded(
                                 flex: 2,
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Stack(
-                                        children: [
-                                          _text(
-                                              widget.tutor[i][keys[i]][0]
-                                                  ['nome'],
-                                              widget.tutor[i][keys[i]][0]
-                                                  ['mail'],
-                                              15.0),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 6.0,
-                                      ),
-                                      Text(
-                                        widget.tutor[i][keys[i]][0]['classe'],
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15.0,
-                                            fontFamily: "CoreSans"),
-                                      ),
-                                    ],
-                                  ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Stack(
+                                      children: [
+                                        _text(
+                                            widget.tutor[i][keys[i]][0]['nome'],
+                                            widget.tutor[i][keys[i]][0]['mail'],
+                                            15.0),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 6.0,
+                                    ),
+                                    Text(
+                                      widget.tutor[i][keys[i]][0]['classe'],
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15.0,
+                                          fontFamily: "CoreSans"),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Expanded(
@@ -391,16 +383,18 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                       children: <Widget>[
                                         // This is the positioned child (because left, top, right are non-null).
                                         // bottomChild is the one _from which_ we are animating.
-                                        Align(
-                                          alignment: Alignment.topRight,
+                                        SizedBox(
+                                          height: 50,
+                                          width: 50,
                                           key: bottomChildKey,
                                           child: bottomChild,
                                         ),
                                         // This is the non-positioned child, according to which the Stack will size itself.
                                         // The Positioned is used only because of the Key. Since the left / right / etc.
                                         // arguments are null, stack considers it non-positioned.
-                                        Align(
-                                          alignment: Alignment.topRight,
+                                        SizedBox(
+                                          height: 50,
+                                          width: 50,
                                           key: topChildKey,
                                           child: topChild,
                                         ),
@@ -436,35 +430,32 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                               children: <Widget>[
                                 Expanded(
                                   flex: 2,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Stack(
-                                          children: [
-                                            _text(
-                                                widget.tutor[i][keys[i]][1]
-                                                    ['nome'],
-                                                widget.tutor[i][keys[i]][1]
-                                                    ['mail'],
-                                                15.0),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 6.0,
-                                        ),
-                                        Text(
-                                          widget.tutor[i][keys[i]][1]['classe'],
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.0,
-                                              fontFamily: "CoreSans"),
-                                        ),
-                                      ],
-                                    ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Stack(
+                                        children: [
+                                          _text(
+                                              widget.tutor[i][keys[i]][1]
+                                                  ['nome'],
+                                              widget.tutor[i][keys[i]][1]
+                                                  ['mail'],
+                                              15.0),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 6.0,
+                                      ),
+                                      Text(
+                                        widget.tutor[i][keys[i]][1]['classe'],
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15.0,
+                                            fontFamily: "CoreSans"),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 Expanded(
@@ -483,16 +474,18 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                         children: <Widget>[
                                           // This is the positioned child (because left, top, right are non-null).
                                           // bottomChild is the one _from which_ we are animating.
-                                          Align(
-                                            alignment: Alignment.centerRight,
+                                          SizedBox(
+                                            height: 50,
+                                            width: 50,
                                             key: bottomChildKey,
                                             child: bottomChild,
                                           ),
                                           // This is the non-positioned child, according to which the Stack will size itself.
                                           // The Positioned is used only because of the Key. Since the left / right / etc.
                                           // arguments are null, stack considers it non-positioned.
-                                          Align(
-                                            alignment: Alignment.centerRight,
+                                          SizedBox(
+                                            height: 50,
+                                            width: 50,
                                             key: topChildKey,
                                             child: topChild,
                                           ),
@@ -574,18 +567,18 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                             children: <Widget>[
                                               // This is the positioned child (because left, top, right are non-null).
                                               // bottomChild is the one _from which_ we are animating.
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
+                                              SizedBox(
+                                                height: 50,
+                                                width: 50,
                                                 key: bottomChildKey,
                                                 child: bottomChild,
                                               ),
                                               // This is the non-positioned child, according to which the Stack will size itself.
                                               // The Positioned is used only because of the Key. Since the left / right / etc.
                                               // arguments are null, stack considers it non-positioned.
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
+                                              SizedBox(
+                                                height: 50,
+                                                width: 50,
                                                 key: topChildKey,
                                                 child: topChild,
                                               ),
