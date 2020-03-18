@@ -282,7 +282,7 @@ class CardScrollWidget extends StatefulWidget {
 }
 
 class _CardScrollWidgetState extends State<CardScrollWidget> {
-  var padding = 20.0;
+  var padding = -20.0;
 
   var verticalInset = 20.0;
 
@@ -294,8 +294,8 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
         var width = contraints.maxWidth;
         var height = contraints.maxHeight;
 
-        var safeWidth = width - 2 * padding;
-        var safeHeight = height - 2 * padding;
+        var safeWidth = width;
+        var safeHeight = height;
 
         var heightOfPrimaryCard = safeHeight;
         var widthOfPrimaryCard = heightOfPrimaryCard * cardAspectRatio;
@@ -311,210 +311,45 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
           bool isOnRight = delta > 0;
 
           var start = padding +
-              math.max(
-                  primaryCardLeft -
-                      horizontalInset * -delta * (isOnRight ? 15 : 1),
-                  0.0);
+              //math.max(
+              primaryCardLeft -
+              horizontalInset *
+                  -delta *
+                  (isOnRight ? 15 : math.pow(0.9, -delta));
+          //0.0);
 
           var cardItem = Positioned.directional(
-            top: padding + verticalInset * math.max(-delta, 0.0),
-            bottom: padding + verticalInset * math.max(-delta, 0.0),
+            top: 0, // + verticalInset * math.max(-delta, 0.0),
+            bottom: 0, // + verticalInset * math.max(-delta, 0.0),
             start: start,
             textDirection: TextDirection.rtl,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50.0), //prima era 16
+            child: Transform.scale(
+              scale: math.pow(0.9, math.max(0, -delta)),
               child: Container(
-                child: AspectRatio(
-                  aspectRatio: cardAspectRatio,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: <Widget>[
-                      _backgroung(),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(top: 50.0, left: 20.0, right: 30.0),
-                        child: Align(
-                          alignment: Alignment(-1.0, -1.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Stack(
-                                      children: [
-                                        _text(
-                                            widget.tutor[i][keys[i]][0]['nome'],
-                                            15.0),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 6.0,
-                                    ),
-                                    Text(
-                                      widget.tutor[i][keys[i]][0]['classe'],
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15.0,
-                                          fontFamily: "CoreSans"),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: AnimatedCrossFade(
-                                  crossFadeState: !widget.info
-                                      ? CrossFadeState.showFirst
-                                      : CrossFadeState.showSecond,
-                                  layoutBuilder: (Widget topChild,
-                                      Key topChildKey,
-                                      Widget bottomChild,
-                                      Key bottomChildKey) {
-                                    // Stacks size themselves according to the non-positioned child.
-                                    return Stack(
-                                      overflow: Overflow.visible,
-                                      children: <Widget>[
-                                        // This is the positioned child (because left, top, right are non-null).
-                                        // bottomChild is the one _from which_ we are animating.
-                                        SizedBox(
-                                          height: 50,
-                                          width: 50,
-                                          key: bottomChildKey,
-                                          child: bottomChild,
-                                        ),
-                                        // This is the non-positioned child, according to which the Stack will size itself.
-                                        // The Positioned is used only because of the Key. Since the left / right / etc.
-                                        // arguments are null, stack considers it non-positioned.
-                                        SizedBox(
-                                          height: 50,
-                                          width: 50,
-                                          key: topChildKey,
-                                          child: topChild,
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                  firstCurve: Curves.easeOutQuad,
-                                  secondCurve: Curves.easeInQuad,
-                                  duration: Duration(milliseconds: 350),
-                                  firstChild: Icon(
-                                      Globals.subjects[keys[i]]['icona'],
-                                      size: 45.0,
-                                      color: colore1_ombra),
-                                  secondChild: Icon(Icons.mail_outline,
-                                      size: 45.0, color: colore1_ombra),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (widget.tutor[i][keys[i]].length > 1)
-                        Padding(
-                          padding: EdgeInsets.only(left: 20.0, right: 30.0),
-                          child: Align(
-                            alignment: Alignment(-1.0, 0.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Stack(
-                                        children: [
-                                          _text(
-                                              widget.tutor[i][keys[i]][1]
-                                                  ['nome'],
-                                              15.0),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 6.0,
-                                      ),
-                                      Text(
-                                        widget.tutor[i][keys[i]][1]['classe'],
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15.0,
-                                            fontFamily: "CoreSans"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: AnimatedCrossFade(
-                                    crossFadeState: !widget.info
-                                        ? CrossFadeState.showFirst
-                                        : CrossFadeState.showSecond,
-                                    layoutBuilder: (Widget topChild,
-                                        Key topChildKey,
-                                        Widget bottomChild,
-                                        Key bottomChildKey) {
-                                      // Stacks size themselves according to the non-positioned child.
-                                      return Stack(
-                                        overflow: Overflow.visible,
-                                        children: <Widget>[
-                                          // This is the positioned child (because left, top, right are non-null).
-                                          // bottomChild is the one _from which_ we are animating.
-                                          SizedBox(
-                                            height: 50,
-                                            width: 50,
-                                            key: bottomChildKey,
-                                            child: bottomChild,
-                                          ),
-                                          // This is the non-positioned child, according to which the Stack will size itself.
-                                          // The Positioned is used only because of the Key. Since the left / right / etc.
-                                          // arguments are null, stack considers it non-positioned.
-                                          SizedBox(
-                                            height: 50,
-                                            width: 50,
-                                            key: topChildKey,
-                                            child: topChild,
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                    firstCurve: Curves.easeOutQuad,
-                                    secondCurve: Curves.easeInQuad,
-                                    duration: Duration(milliseconds: 350),
-                                    firstChild: Icon(
-                                        Globals.subjects[keys[i]]['icona'],
-                                        size: 45.0,
-                                        color: colore2_ombra),
-                                    secondChild: Icon(Icons.mail_outline,
-                                        size: 45.0, color: colore2_ombra),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      else
-                        Offstage(),
-                      widget.tutor[i][keys[i]].length > 2
-                          ? Padding(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50.0),
+                      boxShadow: [
+                        BoxShadow(blurRadius: 5, offset: Offset(3, 3))
+                      ]),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50.0), //prima era 16
+                    child: Container(
+                      child: AspectRatio(
+                        aspectRatio: cardAspectRatio,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: <Widget>[
+                            _backgroung(),
+                            Padding(
                               padding: EdgeInsets.only(
-                                  bottom: 50.0, left: 20.0, right: 30.0),
+                                  top: 50.0, left: 20.0, right: 30.0),
                               child: Align(
-                                alignment: Alignment(-1.0, 1.0),
+                                alignment: Alignment(-1.0, -1.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: <Widget>[
                                     Expanded(
                                       flex: 2,
@@ -526,7 +361,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                           Stack(
                                             children: [
                                               _text(
-                                                  widget.tutor[i][keys[i]][2]
+                                                  widget.tutor[i][keys[i]][0]
                                                       ['nome'],
                                                   15.0),
                                             ],
@@ -535,7 +370,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                             height: 6.0,
                                           ),
                                           Text(
-                                            widget.tutor[i][keys[i]][2]
+                                            widget.tutor[i][keys[i]][0]
                                                 ['classe'],
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -548,6 +383,9 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                     Expanded(
                                       flex: 1,
                                       child: AnimatedCrossFade(
+                                        crossFadeState: !widget.info
+                                            ? CrossFadeState.showFirst
+                                            : CrossFadeState.showSecond,
                                         layoutBuilder: (Widget topChild,
                                             Key topChildKey,
                                             Widget bottomChild,
@@ -576,30 +414,216 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                             ],
                                           );
                                         },
-                                        alignment: Alignment.center,
-                                        crossFadeState: !widget.info
-                                            ? CrossFadeState.showFirst
-                                            : CrossFadeState.showSecond,
-                                        firstCurve: Curves.easeInQuad,
-                                        secondCurve: Curves.decelerate,
+                                        firstCurve: Curves.easeOutQuad,
+                                        secondCurve: Curves.easeInQuad,
                                         duration: Duration(milliseconds: 350),
                                         firstChild: Icon(
                                             Globals.subjects[keys[i]]['icona'],
                                             size: 45.0,
-                                            color: colore3_ombra),
+                                            color: colore1_ombra),
                                         secondChild: Icon(Icons.mail_outline,
-                                            size: 45.0, color: colore3_ombra),
+                                            size: 45.0, color: colore1_ombra),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            )
-                          : Offstage(),
-                    ],
-                  ),
-                ),
-              ),
+                            ),
+                            if (widget.tutor[i][keys[i]].length > 1)
+                              Padding(
+                                padding:
+                                    EdgeInsets.only(left: 20.0, right: 30.0),
+                                child: Align(
+                                  alignment: Alignment(-1.0, 0.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Stack(
+                                              children: [
+                                                _text(
+                                                    widget.tutor[i][keys[i]][1]
+                                                        ['nome'],
+                                                    15.0),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 6.0,
+                                            ),
+                                            Text(
+                                              widget.tutor[i][keys[i]][1]
+                                                  ['classe'],
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.0,
+                                                  fontFamily: "CoreSans"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: AnimatedCrossFade(
+                                          crossFadeState: !widget.info
+                                              ? CrossFadeState.showFirst
+                                              : CrossFadeState.showSecond,
+                                          layoutBuilder: (Widget topChild,
+                                              Key topChildKey,
+                                              Widget bottomChild,
+                                              Key bottomChildKey) {
+                                            // Stacks size themselves according to the non-positioned child.
+                                            return Stack(
+                                              overflow: Overflow.visible,
+                                              children: <Widget>[
+                                                // This is the positioned child (because left, top, right are non-null).
+                                                // bottomChild is the one _from which_ we are animating.
+                                                SizedBox(
+                                                  height: 50,
+                                                  width: 50,
+                                                  key: bottomChildKey,
+                                                  child: bottomChild,
+                                                ),
+                                                // This is the non-positioned child, according to which the Stack will size itself.
+                                                // The Positioned is used only because of the Key. Since the left / right / etc.
+                                                // arguments are null, stack considers it non-positioned.
+                                                SizedBox(
+                                                  height: 50,
+                                                  width: 50,
+                                                  key: topChildKey,
+                                                  child: topChild,
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                          firstCurve: Curves.easeOutQuad,
+                                          secondCurve: Curves.easeInQuad,
+                                          duration: Duration(milliseconds: 350),
+                                          firstChild: Icon(
+                                              Globals.subjects[keys[i]]
+                                                  ['icona'],
+                                              size: 45.0,
+                                              color: colore2_ombra),
+                                          secondChild: Icon(Icons.mail_outline,
+                                              size: 45.0, color: colore2_ombra),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            else
+                              Offstage(),
+                            widget.tutor[i][keys[i]].length > 2
+                                ? Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: 50.0, left: 20.0, right: 30.0),
+                                    child: Align(
+                                      alignment: Alignment(-1.0, 1.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Expanded(
+                                            flex: 2,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Stack(
+                                                  children: [
+                                                    _text(
+                                                        widget.tutor[i][keys[i]]
+                                                            [2]['nome'],
+                                                        15.0),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 6.0,
+                                                ),
+                                                Text(
+                                                  widget.tutor[i][keys[i]][2]
+                                                      ['classe'],
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15.0,
+                                                      fontFamily: "CoreSans"),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: AnimatedCrossFade(
+                                              layoutBuilder: (Widget topChild,
+                                                  Key topChildKey,
+                                                  Widget bottomChild,
+                                                  Key bottomChildKey) {
+                                                // Stacks size themselves according to the non-positioned child.
+                                                return Stack(
+                                                  overflow: Overflow.visible,
+                                                  children: <Widget>[
+                                                    // This is the positioned child (because left, top, right are non-null).
+                                                    // bottomChild is the one _from which_ we are animating.
+                                                    SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      key: bottomChildKey,
+                                                      child: bottomChild,
+                                                    ),
+                                                    // This is the non-positioned child, according to which the Stack will size itself.
+                                                    // The Positioned is used only because of the Key. Since the left / right / etc.
+                                                    // arguments are null, stack considers it non-positioned.
+                                                    SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      key: topChildKey,
+                                                      child: topChild,
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                              alignment: Alignment.center,
+                                              crossFadeState: !widget.info
+                                                  ? CrossFadeState.showFirst
+                                                  : CrossFadeState.showSecond,
+                                              firstCurve: Curves.easeInQuad,
+                                              secondCurve: Curves.decelerate,
+                                              duration:
+                                                  Duration(milliseconds: 350),
+                                              firstChild: Icon(
+                                                  Globals.subjects[keys[i]]
+                                                      ['icona'],
+                                                  size: 45.0,
+                                                  color: colore3_ombra),
+                                              secondChild: Icon(
+                                                  Icons.mail_outline,
+                                                  size: 45.0,
+                                                  color: colore3_ombra),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Offstage(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )),
             ),
           );
           cardList.add(cardItem);
