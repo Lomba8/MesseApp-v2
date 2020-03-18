@@ -106,21 +106,21 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
-          ExpansionSliver(ExpansionSliverDelegate(
-            context,
-            title: 'AGENDA',
-            body: Calendar(_currentDate, (day, events) => setState(() {
-                  if (dayEvents != null && dayEvents.isNotEmpty)
-                    dayEvents.forEach((event) => event.seen());
-                  dayEvents = events ?? [];
-                  dayLessons = RegistroApi.lessons.data['date'][day];
-                  _currentDate = day;
-                  lunghezzaDash = 0;
-                  _value = !_value;
-                }),
-                'agenda'),
-            value: _value
-          )),
+          ExpansionSliver(ExpansionSliverDelegate(context,
+              title: 'AGENDA',
+              body: Calendar(
+                  _currentDate,
+                  (day, events) => setState(() {
+                        if (dayEvents != null && dayEvents.isNotEmpty)
+                          dayEvents.forEach((event) => event.seen());
+                        dayEvents = events ?? [];
+                        dayLessons = RegistroApi.lessons.data['date'][day];
+                        _currentDate = day;
+                        lunghezzaDash = 0;
+                        _value = !_value;
+                      }),
+                  'agenda'),
+              value: _value)),
           SliverList(
             delegate: SliverChildListDelegate(
               [
@@ -143,22 +143,34 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                               leading: CircleAvatar(
                                 child: Text('${l.hour + 1}ª',
                                     style: TextStyle(
-                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
                                     )),
                                 backgroundColor:
                                     (Globals.subjects[l.sbj] ?? {})['colore']
                                             ?.withOpacity(0.5) ??
-                                        (Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black26),
+                                        (Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white24
+                                            : Colors.black26),
                               ),
                               trailing: CircleAvatar(
                                   child: Text('${l.duration.inHours} h',
                                       style: TextStyle(
-                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
                                       )),
                                   backgroundColor:
                                       (Globals.subjects[l.sbj] ?? {})['colore']
                                               ?.withOpacity(0.5) ??
-                                          (Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black26)),
+                                          (Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white24
+                                              : Colors.black26)),
                             ))
                         .toList(),
                   ),
@@ -466,6 +478,7 @@ class EventCard extends StatelessWidget {
                                           Brightness.dark
                                       ? Colors.white54
                                       : Colors.black54,
+                                  height: 1.2,
                                 )),
                           )
                         : AutoSizeText(evento.info,
