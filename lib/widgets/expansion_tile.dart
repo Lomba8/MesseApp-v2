@@ -36,9 +36,13 @@ class _ExpansionTileState extends State<CustomExpansionTile>
       CurveTween(curve: Curves.easeOut);
   static final Animatable<double> _easeInTween =
       CurveTween(curve: Curves.easeIn);
+  static final Animatable<double> _halfTween =
+      Tween<double>(begin: 0.0, end: 0.5);
   final ColorTween _backgroundColorTween = ColorTween();
 
   AnimationController _controller;
+  Animation<double> _iconTurns;
+
   Animation<double> _heightFactor;
   Animation<Color> _backgroundColor;
 
@@ -49,6 +53,8 @@ class _ExpansionTileState extends State<CustomExpansionTile>
     super.initState();
     _controller = AnimationController(duration: _kExpand, vsync: this);
     _heightFactor = _controller.drive(_easeInTween);
+    _iconTurns = _controller.drive(_halfTween.chain(_easeInTween));
+
     _backgroundColor =
         _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
@@ -87,26 +93,17 @@ class _ExpansionTileState extends State<CustomExpansionTile>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTileTheme.merge(
-            child: Container(
-              color: Colors.white10,
-              margin: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 1.0),
-              child: ListTile(
-                onTap: _handleTap,
-                leading: widget.leading,
-                title: widget.title,
-                subtitle: widget.subtitle,
-                trailing: widget.trailing ??
-                    AnimatedCrossFade(
-                      duration: Duration(milliseconds: 200),
-                      crossFadeState: !_isExpanded
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                      firstCurve: Curves.easeInQuad,
-                      secondCurve: Curves.decelerate,
-                      firstChild: Icon(MdiIcons.eye),
-                      secondChild: Icon(MdiIcons.eyeOffOutline),
-                    ),
-              ),
+            child: ListTile(
+              onTap: _handleTap,
+              leading: widget.leading,
+              title: widget.title,
+              subtitle: widget.subtitle,
+              trailing: widget.trailing ??
+                  widget.trailing ??
+                  RotationTransition(
+                    turns: _iconTurns,
+                    child: const Icon(Icons.expand_more),
+                  ),
             ),
           ),
           ClipRect(

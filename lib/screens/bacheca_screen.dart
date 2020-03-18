@@ -80,65 +80,81 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         Container(
                           margin: EdgeInsets.only(top: 15.0),
                           child: Column(
-                            children: data
-                                .map<Widget>((c) => CustomExpansionTile(
-                                      onExpansionChanged: (isExpanded) {
-                                        Expanded = isExpanded;
-                                        setState(() {
-                                          if (c.content ==
-                                              null) // TODO: check not in progress
-                                            c.loadContent(
-                                                () => setState(() {}));
-                                        });
-                                      },
-                                      title: AutoSizeText(
-                                        c.title,
-                                        textAlign: TextAlign.left,
-                                        maxLines: !Expanded ? 2 : 20,
-                                        overflow: TextOverflow.ellipsis,
-                                        minFontSize: 13.0,
-                                        maxFontSize: 15.0,
-                                      ),
-                                      leading: IconButton(
-                                        icon: Icon(MdiIcons.filePdf),
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPressed: c.attachments.isEmpty
-                                            ? null
-                                            : () {/* TODO: download pdf */},
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: c.content == null
-                                            ? Container(
-                                                height: 2,
-                                                child: LinearProgressIndicator(
-                                                  value: null,
-                                                  backgroundColor:
+                            children: data.map<Widget>((c) {
+                              bool _expand = false;
+                              return Container(
+                                color: Colors.white10,
+                                margin: EdgeInsets.only(
+                                    left: 15.0, right: 15.0, bottom: 1.0),
+                                child: CustomExpansionTile(
+                                  onExpansionChanged: (isExpanded) {
+                                    Expanded = isExpanded;
+                                    _expand = !_expand;
+                                    setState(() {
+                                      _expand = !_expand;
+
+                                      if (c.content ==
+                                          null) // TODO: check not in progress
+                                        c.loadContent(() => setState(() {}));
+                                    });
+                                  },
+                                  title: AutoSizeText(
+                                    c.title,
+                                    textAlign: TextAlign.left,
+                                    maxLines: !Expanded ? 2 : 20,
+                                    overflow: TextOverflow.ellipsis,
+                                    minFontSize: 13.0,
+                                    maxFontSize: 15.0,
+                                  ),
+                                  leading: IconButton(
+                                    icon: Icon(MdiIcons.filePdf),
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    onPressed: c.attachments.isEmpty
+                                        ? null
+                                        : () {/* TODO: download pdf */},
+                                  ),
+                                  trailing: AnimatedCrossFade(
+                                    duration: Duration(milliseconds: 300),
+                                    crossFadeState: !_expand
+                                        ? CrossFadeState.showFirst
+                                        : CrossFadeState.showSecond,
+                                    firstCurve: Curves.easeInQuad,
+                                    secondCurve: Curves.decelerate,
+                                    firstChild: Icon(MdiIcons.eye),
+                                    secondChild: Icon(MdiIcons.eyeOffOutline),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: c.content == null
+                                        ? Container(
+                                            height: 2,
+                                            child: LinearProgressIndicator(
+                                              value: null,
+                                              backgroundColor: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white10
+                                                  : Colors.black12,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
                                                       Theme.of(context)
                                                                   .brightness ==
                                                               Brightness.dark
-                                                          ? Colors.white10
-                                                          : Colors.black12,
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation(
-                                                          Theme.of(context)
-                                                                      .brightness ==
-                                                                  Brightness
-                                                                      .dark
-                                                              ? Colors.white
-                                                              : Colors.black),
-                                                ),
-                                              )
-                                            : Text(c.content,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1),
-                                      ),
-                                    ))
-                                .toList(),
+                                                          ? Colors.white
+                                                          : Colors.black),
+                                            ),
+                                          )
+                                        : Text(c.content,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
                       ],
