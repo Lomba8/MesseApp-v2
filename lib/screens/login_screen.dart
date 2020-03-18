@@ -209,7 +209,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ));
     }
 
-<<<<<<< HEAD
     void _submit(BuildContext context) async {
       SystemChannels.textInput.invokeMethod('TextInput.hide');
       setState(() {
@@ -282,8 +281,6 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
 
-=======
->>>>>>> 232ac48cf01d46d1dc0325c7dbff0b08dc724ecb
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: Builder(
