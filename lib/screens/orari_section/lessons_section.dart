@@ -12,31 +12,6 @@ class LessonsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CustomScrollView(
         slivers: <Widget>[
-          SliverAppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            brightness: Theme.of(context).brightness,
-            title: Text(
-              'LEZIONI',
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            pinned: true,
-            flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
-              size: Size.infinite,
-            ),
-            bottom: PreferredSize(
-              child: Container(),
-              preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.width / 8),
-            ),
-          ),
           SliverList(
               delegate:
                   SliverChildListDelegate(RegistroApi.lessons.data['sbj'].keys
