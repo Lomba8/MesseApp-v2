@@ -15,6 +15,7 @@ class CustomExpansionTile extends StatefulWidget {
     this.onExpansionChanged,
     this.child,
     this.trailing,
+    this.onTapEnabled = true,
   }) : super(key: key);
 
   final Widget leading;
@@ -25,6 +26,7 @@ class CustomExpansionTile extends StatefulWidget {
 
   final Color backgroundColor;
   final Widget Function(dynamic) trailing;
+  final bool onTapEnabled;
 
   @override
   _ExpansionTileState createState() => _ExpansionTileState();
@@ -84,7 +86,14 @@ class _ExpansionTileState extends State<CustomExpansionTile>
       widget.onExpansionChanged(_isExpanded);
   }
 
+  dynamic _action;
+
   Widget _buildChildren(BuildContext context, Widget child) {
+    if (widget.onTapEnabled) {
+      _action = _handleTap;
+    } else {
+      _action = () => null;
+    }
     return Container(
       decoration: BoxDecoration(
         color: _backgroundColor.value ?? Colors.transparent,
@@ -94,16 +103,19 @@ class _ExpansionTileState extends State<CustomExpansionTile>
         children: <Widget>[
           ListTileTheme.merge(
             child: ListTile(
-              onTap: _handleTap,
-              leading: widget.leading,
-              title: widget.title,
-              subtitle: widget.subtitle,
-              trailing: widget.trailing?.call(_isExpanded) ??
-                  RotationTransition(
-                    turns: _iconTurns,
-                    child: const Icon(Icons.expand_more),
-                  ),
-            ),
+                //enabled: false,
+                onTap: _action,
+                leading: widget.leading,
+                title: widget.title,
+                subtitle: widget.subtitle,
+                trailing: GestureDetector(
+                  onTap: _handleTap,
+                  child: widget.trailing?.call(_isExpanded) ??
+                      RotationTransition(
+                        turns: _iconTurns,
+                        child: const Icon(Icons.expand_more),
+                      ),
+                )),
           ),
           ClipRect(
             child: Align(

@@ -3,9 +3,18 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flappy_search_bar/flappy_search_bar.dart';
+import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+class Post {
+  final String title;
+  final String description;
+
+  Post(this.title, this.description);
+}
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -15,12 +24,20 @@ class BachecaScreen extends StatefulWidget {
 class _BachecaScreenState extends State<BachecaScreen> {
   Comunicazione _expanded;
   var data = RegistroApi.bacheca.data;
-  bool Expanded = false;
+  final SearchBarController<Comunicazione> _searchBarController =
+      SearchBarController();
 
   Future<void> _refresh() async {
     await RegistroApi.bacheca.getData();
     data = RegistroApi.bacheca.data;
     setState(() {});
+  }
+
+  Future<List<Comunicazione>> search(String search) async {
+    await Future.delayed(Duration(seconds: 2));
+    return List.generate(search.length, (int index) {
+      return; // Comunicazione(); TODO
+    });
   }
 
   @override
@@ -62,6 +79,41 @@ class _BachecaScreenState extends State<BachecaScreen> {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
+                    SizedBox(
+                      height: 80,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 8,
+                              child: SearchBar<Comunicazione>(
+                                searchBarStyle: SearchBarStyle(
+                                  padding: EdgeInsets.all(0),
+                                ),
+                                icon: Padding(
+                                  padding: EdgeInsets.only(left: 8.0),
+                                  child: Icon(Icons.search),
+                                ),
+                                headerPadding: EdgeInsets.only(left: 3.0),
+                                onItemFound: (item, int index) {},
+                                onSearch: (String text) {
+                                  print(text);
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Icon(Icons.settings),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Icon(Icons.clear),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     Stack(
                       overflow: Overflow.visible,
                       children: <Widget>[
@@ -88,8 +140,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     left: 15.0, right: 15.0, bottom: 1.0),
                                 child: CustomExpansionTile(
                                   onExpansionChanged: (isExpanded) {
-                                    Expanded = isExpanded;
-                                    _expand = !_expand;
+                                    _expand = isExpanded;
                                     setState(() {
                                       _expand = !_expand;
 
@@ -98,10 +149,11 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         c.loadContent(() => setState(() {}));
                                     });
                                   },
+                                  onTapEnabled: false,
                                   title: AutoSizeText(
                                     c.title,
                                     textAlign: TextAlign.left,
-                                    maxLines: !Expanded ? 2 : 20,
+                                    maxLines: !_expand ? 2 : 20,
                                     overflow: TextOverflow.ellipsis,
                                     minFontSize: 13.0,
                                     maxFontSize: 15.0,
