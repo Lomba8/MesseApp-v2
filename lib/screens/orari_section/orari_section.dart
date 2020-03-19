@@ -15,37 +15,58 @@ class OrariSection extends StatefulWidget {
   _OrariSectionState createState() => _OrariSectionState();
 }
 
-class _OrariSectionState extends State<OrariSection> {
-  bool _downloading = false;
-  String _selectedSbj;
-  double _progress = 0;
-  Map<String, String> downloads = {};
+bool downloading = false;
 
-  void resetprefs() async =>
-      main.prefs.setString('selectedClass', selectedClass = RegistroApi.cls);
+Future<void> downloadOrario(String classe) async {
+  try {
+    downloads[classe] =
+        await ImageDownloader.downloadImage(orari[classe + 'url']);
+  } catch (e) {
+    print(e);
+  }
+}
+
+Future showNotificationWithDefaultSound(String classe) async {
+  var androidDetails = new AndroidNotificationDetails('Orari', 'Orari Download',
+      "download dell'immagine dell'orario selezionato",
+      importance: Importance.Max, priority: Priority.High);
+  var iOSDetails = new IOSNotificationDetails();
+  var details = new NotificationDetails(androidDetails, iOSDetails);
+  notificationCallbacks['$classe download'] = () async => ImageDownloader.open(
+      await ImageDownloader.findPath(downloads.remove(classe)));
+
+  await notificationsPlugin.show(
+    0,
+    'Immagine scaricata',
+    'Classe: $classe',
+    details,
+    payload: '$classe download',
+  );
+}
+
+double progress = 0;
+
+Map<String, String> downloads = {};
+
+void resetprefs() async =>
+    main.prefs.setString('selectedClass', selectedClass = RegistroApi.cls);
+
+class _OrariSectionState extends State<OrariSection> {
+  String _selectedSbj;
 
   @override
   void initState() {
     super.initState();
-    ImageDownloader.callback(onProgressUpdate: (String imageId, int progress) {
+    ImageDownloader.callback(onProgressUpdate: (String imageId, int progress_) {
       setState(() {
-        _progress = progress / 100;
+        progress = progress_ / 100;
         print(progress);
-        if (_progress == 1) {
-          _downloading = false;
-          _progress = 0;
+        if (progress == 1) {
+          downloading = false;
+          progress = 0;
         }
       });
     });
-  }
-
-  Future<void> downloadOrario(String classe) async {
-    try {
-      downloads[classe] =
-          await ImageDownloader.downloadImage(orari[classe + 'url']);
-    } catch (e) {
-      print(e);
-    }
   }
 
   bool get _hasSaturday {
@@ -59,88 +80,6 @@ class _OrariSectionState extends State<OrariSection> {
   Widget build(BuildContext context) => GestureDetector(
         onTap: () => setState(() => _selectedSbj = null),
         child: CustomScrollView(slivers: [
-          SliverAppBar(
-            pinned: true,
-            brightness: Theme.of(context).brightness,
-            elevation: 0,
-            centerTitle: true,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: IconButton(
-                icon: Icon(Icons.settings_backup_restore),
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white54
-                    : Colors.black54,
-                onPressed: () {
-                  resetprefs();
-                  setState(() {});
-                },
-              ),
-            ),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                if (_downloading)
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: SizedBox(
-                      height: 18.0,
-                      width: 18.0,
-                      child: CircularProgressIndicator(
-                        value: null,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    ),
-                  ),
-                if (_downloading)
-                  SizedBox(
-                    width: 2.0,
-                  ),
-                Text(
-                  _downloading ? 'RARI' : 'ORARI',
-                  style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: IconButton(
-                    icon: Icon(
-                      Icons.file_download,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black54
-                          : Colors.white54,
-                    ),
-                    onPressed: selectedClass == null
-                        ? null
-                        : () async {
-                            downloadOrario(selectedClass).then((_) {
-                              _showNotificationWithDefaultSound(selectedClass);
-                            });
-
-                            setState(() {
-                              _downloading = true;
-                              _progress = 0;
-                            });
-                          }),
-              ),
-            ],
-            backgroundColor: Colors.transparent,
-            flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
-              size: Size.infinite,
-            ),
-            bottom: PreferredSize(
-                child: Container(),
-                preferredSize:
-                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-          ),
           SliverList(
             delegate: SliverChildListDelegate([
               GestureDetector(
@@ -233,25 +172,6 @@ class _OrariSectionState extends State<OrariSection> {
           ),
         ]),
       );
-
-  Future _showNotificationWithDefaultSound(String classe) async {
-    var androidDetails = new AndroidNotificationDetails('Orari',
-        'Orari Download', "download dell'immagine dell'orario selezionato",
-        importance: Importance.Max, priority: Priority.High);
-    var iOSDetails = new IOSNotificationDetails();
-    var details = new NotificationDetails(androidDetails, iOSDetails);
-    notificationCallbacks['$classe download'] = () async =>
-        ImageDownloader.open(
-            await ImageDownloader.findPath(downloads.remove(classe)));
-
-    await notificationsPlugin.show(
-      0,
-      'Immagine scaricata',
-      'Classe: $classe',
-      details,
-      payload: '$classe download',
-    );
-  }
 
   List<Widget> get ore {
     List<Widget> ore = [];

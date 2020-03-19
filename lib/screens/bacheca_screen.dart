@@ -8,6 +8,7 @@ import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class Post {
   final String title;
@@ -98,7 +99,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 headerPadding: EdgeInsets.only(left: 3.0),
                                 onItemFound: (item, int index) {},
                                 onSearch: (String text) {
-                                  print(text);
+                                  // http.post('localhost:3000/upload')
                                 },
                               ),
                             ),
