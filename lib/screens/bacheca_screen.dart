@@ -116,9 +116,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         ? null
                                         : () {/* TODO: download pdf */},
                                   ),
-                                  trailing: AnimatedCrossFade(
+                                  trailing: (isExpanded) => AnimatedCrossFade(
                                     duration: Duration(milliseconds: 300),
-                                    crossFadeState: !_expand
+                                    crossFadeState: !isExpanded
                                         ? CrossFadeState.showFirst
                                         : CrossFadeState.showSecond,
                                     firstCurve: Curves.easeInQuad,

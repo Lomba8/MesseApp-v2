@@ -24,7 +24,7 @@ class CustomExpansionTile extends StatefulWidget {
   final Widget child;
 
   final Color backgroundColor;
-  final Widget trailing;
+  final Widget Function(dynamic) trailing;
 
   @override
   _ExpansionTileState createState() => _ExpansionTileState();
@@ -98,8 +98,7 @@ class _ExpansionTileState extends State<CustomExpansionTile>
               leading: widget.leading,
               title: widget.title,
               subtitle: widget.subtitle,
-              trailing: widget.trailing ??
-                  widget.trailing ??
+              trailing: widget.trailing?.call(_isExpanded) ??
                   RotationTransition(
                     turns: _iconTurns,
                     child: const Icon(Icons.expand_more),

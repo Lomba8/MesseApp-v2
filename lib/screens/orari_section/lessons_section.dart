@@ -47,15 +47,17 @@ class LessonsSection extends StatelessWidget {
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            leading: CircleAvatar(
-                              child: Icon(
-                                (Globals.subjects[sbj] ?? {})['icona'] ??
-                                    MdiIcons.sleep,
-                                color: Colors.black,
+                            leading: Container(
+                              child: CircleAvatar(
+                                child: Icon(
+                                  (Globals.subjects[sbj] ?? {})['icona'] ??
+                                      MdiIcons.sleep,
+                                  color: Colors.black,
+                                ),
+                                backgroundColor:
+                                    (Globals.subjects[sbj] ?? {})['colore']
+                                        ?.withOpacity(0.7),
                               ),
-                              backgroundColor:
-                                  (Globals.subjects[sbj] ?? {})['colore']
-                                      ?.withOpacity(0.7),
                             ),
                             onTap: () => Navigator.push(
                                 context,
@@ -149,23 +151,30 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                                   ? Colors.white
                                   : Colors.black,
                             )),
-                        backgroundColor:
-                            ((Globals.subjects[l.sbj] ?? {})['colore'] ??
-                                    (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black))
-                                .withOpacity(0.3),
+                        backgroundColor: ((Globals.subjects[l.sbj] ??
+                                    {})['colore'] ??
+                                (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black))
+                            .withOpacity(0.3),
                       ),
-                      trailing: CircleAvatar(
-                          child: Text('${l.duration.inHours} h',
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                              )),
-                          backgroundColor:
-                              ((Globals.subjects[l.sbj] ?? {})['colore'] ??
-                                      (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black))
-                                  .withOpacity(0.3)),
+                      trailing: (bool) => Container(
+                        child: CircleAvatar(
+                            child: Text('${l.duration.inHours} h',
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                )),
+                            backgroundColor:
+                                ((Globals.subjects[l.sbj] ?? {})['colore'] ??
+                                        (Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black))
+                                    .withOpacity(0.3)),
+                      ),
                     ),
                   )
                   .toList()))
