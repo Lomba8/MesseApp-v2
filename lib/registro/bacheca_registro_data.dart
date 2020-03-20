@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class BachecaRegistroData extends RegistroData {
   BachecaRegistroData()
@@ -72,6 +74,27 @@ class Comunicazione extends Comparable<Comunicazione> {
     callback();
   }
 
+  Future<File> downloadPdf() async {
+    http.Response r;
+    File assetFile;
+    File file;
+    var dir;
+
+    r = await http.get(
+      'https://web.spaggiari.eu/rest/v1/students/${RegistroApi.usrId}/noticeboard/attach/$evt/$id/1',
+      headers: {
+        'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
+        'Content-Type': 'application/json',
+        'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
+        'Z-Auth-Token': RegistroApi.token,
+      },
+    );
+    dir = await getTemporaryDirectory();
+    file = File('${dir.path}/${encodePath(title)}.pdf');
+    await file.writeAsBytes(r.bodyBytes);
+    return file;
+  }
+
   final List attachments;
   Comunicazione(this.evt, this.id, this.start_date, this.end_date, this.valid,
       this.title, this.attachments,
@@ -100,4 +123,20 @@ class Comunicazione extends Comparable<Comunicazione> {
       json['title'],
       json['attachments'],
       json['content']);
+}
+
+String encodePath(String name) {
+  name = name.replaceAll('"', '');
+  name = name.replaceAll('”', '');
+  name = name.replaceAll('“', '');
+  name = name.replaceAll(' ', '_');
+  name = name.replaceAll('/', ' o ');
+  name = name.replaceAll('\\', ' ');
+  name = name.replaceAll('*', '');
+  name = name.replaceAll('?', '');
+  name = name.replaceAll('<', '');
+  name = name.replaceAll('>', '');
+  name = name.replaceAll('|', '');
+
+  return name;
 }
