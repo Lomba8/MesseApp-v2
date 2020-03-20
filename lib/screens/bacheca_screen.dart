@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
@@ -5,17 +8,13 @@ import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:http/http.dart' as http;
-
-class Post {
-  final String title;
-  final String description;
-
-  Post(this.title, this.description);
-}
+import 'package:native_pdf_view/native_pdf_view.dart';
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -40,6 +39,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
       return; // Comunicazione(); TODO
     });
   }
+
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -88,7 +89,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           children: <Widget>[
                             Expanded(
                               flex: 8,
-                              child: SearchBar<Comunicazione>(
+                              child: SearchBar(
                                 searchBarStyle: SearchBarStyle(
                                   padding: EdgeInsets.all(0),
                                 ),
@@ -98,8 +99,24 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 ),
                                 headerPadding: EdgeInsets.only(left: 3.0),
                                 onItemFound: (item, int index) {},
-                                onSearch: (String text) {
-                                  // http.post('localhost:3000/upload')
+                                onSearch: (String text) async {
+                                  var request = http.MultipartRequest('POST',
+                                      Uri.parse('http://localhost:300/upload'));
+
+                                  var c = RegistroApi.bacheca.data[0];
+                                  print(await c.downloadPdf());
+                                  request.files.add(
+                                    http.MultipartFile(
+                                      'sampleFile',
+                                      c.downloadPdf().readAsBytes().asStream(),
+                                      c.downloadPdf().lengthSync(),
+                                      filename: c.title,
+                                    ),
+                                  );
+
+                                  var res = await request.send();
+
+                                  return ['ciao'];
                                 },
                               ),
                             ),
@@ -115,108 +132,252 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         ),
                       ),
                     ),
-                    Stack(
-                      overflow: Overflow.visible,
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 15.0),
-                          height: 15.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(40.0),
-                              topRight: Radius.circular(40.0),
+                    Opacity(
+                      opacity: !_loading ? 1.0 : 0.5,
+                      child: Stack(
+                        overflow: Overflow.visible,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.symmetric(horizontal: 15.0),
+                            height: 15.0,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(40.0),
+                                topRight: Radius.circular(40.0),
+                              ),
+                              color: Colors.white10,
                             ),
-                            color: Colors.white10,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 15.0),
-                          child: Column(
-                            children: data.map<Widget>((c) {
-                              bool _expand = false;
-                              return Container(
-                                color: Colors.white10,
-                                margin: EdgeInsets.only(
-                                    left: 15.0, right: 15.0, bottom: 1.0),
-                                child: CustomExpansionTile(
-                                  onExpansionChanged: (isExpanded) {
-                                    _expand = isExpanded;
-                                    setState(() {
-                                      _expand = !_expand;
+                          Container(
+                            margin: EdgeInsets.only(top: 15.0),
+                            child: Column(
+                              children: data.map<Widget>((c) {
+                                bool _expand = false;
+                                return Container(
+                                  color: Colors.white10,
+                                  margin: EdgeInsets.only(
+                                      left: 15.0, right: 15.0, bottom: 1.0),
+                                  child: CustomExpansionTile(
+                                    onExpansionChanged: (isExpanded) {
+                                      _expand = isExpanded;
+                                      setState(() {
+                                        _expand = !_expand;
 
-                                      if (c.content ==
-                                          null) // TODO: check not in progress
-                                        c.loadContent(() => setState(() {}));
-                                    });
-                                  },
-                                  onTapEnabled: false,
-                                  title: AutoSizeText(
-                                    c.title,
-                                    textAlign: TextAlign.left,
-                                    maxLines: !_expand ? 2 : 20,
-                                    overflow: TextOverflow.ellipsis,
-                                    minFontSize: 13.0,
-                                    maxFontSize: 15.0,
+                                        if (c.content ==
+                                            null) // TODO: check not in progress
+                                          c.loadContent(() => setState(() {}));
+                                      });
+                                    },
+                                    onTapEnabled: false,
+                                    title: AutoSizeText(
+                                      c.title,
+                                      textAlign: TextAlign.left,
+                                      maxLines: !_expand ? 2 : 20,
+                                      overflow: TextOverflow.ellipsis,
+                                      minFontSize: 13.0,
+                                      maxFontSize: 15.0,
+                                    ),
+                                    leading: IconButton(
+                                      icon: Icon(MdiIcons.filePdf),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      onPressed: c.attachments.isEmpty
+                                          ? null
+                                          : () async {
+                                              setState(() {
+                                                _loading = !_loading;
+                                              });
+                                              var _pathh =
+                                                  await c.downloadPdf();
+                                              _loading = false;
+                                              _pathh = _pathh.path;
+                                              setState(() {});
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PDFScreen(
+                                                    path: _pathh,
+                                                    title: encodePath(c.title),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                    ),
+                                    trailing: (isExpanded) => AnimatedCrossFade(
+                                      duration: Duration(milliseconds: 300),
+                                      crossFadeState: !isExpanded
+                                          ? CrossFadeState.showFirst
+                                          : CrossFadeState.showSecond,
+                                      firstCurve: Curves.easeInQuad,
+                                      secondCurve: Curves.decelerate,
+                                      firstChild: Icon(MdiIcons.eye),
+                                      secondChild: Icon(MdiIcons.eyeOffOutline),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: c.content == null
+                                          ? Container(
+                                              height: 1,
+                                              child: LinearProgressIndicator(
+                                                value: null,
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.white
+                                                        : Colors.black12,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation(Theme
+                                                                    .of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.white
+                                                        : Colors.black),
+                                              ),
+                                            )
+                                          : Text(c.content,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1),
+                                    ),
                                   ),
-                                  leading: IconButton(
-                                    icon: Icon(MdiIcons.filePdf),
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
-                                    onPressed: c.attachments.isEmpty
-                                        ? null
-                                        : () {/* TODO: download pdf */},
-                                  ),
-                                  trailing: (isExpanded) => AnimatedCrossFade(
-                                    duration: Duration(milliseconds: 300),
-                                    crossFadeState: !isExpanded
-                                        ? CrossFadeState.showFirst
-                                        : CrossFadeState.showSecond,
-                                    firstCurve: Curves.easeInQuad,
-                                    secondCurve: Curves.decelerate,
-                                    firstChild: Icon(MdiIcons.eye),
-                                    secondChild: Icon(MdiIcons.eyeOffOutline),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: c.content == null
-                                        ? Container(
-                                            height: 2,
-                                            child: LinearProgressIndicator(
-                                              value: null,
-                                              backgroundColor: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white10
-                                                  : Colors.black12,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                      Theme.of(context)
-                                                                  .brightness ==
-                                                              Brightness.dark
-                                                          ? Colors.white
-                                                          : Colors.black),
-                                            ),
-                                          )
-                                        : Text(c.content,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
-                      ],
+                          !_loading
+                              ? Offstage()
+                              : Container(
+                                  margin: EdgeInsets.only(top: 150),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation(
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                  ),
+                                )
+                        ],
+                      ),
                     ),
                   ],
                 ),
               )
             ],
           ),
+        ),
+      );
+}
+
+class PDFScreen extends StatefulWidget {
+  final String path, title;
+
+  PDFScreen({Key key, this.path, this.title}) : super(key: key);
+
+  _PDFScreenState createState() => _PDFScreenState();
+}
+
+class _PDFScreenState extends State<PDFScreen> {
+  Future<PDFDocument> _getDocument(path) async {
+    return PDFDocument.openFile(path);
+  }
+
+  int _page = 1;
+  PageController _controller;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(120.0),
+          child: AppBar(
+            backgroundColor: Theme.of(context).accentColor,
+            flexibleSpace: Container(
+              margin: EdgeInsets.fromLTRB(60.0, 60.0, 60.0, 0.0),
+              child: Text(
+                widget.title,
+                maxLines: 5,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13.0,
+                  wordSpacing: 1.2,
+                ),
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+              ),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: Icon(
+                      Platform.isAndroid ? Icons.share : CupertinoIcons.share),
+                ),
+                onPressed: () {
+                  FlutterShare.shareFile(
+                      title: widget.title, filePath: widget.path);
+                },
+              ),
+            ],
+          ),
+        ),
+        body: FutureBuilder<PDFDocument>(
+          future: _getDocument(widget.path),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              return Stack(
+                children: [
+                  PDFView(
+                    document: snapshot.data,
+                    onPageChanged: (int page) {
+                      setState(() {
+                        _page = page;
+                      });
+                    },
+                    scrollDirection: Axis.horizontal,
+                    controller: _controller,
+                    renderer: (PDFPage page) => page.render(
+                      // cropRect: rect,
+                      width: page.width * 2,
+                      height: page.height * 2,
+                      format: PDFPageFormat.JPEG,
+                      backgroundColor:
+                          MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark
+                              ? '##1c1c27'
+                              : '#efeef5',
+                    ),
+                  ),
+                  Positioned(
+                    left: 15,
+                    top: 15,
+                    child: Container(
+                        child: Text(
+                      _page.toString(),
+                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                    )),
+                  ),
+                ],
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'PDF Rendering does not '
+                  'support on the system of this version',
+                ),
+              );
+            }
+
+            return Center(child: CircularProgressIndicator());
+          },
         ),
       );
 }

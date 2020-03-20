@@ -9,6 +9,7 @@
   </dict>
 	 <key>CFBundleName</key>
   <string>Messe App</string>
+	
   <key>NSPhotoLibraryUsageDescription</key>
 	<string>Download foto orari</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
