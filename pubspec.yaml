@@ -56,6 +56,7 @@ dependencies:
   positioned_tap_detector: ^1.0.3
   smooth_page_indicator: ^0.1.5
   flappy_search_bar: ^1.7.2
+  flutter_full_pdf_viewer: ^1.0.6
 
   flutter_share: ^1.0.2+1
 
