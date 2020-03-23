@@ -6,6 +6,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:video_player/video_player.dart';
 
 import '../registro/registro.dart';
@@ -32,6 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   double _progress = 0;
   VideoPlayerController _controller;
+  final RoundedLoadingButtonController _btnController =
+      new RoundedLoadingButtonController();
 
   @override
   void initState() {
@@ -98,6 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
       var req = await RegistroApi.login(
           username: _username, password: _password, check: true);
       if (req == '') {
+        _btnController.success();
+
         setState(() {
           splash = true;
         });
@@ -294,21 +299,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           height: media.size.height / 15,
                         ),
-                        FlatButton(
+                        RoundedLoadingButton(
+                            controller: _btnController,
+                            animateOnTap: true,
                             onPressed: () => _submit(context),
                             color: Theme.of(context).primaryColor,
-                            splashColor: Theme.of(context).primaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 120.0, vertical: 16.0),
-                            child: Container(
-                              width: 90.0,
-                              child: Text(
-                                'Login',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyText2,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 80.0, vertical: 10.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                width: 90.0,
+                                child: Text(
+                                  'Login',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
                               ),
                             ))
                       ],
