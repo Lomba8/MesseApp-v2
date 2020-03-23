@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _secondInputFocusNode;
 
   String _username, _password;
-  bool splash = true;
+  bool splash = false;
   bool _loading = false;
   bool finished = false;
 
@@ -53,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
 
-    if (main.connection_main != ConnectivityResult.none) {
-      RegistroApi.login().then((ok) {
-        if (ok == '')
-          downloadAll();
-        else
-          setState(() => splash = false);
-      });
-    }
+    // if (main.connection_main != ConnectivityResult.none) {
+    //   RegistroApi.login().then((ok) {
+    //     if (ok == '')
+    //       downloadAll();
+    //     else
+    //       setState(() => splash = false);
+    //   });
+    // }
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
     finished = false;
@@ -109,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
         downloadAll();
       } else {
         _formKey.currentState.reset();
+        _btnController.reset();
 
         if (Platform.isAndroid)
           Scaffold.of(context).showSnackBar(SnackBar(
@@ -269,12 +270,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             focusNode: _firstInputFocusNode,
                             textInputAction: TextInputAction.next,
                             autocorrect: false,
-                            validator: (input) => input.length < 9
-                                ? "L'username deve essere lungo 9 caratteri" //FIXME ci si puo loggare anche con la email
-                                : input[0].toUpperCase() != 'G' &&
-                                        input[0].toUpperCase() != 'S'
-                                    ? 'Solo accettati solo gli account studente (S) e genitore (G)'
-                                    : null,
+                            validator: (input) {
+                              if (input.length < 9) {
+                                return "L'username deve essere lungo 9 caratteri";
+                                _btnController.reset();
+                              } //FIXME ci si puo loggare anche con la email
+                              else if (input[0].toUpperCase() != 'G' &&
+                                  input[0].toUpperCase() != 'S') {
+                                _btnController.reset();
+
+                                return 'Solo accettati solo gli account studente (S) e genitore (G)';
+                              } else
+                                return null;
+                            },
                             onChanged: (input) => _username = input.trim(),
                             onFieldSubmitted: (v) => FocusScope.of(context)
                                 .requestFocus(_secondInputFocusNode),
@@ -288,9 +296,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(labelText: 'Password'),
                             textInputAction: TextInputAction.send,
                             autocorrect: false,
-                            validator: (input) => input.length == 0
-                                ? 'La password deve essere lunga 8 caratteri'
-                                : null, // FIXME: la password è modificabile
+                            validator: (input) {
+                              if (input.length == 0) {
+                                _btnController.reset();
+
+                                return 'La password deve essere lunga 8 caratteri';
+                              } else
+                                return null;
+                            }, // FIXME: la password è modificabile
                             onChanged: (input) => _password = input.trim(),
                             onFieldSubmitted: (str) => _submit(context),
                             obscureText: true,
