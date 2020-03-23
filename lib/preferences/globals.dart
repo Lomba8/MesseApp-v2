@@ -181,6 +181,44 @@ class Globals {
         .person_add), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
   };
 
+  static Map<String, IconData> estensioni = {
+    '.pdf': MdiIcons.filePdf,
+    '.odt': MdiIcons.fileWord,
+    '.docx': MdiIcons.fileWord,
+    '.pages': MdiIcons.fileWord,
+    '.txt': MdiIcons.fileWord,
+    '.rtf': MdiIcons.fileWord,
+    '.doc': MdiIcons.fileWord,
+    '.xls': MdiIcons.fileExcel,
+    '.xlsx': MdiIcons.fileExcel,
+    '.xlsm': MdiIcons.fileExcel,
+    '.numbers': MdiIcons.fileExcel,
+    '.pptx': MdiIcons.filePowerpoint,
+    '.ppt': MdiIcons.filePowerpoint,
+    '.odp': MdiIcons.filePowerpoint,
+    '.pps': MdiIcons.filePowerpoint,
+    '.pp': MdiIcons.filePowerpoint,
+    '.key': MdiIcons.filePowerpoint,
+    '.zip': MdiIcons.folderZipOutline,
+    '.rar': MdiIcons.folderZipOutline,
+    '.aif': Icons.audiotrack,
+    '.mp3': Icons.audiotrack,
+    '.wav': Icons.audiotrack,
+    '.mp4': MdiIcons.fileVideoOutline,
+    '.avi': MdiIcons.fileVideoOutline,
+    '.mov': MdiIcons.fileVideoOutline,
+    '.c': MdiIcons.languageC,
+    '.h': MdiIcons.languageC,
+    '.hpp': MdiIcons.languageCpp,
+    '.cpp': MdiIcons.languageCpp,
+    '.java': MdiIcons.languageJava,
+    '.class': MdiIcons.languageJava,
+    '.sql': MdiIcons.database,
+    '.html': MdiIcons.languageHtml5,
+    '.css': MdiIcons.languageCss3,
+    '.js': MdiIcons.languageJavascript,
+  };
+
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);
 
   static Map<String, Map<String, dynamic>> sezioni = {
