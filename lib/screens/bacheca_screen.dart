@@ -10,14 +10,17 @@ import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_full_pdf_viewer/full_pdf_viewer_scaffold.dart';
-import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
 import 'package:flutter_share/flutter_share.dart';
-import 'package:flutter_full_pdf_viewer/full_pdf_viewer_plugin.dart';
+// import 'package:flutter_full_pdf_viewer/full_pdf_viewer_scaffold.dart';
+// import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
+
+// import 'package:flutter_full_pdf_viewer/full_pdf_viewer_plugin.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
+import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -206,8 +209,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                                     builder: (context) =>
                                                         PDFScreen(
                                                       path: _pathh,
-                                                      title:
-                                                          encodePath(c.title),
+                                                      title: c.title,
                                                     ),
                                                   ),
                                                 );
@@ -259,7 +261,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           !_loading
                               ? Offstage()
                               : Container(
-                                  margin: EdgeInsets.only(top: 150),
+                                  margin: EdgeInsets.only(
+                                      top:
+                                          150), //FIXME: se si scrolla in basso non si vede piu
                                   child: Center(
                                     child: CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation(
@@ -282,113 +286,6 @@ class _BachecaScreenState extends State<BachecaScreen> {
       );
 }
 
-// class PDFScreen extends StatefulWidget {
-//   final String path, title;
-
-//   PDFScreen({Key key, this.path, this.title}) : super(key: key);
-
-//   _PDFScreenState createState() => _PDFScreenState();
-// }
-
-// class _PDFScreenState extends State<PDFScreen> {
-//   Future<PDFDocument> _getDocument(path) async {
-//     return PDFDocument.openFile(path);
-//   }
-
-//   int _page = 1;
-//   PageController _controller;
-
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//         appBar: PreferredSize(
-//           preferredSize: Size.fromHeight(120.0),
-//           child: AppBar(
-//             backgroundColor: Theme.of(context).accentColor,
-//             flexibleSpace: Container(
-//               margin: EdgeInsets.fromLTRB(60.0, 60.0, 60.0, 0.0),
-//               child: Text(
-//                 widget.title,
-//                 maxLines: 5,
-//                 textAlign: TextAlign.center,
-//                 style: TextStyle(
-//                   color: Colors.black,
-//                   fontSize: 13.0,
-//                   wordSpacing: 1.2,
-//                 ),
-//                 overflow: TextOverflow.ellipsis,
-//                 softWrap: true,
-//               ),
-//             ),
-//             actions: <Widget>[
-//               IconButton(
-//                 icon: Padding(
-//                   padding: EdgeInsets.only(right: 20.0),
-//                   child: Icon(
-//                       Platform.isAndroid ? Icons.share : CupertinoIcons.share),
-//                 ),
-//                 onPressed: () {
-//                   FlutterShare.shareFile(
-//                       title: widget.title, filePath: widget.path);
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//         body: FutureBuilder<PDFDocument>(
-//           future: _getDocument(widget.path),
-//           builder: (_, snapshot) {
-//             if (snapshot.hasData) {
-//               return Stack(
-//                 children: [
-//                   PDFView(
-//                     document: snapshot.data,
-//                     onPageChanged: (int page) {
-//                       setState(() {
-//                         _page = page;
-//                       });
-//                     },
-//                     scrollDirection: Axis.horizontal,
-//                     controller: _controller,
-//                     renderer: (PDFPage page) => page.render(
-//                       // cropRect: rect,
-//                       width: page.width * 2,
-//                       height: page.height * 2,
-//                       format: PDFPageFormat.JPEG,
-//                       backgroundColor:
-//                           MediaQuery.platformBrightnessOf(context) ==
-//                                   Brightness.dark
-//                               ? '##1c1c27'
-//                               : '#efeef5',
-//                     ),
-//                   ),
-//                   Positioned(
-//                     left: 15,
-//                     top: 15,
-//                     child: Container(
-//                         child: Text(
-//                       _page.toString(),
-//                       style: TextStyle(color: Colors.black54, fontSize: 14),
-//                     )),
-//                   ),
-//                 ],
-//               );
-//             }
-
-//             if (snapshot.hasError) {
-//               return Center(
-//                 child: Text(
-//                   'PDF Rendering does not '
-//                   'support on the system of this version',
-//                 ),
-//               );
-//             }
-
-//             return Center(child: CircularProgressIndicator());
-//           },
-//         ),
-//       );
-// }
-
 class PDFScreen extends StatelessWidget {
   final String path;
   final String title;
@@ -396,44 +293,52 @@ class PDFScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PDFViewerScaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(120.0),
-          child: AppBar(
-            backgroundColor: Theme.of(context).accentColor,
-            flexibleSpace: Container(
-              margin: EdgeInsets.fromLTRB(60.0, 40.0, 60.0, 0.0),
-              child: Text(
-                title,
-                maxLines: 5,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13.0,
-                  wordSpacing: 1.2,
-                ),
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(120.0),
+        child: AppBar(
+          backgroundColor: Theme.of(context).accentColor,
+          flexibleSpace: Container(
+            margin: EdgeInsets.fromLTRB(60.0, 40.0, 60.0, 0.0),
+            child: Text(
+              title,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 13.0,
+                wordSpacing: 1.2,
               ),
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
             ),
-            actions: <Widget>[
-              IconButton(
-                icon: Padding(
-                  padding: EdgeInsets.only(right: 20.0),
-                  child: Platform.isAndroid
-                      ? Icon(Icons.share)
-                      : Icon(
-                          CupertinoIcons.share,
-                          size: 25.0,
-                        ),
-                ),
-                onPressed: () {
-                  FlutterShare.shareFile(title: title, filePath: path);
-                },
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Padding(
+                padding: EdgeInsets.only(right: 20.0),
+                child: Platform.isAndroid
+                    ? Icon(Icons.share)
+                    : Icon(
+                        CupertinoIcons.share,
+                        size: 25.0,
+                      ),
               ),
-            ],
+              onPressed: () {
+                FlutterShare.shareFile(title: title, filePath: path);
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: PdfViewer(
+            filePath: path,
           ),
         ),
-        path: path);
+      ),
+    );
   }
 }
