@@ -66,8 +66,8 @@ class CustomDirectory extends CustomPath {
   CustomDirectory(
       {@required String name, @required this.children, DateTime lastUpdate})
       : super(name, lastUpdate: lastUpdate) {
-        for (CustomPath child in children) child.parent = this;
-      }
+    for (CustomPath child in children) child.parent = this;
+  }
 }
 
 class CustomFile extends CustomPath {
@@ -82,7 +82,7 @@ class CustomFile extends CustomPath {
       DateTime lastUpdate})
       : super(name, lastUpdate: lastUpdate);
 
-  void getType () async {
+  void getType() async {
     if (type != 'file') return;
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
@@ -90,10 +90,13 @@ class CustomFile extends CustomPath {
       'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       'Z-Auth-Token': RegistroApi.token,
     };
-    http.Response res = await http.head('https://web.spaggiari.eu/rest/v1/students/${RegistroApi.usrId}/didactics/item/$id', headers: headers);
+    http.Response res = await http.head(
+        'https://web.spaggiari.eu/rest/v1/students/${RegistroApi.usrId}/didactics/item/$id',
+        headers: headers);
     fileName = res.headers['content-disposition'];
-    fileName = fileName.substring(fileName.indexOf('filename=')+ 'filename='.length);
-    type = fileName.substring(fileName.lastIndexOf('.') + 1);
-    print ('$type -> $fileName');
+    fileName =
+        fileName.substring(fileName.indexOf('filename=') + 'filename='.length);
+    type = fileName.substring(fileName.lastIndexOf('.'));
+    print('$type -> $fileName');
   }
 }
