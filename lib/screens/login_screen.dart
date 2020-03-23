@@ -305,7 +305,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return null;
                             }, // FIXME: la password è modificabile
                             onChanged: (input) => _password = input.trim(),
-                            onFieldSubmitted: (str) => _submit(context),
+                            onFieldSubmitted: (str) {
+                              _btnController.success();
+                              _submit(context);
+                            },
                             obscureText: true,
                           ),
                         ),
