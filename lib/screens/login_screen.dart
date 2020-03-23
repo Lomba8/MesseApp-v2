@@ -279,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   input[0].toUpperCase() != 'S') {
                                 _btnController.reset();
 
-                                return 'Solo accettati solo gli account studente (S) e genitore (G)';
+                                return 'Sono accettati solo gli account studente (S) e genitore (G)';
                               } else
                                 return null;
                             },
@@ -300,10 +300,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (input.length == 0) {
                                 _btnController.reset();
 
-                                return 'La password deve essere lunga 8 caratteri';
+                                return 'Inserire una password valida';
                               } else
                                 return null;
-                            }, // FIXME: la password è modificabile
+                            },
                             onChanged: (input) => _password = input.trim(),
                             onFieldSubmitted: (str) {
                               _btnController.success();
