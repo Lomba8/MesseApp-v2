@@ -11,19 +11,19 @@ PODS:
   - ext_storage (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_full_pdf_viewer (1.0.1):
-    - Flutter
   - flutter_local_notifications (0.0.1):
     - Flutter
   - flutter_share (0.0.1):
     - Flutter
   - image_downloader (0.0.1):
     - Flutter
-  - native_pdf_renderer (1.0.0):
+  - open_file (0.0.1):
     - Flutter
   - package_info (0.0.1):
     - Flutter
   - path_provider (0.0.1):
+    - Flutter
+  - pdf_viewer_plugin (0.0.1):
     - Flutter
   - Reachability (3.2)
   - shared_preferences (0.0.1):
@@ -50,13 +50,13 @@ DEPENDENCIES:
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - ext_storage (from `.symlinks/plugins/ext_storage/ios`)
   - Flutter (from `Flutter`)
-  - flutter_full_pdf_viewer (from `.symlinks/plugins/flutter_full_pdf_viewer/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_share (from `.symlinks/plugins/flutter_share/ios`)
   - image_downloader (from `.symlinks/plugins/image_downloader/ios`)
-  - native_pdf_renderer (from `.symlinks/plugins/native_pdf_renderer/ios`)
+  - open_file (from `.symlinks/plugins/open_file/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - pdf_viewer_plugin (from `.symlinks/plugins/pdf_viewer_plugin/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
   - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
@@ -83,20 +83,20 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/ext_storage/ios"
   Flutter:
     :path: Flutter
-  flutter_full_pdf_viewer:
-    :path: ".symlinks/plugins/flutter_full_pdf_viewer/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_share:
     :path: ".symlinks/plugins/flutter_share/ios"
   image_downloader:
     :path: ".symlinks/plugins/image_downloader/ios"
-  native_pdf_renderer:
-    :path: ".symlinks/plugins/native_pdf_renderer/ios"
+  open_file:
+    :path: ".symlinks/plugins/open_file/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  pdf_viewer_plugin:
+    :path: ".symlinks/plugins/pdf_viewer_plugin/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   shared_preferences_macos:
@@ -121,13 +121,13 @@ SPEC CHECKSUMS:
   device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   ext_storage: 4eaf3a84d5594106e2ebcc2502248cfde53c8fa1
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_full_pdf_viewer: 1b65139fc3236cde300ba6bea2a72669cb07f2e6
   flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
   flutter_share: 4be0208963c60b537e6255ed2ce1faae61cd9ac2
   image_downloader: 0cce746db85ab8e068b7bcf8acacbdf71bca185e
-  native_pdf_renderer: f84efbd910ee6a9ee679f4228ce704a14ef90a38
+  open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
   package_info: 48b108e75b8802c2d5e126f208ef540561c98aef
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
+  pdf_viewer_plugin: 96ce5d974dd18dd3a5f17a3f50641d178e355434
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
