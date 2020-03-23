@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _secondInputFocusNode;
 
   String _username, _password;
-  bool splash = false;
+  bool splash = true;
   bool _loading = false;
   bool finished = false;
 
@@ -53,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
 
-    // if (main.connection_main != ConnectivityResult.none) {
-    //   RegistroApi.login().then((ok) {
-    //     if (ok == '')
-    //       downloadAll();
-    //     else
-    //       setState(() => splash = false);
-    //   });
-    // }
+    if (main.connection_main != ConnectivityResult.none) {
+      RegistroApi.login().then((ok) {
+        if (ok == '')
+          downloadAll();
+        else
+          setState(() => splash = false);
+      });
+    }
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
     finished = false;
