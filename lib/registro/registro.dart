@@ -5,6 +5,7 @@ import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
+import 'package:Messedaglia/registro/didattica_registro_data.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/note_registro_data.dart';
 import 'package:Messedaglia/registro/subjects_registro_data.dart';
@@ -24,6 +25,7 @@ class RegistroApi {
   static final NoteRegistroData note = NoteRegistroData();
   static final LessonsRegistroData lessons = LessonsRegistroData();
   static final AbsencesRegistroData absences = AbsencesRegistroData();
+  static final DidatticaRegistroData didactics = DidatticaRegistroData();
 
   static String _capitalize(String s) {
     List<String> parole = [];
@@ -135,7 +137,8 @@ class RegistroApi {
       'bacheca': bacheca,
       'note': note,
       'lessons': lessons,
-      'absences': absences
+      'absences': absences,
+      'didactics': didactics
     };
     int n = 0;
     toDownload.forEach((name, data) async {
