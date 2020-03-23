@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
+import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
@@ -156,9 +157,9 @@ class _AreaStudentiState extends State<AreaStudenti> {
                 page: BachecaScreen(),
               ),
               Section(
-                sezione: 'Note',
+                sezione: 'Didattica',
                 colore: 'rosa',
-                page: null, //NoteScreen(),
+                page: DidatticaScreen(),
               ),
               Section(
                 sezione: 'App Panini',

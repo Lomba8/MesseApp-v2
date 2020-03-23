@@ -1,3 +1,4 @@
+import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
 
 class SubjectsRegistroData extends RegistroData {
@@ -35,4 +36,9 @@ class SubjectsRegistroData extends RegistroData {
     super.fromJson(json);
     data = json['data'];
   }
+
+  String getFirstSubject (String teacher) => data[teacher] is String ? data[teacher] : data[teacher]?.first;
+
+  Map subjectTheme (String teacher) => Globals.subjects[getFirstSubject(teacher)];
+
 }
