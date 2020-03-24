@@ -179,6 +179,9 @@ class Globals {
 
     'Tutoraggi': Icon(Icons
         .person_add), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
+
+    'Didattica': Icon(MdiIcons
+        .fileMultiple), //  fileMultiple, folderAccount, folderMultiple, folderSearch, fileDocumentEdit, folderEdit,
   };
 
   static Map<String, Map> estensioni = {
@@ -216,7 +219,7 @@ class Globals {
     '.sql': {'icona': MdiIcons.database, 'colore': Color(0xFF3295D5)},
     '.html': {'icona': MdiIcons.languageHtml5, 'colore': Color(0xFFDE4B25)},
     '.css': {'icona': MdiIcons.languageCss3, 'colore': Color(0xFF3596D0)},
-    '.js': {'icona': MdiIcons.languageJavascript,  'colore': Color(0xFFf0D91D)},
+    '.js': {'icona': MdiIcons.languageJavascript, 'colore': Color(0xFFf0D91D)},
   };
 
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);
