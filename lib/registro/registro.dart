@@ -188,6 +188,7 @@ class RegistroApi {
     saveData(bacheca, 'bacheca');
     saveData(lessons, 'lessons');
     saveData(absences, 'absences');
+    saveData(didactics, 'didactics');
   }
 
   static Future<void> load() async {
@@ -204,6 +205,8 @@ class RegistroApi {
     if (data != null) lessons.fromJson(data);
     data = await loadData('absences');
     if (data != null) absences.fromJson(data);
+    data = await loadData('didacticd');
+    if (data != null) didactics.fromJson(data);
   }
 }
 
