@@ -58,7 +58,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<int> _uploadFiles() async {
-    // var uri = '';
+    var uri = '';
 
     List<MultipartFile> newList = new List<MultipartFile>();
 
@@ -88,21 +88,24 @@ class _BachecaScreenState extends State<BachecaScreen> {
   Future<bool> _ocr() async {
     files = [];
     frasi = {};
-    _highlight = '';
-    // var uri =
-    //     '/ocr?pattern=${_textController.text.toString()}';
+    var uri = '';
     _highlight = _textController.text;
     _textController.clear();
 
     print(uri + '\n\n');
 
     http.Response res = await http.get(uri);
-    jsonDecode(res.body).forEach((k, v) {
-      // print(
-      //     '$k=> volte: ${v['volte']}, frase: ${v['frase'].map((f) => f.trim())}');
-      files.add(k);
-      frasi[k] = v['frase'].map((f) => f.trim()).toList();
-    });
+    if (res.statusCode == 200) {
+      if (res.body == null) return false;
+      jsonDecode(res.body).forEach((k, v) {
+        // print(
+        //     '$k=> volte: ${v['volte']}, frase: ${v['frase'].map((f) => f.trim())}');
+        files.add(k);
+        frasi[k] = v['frase'].map((f) => f.trim()).toList();
+      });
+    } else {
+      return false;
+    }
     return files.isEmpty ? false : true;
   }
 
@@ -376,7 +379,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                   onTapEnabled: false,
                                   title: AutoSizeText(
                                     c.title,
-                                    textAlign: TextAlign.left,
+                                    textAlign: TextAlign.center,
                                     maxLines: !_expand ? 2 : 20,
                                     overflow: TextOverflow.ellipsis,
                                     minFontSize: 13.0,
@@ -442,10 +445,15 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                                           : Colors.black),
                                             ),
                                           )
-                                        : Text(c.content,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1),
+                                        : Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                10.0, 5.0, 10.0, 10.0),
+                                            child: Text(c.content,
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1),
+                                          ),
                                   ),
                                 ),
                               );
@@ -518,7 +526,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     secondChild: Icon(MdiIcons.eyeOffOutline),
                                   ),
                                   child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
+                                      padding: EdgeInsets.fromLTRB(
                                           10.0, 10.0, 10.0, 15.0),
                                       child: HighlightText(
                                         text: '“' +
