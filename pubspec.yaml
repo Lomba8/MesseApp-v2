@@ -55,11 +55,11 @@ dependencies:
   flip_card: ^0.4.4
   positioned_tap_detector: ^1.0.3
   smooth_page_indicator: ^0.1.5
-  flappy_search_bar: ^1.7.2
   open_file: ^3.0.1
   rounded_loading_button: ^1.0.4
   share_extend: ^1.1.1
   progress_dialog: ^1.2.1
+  simple_search_bar: ^0.1.7
 
   pdf_viewer_plugin: ^1.0.0+2
 
