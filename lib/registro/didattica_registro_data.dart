@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:math';
 
 import 'package:Messedaglia/registro/registro.dart';
-import 'package:Messedaglia/utils/mapUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DidatticaRegistroData extends RegistroData {
   DidatticaRegistroData()
@@ -28,8 +27,9 @@ class DidatticaRegistroData extends RegistroData {
                     .map<CustomFile>((content) => CustomFile(
                         name: content['contentName'],
                         type: content['objectType'],
+                        lastUpdate: DateTime.parse(content['shareDT'].replaceAll(':','')),
                         id: content['contentId'])
-                      ..getType())
+                      ..download(onlyHeader: true))
                     .toList()))
             .toList(),
       ));
@@ -56,23 +56,38 @@ class DidatticaRegistroData extends RegistroData {
 
 abstract class CustomPath {
   final String name;
+  bool changed = false;
   CustomDirectory parent;
-  final DateTime lastUpdate;
-  CustomPath(this.name, {this.lastUpdate});
+  CustomPath(this.name);
 }
 
 class CustomDirectory extends CustomPath {
   final List<CustomPath> children;
+
   CustomDirectory(
-      {@required String name, @required this.children, DateTime lastUpdate})
-      : super(name, lastUpdate: lastUpdate) {
-    for (CustomPath child in children) child.parent = this;
+      {@required String name, @required this.children})
+      : super(name) {
+    for (CustomPath child in children) {
+      child.parent = this;
+      changed |= child.changed; 
+    }
   }
+
+  CustomDirectory view ({bool recursive = false}) {
+    children.where((child) => child is CustomFile || recursive).forEach((child) {
+      if (child is CustomDirectory) child.view(recursive: true);
+      else child.changed = false;
+    });
+    changed = children.any((child) => child.changed);
+    return this;
+  }
+
 }
 
 class CustomFile extends CustomPath {
   String type, fileName;
   final int id;
+  int lastUpdate;
 
   CustomFile(
       {@required String name,
@@ -80,23 +95,32 @@ class CustomFile extends CustomPath {
       @required this.id,
       String fileName,
       DateTime lastUpdate})
-      : super(name, lastUpdate: lastUpdate);
+      : super(name) {
+        changed = lastUpdate.millisecondsSinceEpoch > (this.lastUpdate ?? 0);
+        this.lastUpdate = max(this.lastUpdate ?? 0, lastUpdate.millisecondsSinceEpoch);
+      }
 
-  void getType() async {
-    if (type != 'file') return;
+  void download({bool onlyHeader = false}) async {
+    if (onlyHeader && type != 'file') return;
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
       'Content-Type': 'application/json',
       'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       'Z-Auth-Token': RegistroApi.token,
     };
-    http.Response res = await http.head(
+    Function funct = onlyHeader ? http.head : http.get;
+    http.Response res = await funct(
         'https://web.spaggiari.eu/rest/v1/students/${RegistroApi.usrId}/didactics/item/$id',
         headers: headers);
-    fileName = res.headers['content-disposition'];
-    fileName =
-        fileName.substring(fileName.indexOf('filename=') + 'filename='.length);
-    type = fileName.substring(fileName.lastIndexOf('.'));
-    print('$type -> $fileName');
+    if (onlyHeader) {
+      fileName = res.headers['content-disposition'];
+      fileName =
+          fileName.substring(fileName.indexOf('filename=') + 'filename='.length);
+      type = fileName.substring(fileName.lastIndexOf('.'));
+      return;
+    }
+    if (type == 'link') launch(jsonDecode(res.body)['item']['link']);
   }
+
+
 }
