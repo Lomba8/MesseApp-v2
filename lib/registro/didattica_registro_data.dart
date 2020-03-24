@@ -97,6 +97,5 @@ class CustomFile extends CustomPath {
     fileName =
         fileName.substring(fileName.indexOf('filename=') + 'filename='.length);
     type = fileName.substring(fileName.lastIndexOf('.'));
-    print('$type -> $fileName');
   }
 }
