@@ -10,71 +10,109 @@ class DidatticaRegistroData extends RegistroData {
   DidatticaRegistroData()
       : super('https://web.spaggiari.eu/rest/v1/students/%uid/didactics');
 
-  Map<String, bool> bachecaNewFlags = {};
-
   @override
   Result parseData(json) {
     json = json['didacticts'];
-    data = <CustomPath>[];
+    CustomDirectory data2 = CustomDirectory(name: '/', children: {});
 
     json.forEach((teacher) {
-      data.add(CustomDirectory(
-        name: teacher['teacherName'],
-        children: teacher['folders']
-            .map<CustomDirectory>((folder) => CustomDirectory(
-                name: folder['folderName'],
-                children: folder['contents']
-                    .map<CustomFile>((content) => CustomFile(
-                        name: content['contentName'],
-                        type: content['objectType'],
-                        lastUpdate: DateTime.parse(
-                            content['shareDT'].replaceAll(':', '')),
-                        id: content['contentId'])
-                      ..download(onlyHeader: true))
-                    .toList()))
-            .toList(),
-      ));
+      data2.add(
+          teacher['teacherName'],
+          CustomDirectory(
+            name: teacher['teacherName'],
+            children: Map.fromEntries(teacher['folders']
+                .map<MapEntry<String, CustomPath>>((folder) =>
+                    MapEntry<String, CustomPath>(
+                        folder['folderName'],
+                        CustomDirectory(
+                            name: folder['folderName'],
+                            children: Map.fromEntries(folder['contents']
+                                .map<MapEntry<String, CustomPath>>((content) =>
+                                    MapEntry<String, CustomPath>(
+                                        content['contentName'],
+                                        CustomFile(
+                                            name: content['contentName'],
+                                            type: content['objectType'],
+                                            lastUpdate:
+                                                DateTime.parse(content['shareDT'].replaceAll(':', '')),
+                                            id: content['contentId'],
+                                            oldLastUpdate: data is CustomDirectory ? data?.getFile([teacher['teacherName'], folder['folderName'], content['contentName']])?.lastUpdate : null)
+                                          ..download(onlyHeader: true)))
+                                .toList()))))
+                .toList()),
+          ));
     });
+    data = data2;
     return Result(true, true);
   }
 
-  /*@override
+  @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> tr = super.toJson();
     tr['data'] = data;
-    tr['newFlags'] = bachecaNewFlags;
     return tr;
-  }*/
+  }
 
-  /*@override
+  @override
   void fromJson(Map<String, dynamic> json) {
     super.fromJson(json);
-    data = json['data'].map((c) => Comunicazione.fromJson(c)).toList();
-    bachecaNewFlags = json['newFlags']
-        .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
-  }*/
+    data = CustomDirectory.parse(json: json['data'], name: 'dir:/');
+  }
 }
 
 abstract class CustomPath {
   final String name;
   bool changed = false;
   CustomDirectory parent;
+
   CustomPath(this.name);
+
+  Iterable<String> getPath() sync* {
+    if (parent != null) yield* parent.getPath();
+    yield name;
+  }
 }
 
 class CustomDirectory extends CustomPath {
-  final List<CustomPath> children;
+  final Map<String, CustomPath> children;
 
   CustomDirectory({@required String name, @required this.children})
       : super(name) {
-    for (CustomPath child in children) {
+    for (CustomPath child in children.values) {
       child.parent = this;
       changed |= child.changed;
     }
   }
 
+  CustomDirectory.parse({@required String name, @required Map json})
+      : children = json.map((name, file) => MapEntry(
+            name.substring(name.indexOf(':') + 1),
+            name.startsWith('dir:')
+                ? CustomDirectory.parse(name: name, json: file)
+                : CustomFile.parse(name: name, json: file))),
+        super(name.substring('dir:'.length)) {
+    for (CustomPath child in children.values) {
+      child.parent = this;
+      changed |= child.changed;
+    }
+  }
+
+  CustomPath getFile(Iterable<String> paths) {
+    if (paths.first == name) paths.skip(1);
+    CustomPath file = this;
+    for (String path in paths) {
+      if (file == null || file is CustomFile) return null;
+      file = (file as CustomDirectory).children[path];
+    }
+    return file;
+  }
+
+  void add(String name, CustomPath child) {
+    children[name] = child..parent = this;
+  }
+
   CustomDirectory view({bool recursive = false}) {
-    children
+    children.values
         .where((child) => child is CustomFile || recursive)
         .forEach((child) {
       if (child is CustomDirectory)
@@ -82,9 +120,11 @@ class CustomDirectory extends CustomPath {
       else
         child.changed = false;
     });
-    changed = children.any((child) => child.changed);
+    changed = children.values.any((child) => child.changed);
     return this;
   }
+
+  dynamic toJson() => children.map((name, child) => MapEntry((child is CustomDirectory ? 'dir:' : 'file:')+name, child));
 }
 
 class CustomFile extends CustomPath {
@@ -97,12 +137,27 @@ class CustomFile extends CustomPath {
       @required this.type,
       @required this.id,
       String fileName,
+      int oldLastUpdate,
       DateTime lastUpdate})
       : super(name) {
-    changed = lastUpdate.millisecondsSinceEpoch > (this.lastUpdate ?? 0);
+    changed = lastUpdate.millisecondsSinceEpoch > (oldLastUpdate ?? 0);
     this.lastUpdate =
-        max(this.lastUpdate ?? 0, lastUpdate.millisecondsSinceEpoch);
+        max(oldLastUpdate ?? 0, lastUpdate.millisecondsSinceEpoch);
   }
+
+  dynamic toJson() => {
+    'type': type,
+    'fileName': fileName,
+    'id': id,
+    'lastUpdate': lastUpdate 
+  };
+
+  CustomFile.parse({String name, Map json})
+      : type = json['type'],
+        fileName = json['fileName'],
+        id = json['id'],
+        lastUpdate = json['lastUpdate'],
+        super(name.substring('file:'.length));
 
   void download({bool onlyHeader = false}) async {
     if (onlyHeader && type != 'file') return;

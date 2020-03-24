@@ -11,8 +11,7 @@ class DidatticaScreen extends StatefulWidget {
 
 class _DidatticaScreenData extends State<DidatticaScreen>
     with SingleTickerProviderStateMixin {
-  CustomDirectory directory =
-      CustomDirectory(name: '/', children: RegistroApi.didactics.data);
+  CustomDirectory directory = RegistroApi.didactics.data;
 
   AnimationController _animationController;
   Animation<double> _animation1, _animation2;
@@ -105,7 +104,7 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                     ),
                   )
               ]
-                  .followedBy(directory.children.map<Widget>((path) => Padding(
+                  .followedBy(directory.children.values.map<Widget>((path) => Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
