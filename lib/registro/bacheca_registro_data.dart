@@ -51,6 +51,10 @@ class BachecaRegistroData extends RegistroData {
     bachecaNewFlags = json['newFlags']
         .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
   }
+
+  bool hasNewMarks(String id) {
+    return bachecaNewFlags[id] ?? false;
+  }
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
@@ -94,6 +98,9 @@ class Comunicazione extends Comparable<Comunicazione> {
     await file.writeAsBytes(r.bodyBytes);
     return file;
   }
+
+  bool get isNew => RegistroApi.bacheca.bachecaNewFlags[id.toString()] ?? true;
+  void seen() => RegistroApi.bacheca.bachecaNewFlags[id.toString()] = false;
 
   final List attachments;
   Comunicazione(this.evt, this.id, this.start_date, this.end_date, this.valid,

@@ -21,7 +21,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share_extend/share_extend.dart';
-import 'package:simple_search_bar/simple_search_bar.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:syncfusion_flutter_core/core.dart';
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -58,7 +59,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<int> _uploadFiles() async {
-    var uri = '';
+    var uri = 'http://76935b85.ngrok.io/upload';
 
     List<MultipartFile> newList = new List<MultipartFile>();
 
@@ -88,7 +89,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
   Future<bool> _ocr() async {
     files = [];
     frasi = {};
-    var uri = '';
+    var uri =
+        'http://76935b85.ngrok.io/ocr?pattern=${_textController.text.toString()}';
     _highlight = _textController.text;
     _textController.clear();
 
@@ -107,6 +109,30 @@ class _BachecaScreenState extends State<BachecaScreen> {
       return false;
     }
     return files.isEmpty ? false : true;
+  }
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    /// The argument value will return the changed date as [DateTime] when the
+    /// widget [SfDateRangeSelectionMode] set as single.
+    ///
+    /// The argument value will return the changed dates as [List<DateTime>] when the
+    /// widget [SfDateRangeSelectionMode] set as multiple.
+    ///
+    /// The argument value will return the changed range as [PickerDateRange]
+    /// when the widget [SfDateRangeSelectionMode] set as range.
+    ///
+    /// The argument value will return the changed ranges as [List<PickerDateRange]
+    /// when the widget [SfDateRangeSelectionMode] set as multi range.
+    if (args.value is PickerDateRange) {
+      final DateTime rangeStartDate = args.value.startDate;
+      final DateTime rangeEndDate = args.value.endDate;
+    } else if (args.value is DateTime) {
+      final DateTime selectedDate = args.value;
+    } else if (args.value is List<DateTime>) {
+      final List<DateTime> selectedDates = args.value;
+    } else {
+      final List<PickerDateRange> selectedRanges = args.value;
+    }
   }
 
   @override
@@ -318,10 +344,21 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           Expanded(
                             flex: 1,
                             child: IconButton(
-                              icon: Icon(Icons.settings),
-                              onPressed:
-                                  _uploadFiles, //TODO: spostarlo & select range of time
-                            ),
+                                icon: Icon(Icons.settings),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    child: Container(
+                                      child: SfDateRangePicker(
+                                        onSelectionChanged: _onSelectionChanged,
+                                        selectionMode:
+                                            DateRangePickerSelectionMode.range,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                // _uploadFiles, //TODO: spostarlo & select range of time
+                                ),
                           ),
                           Expanded(
                             flex: 1,
@@ -374,6 +411,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                       if (c.content ==
                                           null) // TODO: check not in progress
                                         c.loadContent(() => setState(() {}));
+                                      c.seen();
                                     });
                                   },
                                   onTapEnabled: false,
@@ -421,7 +459,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         : CrossFadeState.showSecond,
                                     firstCurve: Curves.easeInQuad,
                                     secondCurve: Curves.decelerate,
-                                    firstChild: Icon(MdiIcons.eye),
+                                    firstChild: Icon(
+                                      MdiIcons.eye,
+                                      color: c.isNew
+                                          ? Colors.yellow.withOpacity(0.7)
+                                          : Colors.white,
+                                    ),
                                     secondChild: Icon(MdiIcons.eyeOffOutline),
                                   ),
                                   child: Padding(
