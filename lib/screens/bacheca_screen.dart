@@ -21,8 +21,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share_extend/share_extend.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:syncfusion_flutter_core/core.dart';
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -39,7 +37,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
   List<String> files = List<String>();
   Map<String, List<dynamic>> frasi = {};
 
-  ProgressDialog pr;
+  ProgressDialog pr_pdf;
+  ProgressDialog pr_ocr;
 
   Future<void> _refresh() async {
     await RegistroApi.bacheca.getData();
@@ -59,42 +58,36 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<int> _uploadFiles() async {
-    var uri = 'http://76935b85.ngrok.io/upload';
-
+    var uri = 'http://5c52c43c.ngrok.io/upload';
     List<MultipartFile> newList = new List<MultipartFile>();
 
-    for (int i = 0; i < RegistroApi.bacheca.data.length; i++) {
-      http.MultipartFile multipartFile;
-      if (!RegistroApi.bacheca.data[i].attachments.isEmpty &&
-          RegistroApi.bacheca.data[i].attachments.length != 0) {
-        var c;
-        c = await RegistroApi.bacheca.data[i].downloadPdf();
-        multipartFile = await http.MultipartFile.fromPath('sampleFiles', c.path,
-            filename: RegistroApi.bacheca.data[i].title +
-                '.pdf'); //returns a Future<MultipartFile>}
-        newList.add(multipartFile);
-
-        print('added file #$i: ' + RegistroApi.bacheca.data[i].title + '\n');
-      }
-    }
-    final postUri = Uri.parse(uri);
-    http.MultipartRequest request = http.MultipartRequest('POST', postUri);
-
-    request.files.addAll(newList);
-
-    http.StreamedResponse response = await request.send();
-    return response.statusCode;
+    var send = await http.post(uri, headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'token': RegistroApi.token,
+      'uuid': RegistroApi.uname.substring(1),
+    }, body: {
+      'ids': RegistroApi.bacheca.data
+          .where((circolare) => !circolare.attachments.isEmpty)
+          .map((circolare) {
+            return json.encode({
+              'title': (circolare.title),
+              'id': circolare.id,
+              'evt': circolare.evt
+            });
+          })
+          .toList()
+          .toString()
+    });
+    debugPrint(send.toString());
+    return send.statusCode;
   }
 
   Future<bool> _ocr() async {
     files = [];
     frasi = {};
     var uri =
-        'http://76935b85.ngrok.io/ocr?pattern=${_textController.text.toString()}';
+        'http://5c52c43c.ngrok.io/ocr?pattern=${_textController.text.toString()}';
     _highlight = _textController.text;
-    _textController.clear();
-
-    print(uri + '\n\n');
 
     http.Response res = await http.get(uri);
     if (res.statusCode == 200) {
@@ -108,36 +101,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
     } else {
       return false;
     }
+    if (files.isEmpty) _textController.clear();
     return files.isEmpty ? false : true;
-  }
-
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    /// The argument value will return the changed date as [DateTime] when the
-    /// widget [SfDateRangeSelectionMode] set as single.
-    ///
-    /// The argument value will return the changed dates as [List<DateTime>] when the
-    /// widget [SfDateRangeSelectionMode] set as multiple.
-    ///
-    /// The argument value will return the changed range as [PickerDateRange]
-    /// when the widget [SfDateRangeSelectionMode] set as range.
-    ///
-    /// The argument value will return the changed ranges as [List<PickerDateRange]
-    /// when the widget [SfDateRangeSelectionMode] set as multi range.
-    if (args.value is PickerDateRange) {
-      final DateTime rangeStartDate = args.value.startDate;
-      final DateTime rangeEndDate = args.value.endDate;
-    } else if (args.value is DateTime) {
-      final DateTime selectedDate = args.value;
-    } else if (args.value is List<DateTime>) {
-      final List<DateTime> selectedDates = args.value;
-    } else {
-      final List<PickerDateRange> selectedRanges = args.value;
-    }
   }
 
   @override
   void initState() {
-    super.initState();
     _firstInputFocusNode = new FocusNode();
   }
 
@@ -149,11 +118,35 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    pr = new ProgressDialog(context);
-    pr = new ProgressDialog(context,
+    pr_pdf = new ProgressDialog(context);
+    pr_pdf = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr.style(
+    pr_pdf.style(
         message: 'Downloading Pdf...',
+        borderRadius: 10.0,
+        backgroundColor: Colors.black45,
+        progressWidget: Platform.isAndroid
+            ? Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                ),
+              )
+            : CupertinoActivityIndicator(
+                radius: 20.0,
+              ),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        messageTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 15.0,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'CoreSans'));
+
+    pr_ocr = new ProgressDialog(context);
+    pr_ocr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    pr_ocr.style(
         borderRadius: 10.0,
         backgroundColor: Colors.black45,
         progressWidget: Platform.isAndroid
@@ -344,21 +337,10 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           Expanded(
                             flex: 1,
                             child: IconButton(
-                                icon: Icon(Icons.settings),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    child: Container(
-                                      child: SfDateRangePicker(
-                                        onSelectionChanged: _onSelectionChanged,
-                                        selectionMode:
-                                            DateRangePickerSelectionMode.range,
-                                      ),
-                                    ),
-                                  );
-                                }
-                                // _uploadFiles, //TODO: spostarlo & select range of time
-                                ),
+                              icon: Icon(Icons.settings),
+                              onPressed:
+                                  _uploadFiles, //TODO: spostarlo & select range of time
+                            ),
                           ),
                           Expanded(
                             flex: 1,
@@ -366,6 +348,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                               icon: Icon(Icons.clear),
                               onPressed: () {
                                 setState(() {
+                                  _textController.clear();
+
                                   files = [];
                                   frasi = {};
                                   _highlight = '';
@@ -432,10 +416,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     onPressed: c.attachments.isEmpty
                                         ? null
                                         : () async {
-                                            await pr.show();
+                                            c.seen();
+
+                                            await pr_pdf.show();
                                             // show hud with colors
                                             var _pathh = await c.downloadPdf();
-                                            pr.hide();
+                                            pr_pdf.hide();
                                             _pathh = _pathh.path;
                                             if (mounted) {
                                               setState(() {});
@@ -500,7 +486,19 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                   ),
                                 ),
                               );
-                            } else if (files.contains(c.title)) {
+                            } else if (files.contains(c.id.toString())) {
+                              String text = '';
+
+                              for (int i = 0;
+                                  i < frasi[c.id.toString()].length;
+                                  i++) {
+                                int tmp = i + 1;
+                                text += '$tmp)' +
+                                    '“' +
+                                    frasi[c.id.toString()][i] +
+                                    '”' +
+                                    '\n';
+                              }
                               bool _expand = false;
                               return Container(
                                 color: Colors.white10,
@@ -511,6 +509,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     bottom: 1.0),
                                 child: CustomExpansionTile(
                                   onExpansionChanged: (isExpanded) {
+                                    c.seen();
+
                                     _expand = isExpanded;
                                     setState(() {
                                       _expand = !_expand;
@@ -538,10 +538,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     onPressed: c.attachments.isEmpty
                                         ? null
                                         : () async {
-                                            await pr.show();
+                                            c.seen();
+
+                                            await pr_pdf.show();
                                             // show hud with colors
                                             var _pathh = await c.downloadPdf();
-                                            pr.hide();
+                                            pr_pdf.hide();
                                             _pathh = _pathh.path;
                                             if (mounted) {
                                               setState(() {});
@@ -572,9 +574,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                       padding: EdgeInsets.fromLTRB(
                                           10.0, 10.0, 10.0, 15.0),
                                       child: HighlightText(
-                                        text: '“' +
-                                            frasi[c.title].join('\n') +
-                                            '”',
+                                        // text: '↵' +
+                                        //     '“' +
+                                        //     frasi[c.id.toString()]
+                                        //         .join('\n↵“') +
+                                        //     '”',
+                                        text: text,
                                         highlight: _highlight,
                                         highlightColor: Colors.yellowAccent
                                             .withOpacity(0.7),
@@ -697,7 +702,7 @@ class HighlightText extends StatelessWidget {
         text,
         style: style,
         textAlign: TextAlign.center,
-        maxLines: 2,
+        maxLines: 50,
         overflow: TextOverflow.ellipsis,
       );
     }
@@ -727,7 +732,7 @@ class HighlightText extends StatelessWidget {
     return Text.rich(
       TextSpan(children: spans),
       textAlign: TextAlign.center,
-      maxLines: 2,
+      maxLines: 50,
       overflow: TextOverflow.ellipsis,
     );
   }
@@ -741,6 +746,13 @@ class HighlightText extends StatelessWidget {
     return TextSpan(
       text: content,
       style: style,
+    );
+  }
+
+  TextSpan _dot(String content) {
+    return TextSpan(
+      text: content,
+      style: TextStyle(fontSize: 30.0),
     );
   }
 }
