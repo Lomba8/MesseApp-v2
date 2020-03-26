@@ -173,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
         : 'images/loading_light.gif';
 
     if (splash) {
+      _controller.setVolume(0.0);
       _controller.play();
 
       return Scaffold(
