@@ -7,11 +7,13 @@ import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
+import 'package:Messedaglia/widgets/RangePicker.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:flutter/services.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -37,8 +39,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
   List<String> files = List<String>();
   Map<String, List<dynamic>> frasi = {};
 
-  ProgressDialog pr_pdf;
-  ProgressDialog pr_ocr;
+  ProgressDialog pr;
+
+  DateTime _start, _end;
 
   Future<void> _refresh() async {
     await RegistroApi.bacheca.getData();
@@ -83,6 +86,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<bool> _ocr() async {
+    if (_textController.text == '') return false;
+    pr.show();
     files = [];
     frasi = {};
     var uri =
@@ -101,6 +106,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
     } else {
       return false;
     }
+    pr.hide();
     if (files.isEmpty) _textController.clear();
     return files.isEmpty ? false : true;
   }
@@ -118,35 +124,11 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    pr_pdf = new ProgressDialog(context);
-    pr_pdf = new ProgressDialog(context,
+    pr = new ProgressDialog(context);
+    pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr_pdf.style(
-        message: 'Downloading Pdf...',
-        borderRadius: 10.0,
-        backgroundColor: Colors.black45,
-        progressWidget: Platform.isAndroid
-            ? Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                ),
-              )
-            : CupertinoActivityIndicator(
-                radius: 20.0,
-              ),
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        messageTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 15.0,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'CoreSans'));
-
-    pr_ocr = new ProgressDialog(context);
-    pr_ocr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr_ocr.style(
+    pr.style(
+        message: 'Loading...',
         borderRadius: 10.0,
         backgroundColor: Colors.black45,
         progressWidget: Platform.isAndroid
@@ -217,143 +199,171 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         children: <Widget>[
                           Expanded(
                             flex: 8,
-                            child: TextFormField(
-                              autocorrect: false,
-                              focusNode: _firstInputFocusNode,
-                              controller: _textController,
-                              validator: (value) => value.trim() != ''
-                                  ? null
-                                  : 'Inserire una parola o frase valida/e',
-                              decoration: InputDecoration(
-                                enabledBorder: InputBorder.none,
-                                fillColor: Colors.white10,
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.auto,
-                                labelText: 'Inserire la parola chiave..',
-                                helperMaxLines: 1,
-                                filled: true,
-                                prefixIcon: GestureDetector(
-                                    onTap: () {
-                                      _ocr().then((value) {
-                                        if (value) {
-                                          setState(() {});
-                                          rebuildAllChildren(context);
-                                        } else {
-                                          Flushbar(
-                                            padding: EdgeInsets.all(20),
-                                            borderRadius: 20,
-                                            backgroundGradient: LinearGradient(
-                                              colors: [
-                                                Globals.bluScolorito,
-                                                Theme.of(context).accentColor
-                                              ],
-                                              stops: [0.3, 1],
-                                            ),
-                                            boxShadows: [
-                                              BoxShadow(
-                                                color: Colors.black45,
-                                                offset: Offset(3, 3),
-                                                blurRadius: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 15.0, bottom: 15.0),
+                              child: TextFormField(
+                                autocorrect: false,
+                                focusNode: _firstInputFocusNode,
+                                controller: _textController,
+                                decoration: InputDecoration(
+                                  enabledBorder: InputBorder.none,
+                                  fillColor: Colors.white10,
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.auto,
+                                  hintText: 'Inserire la parola chiave..',
+                                  helperMaxLines: 1,
+                                  filled: true,
+                                  prefixIcon: GestureDetector(
+                                      onTap: () {
+                                        _ocr().then((value) {
+                                          if (value) {
+                                            setState(() {});
+                                            rebuildAllChildren(context);
+                                          } else {
+                                            Flushbar(
+                                              margin: EdgeInsets.all(30.0),
+                                              padding: EdgeInsets.all(20),
+                                              borderRadius: 20,
+                                              backgroundGradient:
+                                                  LinearGradient(
+                                                colors: [
+                                                  Globals.bluScolorito,
+                                                  Theme.of(context).accentColor
+                                                ],
+                                                stops: [0.3, 1],
                                               ),
-                                            ],
-                                            duration: Duration(seconds: 3),
-                                            isDismissible: true,
-                                            icon: Icon(
-                                              Icons.error_outline,
-                                              size: 35,
-                                              color: Theme.of(context)
-                                                  .backgroundColor,
-                                            ),
-                                            shouldIconPulse: true,
-                                            animationDuration:
-                                                Duration(seconds: 1),
-                                            // All of the previous Flushbars could be dismissed by swiping down
-                                            // now we want to swipe to the sides
-                                            dismissDirection:
-                                                FlushbarDismissDirection
-                                                    .HORIZONTAL,
-                                            // The default curve is Curves.easeOut
-                                            forwardAnimationCurve:
-                                                Curves.fastOutSlowIn,
-                                            title: 'Parola o frase inesistenti',
-                                            message:
-                                                'Reinserire la parola chiave',
-                                          ).show(context);
-                                        }
-                                      });
-                                    },
-                                    child: Icon(Icons.search)),
-                                disabledBorder: InputBorder.none,
-                              ),
-                              maxLines: 1,
-                              onFieldSubmitted: (value) {
-                                _ocr().then((value) {
-                                  if (value) {
-                                    setState(() {});
-                                    rebuildAllChildren(context);
-                                  } else {
-                                    Flushbar(
-                                      padding: EdgeInsets.all(20),
-                                      borderRadius: 20,
-                                      backgroundGradient: LinearGradient(
-                                        colors: [
-                                          Globals.bluScolorito,
-                                          Theme.of(context).accentColor
-                                        ],
-                                        stops: [0.3, 1],
-                                      ),
-                                      boxShadows: [
-                                        BoxShadow(
-                                          color: Colors.black45,
-                                          offset: Offset(3, 3),
-                                          blurRadius: 6,
+                                              boxShadows: [
+                                                BoxShadow(
+                                                  color: Colors.black45,
+                                                  offset: Offset(3, 3),
+                                                  blurRadius: 6,
+                                                ),
+                                              ],
+                                              duration: Duration(seconds: 3),
+                                              isDismissible: true,
+                                              icon: Icon(
+                                                Icons.error_outline,
+                                                size: 35,
+                                                color: Theme.of(context)
+                                                    .backgroundColor,
+                                              ),
+                                              shouldIconPulse: true,
+                                              animationDuration:
+                                                  Duration(seconds: 1),
+                                              // All of the previous Flushbars could be dismissed by swiping down
+                                              // now we want to swipe to the sides
+                                              dismissDirection:
+                                                  FlushbarDismissDirection
+                                                      .HORIZONTAL,
+                                              // The default curve is Curves.easeOut
+                                              forwardAnimationCurve:
+                                                  Curves.fastOutSlowIn,
+                                              title:
+                                                  'Parola o frase inesistenti',
+                                              message:
+                                                  'Reinserire la parola chiave',
+                                            ).show(context);
+                                          }
+                                        });
+                                      },
+                                      child: Icon(Icons.search)),
+                                  disabledBorder: InputBorder.none,
+                                ),
+                                maxLines: 1,
+                                onFieldSubmitted: (value) {
+                                  _ocr().then((value) {
+                                    if (value) {
+                                      setState(() {});
+                                      rebuildAllChildren(context);
+                                    } else {
+                                      Flushbar(
+                                        padding: EdgeInsets.all(20),
+                                        margin: EdgeInsets.all(30.0),
+
+                                        borderRadius: 20,
+                                        backgroundGradient: LinearGradient(
+                                          colors: [
+                                            Globals.bluScolorito,
+                                            Theme.of(context).accentColor
+                                          ],
+                                          stops: [0.3, 1],
                                         ),
-                                      ],
-                                      duration: Duration(seconds: 3),
-                                      isDismissible: true,
-                                      icon: Icon(
-                                        Icons.error_outline,
-                                        size: 35,
-                                        color:
-                                            Theme.of(context).backgroundColor,
-                                      ),
-                                      shouldIconPulse: true,
-                                      animationDuration: Duration(seconds: 1),
-                                      // All of the previous Flushbars could be dismissed by swiping down
-                                      // now we want to swipe to the sides
-                                      dismissDirection:
-                                          FlushbarDismissDirection.HORIZONTAL,
-                                      // The default curve is Curves.easeOut
-                                      forwardAnimationCurve:
-                                          Curves.fastOutSlowIn,
-                                      title: 'Parola o frase inesistenti',
-                                      message: 'Reinserire la parola chiave',
-                                    ).show(context);
-                                  }
-                                });
-                              },
+                                        boxShadows: [
+                                          BoxShadow(
+                                            color: Colors.black45,
+                                            offset: Offset(3, 3),
+                                            blurRadius: 6,
+                                          ),
+                                        ],
+                                        duration: Duration(seconds: 3),
+                                        isDismissible: true,
+                                        icon: Icon(
+                                          Icons.error_outline,
+                                          size: 35,
+                                          color:
+                                              Theme.of(context).backgroundColor,
+                                        ),
+                                        shouldIconPulse: true,
+                                        animationDuration: Duration(seconds: 1),
+                                        // All of the previous Flushbars could be dismissed by swiping down
+                                        // now we want to swipe to the sides
+                                        dismissDirection:
+                                            FlushbarDismissDirection.HORIZONTAL,
+                                        // The default curve is Curves.easeOut
+                                        forwardAnimationCurve:
+                                            Curves.fastOutSlowIn,
+                                        title: 'Parola o frase inesistenti',
+                                        message: 'Reinserire la parola chiave',
+                                      ).show(context);
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: IconButton(
+                                  icon: Icon(
+                                    MdiIcons.calendarClock,
+                                    size: 22,
+                                  ),
+                                  onPressed: () => {
+                                        DateTimeRangePicker(
+                                            startText: "Dal",
+                                            endText: "Al",
+                                            initialStartTime: DateTime.now(),
+                                            initialEndTime: DateTime.now(),
+                                            mode: DateTimeRangePickerMode.date,
+                                            onConfirm: (start, end) {
+                                              setState(() {
+                                                _start = start;
+                                                _end = end;
+                                              });
+                                              rebuildAllChildren(context);
+                                            }).showPicker(context)
+                                      }
+                                  // _uploadFiles, //TODO: spostarlo & select range of time
+                                  ),
                             ),
                           ),
                           Expanded(
                             flex: 1,
                             child: IconButton(
-                              icon: Icon(Icons.settings),
-                              onPressed:
-                                  _uploadFiles, //TODO: spostarlo & select range of time
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: IconButton(
+                              enableFeedback: true,
                               icon: Icon(Icons.clear),
                               onPressed: () {
+                                HapticFeedback.heavyImpact();
                                 setState(() {
                                   _textController.clear();
-
+                                  _start = _end = null;
                                   files = [];
                                   frasi = {};
                                   _highlight = '';
                                 });
+
                                 rebuildAllChildren(context);
                               },
                             ),
@@ -365,27 +375,26 @@ class _BachecaScreenState extends State<BachecaScreen> {
                       overflow: Overflow.visible,
                       children: <Widget>[
                         Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 15.0),
-                          height: 15.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(40.0),
-                              topRight: Radius.circular(40.0),
-                            ),
-                            color: Colors.white10,
-                          ),
-                        ),
-                        Container(
                           margin: EdgeInsets.only(top: 15.0),
                           child: Column(
-                              children: data.map<Widget>((c) {
+                              children: data.where((b) {
+                            if (_start != null && _end != null) {
+                              return b.start_date.isAfter(_start) &&
+                                  b.end_date.isAfter(_end);
+                            } else
+                              return b != null;
+                          }).map<Widget>((c) {
                             if (files.isEmpty) {
                               bool _expand = false;
                               return Container(
-                                color: Colors.white10,
                                 margin: EdgeInsets.only(
-                                    left: 15.0, right: 15.0, bottom: 1.0),
+                                    left: 15.0, right: 15.0, bottom: 3.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white10,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
                                 child: CustomExpansionTile(
                                   onExpansionChanged: (isExpanded) {
                                     _expand = isExpanded;
@@ -418,10 +427,10 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         : () async {
                                             c.seen();
 
-                                            await pr_pdf.show();
+                                            await pr.show();
                                             // show hud with colors
                                             var _pathh = await c.downloadPdf();
-                                            pr_pdf.hide();
+                                            pr.hide();
                                             _pathh = _pathh.path;
                                             if (mounted) {
                                               setState(() {});
@@ -497,16 +506,18 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     '“' +
                                     frasi[c.id.toString()][i] +
                                     '”' +
-                                    '\n';
+                                    '\n\n';
                               }
                               bool _expand = false;
                               return Container(
-                                color: Colors.white10,
                                 margin: EdgeInsets.only(
-                                    left: 15.0,
-                                    right: 15.0,
-                                    top: 0.0,
-                                    bottom: 1.0),
+                                    left: 15.0, right: 15.0, bottom: 3.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white10,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
                                 child: CustomExpansionTile(
                                   onExpansionChanged: (isExpanded) {
                                     c.seen();
@@ -540,10 +551,10 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         : () async {
                                             c.seen();
 
-                                            await pr_pdf.show();
+                                            await pr.show();
                                             // show hud with colors
                                             var _pathh = await c.downloadPdf();
-                                            pr_pdf.hide();
+                                            pr.hide();
                                             _pathh = _pathh.path;
                                             if (mounted) {
                                               setState(() {});
@@ -574,16 +585,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                       padding: EdgeInsets.fromLTRB(
                                           10.0, 10.0, 10.0, 15.0),
                                       child: HighlightText(
-                                        // text: '↵' +
-                                        //     '“' +
-                                        //     frasi[c.id.toString()]
-                                        //         .join('\n↵“') +
-                                        //     '”',
                                         text: text,
                                         highlight: _highlight,
                                         highlightColor: Colors.yellowAccent
                                             .withOpacity(0.7),
                                         style: TextStyle(
+                                          height: 1.2,
                                           fontSize: 13.0,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.dark
@@ -640,7 +647,7 @@ class PDFScreen extends StatelessWidget {
             child: Text(
               title,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 13.0,
@@ -701,7 +708,7 @@ class HighlightText extends StatelessWidget {
       return Text(
         text,
         style: style,
-        textAlign: TextAlign.center,
+        textAlign: TextAlign.left,
         maxLines: 50,
         overflow: TextOverflow.ellipsis,
       );
@@ -731,7 +738,7 @@ class HighlightText extends StatelessWidget {
 
     return Text.rich(
       TextSpan(children: spans),
-      textAlign: TextAlign.center,
+      textAlign: TextAlign.left,
       maxLines: 50,
       overflow: TextOverflow.ellipsis,
     );
