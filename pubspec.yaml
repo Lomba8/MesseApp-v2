@@ -59,7 +59,7 @@ dependencies:
   rounded_loading_button: ^1.0.4
   share_extend: ^1.1.1
   progress_dialog: ^1.2.1
-  simple_search_bar: ^0.1.7
+  syncfusion_flutter_datepicker: ^18.1.36-beta
 
   pdf_viewer_plugin: ^1.0.0+2
 
