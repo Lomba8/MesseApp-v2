@@ -9,15 +9,14 @@ import 'registro.dart';
 class AgendaRegistroData extends RegistroData {
   Map<String, bool> eventiNewFlags = {};
 
-  static String classe;
-  static String _getSchoolYear(DateTime date) {
-    int year2 = int.parse(DateFormat.M().format(date)) >= 9 ? 1 : 0;
-    return '${DateFormat.y().format(date)}${DateFormat.M().format(date).padLeft(2, '0')}${DateFormat.d().format(date).padLeft(2, '0')}/${int.parse(DateFormat.y().format(date)) + year2}1231';
+  static String getSchoolYear(DateTime date) {
+    int year2 = int.parse(DateFormat.M().format(date)) < 9 ? 1 : 0;
+    return '${date.year - year2}0901/${date.year  + 1 - year2}0630';
   }
 
   AgendaRegistroData()
       : super(
-            'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${_getSchoolYear(DateTime.now())}');
+            'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${getSchoolYear(DateTime.now())}');
 
   @override
   Result parseData(json) {
@@ -27,7 +26,7 @@ class AgendaRegistroData extends RegistroData {
       Map<String, bool> eventiNewFlags2 = {};
 
       json.forEach((m) {
-        classe = m['classDesc'];
+        RegistroApi.cls = m['classDesc'].substring(0, m['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
         Evento evt = Evento(m['evtId'].toString(),
             inizio: DateTime.parse(m['evtDatetimeBegin'].replaceFirst(
                     ':', '', m['evtDatetimeBegin'].lastIndexOf(':')))
@@ -40,8 +39,8 @@ class AgendaRegistroData extends RegistroData {
             autore: m['authorName']);
 
         data2.add(evt.getDate(), evt);
-        eventiNewFlags2[m['evtId'].toString()] =
-            eventiNewFlags[m['evtId'].toString()] ?? true;
+        eventiNewFlags2[m['evtId'].toString()] = DateTime.now().isBefore(evt.getDate()) &&
+            (eventiNewFlags[m['evtId'].toString()] ?? true);
       });
 
       data = data2;
@@ -102,9 +101,9 @@ class Evento implements EventInterface {
   }
 
   @override
-  Widget getDot() => Container(
+  Widget getDot([double opacity]) => Container(
         margin: EdgeInsets.symmetric(horizontal: 1.0),
-        color: nuovo ? Colors.red : Colors.lightBlueAccent,
+        color: (nuovo ?? true ? Colors.red : Colors.lightBlueAccent).withOpacity(opacity),
         height: 5.0,
         width: 5.0,
       );
@@ -129,29 +128,4 @@ class Evento implements EventInterface {
       giornaliero: json['giornaliero'],
       autore: json['autore'],
       info: json['info']);
-
-  String getAutore() {
-    // TODO: implement getAutore
-    throw UnimplementedError();
-  }
-
-  DateTime getFine() {
-    // TODO: implement getFine
-    throw UnimplementedError();
-  }
-
-  bool getGiornaliero() {
-    // TODO: implement getGiornaliero
-    throw UnimplementedError();
-  }
-
-  DateTime getInizio() {
-    // TODO: implement getInizio
-    throw UnimplementedError();
-  }
-
-  bool getNuovo() {
-    // TODO: implement getNuovo
-    throw UnimplementedError();
-  }
 }

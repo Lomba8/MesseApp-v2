@@ -19,8 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^0.5.6+2
-  http: ^0.12.0+3
+  preferences: ^5.1.0
+  http: ^0.12.0+4
   convert: ^2.1.1
   flare_flutter: ^1.8.3
   flare_splash_screen: ^3.0.0
@@ -29,21 +29,54 @@ dependencies:
   intl: ^0.16.1
   flutter_calendar_carousel: ^1.4.10
   fl_chart: ^0.8.0
-  flushbar: ^1.9.1
+  flushbar:
+    git:
+      url: https://github.com/valterh4ck3r/flushbar.git
   device_info: ^0.4.1+4
   flutter_dash: ^0.0.1
   auto_size_text: ^2.1.0
   provider: ^4.0.4
   path_parsing: ^0.1.4
   material_design_icons_flutter: ^3.4.4995
+  url_launcher: ^5.4.2
+  # permission_handler: ^4.2.0+hotfix.3
+  package_info: ^0.4.0+14
+  android_intent: ^0.3.5+1
+  # google_sign_in: 4.1.1
+  image_downloader: ^0.19.1
+  flutter_local_notifications: ^1.2.0+4
+  video_player: ^0.10.8+1
+  connectivity: ^0.4.8+1
+  preload_page_view: ^0.1.4
+  ext_storage: ^1.0.2
+  stream_listener: ^2.0.0
+  autocomplete_textfield: ^1.7.3
+  flutter_flip_view: ^1.0.3
+  flip_card: ^0.4.4
+  positioned_tap_detector: ^1.0.3
+  smooth_page_indicator: ^0.1.5
+  open_file: ^3.0.1
+  rounded_loading_button: ^1.0.4
+  share_extend: ^1.1.1
+  progress_dialog: ^1.2.1
+  f_datetimerangepicker: ^0.1.1
+
+  pdf_viewer_plugin: ^1.0.0+2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
+  # flutter_launcher_icons: ^0.7.4
+
   flutter_test:
     sdk: flutter
+
+# flutter_icons:
+#   android: true
+#   ios: true
+#   image_path: "images/logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -54,11 +87,13 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/
     - flare/
-  #  - images/a_dot_ham.jpeg
+    - videos/
+    #  - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see

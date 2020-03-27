@@ -1,28 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class Globals with ChangeNotifier {
-  ThemeMode _themeMode;
-
-  Globals(this._themeMode);
-  getTheme() => _themeMode;
-  setTheme(ThemeMode mode) async {
-    _themeMode = mode;
-    final prefs = await SharedPreferences.getInstance();
-
-    (mode == ThemeMode.dark)
-        ? prefs.setBool('DarkMode', true)
-        : prefs.setBool('DarkMode', false);
-
-    if (mode == ThemeMode.system) prefs.setBool('DarkMode', null);
-
-    print(mode.toString());
-
-    notifyListeners();
-  }
-
+class Globals {
   static final ThemeData lightTheme = ThemeData(
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     pageTransitionsTheme: PageTransitionsTheme(builders: {
       TargetPlatform.android: CupertinoPageTransitionsBuilder(),
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
@@ -34,7 +16,7 @@ class Globals with ChangeNotifier {
 
     scaffoldBackgroundColor: Color.fromRGBO(239, 238, 245, 1),
 
-    primaryColor: Color.fromRGBO(105, 181, 201, 1), // rgb(105, 181, 201, 1)
+    primaryColor: Color.fromRGBO(52, 90, 100, 1), // rgb(105, 181, 201, 1)
     /*
     Color.fromRGBO(91, 34, 196,
         1),  (Globals.rosso,). Alternativa a 91,34,19662, 123, 150,)*/
@@ -55,6 +37,7 @@ class Globals with ChangeNotifier {
           fontSize: 36.0,
           fontStyle: FontStyle.italic,
           color: Color.fromRGBO(246, 232, 234, 1)),
+      bodyText1: TextStyle(color: Colors.black54),
       bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
@@ -74,6 +57,11 @@ class Globals with ChangeNotifier {
     scaffoldBackgroundColor: Color.fromRGBO(28, 28, 39, 1),
 
     primaryColor: Color.fromRGBO(105, 181, 201, 1), // rgb(105, 181, 201, 1)
+
+    cardColor: Color.fromRGBO(28, 28, 39, 1),
+    cardTheme: CardTheme(
+      elevation: 0,
+    ),
     /*
     Color.fromRGBO(91, 34, 196,
         1),  (Globals.rosso,). Alternativa a 91,34,19662, 123, 150,)*/
@@ -89,17 +77,15 @@ class Globals with ChangeNotifier {
     // text styling for headlines, titles, bodies of text, and more.
     textTheme: TextTheme(
       headline5: TextStyle(
-        fontSize: 72.0,
+        fontSize: 75,
         fontWeight: FontWeight.bold,
         color: Color.fromRGBO(105, 181, 201, 1),
       ),
       headline6: TextStyle(
-          fontSize: 36.0,
-          fontStyle: FontStyle.italic,
-          color: Color.fromRGBO(40, 41, 60, 1)), // rgb(40, 41, 60, 1)
-      bodyText1: TextStyle(
-        color: Colors.white54
-      ),
+          color: Colors.white,
+          fontSize: 30,
+          fontWeight: FontWeight.bold), // rgb(40, 41, 60, 1)
+      bodyText1: TextStyle(color: Colors.white54),
       bodyText2: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
@@ -113,85 +99,70 @@ class Globals with ChangeNotifier {
   static Color violaScolorito = Color.fromRGBO(115, 121, 247, 0.7);
 
   static Map<String, Map<String, dynamic>> subjects = {
-    'profe1': {
-      'materia': 'DISEGNO - ST. DELL\'ARTE',
+    "DISEGNO - ST. DELL'ARTE": {
       'colore': Colors.red,
       'icona': Icons.brush,
     },
-    'profe2': {
-      'materia': 'FILOSOFIA',
+    "STORIA DELL'ARTE": {
+      // per i tutor perche non sono capaci di usare gli stessi nomi che hanno dato a classe viva
+
+      'colore': Colors.red,
+      'icona': Icons.brush,
+    },
+    'FILOSOFIA': {
       'colore': Colors.blue,
-      'icona': MdiIcons.yinYang,
+      'icona': MdiIcons.yinYang, //yinYang
     },
-    'profe3': {
-      'materia': 'FISICA',
+    'FISICA': {
       'colore': Colors.yellow,
-      'icona': MdiIcons.atom,
+      'icona': MdiIcons.electronFramework, // atom
     },
-    'profe4': {
-      'materia': 'INGLESE',
+    'INGLESE': {
       'colore': Colors.lightGreenAccent,
-      'icona': MdiIcons.currencyGbp,
+      'icona': MdiIcons.currencyGbp, // or googleTranslate ?
     },
-    'profe5': {
-      'materia': 'INFORMATICA',
+    'INFORMATICA': {
       'colore': Colors.green,
-      'icona': MdiIcons.codeBraces,
+      'icona': Icons.desktop_mac, //  or codeBraces, languageCpp
     },
-    'profe6': {
-      'materia': 'LATINO',
+    'LINGUA E CULTURA LATINA': {
       'colore': Colors.amber,
-      'icona': MdiIcons.help, // IFXME cosa mettere?
+      'icona': MdiIcons
+          .romanNumeral6, // FIXME cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
     },
-    'profe7': {
-      'materia': 'LINGUA E LETTERATURA ITALIANA',
+    'LINGUA E LETTERATURA ITALIANA': {
       'colore': Colors.cyan,
-      'icona': MdiIcons.pasta, // or pizza?
+      'icona': MdiIcons.alphabeticalVariant, //
     },
-    'profe8': {
-      'materia': 'MATEMATICA',
+    'MATEMATICA': {
       'colore': Colors.brown,
       'icona': MdiIcons.squareRoot,
     },
-    'profe9': {
-      'mat10ria': 'PROGETTI / POTENZIAMENTO', // 4 profe di potenziamento
+    'PROGETTI / POTENZIAMENTO': {
       'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
+      'icona': MdiIcons
+          .gavel, // FIXME cosa mettere?   weightLifter, bag-personal-outline, foodOff?
     },
-    'profe11': {
-      'materia': 'PROGETTI / POTENZIAMENTO',
-      'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
-    },
-    'profe12': {
-      'materia': 'PROGETTI / POTENZIAMENTO',
-      'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
-    },
-    'profe13': {
-      'materia': 'PROGETTI / POTENZIAMENTO',
-      'colore': Colors.grey,
-      'icona': MdiIcons.help, // FIXME cosa mettere?
-    },
-    'profe14': {
-      'materia': 'RELIGIONE-ATTIVITA\' ALTERNATIVE',
+    "RELIGIONE-ATTIVITA' ALTERNATIVE": {
       'colore': Colors.deepPurple,
       'icona': MdiIcons.christianity,
     },
-    'profe15': {
-      'materia': 'SCIENZE MOTORIE E SPORTIVE',
+    'SCIENZE MOTORIE E SPORTIVE': {
       'colore': Colors.purpleAccent,
       'icona': MdiIcons.basketball,
     },
-    'profe16': {
-      'materia': 'SCIENZE NATURALI',
+    'SCIENZE NATURALI': {
       'colore': Colors.tealAccent,
-      'icona': MdiIcons.flask, // or test-tube, dna, bacteria, microscope
+      'icona': MdiIcons.flask, // or dna,
     },
-    'profe17': {
-      'materia': 'STORIA',
+    'SCIENZE': {
+      // per i tutor perche non sono capaci di usare gli stessi nomi che hanno dato a classe viva
+      'colore': Colors.tealAccent,
+      'icona': MdiIcons.flask, // or dna,
+    },
+    'STORIA': {
       'colore': Colors.deepOrangeAccent,
-      'icona': Icons.account_balance,
+      'icona': MdiIcons.pillar, // or account_balance
     },
   };
 
@@ -208,6 +179,48 @@ class Globals with ChangeNotifier {
 
     'Tutoraggi': Icon(Icons
         .person_add), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
+
+    'Didattica': Icon(MdiIcons
+        .fileMultiple), //  fileMultiple, folderAccount, folderMultiple, folderSearch, fileDocumentEdit, folderEdit,
+  };
+
+  static Map<String, Map> estensioni = {
+    '.pdf': {'icona': MdiIcons.filePdf, 'colore': Color(0xFFCA1B00)},
+    '.odt': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.docx': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.pages': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    'msword': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.txt': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.rtf': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.doc': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.xls': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
+    '.xlsx': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
+    '.xlsm': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
+    '.numbers': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
+    '.pptx': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    '.ppt': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    '.odp': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    '.pps': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    '.pp': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    '.key': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    '.zip': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)},
+    '.rar': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)},
+    '.aif': {'icona': Icons.audiotrack, 'colore': Color(0xFF009AEF)},
+    '.mp3': {'icona': Icons.audiotrack, 'colore': Color(0xFF009AEF)},
+    '.wav': {'icona': Icons.audiotrack, 'colore': Color(0xFF009AEF)},
+    '.mp4': {'icona': MdiIcons.fileVideoOutline, 'colore': Color(0xFF12AB9B)},
+    '.avi': {'icona': MdiIcons.fileVideoOutline, 'colore': Color(0xFF12AB9B)},
+    '.mov': {'icona': MdiIcons.fileVideoOutline, 'colore': Color(0xFF12AB9B)},
+    '.c': {'icona': MdiIcons.languageC, 'colore': Color(0xFF0074C2)},
+    '.h': {'icona': MdiIcons.languageC, 'colore': Color(0xFF0074C2)},
+    '.hpp': {'icona': MdiIcons.languageCpp, 'colore': Color(0xFF0074C2)},
+    '.cpp': {'icona': MdiIcons.languageCpp, 'colore': Color(0xFF0074C2)},
+    '.java': {'icona': MdiIcons.languageJava, 'colore': Color(0xFF53829F)},
+    '.class': {'icona': MdiIcons.languageJava, 'colore': Color(0xFF53829F)},
+    '.sql': {'icona': MdiIcons.database, 'colore': Color(0xFF3295D5)},
+    '.html': {'icona': MdiIcons.languageHtml5, 'colore': Color(0xFFDE4B25)},
+    '.css': {'icona': MdiIcons.languageCss3, 'colore': Color(0xFF3596D0)},
+    '.js': {'icona': MdiIcons.languageJavascript, 'colore': Color(0xFFf0D91D)},
   };
 
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);
@@ -260,7 +273,8 @@ class Globals with ChangeNotifier {
     },
     'verde': {
       'color': Color.fromRGBO(144, 237, 137, 0.7),
-      'textColor': Color.fromRGBO(144, 237, 137, 0.5),
+      'textColor': Color.fromRGBO(72, 118, 63,
+          1), // TODO: scegliere un colore, quello di prima non si vedeva con il tema chiaro
       'gradientColors': [
         Color.fromRGBO(21, 195, 65, 1.0),
         Color.fromRGBO(46, 208, 81, 1.0),

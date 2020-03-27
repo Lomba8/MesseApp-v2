@@ -1,222 +1,243 @@
+import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/utils/mapUtils.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
-  //final Map<String, List<String>> activities;   TODO: attualmente gestito internamente, deve essere lanciata la route con il parametro
-
-  MapScreen(/*{this.activities}*/);
+  MapScreen();
 
   @override
   _MapScreenState createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  bool _scroll = false;
-  List<String> selectedClass = [];
-  double _floor = 0;
+  GlobalKey<AutoCompleteTextFieldState<String>> _autocompleteKey = GlobalKey();
+  TextEditingController _autocompleteController = TextEditingController();
+  double floor = 0;
 
-  Map<String, List<String>> activities;
+  String mask = 'aule';
+  String selectedKey;
+  bool showSearch = false;
+
+  String reversePicker(String aula) => mapData[mask]['mask'].keys.singleWhere(
+      (key) => mapData[mask]['mask'][key].contains(aula) as bool,
+      orElse: () => null);
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Padding(
-          padding: MediaQuery.of(context).padding,
-          child: Column(children: <Widget>[
-            Stack(children: [
-              SingleChildScrollView(
-                // TODO:  con o senza scroll?
-                scrollDirection: Axis.horizontal,
-                child: CustomPaint(
-                  size: _scroll
-                      ? Size(1000, 200)
-                      : Size(MediaQuery.of(context).size.width,
-                          MediaQuery.of(context).size.width * 3 / 5),
-                  painter: MapPainter(selectedClass, floor: _floor),
-                ),
-              ),
-              Positioned(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Center(
+  Widget build(BuildContext context) => Material(
+          child: SingleChildScrollView(
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Container(
+          color: Colors.grey[700],
+          child: CustomPaint(
+              painter: BackgroundPainter(Theme.of(context)),
+              child: Column(children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top + 8),
+                  child: Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.arrow_back_ios),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white60
+                            : Colors.black54,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Expanded(
                         child: Text(
-                      _floor.floor().toString(),
-                    )),
+                          'CARTINA',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.search),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white60
+                            : Colors.black54,
+                        onPressed: () =>
+                            setState(() => showSearch = !showSearch),
+                      )
+                    ],
                   ),
-                  top: 20,
-                  left: 20),
-              Positioned(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color:
-                            Colors.black.withOpacity(_floor - _floor.floor()),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Center(
-                        child: Text(
-                      _floor.ceil().toString(),
-                      style: TextStyle(
-                          color: Colors.white
-                              .withOpacity(_floor - _floor.floor())),
-                    )),
-                  ),
-                  top: 20,
-                  left: 20)
-            ]),
-            Slider(
-              value: _floor,
-              onChanged: (v) => setState(() => _floor = v),
-              onChangeEnd: (v) => setState(() => _floor = v.roundToDouble()),
-              min: -2,
-              max: 3,
-              //label: _floor.round().toString(),
-              activeColor: Theme.of(context).primaryColor,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.warning,
-                    color: Colors.yellow,
-                  ),
-                  Expanded(
-                      child: Text(
-                    "WORK IN PROGRESS!",
-                    textAlign: TextAlign.center,
-                  )),
-                  Icon(
-                    Icons.warning,
-                    color: Colors.yellow,
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                    child: Text(
-                  "Qual è meglio?",
-                  style: TextStyle(fontWeight: FontWeight.normal),
-                )),
-                IconButton(
-                  icon:
-                      Icon(_scroll ? Icons.fullscreen : Icons.fullscreen_exit),
-                  onPressed: () => setState(() => _scroll = !_scroll),
                 ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                    child: Text(
-                  'Visualizza le attività:',
-                  style: TextStyle(fontWeight: FontWeight.normal),
-                )),
-                Switch(
-                  value: activities != null,
-                  onChanged: (v) => setState(
-                      () => activities = v ? testActivitiesMask : null),
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: 20 + MediaQuery.of(context).size.width / 8),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(
+                            right: 20.0, left: showSearch ? 20 : 0),
+                        child: showSearch
+                            ? AutoCompleteTextField<String>(
+                                itemSubmitted: (item) {
+                                  setState(() => floor = getFloor(
+                                          mapData[mask]['mask'][item]?.first,
+                                          mask)
+                                      .toDouble());
+                                  selectedKey = item;
+                                },
+                                key: _autocompleteKey,
+                                suggestions:
+                                    mapData[mask]['mask'].keys.toList(),
+                                itemBuilder: (context, suggestion) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(suggestion),
+                                ),
+                                itemSorter: (a, b) => a.compareTo(b),
+                                itemFilter: (suggestion, query) {
+                                  query = query.toUpperCase();
+                                  List<String> split = query.split(' ');
+                                  return split.every((s) =>
+                                      suggestion.toUpperCase().contains(s));
+                                },
+                                clearOnSubmit: false,
+                                controller: _autocompleteController,
+                                suggestionsAmount: 10,
+                                decoration: InputDecoration(
+                                    icon: Icon(Icons.search),
+                                    filled: true,
+                                    hintText: 'cerca ${mapData[mask]['item']}'),
+                              )
+                            : Row(children: [
+                                Expanded(
+                                  child: Slider(
+                                    label: 'piano ${floor.toStringAsFixed(0)}',
+                                    divisions: 5,
+                                    value: floor,
+                                    onChanged: (v) => setState(() => floor = v),
+                                    onChangeEnd: (v) => setState(
+                                        () => floor = v.roundToDouble()),
+                                    min: -2,
+                                    max: 3,
+                                    //label: _floor.round().toString(),
+                                    activeColor: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                DropdownButton<String>(
+                                  value: mask,
+                                  items: mapData.keys
+                                      .map((key) => DropdownMenuItem<String>(
+                                          value: key, child: Text(key)))
+                                      .toList(),
+                                  onChanged: (value) => setState(() {
+                                    mask = value;
+                                    _autocompleteKey = GlobalKey();
+                                    _autocompleteController.clear();
+                                    selectedKey = null;
+                                  }),
+                                ),
+                              ]),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                    children: activities == null
-                        ? floors[_floor.round() + 2]
-                            .classesList
-                            .map((aula) => GestureDetector(
-                                  child: Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text(aula)),
-                                  onTap: () =>
-                                      setState(() => selectedClass = [aula]),
-                                ))
-                            .toList()
-                        : activities.keys
-                            .map((activity) => GestureDetector(
-                                  child: Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text(activity)),
-                                  onTap: () =>
-                                      setState(() {
-                                        _floor = getFloor (activities[activity][0]).toDouble();
-                                        selectedClass = activities[activity];
-                                      }),
-                                ))
-                            .toList()),
-              ),
-            )
-          ]),
+              ])),
         ),
-      );
+        Stack(overflow: Overflow.clip, children: [
+          GestureDetector(
+            onTapUp: (details) {
+              final Offset start = Offset(14, 703);
+              Function(String, dynamic) picker = (cls, data) {
+                if (data.selectable &&
+                    data
+                        .getFill(
+                            MediaQuery.of(context).size.width / 1000, Paint(),
+                            translateX: start.dx, translateY: start.dy)
+                        .contains(details.localPosition))
+                  _autocompleteController.text =
+                      selectedKey = reversePicker(cls) ?? selectedKey;
+              };
+              floors[floor.toInt() + 2].classes.forEach(picker);
+              if (mapData[mask]['classes'].length > floor + 2)
+                mapData[mask]['classes'][floor.toInt() + 2].forEach(picker);
+              setState(() {});
+            },
+            child: CustomPaint(
+              size: Size.fromHeight(
+                  MediaQuery.of(context).size.width * 903 / 1000),
+              painter: MapPainter(mapData[mask]['mask'][selectedKey], mask,
+                  floor: floor.toInt()),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(20),
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                color: Colors.black, borderRadius: BorderRadius.circular(10)),
+            child: Center(
+                child: Text(
+              floor.toStringAsFixed(0),
+              style: TextStyle(color: Colors.white),
+            )),
+          ),
+        ]),
+      ])));
 }
 
 class MapPainter extends CustomPainter {
-  static final Color border = Colors.black; // TODO: meglio bianco o nero?
+  static final Color border = Colors.black;
 
   Paint _paint = Paint()
     ..color = border
     ..style = PaintingStyle.stroke
     ..strokeWidth = 1;
 
-  List<String> _selectedClass;
-  double floor;
-  MapPainter(this._selectedClass, {this.floor = 0});
+  List _selectedClass;
+  String _mask;
+  int floor;
+  MapPainter(this._selectedClass, this._mask, {this.floor = 0});
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: le porte?
-    double cropWidth = size.width / 1000, cropHeight = size.height / 600;
-    if (size.width / size.height == 5) cropHeight *= 3;
-    _paint.color = Colors.green[900];
+    canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    double cropWidth = size.width / 1000;
+    _paint.color = Colors.grey[700];
     canvas.drawPaint(_paint);
     _paint.color = border;
-
-    _paintFloor(canvas, floors[floor.floor() + 2], 1, cropWidth, cropHeight,
-        size.width / size.height);
-    _paintFloor(canvas, floors[floor.ceil() + 2], floor - floor.floor(),
-        cropWidth, cropHeight, size.width / size.height);
+    _paintFloor(canvas, floors[floor + 2], cropWidth,
+        Offset(14, size.height / cropWidth - 200));
   }
 
-  void _paintFloor(Canvas canvas, Floor floor, double opacity, double cropWidth,
-      double cropHeight, double ratio) {
-    Offset start = Offset(14, ratio == 5 ? 16 : 400);
-
-    Path path = floor.school.create(
-        cropWidth: cropWidth, cropHeight: cropHeight, translation: start);
-
-    _paint.color = Colors.lime[900].withOpacity(opacity); //.withAlpha(128);
-    _paint.style = PaintingStyle.fill;
-    canvas.drawPath(path, _paint);
-    _paint.color = border.withOpacity(opacity);
-    _paint.style = PaintingStyle.stroke;
-    canvas.drawPath(path, _paint);
-
-    floor.classes.forEach((aula, data) {
-      path = data['pathBuilder'].create(
-          cropWidth: cropWidth,
-          cropHeight: cropHeight,
-          translation: (data['translation'] ?? Offset(0, 0))
-              .translate(start.dx, start.dy));
-      _paint
-        ..color = _selectedClass.contains(aula) && data['selectable']
-            ? Colors.yellow[700].withOpacity(opacity)
-            : data['defaultColor']
-                .withOpacity(data['defaultColor'].opacity * opacity)
-        ..style = PaintingStyle.fill;
-      canvas.drawPath(path, _paint);
-      _paint
-        ..color = border.withOpacity(opacity)
-        ..style = PaintingStyle.stroke;
-
-      canvas.drawPath(path, _paint);
+  void _paintFloor(
+      Canvas canvas, Floor floor, double crop, final Offset start) {
+    decorations.followedBy(mapData[_mask]['decorations']).forEach((decoration) {
+      canvas.drawPath(
+          decoration.getFill(crop, _paint, translateY: start.dy), _paint);
+      canvas.drawPath(
+          decoration.getStroke(crop, _paint,
+              translateY: start.dy, defaultColor: border),
+          _paint);
     });
+
+    Function(String, dynamic) drawer = (aula, data) {
+      canvas.drawPath(
+          data.getFill(crop, _paint,
+              translateX: start.dx,
+              translateY: start.dy,
+              color: (_selectedClass ?? []).contains(aula)
+                  ? Colors.yellow[700]
+                  : null),
+          _paint);
+      canvas.drawPath(
+          data.getStroke(crop, _paint,
+              translateX: start.dx, translateY: start.dy, defaultColor: border),
+          _paint);
+    };
+
+    floor.classes.forEach(drawer); // join delle due mappe
+    if (mapData[_mask]['classes'].length > this.floor + 2)
+      mapData[_mask]['classes'][this.floor + 2].forEach(drawer);
   }
 
   @override

@@ -83,9 +83,7 @@ class _NavBarState extends State<NavBar> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: items.map((item) {
-                    return _flare(item, context);
-                  }).toList(),
+                  children: items.map((item) => _flare(item, context)).toList(),
                 ),
               )
             ],
@@ -98,30 +96,27 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
-  Widget _flare(Menuitem item, BuildContext contesto) {
-    print(item.name);
-    return Expanded(
-      child: GestureDetector(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: FlareActor(
-              'flare/${item.name}',
-              alignment: Alignment.center,
-              fit: BoxFit.contain,
-              animation: item.name == active.name ? 'Go' : 'idle',
+  Widget _flare(Menuitem item, BuildContext contesto) => Expanded(
+        child: GestureDetector(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: FlareActor(
+                'flare/${item.name}',
+                alignment: Alignment.center,
+                fit: BoxFit.contain,
+                animation: item.name == active.name ? 'Go' : 'idle',
+              ),
             ),
           ),
+          onTap: () {
+            setState(() {
+              active = item;
+              dynamic name = item.name.split(".");
+              Navigator.pushNamed(contesto, "/lib/screens/${name[0]}.id");
+            });
+          },
         ),
-        onTap: () {
-          setState(() {
-            active = item;
-            dynamic name = item.name.split(".");
-            Navigator.pushNamed(contesto, "/lib/screens/${name[0]}.id");
-          });
-        },
-      ),
-    );
-  }
+      );
 }

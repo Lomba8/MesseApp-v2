@@ -1,27 +1,33 @@
+import 'dart:convert';
+
 import 'package:Messedaglia/preferences/globals.dart';
-import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/bacheca_screen.dart';
+import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar_carousel/classes/event_list.dart';
-import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:http/http.dart' as http;
+import 'package:Messedaglia/main.dart' as main;
 
 import 'package:flutter/cupertino.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../registro/agenda_registro_data.dart';
 import '../registro/registro.dart';
 
 class AreaStudenti extends StatefulWidget {
   static final String id = 'area_studenti_screen';
+
   @override
   _AreaStudentiState createState() => _AreaStudentiState();
 }
 
 class _AreaStudentiState extends State<AreaStudenti> {
-  String _passedTime() {
+  /*String _passedTime() {
     if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
         DateTime.now().difference(RegistroApi.agenda.lastUpdate);
@@ -40,7 +46,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
-  }
+  }*/
 
   void _setStateIfAlive() {
     if (mounted) setState(() {});
@@ -53,11 +59,51 @@ class _AreaStudentiState extends State<AreaStudenti> {
     return null;
   }
 
-  DateTime _currentDate, _currentMonth = DateTime.now();
+  _listaPanini() async {
+    const url = 'https://pagni.altervista.org/istituto/lista.php';
+    if (await canLaunch(url)) {
+      await launch(url,
+          forceSafariVC: true,
+          enableJavaScript: true,
+          forceWebView: true,
+          headers: {'User-Agent': 'MesseApp <3'});
+    } else {
+      Flushbar(
+        padding: EdgeInsets.all(10),
+        borderRadius: 20,
+        backgroundGradient: LinearGradient(
+          colors: Globals.sezioni['viola']['gradientColors'],
+          stops: [0.3, 0.6, 1],
+        ),
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black45,
+            offset: Offset(3, 3),
+            blurRadius: 6,
+          ),
+        ],
+        duration: Duration(seconds: 5),
+        isDismissible: true,
+        icon: Icon(
+          Icons.error_outline,
+          size: 35,
+          color: Theme.of(context).backgroundColor,
+        ),
+        shouldIconPulse: true,
+        animationDuration: Duration(seconds: 1),
+        dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+        // The default curve is Curves.easeOut
+        forwardAnimationCurve: Curves.fastOutSlowIn,
+        title: 'Errore nell\'aprire l\'url:',
+        message: '$url',
+      ).show(context);
+    }
+  }
 
-  EventList<Evento> get e => RegistroApi.agenda.data;
-
-  List<Evento> dayEvents = List<Evento>();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +114,12 @@ class _AreaStudentiState extends State<AreaStudenti> {
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
           SliverAppBar(
+            brightness: Theme.of(context).brightness,
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: Text(
-              "Area Studenti",
-              textAlign: TextAlign
-                  .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
+              "AREA STUDENTI",
+              textAlign: TextAlign.center,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black
@@ -81,7 +127,10 @@ class _AreaStudentiState extends State<AreaStudenti> {
                   fontSize: 30,
                   fontWeight: FontWeight.bold),
             ),
-            bottom: PreferredSize(child: Container(), preferredSize: Size.fromHeight(MediaQuery.of(context).size.width/8)),
+            bottom: PreferredSize(
+                child: Container(),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
             pinned: true,
             centerTitle: true,
             flexibleSpace: CustomPaint(
@@ -100,27 +149,27 @@ class _AreaStudentiState extends State<AreaStudenti> {
               Section(
                 sezione: 'Alternanza',
                 colore: 'blu',
-                page: MapScreen(),
+                page: null,
               ),
               Section(
                 sezione: 'Bacheca',
                 colore: 'arancione',
-                page: MapScreen(),
+                page: BachecaScreen(),
               ),
               Section(
-                sezione: 'Note',
+                sezione: 'Didattica',
                 colore: 'rosa',
-                page: MapScreen(),
+                page: DidatticaScreen(),
               ),
               Section(
                 sezione: 'App Panini',
-                colore: 'viola',
-                page: MapScreen(),
+                colore: 'rosso',
+                action: _listaPanini,
               ),
               Section(
                 sezione: 'Tutoraggi',
-                colore: 'rosso',
-                page: MapScreen(),
+                colore: 'viola',
+                page: TutoraggiScreen(),
               ),
             ],
           )
@@ -133,12 +182,14 @@ class _AreaStudentiState extends State<AreaStudenti> {
 class Section extends StatelessWidget {
   final String colore, sezione;
   final dynamic page;
+  final dynamic action;
 
   const Section({
     Key key,
     @required this.colore,
     @required this.sezione,
-    @required this.page,
+    this.page,
+    this.action,
   }) : super(key: key);
 
   @override
@@ -146,10 +197,19 @@ class Section extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: GestureDetector(
-        onTap: () =>
-            Navigator.push(context, MaterialPageRoute(builder: (c) => page)),
+        onTap: action == null
+            ? page == null
+                ? null
+                : () => Navigator.push(
+                    context, MaterialPageRoute(builder: (c) => page))
+            : action,
         child: Card(
-          color: Colors.white10,
+          elevation: 0,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? page == null && action == null ? Colors.white24 : Colors.white10
+              : page == null && action == null
+                  ? Colors.black26
+                  : Colors.black12,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Column(
@@ -162,9 +222,13 @@ class Section extends StatelessWidget {
                 height: 65,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Globals.sezioni[colore]['color'],
+                  color: action == null && page == null
+                      ? Colors.white54
+                      : Globals.sezioni[colore]['color'],
                   gradient: RadialGradient(
-                    colors: Globals.sezioni[colore]['gradientColors'],
+                    colors: action == null && page == null
+                        ? [Colors.white54, Colors.white30]
+                        : Globals.sezioni[colore]['gradientColors'],
                     center: Alignment(1.0, 1.0),
                     radius: 1,
                     focal: Alignment(1.0, 1.0),
@@ -183,7 +247,9 @@ class Section extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     letterSpacing: 1.5,
-                    color: Globals.sezioni[colore]['textColor'],
+                    color: action == null && page == null
+                        ? Colors.white54
+                        : Globals.sezioni[colore]['textColor'],
                   ),
                 ),
               ),
