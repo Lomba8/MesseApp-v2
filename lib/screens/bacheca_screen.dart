@@ -326,27 +326,13 @@ class _BachecaScreenState extends State<BachecaScreen> {
                             flex: 1,
                             child: Container(
                               child: IconButton(
-                                  icon: Icon(
-                                    MdiIcons.calendarClock,
-                                    size: 22,
-                                  ),
-                                  onPressed: () => {
-                                        DateTimeRangePicker(
-                                            startText: "Dal",
-                                            endText: "Al",
-                                            initialStartTime: DateTime.now(),
-                                            initialEndTime: DateTime.now(),
-                                            mode: DateTimeRangePickerMode.date,
-                                            onConfirm: (start, end) {
-                                              setState(() {
-                                                _start = start;
-                                                _end = end;
-                                              });
-                                              rebuildAllChildren(context);
-                                            }).showPicker(context)
-                                      }
-                                  // _uploadFiles, //TODO: spostarlo & select range of time
-                                  ),
+                                icon: Icon(
+                                  MdiIcons.calendarClock,
+                                  size: 22,
+                                ),
+                                onPressed:
+                                    _uploadFiles, //TODO: spostarlo & select range of time
+                              ),
                             ),
                           ),
                           Expanded(
@@ -542,10 +528,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                   ),
                                   leading: IconButton(
                                     icon: Icon(MdiIcons.filePdf),
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                    color: c.isNew
+                                        ? Colors.yellow
+                                        : Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
                                     onPressed: c.attachments.isEmpty
                                         ? null
                                         : () async {
@@ -578,7 +566,15 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         : CrossFadeState.showSecond,
                                     firstCurve: Curves.easeInQuad,
                                     secondCurve: Curves.decelerate,
-                                    firstChild: Icon(MdiIcons.eye),
+                                    firstChild: Icon(
+                                      MdiIcons.eye,
+                                      color: c.isNew
+                                          ? Colors.yellow
+                                          : Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                    ),
                                     secondChild: Icon(MdiIcons.eyeOffOutline),
                                   ),
                                   child: Padding(

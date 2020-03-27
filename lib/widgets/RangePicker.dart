@@ -168,6 +168,8 @@ class _PickerWidgetState extends State<PickerWidget>
                 controller: _tabController,
                 children: widget._tabs.map((Tab tab) {
                   return CupertinoDatePicker(
+                    minimumDate: DateTime(DateTime.now().year - 1),
+                    maximumYear: DateTime.now().year,
                     mode: widget._mode,
                     minuteInterval: widget._interval,
                     initialDateTime:
