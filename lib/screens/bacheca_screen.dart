@@ -538,7 +538,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         ? null
                                         : () async {
                                             c.seen();
-
+                                            await c.loadContent(null);
                                             await pr.show();
                                             // show hud with colors
                                             var _pathh = await c.downloadPdf();
