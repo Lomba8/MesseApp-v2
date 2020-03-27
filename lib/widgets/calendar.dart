@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
@@ -33,7 +34,7 @@ class Calendar extends ResizableWidget {
 
   set currentDay(DateTime currentDay) {
     _onDayChanged(_currentDay = currentDay,
-        RegistroApi.agenda.data.getEvents(currentDay));
+        session.agenda.data.getEvents(currentDay));
   }
 
   @override
@@ -189,7 +190,7 @@ class Calendar extends ResizableWidget {
                   child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: ((RegistroApi.agenda.data as EventList<Evento>)
+                      children: ((session.agenda.data as EventList<Evento>)
                                   .getEvents(day) ??
                               [])
                           .map((e) => e.getDot(week == safeWeek

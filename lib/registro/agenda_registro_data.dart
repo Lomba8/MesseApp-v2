@@ -1,3 +1,4 @@
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -11,22 +12,25 @@ class AgendaRegistroData extends RegistroData {
 
   static String getSchoolYear(DateTime date) {
     int year2 = int.parse(DateFormat.M().format(date)) < 9 ? 1 : 0;
-    return '${date.year - year2}0901/${date.year  + 1 - year2}0630';
+    return '${date.year - year2}0901/${date.year + 1 - year2}0630';
   }
 
-  AgendaRegistroData()
+  AgendaRegistroData({@required RegistroApi account})
       : super(
-            'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${getSchoolYear(DateTime.now())}');
+            url:
+                'https://web.spaggiari.eu/rest/v1/students/%uid/agenda/all/${getSchoolYear(DateTime.now())}',
+            account: account, name: 'agenda');
 
   @override
-  Result parseData(json) {
+  Future<Result> parseData(json) async {
     try {
       json = json['agenda'];
       EventList<Evento> data2 = EventList<Evento>();
       Map<String, bool> eventiNewFlags2 = {};
 
       json.forEach((m) {
-        RegistroApi.cls = m['classDesc'].substring(0, m['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
+        account.cls = m['classDesc']
+            .substring(0, m['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
         Evento evt = Evento(m['evtId'].toString(),
             inizio: DateTime.parse(m['evtDatetimeBegin'].replaceFirst(
                     ':', '', m['evtDatetimeBegin'].lastIndexOf(':')))
@@ -39,13 +43,15 @@ class AgendaRegistroData extends RegistroData {
             autore: m['authorName']);
 
         data2.add(evt.getDate(), evt);
-        eventiNewFlags2[m['evtId'].toString()] = DateTime.now().isBefore(evt.getDate()) &&
-            (eventiNewFlags[m['evtId'].toString()] ?? true);
+        eventiNewFlags2[m['evtId'].toString()] =
+            DateTime.now().isBefore(evt.getDate()) &&
+                (eventiNewFlags[m['evtId'].toString()] ?? true);
       });
 
       data = data2;
       eventiNewFlags = eventiNewFlags2;
 
+      account.update();
       return Result(true, true);
     } catch (e, stack) {
       print(e);
@@ -80,6 +86,11 @@ class AgendaRegistroData extends RegistroData {
     eventiNewFlags = json['newFlags']
         .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
   }
+
+  @override
+  Future<void> create() {
+    // TODO: implement create
+  }
 }
 
 class Evento implements EventInterface {
@@ -95,15 +106,16 @@ class Evento implements EventInterface {
   @override
   DateTime getDate() => DateTime(inizio.year, inizio.month, inizio.day);
 
-  bool get nuovo => RegistroApi.agenda.eventiNewFlags[_evtId];
+  bool get nuovo => session.agenda.eventiNewFlags[_evtId];
   void seen() {
-    RegistroApi.agenda.eventiNewFlags[_evtId] = false;
+    session.agenda.eventiNewFlags[_evtId] = false;
   }
 
   @override
   Widget getDot([double opacity]) => Container(
         margin: EdgeInsets.symmetric(horizontal: 1.0),
-        color: (nuovo ?? true ? Colors.red : Colors.lightBlueAccent).withOpacity(opacity),
+        color: (nuovo ?? true ? Colors.red : Colors.lightBlueAccent)
+            .withOpacity(opacity),
         height: 5.0,
         width: 5.0,
       );

@@ -6,6 +6,7 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/offline.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -29,10 +30,13 @@ import 'package:connectivity/connectivity.dart';
     scopes: ['https://www.googleapis.com/auth/admin.directory.group.readonly'],
     hostedDomain: 'messedaglia.edu.it');*/
 
+RegistroApi session;
+
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     WidgetsFlutterBinding.ensureInitialized();
-    await RegistroApi.loadAuth();
+    await init();
+    session = accounts?.isNotEmpty ?? false ? accounts.first : null;
     //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     //_signIn.signIn();
     notificationsPlugin.initialize(

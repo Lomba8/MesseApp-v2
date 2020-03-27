@@ -53,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
 
-    if (main.connection_main != ConnectivityResult.none) {
-      RegistroApi.login().then((ok) {
+    if (main.connection_main != ConnectivityResult.none && main.session != null) {
+      main.session.login().then((ok) {
         if (ok == '')
           downloadAll();
         else
           setState(() => splash = false);
       });
-    }
+    } else splash = false;
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
     finished = false;
@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void downloadAll() => RegistroApi.downloadAll(
+  void downloadAll() => main.session.downloadAll(
           (double progress) => setState(() {
                 _progress = progress;
                 if (progress == 1)
@@ -98,11 +98,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      var req = await RegistroApi.login(
-          username: _username, password: _password, check: true);
+      RegistroApi account = RegistroApi(uname: _username, pword: _password);
+      var req = await account.login(check: true);
       if (req == '') {
         _btnController.success();
-
+        main.session = account;
         setState(() {
           splash = true;
         });
