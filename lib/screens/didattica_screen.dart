@@ -64,8 +64,13 @@ class _DidatticaScreenData extends State<DidatticaScreen>
               size: Size.infinite,
             ),
             actions: <Widget>[
-              IconButton(icon: Icon(Icons.clear_all, color: Colors.white54,),
-              onPressed: () => setState(() => directory.view(recursive: true)))
+              IconButton(
+                  icon: Icon(
+                    Icons.clear_all,
+                    color: Colors.white54,
+                  ),
+                  onPressed: () =>
+                      setState(() => directory.view(recursive: true)))
             ],
             bottom: PreferredSize(
                 child: Container(),
@@ -80,7 +85,8 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
-                      onTap: () => setState(() => directory = directory.view().parent),
+                      onTap: () =>
+                          setState(() => directory = directory.view().parent),
                       child: Column(
                         children: <Widget>[
                           Stack(
@@ -104,7 +110,8 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                     ),
                   )
               ]
-                  .followedBy(directory.children.values.map<Widget>((path) => Padding(
+                  .followedBy(directory.children.values.map<Widget>((path) =>
+                      Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
@@ -117,8 +124,10 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                                 animation: _animationController,
                                 builder: (context, child) => Transform(
                                   transform: Matrix4.identity()
-                                    ..translate(0.0, path.changed ? _animation1.value : 0.0)
-                                    ..scale(1.0, path.changed ? _animation2.value : 1.0),
+                                    ..translate(0.0,
+                                        path.changed ? _animation1.value : 0.0)
+                                    ..scale(1.0,
+                                        path.changed ? _animation2.value : 1.0),
                                   alignment: Alignment.bottomCenter,
                                   child: Stack(
                                     alignment: Alignment.center,

@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DidatticaRegistroData extends RegistroData {
@@ -36,7 +39,7 @@ class DidatticaRegistroData extends RegistroData {
                                             lastUpdate:
                                                 DateTime.parse(content['shareDT'].replaceAll(':', '')),
                                             id: content['contentId'],
-                                            oldLastUpdate: data is CustomDirectory ? data?.getFile([teacher['teacherName'], folder['folderName'], content['contentName']])?.lastUpdate : null)
+                                            oldLastUpdate: data is CustomDirectory ? data?.getFile(<String>[teacher['teacherName'], folder['folderName'], content['contentName']])?.lastUpdate : null)
                                           ..download(onlyHeader: true)))
                                 .toList()))))
                 .toList()),
@@ -124,7 +127,8 @@ class CustomDirectory extends CustomPath {
     return this;
   }
 
-  dynamic toJson() => children.map((name, child) => MapEntry((child is CustomDirectory ? 'dir:' : 'file:')+name, child));
+  dynamic toJson() => children.map((name, child) =>
+      MapEntry((child is CustomDirectory ? 'dir:' : 'file:') + name, child));
 }
 
 class CustomFile extends CustomPath {
@@ -145,12 +149,8 @@ class CustomFile extends CustomPath {
         max(oldLastUpdate ?? 0, lastUpdate.millisecondsSinceEpoch);
   }
 
-  dynamic toJson() => {
-    'type': type,
-    'fileName': fileName,
-    'id': id,
-    'lastUpdate': lastUpdate 
-  };
+  dynamic toJson() =>
+      {'type': type, 'fileName': fileName, 'id': id, 'lastUpdate': lastUpdate};
 
   CustomFile.parse({String name, Map json})
       : type = json['type'],
@@ -175,7 +175,11 @@ class CustomFile extends CustomPath {
       fileName = res.headers['content-disposition'];
       fileName = fileName
           .substring(fileName.indexOf('filename=') + 'filename='.length);
-      type = fileName.substring(fileName.lastIndexOf('.'));
+      try {
+        type = fileName.substring(fileName.lastIndexOf('.'));
+      } catch (e) {
+        type = res.headers['content-type'].split('/')[1];
+      }
       return;
     }
     if (type == 'link') launch(jsonDecode(res.body)['item']['link']);

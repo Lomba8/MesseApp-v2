@@ -189,6 +189,7 @@ class Globals {
     '.odt': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.docx': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.pages': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    'msword': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.txt': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.rtf': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.doc': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
