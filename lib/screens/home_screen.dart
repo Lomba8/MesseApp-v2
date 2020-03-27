@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:Messedaglia/main.dart' as main;
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 //se non mi piace la nav bar di flare posso usare: curved_navigation_bar
 //flare gia pronto per menu bar https://rive.app/a/akaaljotsingh/files/flare/drawer/preview
@@ -33,11 +34,11 @@ class _HomeState extends State<Home> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('${RegistroApi.voti.newVotiTot} nuovi voti'),
+              Text('${main.session.voti.newVotiTot} nuovi voti'),
               Text('0 nuove comunicazioni'),
               Text('nessuna supplenza per domani'),
               Text(
-                  '${RegistroApi.agenda.data.getEvents(getDayFromDT(DateTime.now()).add(Duration(days: 1))).length} eventi domani'),
+                  '${main.session.agenda.data.getEvents(getDayFromDT(DateTime.now()).add(Duration(days: 1))).length} eventi domani'),
             ],
           ),
         ),
@@ -46,7 +47,7 @@ class _HomeState extends State<Home> {
           child: SingleChildScrollView(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: (RegistroApi.lessons.data['date']
+                children: (main.session.lessons.data['date']
                             [getDayFromDT(DateTime.now())] ??
                         [])
                     .map<Widget>((lesson) => Padding(
@@ -102,7 +103,7 @@ class _HomeState extends State<Home> {
   //   flutterLocalNotificationsPlugin.schedule(
   //       1,
   //       'Tanti auguri🎉🎁',
-  //       '${RegistroApi.nome}', //FIXME: le notifiche non spuntano la data di compleanno
+  //       '${session.nome}', //FIXME: le notifiche non spuntano la data di compleanno
   //       DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2])),
   //       platformChannelSpecifics);
   //   print(
@@ -122,7 +123,7 @@ class _HomeState extends State<Home> {
     }
     return LiquidPullToRefresh(
       showChildOpacityTransition: false,
-      onRefresh: () => RegistroApi.downloadAll((d) {}),
+      onRefresh: () => main.session.downloadAll((d) {}),
       child: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -132,7 +133,7 @@ class _HomeState extends State<Home> {
             pinned: true,
             backgroundColor: Colors.transparent,
             title: Text(
-              '${RegistroApi.nome} ${RegistroApi.cognome}',
+              '${main.session.nome} ${main.session.cognome}',
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
@@ -140,6 +141,15 @@ class _HomeState extends State<Home> {
                       : Colors.white,
                   fontSize: 30,
                   fontWeight: FontWeight.bold),
+            ),
+            leading: MaterialButton(
+              child: Icon(MdiIcons.account,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Color(0xFFBDBDBD)
+                      : Colors.grey[800]),
+              onPressed: () {},
+              color: Theme.of(context).primaryColor,
+              shape: CircleBorder(),
             ),
             actions: <Widget>[
               IconButton(

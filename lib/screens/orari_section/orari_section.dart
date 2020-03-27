@@ -22,7 +22,7 @@ class _OrariSectionState extends State<OrariSection> {
   Map<String, String> downloads = {};
 
   void resetprefs() async =>
-      main.prefs.setString('selectedClass', selectedClass = RegistroApi.cls);
+      main.prefs.setString('selectedClass', selectedClass = session.cls);
 
   @override
   void initState() {

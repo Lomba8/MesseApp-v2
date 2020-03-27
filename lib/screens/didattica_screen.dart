@@ -1,3 +1,4 @@
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/didattica_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
@@ -11,7 +12,7 @@ class DidatticaScreen extends StatefulWidget {
 
 class _DidatticaScreenData extends State<DidatticaScreen>
     with SingleTickerProviderStateMixin {
-  CustomDirectory directory = RegistroApi.didactics.data;
+  CustomDirectory directory = session.didactics.data;
 
   AnimationController _animationController;
   Animation<double> _animation1, _animation2;
@@ -147,10 +148,10 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                                                     })['icona'],
                                         size: 125,
                                         color: (path is CustomDirectory
-                                                ? (RegistroApi.subjects
+                                                ? (session.subjects
                                                             .subjectTheme(
                                                                 path.name) ??
-                                                        RegistroApi.subjects
+                                                        session.subjects
                                                             .subjectTheme(path
                                                                 .parent
                                                                 ?.name) ??
@@ -164,9 +165,9 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                                       ),
                                       if (path is CustomDirectory)
                                         Icon(
-                                          (RegistroApi.subjects
+                                          (session.subjects
                                                   .subjectTheme(path.name) ??
-                                              RegistroApi.subjects.subjectTheme(
+                                              session.subjects.subjectTheme(
                                                   path.parent?.name) ??
                                               {})['icona'],
                                           size: 40,

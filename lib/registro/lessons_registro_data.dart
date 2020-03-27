@@ -5,12 +5,14 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 
 class LessonsRegistroData extends RegistroData {
-  LessonsRegistroData()
+  LessonsRegistroData({@required RegistroApi account})
       : super(
-            'https://web.spaggiari.eu/rest/v1/students/%uid/lessons/${AgendaRegistroData.getSchoolYear(DateTime.now())}');
+            url:
+                'https://web.spaggiari.eu/rest/v1/students/%uid/lessons/${AgendaRegistroData.getSchoolYear(DateTime.now())}',
+            account: account, name: 'lessons');
 
   @override
-  Result parseData(json) {
+  Future<Result> parseData(json) async {
     json = json['lessons'];
     data['sbj'] = <String, List<Lezione>>{};
     data['date'] = <DateTime, List<Lezione>>{};
@@ -35,7 +37,7 @@ class LessonsRegistroData extends RegistroData {
     // Interrogazione e spiegazione
 
     for (Map lesson in json) {
-      RegistroApi.cls = lesson['classDesc']
+      account.cls = lesson['classDesc']
           .substring(0, lesson['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
       Lezione lezione = Lezione(
           date: DateTime.parse(lesson['evtDate']),
@@ -53,6 +55,7 @@ class LessonsRegistroData extends RegistroData {
         (data['date'][lezione.date] ??= <Lezione>[]).add(lezione);
       }
     }
+    account.update();
     return Result(true, true);
   }
 
@@ -76,6 +79,11 @@ class LessonsRegistroData extends RegistroData {
       (data['sbj'][l.sbj] ??= <Lezione>[]).add(l);
       (data['date'][l.date] ??= <Lezione>[]).add(l);
     });
+  }
+
+  @override
+  Future<void> create() {
+    // TODO: implement create
   }
 }
 

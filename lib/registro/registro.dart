@@ -10,22 +10,91 @@ import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/note_registro_data.dart';
 import 'package:Messedaglia/registro/subjects_registro_data.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sqflite/sqlite_api.dart';
+
+final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
 
 class RegistroApi {
-  static String nome, cognome, scuola, uname, pword, cls;
-  static DateTime compleanno;
-  static int usrId;
+  final String uname, pword;
+  int usrId;
+  String nome, cognome, scuola, token, cls;
+  DateTime tokenExpiration, birth;
 
-  static final VotiRegistroData voti = VotiRegistroData();
-  static final AgendaRegistroData agenda = AgendaRegistroData();
-  static final SubjectsRegistroData subjects = SubjectsRegistroData();
-  static final BachecaRegistroData bacheca = BachecaRegistroData();
-  static final NoteRegistroData note = NoteRegistroData();
-  static final LessonsRegistroData lessons = LessonsRegistroData();
-  static final AbsencesRegistroData absences = AbsencesRegistroData();
-  static final DidatticaRegistroData didactics = DidatticaRegistroData();
+  RegistroApi({@required this.uname, @required this.pword}) {
+    init();
+  }
+  RegistroApi.parse(Map map)
+      : this.uname = map['uname'],
+        this.pword = map['pword'],
+        this.usrId = map['usrId'],
+        this.nome = map['nome'],
+        this.cognome = map['cognome'],
+        this.scuola = map['scuola'],
+        this.token = map['token'],
+        this.cls = map['cls'],
+        this.tokenExpiration = DateTime.tryParse(map['tokenExpiration']),
+        this.birth = DateTime.tryParse(map['birth']) {
+    init();
+  }
+
+  void init() {
+    voti = VotiRegistroData(account: this);
+    agenda = AgendaRegistroData(account: this);
+    subjects = SubjectsRegistroData(account: this);
+    bacheca = BachecaRegistroData(account: this);
+    note = NoteRegistroData(account: this);
+    lessons = LessonsRegistroData(account: this);
+    absences = AbsencesRegistroData(account: this);
+    didactics = DidatticaRegistroData(account: this);
+  }
+
+  Map get asMap => <String, dynamic>{
+        'usrId': usrId,
+        'nome': nome,
+        'cognome': cognome,
+        'scuola': scuola,
+        'uname': uname,
+        'pword': pword,
+        'token': token,
+        'cls': cls,
+        'birth': birth.toIso8601String(),
+        'tokenExpiration': tokenExpiration.toIso8601String(),
+      };
+
+  Future<void> register() async {
+    await database.insert('auth', asMap,
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    await voti.register();
+    await agenda.register();
+    await subjects.register();
+    await bacheca.register();
+    await note.register();
+    await lessons.register();
+    await absences.register();
+    await didactics.register();
+  }
+
+  Future<void> update() async => await database.update(
+      'auth',
+      <String, dynamic>{
+        'cls': cls,
+        'token': token,
+        'tokenExpiration': tokenExpiration.toIso8601String()
+      },
+      where: 'usrId = ?',
+      whereArgs: [usrId]);
+
+  VotiRegistroData voti;
+  AgendaRegistroData agenda;
+  SubjectsRegistroData subjects;
+  BachecaRegistroData bacheca;
+  NoteRegistroData note;
+  LessonsRegistroData lessons;
+  AbsencesRegistroData absences;
+  DidatticaRegistroData didactics;
 
   static String _capitalize(String s) {
     List<String> parole = [];
@@ -38,42 +107,26 @@ class RegistroApi {
     return capitalizzato.trim();
   }
 
-  static Map<String, String> body = {'ident': null, 'pass': '', 'uid': ''};
-
-  static final String loginUrl = 'https://web.spaggiari.eu/rest/v1/auth/login';
-
-  static String token;
-  static DateTime tokenExpiration;
-
-  static Future<String> login(
-      {String username,
-      String password,
-      bool check = true,
-      bool force = false}) async {
-    username ??= uname;
-    password ??= pword;
-    if (username == null || password == null)
+  Future<String> login({bool check = true, bool force = false}) async {
+    if (uname == null || pword == null)
       return 'Username e/o password non validi';
-    if (username == uname && password == pword && !force) if (token != null &&
+    if (uname == uname && pword == pword && !force) if (token != null &&
         DateTime.now().isBefore(tokenExpiration)) return '';
-    print('logging $username');
     try {
       Map<String, String> headers = {
         'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
         'Content-Type': 'application/json',
         'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       };
-
-      body['pass'] = password;
-      body['uid'] = username;
       http.Response res;
 
       try {
-        res =
-            await http.post(loginUrl, headers: headers, body: jsonEncode(body));
+        res = await http.post(loginUrl,
+            headers: headers,
+            body: jsonEncode({'ident': null, 'pass': pword, 'uid': uname}));
       } catch (e) {
         print(e);
-        return res.reasonPhrase.toString();
+        return res.reasonPhrase;
       }
 
       if (res.statusCode != 200) return res.reasonPhrase;
@@ -83,18 +136,14 @@ class RegistroApi {
               .replaceFirst(':', '', json['expire'].lastIndexOf(':')))
           .toLocal();
       if (!check) {
-        _saveAuth();
+        update();
         return '';
       }
       headers['Z-Auth-Token'] = token;
 
-      try {
-        res = await http.get(
-            "https://web.spaggiari.eu/rest/v1/students/${username.substring(1)}/card",
-            headers: headers);
-      } catch (e) {
-        print(e);
-      }
+      res = await http.get(
+          "https://web.spaggiari.eu/rest/v1/students/${uname.substring(1)}/card",
+          headers: headers);
       if (res.statusCode != HttpStatus.ok) {
         token = tokenExpiration = null;
         return res.reasonPhrase;
@@ -105,30 +154,26 @@ class RegistroApi {
         token = tokenExpiration = null;
         return 'Haha ci hai provato';
       }
-      print(json['birthDate']);
-      uname = username;
-      pword = password;
       scuola = _capitalize("${json["schName"]} ${json["schDedication"]}");
       nome = _capitalize(json["firstName"]);
       cognome = _capitalize(json["lastName"]);
-      compleanno = DateTime.parse(json["birthDate"]);
-      compleanno =
+      birth = DateTime.parse(json["birthDate"]);
+      /*compleanno =
           DateTime(DateTime.now().year, compleanno.month, compleanno.day);
       if (compleanno.isBefore(DateTime.now()))
-        compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));
+        compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));*/
       usrId = json["usrId"];
-      _saveAuth();
+      accounts.add(this);
+      await register();
       return '';
     } catch (e, s) {
       print(e);
       print(s);
-      token = tokenExpiration = null;
     }
-
     return 'Errore durante il login';
   }
 
-  static Future<void> downloadAll(void Function(double) callback,
+  Future<void> downloadAll(void Function(double) callback,
       {List<Future Function()> downloaders = const []}) async {
     final Map<String, RegistroData> toDownload = {
       'voti': voti,
@@ -142,8 +187,12 @@ class RegistroApi {
     };
     int n = 0;
     toDownload.forEach((name, data) async {
-      dynamic json = await loadData(name);
-      if (json != null) data.fromJson(json);
+      if (data is VotiRegistroData) {
+        data.load();
+      } else {
+        dynamic json = await loadData(name);
+        if (json != null) if (data is VotiRegistroData) data.fromJson(json);
+      }
       await data.getData();
       callback(++n / (toDownload.length + downloaders.length));
     });
@@ -153,36 +202,7 @@ class RegistroApi {
     });
   }
 
-  static void _saveAuth() => saveData({
-        'nome': nome,
-        'cognome': cognome,
-        'scuola': scuola,
-        'compleanno': compleanno.toIso8601String(),
-        'usrId': usrId,
-        'uname': uname,
-        'pword': pword,
-        'token': token,
-        'tokenExpiration': tokenExpiration.toIso8601String(),
-        'cls': cls
-      }, 'auth');
-  static Future loadAuth() async {
-    Map data = await loadData('auth');
-    if (data == null) return;
-    nome = data['nome'];
-    cognome = data['cognome'];
-    scuola = data['scuola'];
-    compleanno = DateTime.parse(data['compleanno']);
-    usrId = data['usrId'];
-    uname = data['uname'];
-    pword = data['pword'];
-    token = data['token'];
-    tokenExpiration = DateTime.parse(data['tokenExpiration']);
-    cls = data['cls'];
-  }
-
-  static void save() async {
-    _saveAuth();
-    saveData(voti, 'voti');
+  void save() async {
     saveData(agenda, 'agenda');
     saveData(subjects, 'subjects');
     saveData(bacheca, 'bacheca');
@@ -191,11 +211,9 @@ class RegistroApi {
     saveData(didactics, 'didactics');
   }
 
-  static Future<void> load() async {
-    await loadAuth();
-    dynamic data = await loadData('voti');
-    if (data != null) voti.fromJson(data);
-    data = await loadData('agenda');
+  Future<void> load() async {
+    voti.load();
+    dynamic data = await loadData('agenda');
     if (data != null) agenda.fromJson(data);
     data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
@@ -211,23 +229,60 @@ class RegistroApi {
 }
 
 abstract class RegistroData {
+  final RegistroApi account;
+  final String name;
+
   DateTime lastUpdate;
   String etag;
   dynamic data = <String, dynamic>{};
   final String _url;
   bool _loading = false;
 
+  RegistroData(
+      {@required this.account, @required String url, @required this.name})
+      : _url = url;
+
+  Map<String, dynamic> asMap(String name) => <String, dynamic>{
+        'name': name,
+        'usrId': account.usrId,
+        'etag': etag,
+        'lastUpdate': lastUpdate?.toIso8601String()
+      };
+
+  Future<void> create();
+
+  Future<void> register() async {
+    await database.insert('sections', asMap(name),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    await create();
+  }
+
+  Future<void> update(String name) async => await database.update(
+      'sections', {'etag': etag, 'lastUpdate': lastUpdate?.toIso8601String()},
+      where: 'name = ? AND usrId = ?', whereArgs: [name, account.usrId]);
+
+  Future<void> load() async {
+    await database.query('sections',
+        columns: ['etag', 'lastUpdate'],
+        where: 'name = ? AND usrId = ?',
+        whereArgs: [name, account.usrId]);
+    data = (await database
+            .query('voti', where: 'usrId = ?', whereArgs: [account.usrId]))
+        .map((v) => Map.from(v))
+        .toList();
+  }
+
   Future<Result> getData() async {
     if (_loading) return Result(true, false);
     _loading = true;
-    if (DateTime.now().isAfter(
-        RegistroApi.tokenExpiration)) if (await RegistroApi.login() != '')
+    if (DateTime.now()
+        .isAfter(account.tokenExpiration)) if (await account.login() != '')
       return Result(false, false);
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
       'Content-Type': 'application/json',
       'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
-      'Z-Auth-Token': RegistroApi.token,
+      'Z-Auth-Token': account.token,
       'Z-If-None-Match': etag
     };
     http.Response r;
@@ -241,13 +296,17 @@ abstract class RegistroData {
 
     if (r.statusCode != HttpStatus.ok) {
       _loading = false;
-      if (r.statusCode == HttpStatus.notModified) lastUpdate = DateTime.now();
+      if (r.statusCode == HttpStatus.notModified) {
+        lastUpdate = DateTime.now();
+        update(name);
+      }
       return Result(r.statusCode == HttpStatus.notModified, false);
     }
     etag = r.headers['etag'];
-    Result result = parseData(json.decode(r.body));
+    Result result = await parseData(json.decode(r.body));
     lastUpdate = DateTime.now();
     _loading = false;
+    update(name);
     return result;
   }
 
@@ -265,11 +324,9 @@ abstract class RegistroData {
         'etag': etag,
       }; // delegates data save to the derivate class
 
-  RegistroData(this._url);
+  String get url => _url.replaceFirst('%uid', account.usrId.toString());
 
-  String get url => _url.replaceFirst('%uid', RegistroApi.usrId.toString());
-
-  Result parseData(dynamic json);
+  Future<Result> parseData(dynamic json);
 }
 
 class Result {

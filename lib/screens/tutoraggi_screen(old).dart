@@ -1,3 +1,4 @@
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
@@ -21,7 +22,7 @@ final List<_Tutor> tutors = [
 ];
 final String _defaultBody = '''Buona giornata,
 \nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
-\n${RegistroApi.nome} ${RegistroApi.cognome}''';
+\n${session.nome} ${session.cognome}''';
 
 class _Tutor {
   final String _nome, _cognome, classe, materia;

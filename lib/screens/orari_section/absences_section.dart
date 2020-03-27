@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
 
@@ -65,7 +66,7 @@ final List<Interval> holidaysData = jsonDecode('''[
 
 // se sbj è null allora conta i giorni invece che le ore
 int countRemainingHours ({String sbj, String cls}) {
-  cls ??= RegistroApi.cls;
+  cls ??= session.cls;
   if (cls == null) return null;
   int count = 0;
   for (Interval interval in holidaysData)

@@ -1,14 +1,15 @@
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:flutter/material.dart';
 
 class NoteRegistroData extends RegistroData {
-  NoteRegistroData()
-      : super('https://web.spaggiari.eu/rest/v1/students/%uid/notes/all/');
+  NoteRegistroData({@required RegistroApi account})
+      : super(url: 'https://web.spaggiari.eu/rest/v1/students/%uid/notes/all/', account: account, name: 'note');
 
   Map<int, bool> noteNewFlags = {};
   String json;
 
   @override
-  Result parseData(json) {
+  Future<Result> parseData(json) async {
     this.json = json.toString();
     /*
     json = json['items'];
@@ -30,5 +31,10 @@ class NoteRegistroData extends RegistroData {
     data = data2..sort();
     bachecaNewFlags = bachecaNewFlags2;*/
     return Result(true, true);
+  }
+
+  @override
+  Future<void> create() {
+    // TODO: implement create
   }
 }
