@@ -1,58 +1,65 @@
-import 'package:Messedaglia/utils/orariUtils.dart' as orariUtils;
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Messedaglia/screens/orari_section/lessons_section.dart';
+import 'package:Messedaglia/screens/orari_section/orari_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Orari extends StatefulWidget {
   static final String id = 'orari_screen';
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   @override
   _OrariState createState() => _OrariState();
 }
 
 class _OrariState extends State<Orari> {
-  static String _selectedClass;
-
   @override
   void initState() {
     super.initState();
   }
 
+  int _index = 1;
+  PageController _controller = PageController();
+
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: MediaQuery.of(context).padding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: DropdownButton(
-                  isExpanded: true,
-                  hint: Text('seleziona una classe...'),
-                  value: _selectedClass,
-                  items: orariUtils.orari.keys
-                      .map((cls) => DropdownMenuItem<String>(
-                            child: Text('    $cls'),
-                            value: cls,
-                          ))
-                      .toList()
-                        ..sort((d1, d2) => d1.value
-                            .compareTo(d2.value)), // TODO: sort solo una volta
-                  onChanged: (cls) => setState(() => _selectedClass = cls)),
+  Widget build(BuildContext context) => Stack(
+        children: [
+          PageView(
+            children: [
+              OrariSection(),
+              LessonsSection(),
+            ],
+            controller: _controller,
+            // onPageChanged: (index) {
+            //   setState(() {
+            //     _index = index;
+            //   });
+            // },
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SmoothPageIndicator(
+              controller: _controller,
+              count: 2,
+              effect: SwapEffect(
+                activeDotColor: Theme.of(context).accentColor,
+                dotColor: Colors.white10,
+                dotHeight: 10.0,
+                dotWidth: 10.0,
+                radius: 5.0,
+              ),
             ),
-            if (_selectedClass != null)
-              GridView.count(
-                crossAxisCount: 6,
-                childAspectRatio: 1.5,
-                shrinkWrap: true,
-                children: (orariUtils.orari[_selectedClass] ?? [])
-                    .map<Widget>((sbj) => Container(
-                      color: orariUtils.colors[sbj] ?? Colors.transparent,
-                      child: Center(
-                            child: AutoSizeText(sbj, textAlign: TextAlign.center,),
-                          ),
-                    ))
-                    .toList(),
-              )
-          ],
-        ),
+          ),
+        ],
       );
+}
+
+void rebuildAllChildren(BuildContext context) {
+  void rebuild(Element el) {
+    el.markNeedsBuild();
+    el.visitChildren(rebuild);
+  }
+
+  (context as Element).visitChildren(rebuild);
 }

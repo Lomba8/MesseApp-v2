@@ -1,35 +1,42 @@
 import 'dart:math';
+import 'dart:ui';
 
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
+import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
-    show CalendarCarousel, EventList;
+    show EventList;
 import 'package:flutter_dash/flutter_dash.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../registro/agenda_registro_data.dart';
 import '../registro/registro.dart';
 
 class Agenda extends StatefulWidget {
   static final String id = 'agenda_screen';
+
   @override
   _AgendaState createState() => _AgendaState();
 }
 
-class _AgendaState extends State<Agenda> {
+class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   DateTime _currentDate;
+  bool _value = false;
 
   EventList<Evento> get e => RegistroApi.agenda.data;
 
   List<Evento> dayEvents = List<Evento>();
+  List<Lezione> dayLessons = List<Lezione>();
+  Evento _onTop;
 
-  double lunghezza_dash = 0;
+  double lunghezzaDash = 0;
 
   void initState() {
     _currentDate =
@@ -55,7 +62,8 @@ class _AgendaState extends State<Agenda> {
     if (mounted) setState(() {});
   }
 
-  String _passedTime() {
+  // TODO: ripristinare lastUpdate
+  /*String _passedTime() {
     if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
         DateTime.now().difference(RegistroApi.agenda.lastUpdate);
@@ -74,7 +82,7 @@ class _AgendaState extends State<Agenda> {
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
-  }
+  }*/
 
   Future<void> _refresh() async {
     RegistroApi.agenda.getData().then((r) {
@@ -98,63 +106,74 @@ class _AgendaState extends State<Agenda> {
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
+          ExpansionSliver(ExpansionSliverDelegate(context,
+              title: 'AGENDA',
+              body: Calendar(
+                  _currentDate,
+                  (day, events) => setState(() {
+                        if (dayEvents != null && dayEvents.isNotEmpty)
+                          dayEvents.forEach((event) => event.seen());
+                        dayEvents = events ?? [];
+                        dayLessons = RegistroApi.lessons.data['date'][day];
+                        _currentDate = day;
+                        lunghezzaDash = 0;
+                        _value = !_value;
+                      }),
+                  'agenda'),
+              value: _value)),
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                CustomPaint(
-                  painter: BackgroundPainter(Theme.of(context)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 50),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: size.height / 100, top: size.height / 18),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "Agenda",
-                            textAlign: TextAlign
-                                .center, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
-                            style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.black
-                                    : Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Calendar((day, events) => setState(() {
-                                if (dayEvents != null && dayEvents.isNotEmpty)
-                                  dayEvents.forEach((event) => event.seen());
-                                dayEvents = events ?? [];
-                                _currentDate = day;
-                                lunghezza_dash = 0;
-                              })),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15.0),
-                            child: SizedBox(
-                              width: size.width,
-                              child: Text(
-                                '\n${_passedTime()}',
-                                textAlign: TextAlign
-                                    .right, //FIXME: _calendarController si inizializza solo dopo un secondo come fare ad aspettare la sua inizalizzazione?
-                                style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? Colors.black
-                                        : Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold),
+                if (dayLessons != null)
+                  Column(
+                    // TODO: per ora lo piazzo qui
+                    children: dayLessons
+                        .map((l) => ListTile(
+                              title: Text(l.sbj),
+                              subtitle: Text(
+                                (RegistroApi.subjects.data[l.author] == l.sbj ||
+                                            (RegistroApi.subjects.data[l.author]
+                                                    ?.contains(l.sbj) ??
+                                                false)
+                                        ? ''
+                                        : '(${l.author})\n') +
+                                    l.lessonType,
+                                style: Theme.of(context).textTheme.bodyText1,
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                              leading: CircleAvatar(
+                                child: Text('${l.hour + 1}ª',
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
+                                backgroundColor:
+                                    (Globals.subjects[l.sbj] ?? {})['colore']
+                                            ?.withOpacity(0.5) ??
+                                        (Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white24
+                                            : Colors.black26),
+                              ),
+                              trailing: CircleAvatar(
+                                  child: Text('${l.duration.inHours} h',
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      )),
+                                  backgroundColor:
+                                      (Globals.subjects[l.sbj] ?? {})['colore']
+                                              ?.withOpacity(0.5) ??
+                                          (Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white24
+                                              : Colors.black26)),
+                            ))
+                        .toList(),
                   ),
-                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: dayEvents
@@ -180,7 +199,10 @@ class _AgendaState extends State<Agenda> {
                                   style: TextStyle(
                                       fontSize: 16.0,
                                       fontFamily: 'CoreSans',
-                                      color: Colors.white),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                               ),
                               Icon(
@@ -195,12 +217,8 @@ class _AgendaState extends State<Agenda> {
                                     size.width / 19.0,
                                     size.height / 50.0,
                                   ),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints.tight(Size(
-                                        double.infinity, size.height / 6.0)),
-                                    child: EventCard(
-                                      evento: evento,
-                                    ),
+                                  child: EventCard(
+                                    evento: evento,
                                   )),
                             ],
                           ))
@@ -240,10 +258,12 @@ class _AgendaState extends State<Agenda> {
                     Dash(
                       direction: Axis.vertical,
                       dashBorderRadius: 0.0,
-                      dashColor: Colors.white54,
+                      dashColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white54
+                          : Colors.black54,
                       dashGap: 2,
                       dashThickness: 1.0,
-                      length: lunghezza_dash - 47,
+                      length: lunghezzaDash - 47,
                     ),
                     Expanded(
                       child: Container(
@@ -252,11 +272,16 @@ class _AgendaState extends State<Agenda> {
                           overflow: Overflow.clip,
                           // FIXME: sovrapposizione di eventi
                           children: dayEvents
-                              .where((event) => !event.giornaliero)
+                              .where((event) =>
+                                  !event.giornaliero && event != _onTop)
                               .map<Widget>((oggi) => EventCard(
                                     evento: oggi,
+                                    onTap: () => setState(() => _onTop = oggi),
                                   ))
-                              .toList(),
+                              .followedBy([
+                            if (_onTop != null && dayEvents.contains(_onTop))
+                              EventCard(evento: _onTop)
+                          ]).toList(),
                         ),
                       ),
                     )
@@ -287,14 +312,17 @@ class _AgendaState extends State<Agenda> {
     if (inizio >= 24 * 60) return [];
     timelineStart = inizio ~/ 60;
     List<Widget> tr = [];
-    lunghezza_dash = 0;
+    lunghezzaDash = 0;
     for (int i = inizio ~/ 60 * 2; i < (fine + 30) ~/ 30; i++) {
-      lunghezza_dash += 70;
+      lunghezzaDash += 70;
       tr.add(SizedBox(
         height: 70,
         child: Text(
           '${(i ~/ 2).toString().padLeft(2, '0')}:${(i % 2 * 30).toString().padLeft(2, '0')}',
-          style: TextStyle(color: Colors.white60),
+          style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white60
+                  : Colors.black54),
         ),
       ));
     }
@@ -304,136 +332,203 @@ class _AgendaState extends State<Agenda> {
 
 class EventCard extends StatelessWidget {
   final Evento evento;
-  const EventCard({
-    Key key,
-    @required this.evento,
-  }) : super(key: key);
+  final Function() onTap;
+  const EventCard({Key key, @required this.evento, this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print(evento.inizio.hour);
-    print(_AgendaState.timelineStart);
-    return Padding(
-      padding: EdgeInsets.only(
-          top: !evento.giornaliero
-              ? 70 *
-                  ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
-                      evento.inizio.minute / 30)
-              : 0.0),
+    return GestureDetector(
+      onTap: onTap,
+      onDoubleTap: () => showDialog(
+        context: context,
+        builder: (context) => Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: MediaQuery.of(context).size.height / 6),
+          child: Dialog(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Color(0xFF33333D)
+                  : Color(0xFFD2D1D7),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: _buildContent(context, true),
+              )),
+        ),
+      ),
       child: Container(
+        margin: EdgeInsets.only(
+            top: !evento.giornaliero
+                ? 70 *
+                    ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
+                        evento.inizio.minute / 30)
+                : 0.0),
         height: !evento.giornaliero
-            ? 80 * evento.fine.difference(evento.inizio).inMinutes / 30
-            : 140.0,
-        child: Padding(
-          padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
-          child: Container(
+            ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
+            : MediaQuery.of(context).size.height / 5.5,
+        padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
+        child: Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadiusDirectional.circular(20),
-                color: Colors.white10),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26, blurRadius: 3.0, spreadRadius: 4.5)
+                ],
+                //border: Border.all(color: Colors.white24),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Color(0xFF33333D)
+                    : Color(0xFFD2D1D7)),
+            padding: const EdgeInsets.all(10.0),
+            child: _buildContent(context, false)),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, bool grande) => Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                color: RegistroApi.subjects.data[evento.autore] == null ||
+                        RegistroApi.subjects.data[evento.autore] is String
+                    ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
+                                {})['colore']
+                            ?.withOpacity(0.7) ??
+                        (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white10
+                            : Colors.black12)
+                    : null,
+                gradient: RegistroApi.subjects.data[evento.autore] is List
+                    ? LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: RegistroApi.subjects.data[evento.autore].reversed
+                            .map<Color>(
+                                (sbj) => (Globals.subjects[sbj]['colore'] as Color))
+                            .toList())
+                    : null,
+                borderRadius: BorderRadius.circular(10.0)),
+            child: Row(
+              children: <Widget>[
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: RegistroApi.subjects.data[evento.autore] is List
+                        ? RegistroApi.subjects.data[evento.autore]
+                            .map<Widget>((sbj) => Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Icon(
+                                      Globals.subjects[sbj]['icona'] ??
+                                          MdiIcons.sleep,
+                                      size: 25.0,
+                                      color: Colors.black),
+                                ))
+                            .toList()
+                        : [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Icon(
+                                (Globals.subjects[RegistroApi
+                                            .subjects.data[evento.autore]] ??
+                                        {})['icona'] ??
+                                    MdiIcons.sleep,
+                                size: 25.0,
+                                color:
+                                    RegistroApi.subjects.data[evento.autore] !=
+                                            null
+                                        ? Colors.black
+                                        : Colors.white,
+                              ),
+                            )
+                          ]),
+              ],
+            ),
+          ),
+          Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
+              padding: EdgeInsets.only(left: 12.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                        color: (Globals.subjects[
-                                    '${evento.autore.toUpperCase()}'] !=
-                                null)
-                            ? Globals.subjects['${evento.autore.toUpperCase()}']
-                                    ['colore']
-                                .withOpacity(0.7)
-                            : Colors.grey, //FIXME cosa mettere?
-                        borderRadius: BorderRadius.circular(10.0)),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          (Globals.subjects['${evento.autore.toUpperCase()}'] !=
-                                  null)
-                              ? Globals.subjects[
-                                  '${evento.autore.toUpperCase()}']['icona']
-                              : Icons.help, //FIXME cosa mettere?
-                          size: 25.0,
-                          color: Colors
-                              .black, //TODO: mappa in globals.dart con corrispondenza autore icona colore
-                          //                se giornaliero cambiare colore a prescienere dalla materia
-                        ),
-                      ),
-                    ),
+                  AutoSizeText(evento.autore,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      minFontSize: 10.0,
+                      maxFontSize: 15.0,
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'CoreSans',
+                      )),
+                  SizedBox(
+                    height: 10.0,
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          AutoSizeText(evento.autore,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              minFontSize: 10.0,
-                              maxFontSize: 15.0,
-                              softWrap: true,
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'CoreSans',
-                              )),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Expanded(
+                    child: grande
+                        ? SingleChildScrollView(
                             child: AutoSizeText(evento.info,
-                                maxLines: 5,
                                 overflow: TextOverflow.ellipsis,
-                                minFontSize: 10.0,
-                                maxFontSize: 13.0,
+                                minFontSize: 13.0,
+                                maxFontSize: 16.0,
+                                maxLines: 100,
                                 style: TextStyle(
-                                  color: Colors.white54,
-                                  fontFamily: 'CoreSans',
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white54
+                                      : Colors.black54,
+                                  height: 1.2,
                                 )),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 2.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.access_time,
-                                  size: 14.0,
-                                ),
-                                SizedBox(width: 5.0),
-                                Text(
-                                  !evento.giornaliero
-                                      ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
-                                      : 'Giornaliero',
-                                  style: TextStyle(fontSize: 11.0),
-                                ),
-                              ],
-                            ),
                           )
-                        ],
-                      ),
+                        : AutoSizeText(evento.info,
+                            overflow: TextOverflow.ellipsis,
+                            minFontSize: 13.0,
+                            maxFontSize: 15.0,
+                            maxLines: 6,
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white54
+                                  : Colors.black54,
+                            )),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(bottom: 2.0, top: grande ? 10.0 : 0.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Icon(
+                          Icons.access_time,
+                          size: 14.0,
+                        ),
+                        SizedBox(width: 5.0),
+                        Text(
+                          !evento.giornaliero
+                              ? '${DateFormat.Hm().format(evento.inizio)}-${DateFormat.Hm().format(evento.fine)}'
+                              : 'Giornaliero',
+                          style: TextStyle(fontSize: grande ? 14 : 11.0),
+                        ),
+                      ],
                     ),
-                  ),
-                  Center(
-                    child: evento.nuovo
-                        ? Icon(
-                            Icons.brightness_1,
-                            color: Colors.yellow,
-                            size: 15.0,
-                          )
-                        : SizedBox(),
-                  ),
+                  )
                 ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
+          Center(
+            child: evento.nuovo ?? true
+                ? Icon(
+                    Icons.brightness_1,
+                    color: Colors.yellow,
+                    size: 15.0,
+                  )
+                : SizedBox(),
+          ),
+        ],
+      );
 }
+
+DateTime getDayFromDT(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
