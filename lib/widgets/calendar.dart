@@ -20,7 +20,7 @@ class Calendar extends ResizableWidget {
   Calendar([this._currentDay, this._onDayChanged, String key]) {
     if (key != null) {
       _page = _instances[key]?._page ?? 0;
-      _controller = PageController(initialPage: _page + _pagesCount ~/2);
+      _controller = PageController(initialPage: _page + _pagesCount ~/ 2);
       _instances[key] = this;
     } else {
       _page = 0;
@@ -33,80 +33,80 @@ class Calendar extends ResizableWidget {
   static final Curve _curve = Curves.easeIn;
 
   set currentDay(DateTime currentDay) {
-    _onDayChanged(_currentDay = currentDay,
-        session.agenda.data.getEvents(currentDay));
+    _onDayChanged(
+        _currentDay = currentDay, session.agenda.getEvents(currentDay).toList());
   }
 
   @override
   Widget build(BuildContext context, [double heightFactor]) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    onPressed: () => _controller.previousPage(
-                        duration: Duration(milliseconds: 200), curve: _curve)),
-                Expanded(
-                    child: Text(
-                  DateFormat.yMMMM('it')
-                      .format(DateTime(
-                          DateTime.now().year, DateTime.now().month + _page))
-                      .toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                )),
-                IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward_ios,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    onPressed: () => _controller.nextPage(
-                        duration: Duration(milliseconds: 200), curve: _curve))
-              ],
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () => _controller.previousPage(
+                      duration: Duration(milliseconds: 200), curve: _curve)),
+              Expanded(
+                  child: Text(
+                DateFormat.yMMMM('it')
+                    .format(DateTime(
+                        DateTime.now().year, DateTime.now().month + _page))
+                    .toUpperCase(),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              )),
+              IconButton(
+                  icon: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () => _controller.nextPage(
+                      duration: Duration(milliseconds: 200), curve: _curve))
+            ],
+          ),
+        ),
+        Row(
+          children: ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
+              .map((g) => Expanded(
+                      child: Text(
+                    g,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.w600),
+                  )))
+              .toList(),
+        ),
+        Container(
+          height: MediaQuery.of(context).size.width /
+              7 *
+              interpolate(1.0, 6.0,
+                  heightFactor), // il massimo numero di righe è 6, il massimo numero di colonne è 7: i giorni sono in un aspect ratio di 1:1
+          child: PageView.builder(
+            itemCount: _pagesCount,
+            onPageChanged: (value) {
+              _page = value - _pagesCount ~/ 2;
+              currentDay = _currentDay;
+            },
+            controller: _controller,
+            itemBuilder: (context, i) => Stack(
+              children: _children(context, i - _pagesCount ~/ 2, heightFactor)
+                  .toList(),
             ),
           ),
-          Row(
-            children: ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
-                .map((g) => Expanded(
-                        child: Text(
-                      g,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          fontWeight: FontWeight.w600),
-                    )))
-                .toList(),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.width /
-                7 *
-                interpolate(1.0, 6.0,
-                    heightFactor), // il massimo numero di righe è 6, il massimo numero di colonne è 7: i giorni sono in un aspect ratio di 1:1
-            child: PageView.builder(
-              itemCount: _pagesCount,
-              onPageChanged: (value) {
-                _page = value - _pagesCount ~/ 2;
-                currentDay = _currentDay;
-              },
-              controller: _controller,
-              itemBuilder: (context, i) => Stack(
-                children: _children(context, i - _pagesCount ~/ 2, heightFactor)
-                    .toList(),
-              ),
-            ),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 
   // TODO: fix chiusura completa dell'header quando ci sono pochi eventi
@@ -115,7 +115,7 @@ class Calendar extends ResizableWidget {
     // TODO: se il giorno selezionato è in un altro mese, che settimana prendiamo?
     // TODO: in modalità settimana le page devono andare di 7gg in 7gg
     DateTime firstDayOfMonth =
-        DateTime(DateTime.now().year, DateTime.now().month + index);
+        DateTime.utc(DateTime.now().year, DateTime.now().month + index);
     int month = firstDayOfMonth.month;
     DateTime firstDayRendered;
     DateTime startDay = firstDayRendered =
@@ -190,13 +190,13 @@ class Calendar extends ResizableWidget {
                   child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: ((session.agenda.data as EventList<Evento>)
-                                  .getEvents(day) ??
-                              [])
-                          .map((e) => e.getDot(week == safeWeek
-                              ? 1
-                              : max(0, weekFactor * 1.25 - 0.25)))
-                          .toList()),
+                      children: session.agenda
+                              .getEvents(day)
+                              ?.map((e) => e.getDot(week == safeWeek
+                                  ? 1
+                                  : max(0, weekFactor * 1.25 - 0.25)))
+                              ?.toList() ??
+                          []),
                 )
               ]),
               shape: CircleBorder(

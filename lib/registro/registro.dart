@@ -203,7 +203,6 @@ class RegistroApi {
   }
 
   void save() async {
-    saveData(agenda, 'agenda');
     saveData(subjects, 'subjects');
     saveData(bacheca, 'bacheca');
     saveData(lessons, 'lessons');
@@ -213,9 +212,8 @@ class RegistroApi {
 
   Future<void> load() async {
     voti.load();
-    dynamic data = await loadData('agenda');
-    if (data != null) agenda.fromJson(data);
-    data = await loadData('subjects');
+    agenda.load();
+    dynamic data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
     data = await loadData('bacheca');
     if (data != null) bacheca.fromJson(data);
