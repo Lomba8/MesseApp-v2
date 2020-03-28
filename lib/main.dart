@@ -7,6 +7,7 @@ import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/offline.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -36,9 +37,10 @@ void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     WidgetsFlutterBinding.ensureInitialized();
     await init();
+    await downloadOrari();
     session = accounts?.isNotEmpty ?? false ? accounts.first : null;
-    //TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
-    //_signIn.signIn();
+    // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
+    // _signIn.signIn();
     notificationsPlugin.initialize(
       InitializationSettings(AndroidInitializationSettings('@mipmap/splash'),
           IOSInitializationSettings()),

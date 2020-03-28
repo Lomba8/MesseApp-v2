@@ -38,7 +38,7 @@ class _HomeState extends State<Home> {
               Text('0 nuove comunicazioni'),
               Text('nessuna supplenza per domani'),
               Text(
-                  '${main.session.agenda.data.getEvents(getDayFromDT(DateTime.now()).add(Duration(days: 1))).length} eventi domani'),
+                  '${main.session.agenda.getEvents(getDayFromDT(DateTime.now()).add(Duration(days: 1))).length} eventi domani'),
             ],
           ),
         ),

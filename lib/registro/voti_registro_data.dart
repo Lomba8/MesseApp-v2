@@ -1,4 +1,5 @@
-import 'package:Messedaglia/main.dart';
+import 'dart:typed_data';
+
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class VotiRegistroData extends RegistroData {
             'usrId': account.usrId,
             'new': 1
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
+          conflictAlgorithm: ConflictAlgorithm.ignore,
         );
       }
       batch.delete('voti',
@@ -70,9 +71,10 @@ class VotiRegistroData extends RegistroData {
   // FIXME: non salva sul db
   void allSeen({String sbj}) {
     data.where((v) => (v['period'] == periods[0] || periods[0] == 'TOTALE') && (sbj == null || v['sbj'] == sbj)).forEach((v) => v['new'] = 0);
+    print ('seeing: $sbj');
     database.update('voti', {'new': 0},
-        where: 'period = ? AND usrId = ?'+(sbj == null ? '' : ' AND sbj = ?'),
-        whereArgs: [periods[0], account.usrId, if (sbj != null) sbj]).then((value) => print(value));
+        where: 'usrId = ?'+(sbj == null ? '' : ' AND sbj = ?')+(periods[0] == 'TOTALE' ? '' : ' AND period = ?'),
+        whereArgs: [account.usrId, if (sbj != null) sbj, if (periods[0] != 'TOTALE') periods[0]]).then((value) => print(value));
   }
 
   Iterable<Voto> sbjVoti(String sbj, [int period = 0]) {

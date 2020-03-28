@@ -31,7 +31,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   DateTime _currentDate;
   bool _value = false;
 
-  EventList<Evento> get e => session.agenda.data;
+  List get e => session.agenda.data;
 
   List<Evento> dayEvents = List<Evento>();
   List<Lezione> dayLessons = List<Lezione>();
@@ -41,13 +41,13 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
 
   void initState() {
     _currentDate =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    dayEvents = e.events[_currentDate] ?? [];
+        DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    dayEvents = session.agenda.getEvents(_currentDate).toList() ?? [];
     session.agenda.getData().then((r) {
       if (!r.reload || !mounted) return;
-      _currentDate = DateTime(
+      _currentDate = DateTime.utc(
           DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      dayEvents = e.events[_currentDate] ?? [];
+      dayEvents = session.agenda.getEvents(_currentDate).toList() ?? [];
       setState(() {});
     });
 
@@ -520,7 +520,7 @@ class EventCard extends StatelessWidget {
             ),
           ),
           Center(
-            child: evento.nuovo ?? true
+            child: evento.isNew ?? true
                 ? Icon(
                     Icons.brightness_1,
                     color: Colors.yellow,
@@ -532,4 +532,4 @@ class EventCard extends StatelessWidget {
       );
 }
 
-DateTime getDayFromDT(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+DateTime getDayFromDT(DateTime dt) => DateTime.utc(dt.year, dt.month, dt.day);
