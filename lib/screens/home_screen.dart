@@ -2,6 +2,7 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
@@ -131,15 +132,22 @@ class _HomeState extends State<Home> {
             elevation: 0,
             pinned: true,
             backgroundColor: Colors.transparent,
-            title: Text(
-              '${RegistroApi.nome} ${RegistroApi.cognome}',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
+            title: Column(
+              children: <Widget>[
+                Text(
+                  '${RegistroApi.nome} ${RegistroApi.cognome}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
+                ),
+                CustomConnectionStatusBar(
+                  width: MediaQuery.of(context).size.width / 3,
+                ),
+              ],
             ),
             actions: <Widget>[
               IconButton(
