@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.5+1"
+  app_settings:
+    dependency: "direct main"
+    description:
+      name: app_settings
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   archive:
     dependency: transitive
     description:
@@ -106,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  cupertino_tabbar:
+    dependency: "direct main"
+    description:
+      name: cupertino_tabbar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   device_info:
     dependency: "direct main"
     description:
@@ -113,6 +127,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.1+5"
+  easy_permission_validator:
+    dependency: "direct main"
+    description:
+      name: easy_permission_validator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   ext_storage:
     dependency: "direct main"
     description:
@@ -120,13 +141,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  f_datetimerangepicker:
-    dependency: "direct main"
-    description:
-      name: f_datetimerangepicker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
   ffi:
     dependency: transitive
     description:
@@ -155,27 +169,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.3"
-  flare_loading:
-    dependency: transitive
-    description:
-      name: flare_loading
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
-  flare_splash_screen:
-    dependency: "direct main"
-    description:
-      name: flare_splash_screen
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
-  flip_card:
-    dependency: "direct main"
-    description:
-      name: flip_card
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.4"
   flushbar:
     dependency: "direct main"
     description:
@@ -204,13 +197,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1"
-  flutter_flip_view:
-    dependency: "direct main"
-    description:
-      name: flutter_flip_view
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -225,6 +211,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  flutter_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -298,13 +291,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4"
   open_file:
     dependency: "direct main"
     description:
@@ -361,6 +347,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0+1"
+  permission_handler:
+    dependency: transitive
+    description:
+      name: permission_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0+hotfix.3"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   petitparser:
     dependency: transitive
     description:
@@ -375,6 +375,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
+  platform_alert_dialog:
+    dependency: "direct main"
+    description:
+      name: platform_alert_dialog
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+2"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -410,13 +417,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.4"
   quiver:
     dependency: transitive
     description:
@@ -496,13 +496,6 @@ packages:
     dependency: transitive
     description:
       name: stream_channel
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
-  stream_listener:
-    dependency: "direct main"
-    description:
-      name: stream_listener
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
@@ -598,5 +591,5 @@ packages:
     source: hosted
     version: "3.5.0"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  dart: ">=2.7.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.8 <2.0.0"

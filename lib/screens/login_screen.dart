@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() => splash = false);
       });
     }
+    downloadAll();
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
     finished = false;
@@ -76,11 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void downloadAll() => RegistroApi.downloadAll(
-          (double progress) => setState(() {
-                _progress = progress;
-                if (progress == 1)
-                  Navigator.of(this.context).pushReplacementNamed(Menu.id);
-              }),
+          (double progress) => mounted
+              ? setState(() {
+                  _progress = progress;
+                  if (progress == 1)
+                    Navigator.of(this.context).pushReplacementNamed(Menu.id);
+                })
+              : null,
           downloaders: [
             () async {
               dynamic r;

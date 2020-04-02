@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -97,209 +98,228 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     List<Widget> orariList = _orariList();
     var size = MediaQuery.of(context).size;
-    return LiquidPullToRefresh(
-      backgroundColor: Color.fromRGBO(66, 66, 66, 1),
-      color: Theme.of(context).accentColor,
-      //key: _refreshIndicatorKey,	// key if you want to add
-      onRefresh: _refresh,
-      showChildOpacityTransition: false, // refresh callback
-      child: CustomScrollView(
-        scrollDirection: Axis.vertical,
-        slivers: <Widget>[
-          ExpansionSliver(ExpansionSliverDelegate(context,
-              title: 'AGENDA',
-              body: Calendar(
-                  _currentDate,
-                  (day, events) => setState(() {
-                        if (dayEvents != null && dayEvents.isNotEmpty)
-                          dayEvents.forEach((event) => event.seen());
-                        dayEvents = events ?? [];
-                        dayLessons = RegistroApi.lessons.data['date'][day];
-                        _currentDate = day;
-                        lunghezzaDash = 0;
-                        _value = !_value;
-                      }),
-                  'agenda'),
-              value: _value)),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                if (dayLessons != null)
-                  Column(
-                    // TODO: per ora lo piazzo qui
-                    children: dayLessons
-                        .map((l) => ListTile(
-                              title: Text(l.sbj),
-                              subtitle: Text(
-                                (RegistroApi.subjects.data[l.author] == l.sbj ||
-                                            (RegistroApi.subjects.data[l.author]
-                                                    ?.contains(l.sbj) ??
-                                                false)
-                                        ? ''
-                                        : '(${l.author})\n') +
-                                    l.lessonType,
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ),
-                              leading: CircleAvatar(
-                                child: Text('${l.hour + 1}ª',
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black,
-                                    )),
-                                backgroundColor:
-                                    (Globals.subjects[l.sbj] ?? {})['colore']
+    return Stack(
+      children: [
+        LiquidPullToRefresh(
+          backgroundColor: Color.fromRGBO(66, 66, 66, 1),
+          color: Theme.of(context).accentColor,
+          //key: _refreshIndicatorKey,	// key if you want to add
+          onRefresh: _refresh,
+          showChildOpacityTransition: false, // refresh callback
+          child: CustomScrollView(
+            scrollDirection: Axis.vertical,
+            slivers: <Widget>[
+              ExpansionSliver(ExpansionSliverDelegate(context,
+                  title: 'AGENDA',
+                  body: Calendar(
+                      _currentDate,
+                      (day, events) => setState(() {
+                            if (dayEvents != null && dayEvents.isNotEmpty)
+                              dayEvents.forEach((event) => event.seen());
+                            dayEvents = events ?? [];
+                            dayLessons = RegistroApi.lessons.data['date'][day];
+                            _currentDate = day;
+                            lunghezzaDash = 0;
+                            _value = !_value;
+                          }),
+                      'agenda'),
+                  value: _value)),
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    if (dayLessons != null)
+                      Column(
+                        // TODO: per ora lo piazzo qui
+                        children: dayLessons
+                            .map((l) => ListTile(
+                                  title: Text(l.sbj),
+                                  subtitle: Text(
+                                    (RegistroApi.subjects.data[l.author] ==
+                                                    l.sbj ||
+                                                (RegistroApi
+                                                        .subjects.data[l.author]
+                                                        ?.contains(l.sbj) ??
+                                                    false)
+                                            ? ''
+                                            : '(${l.author})\n') +
+                                        l.lessonType,
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  ),
+                                  leading: CircleAvatar(
+                                    child: Text('${l.hour + 1}ª',
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        )),
+                                    backgroundColor: (Globals.subjects[l.sbj] ??
+                                                {})['colore']
                                             ?.withOpacity(0.5) ??
                                         (Theme.of(context).brightness ==
                                                 Brightness.dark
                                             ? Colors.white24
                                             : Colors.black26),
-                              ),
-                              trailing: CircleAvatar(
-                                  child: Text('${l.duration.inHours} h',
-                                      style: TextStyle(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                  backgroundColor:
-                                      (Globals.subjects[l.sbj] ?? {})['colore']
-                                              ?.withOpacity(0.5) ??
-                                          (Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white24
-                                              : Colors.black26)),
-                            ))
-                        .toList(),
-                  ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: dayEvents
-                      .where((event) => event.giornaliero)
-                      .map((evento) => Stack(
-                            alignment: Alignment(-0.9, 0.0),
-                            overflow: Overflow.visible,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 8.0),
-                                width: 34.0,
-                                height: 38.0,
-                                decoration:
-                                    BoxDecoration(color: Colors.white10),
-                                child: SizedBox(),
-                              ),
-                              Padding(
-                                padding: (_currentDate.day < 10)
-                                    ? EdgeInsets.only(left: 18.5, top: 12.0)
-                                    : EdgeInsets.only(left: 12.5, top: 12.0),
-                                child: Text(
-                                  DateFormat.d().format(_currentDate),
-                                  style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontFamily: 'CoreSans',
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black),
-                                ),
-                              ),
-                              Icon(
-                                Icons.calendar_today,
-                                size: 50.0,
-                                color: Colors.green[200],
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(
-                                    size.width / 6.0,
-                                    size.height / 50.0,
-                                    size.width / 19.0,
-                                    size.height / 50.0,
                                   ),
-                                  child: EventCard(
-                                    evento: evento,
-                                  )),
-                            ],
-                          ))
-                      .toList(),
-                ),
-                if (dayEvents.any((evento) => !evento.giornaliero))
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: 33.0),
-                        child: Text(
-                          'Ora',
-                          style: TextStyle(color: Colors.blueGrey),
-                        ),
+                                  trailing: CircleAvatar(
+                                      child: Text('${l.duration.inHours} h',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          )),
+                                      backgroundColor:
+                                          (Globals.subjects[l.sbj] ??
+                                                      {})['colore']
+                                                  ?.withOpacity(0.5) ??
+                                              (Theme.of(context).brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white24
+                                                  : Colors.black26)),
+                                ))
+                            .toList(),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 50.0),
-                        child: Text(
-                          'Evento',
-                          style: TextStyle(color: Colors.blueGrey),
-                        ),
-                      ),
-                    ],
-                  ),
-                SizedBox(height: 30.0),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Column(children: orariList)),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: dayEvents
+                          .where((event) => event.giornaliero)
+                          .map((evento) => Stack(
+                                alignment: Alignment(-0.9, 0.0),
+                                overflow: Overflow.visible,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(left: 8.0),
+                                    width: 34.0,
+                                    height: 38.0,
+                                    decoration:
+                                        BoxDecoration(color: Colors.white10),
+                                    child: SizedBox(),
+                                  ),
+                                  Padding(
+                                    padding: (_currentDate.day < 10)
+                                        ? EdgeInsets.only(left: 18.5, top: 12.0)
+                                        : EdgeInsets.only(
+                                            left: 12.5, top: 12.0),
+                                    child: Text(
+                                      DateFormat.d().format(_currentDate),
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontFamily: 'CoreSans',
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 50.0,
+                                    color: Colors.green[200],
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(
+                                        size.width / 6.0,
+                                        size.height / 50.0,
+                                        size.width / 19.0,
+                                        size.height / 50.0,
+                                      ),
+                                      child: EventCard(
+                                        evento: evento,
+                                      )),
+                                ],
+                              ))
+                          .toList(),
                     ),
-                    Dash(
-                      direction: Axis.vertical,
-                      dashBorderRadius: 0.0,
-                      dashColor: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white54
-                          : Colors.black54,
-                      dashGap: 2,
-                      dashThickness: 1.0,
-                      length: lunghezzaDash - 47,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 70.0 * orariList.length,
-                        child: Stack(
-                          overflow: Overflow.clip,
-                          // FIXME: sovrapposizione di eventi
-                          children: dayEvents
-                              .where((event) =>
-                                  !event.giornaliero && event != _onTop)
-                              .map<Widget>((oggi) => EventCard(
-                                    evento: oggi,
-                                    onTap: () => setState(() => _onTop = oggi),
-                                  ))
-                              .followedBy([
-                            if (_onTop != null && dayEvents.contains(_onTop))
-                              EventCard(evento: _onTop)
-                          ]).toList(),
-                        ),
+                    if (dayEvents.any((evento) => !evento.giornaliero))
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(left: 33.0),
+                            child: Text(
+                              'Ora',
+                              style: TextStyle(color: Colors.blueGrey),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 50.0),
+                            child: Text(
+                              'Evento',
+                              style: TextStyle(color: Colors.blueGrey),
+                            ),
+                          ),
+                        ],
                       ),
-                    )
+                    SizedBox(height: 30.0),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Column(children: orariList)),
+                        ),
+                        Dash(
+                          direction: Axis.vertical,
+                          dashBorderRadius: 0.0,
+                          dashColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white54
+                                  : Colors.black54,
+                          dashGap: 2,
+                          dashThickness: 1.0,
+                          length: lunghezzaDash - 47,
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 70.0 * orariList.length,
+                            child: Stack(
+                              overflow: Overflow.clip,
+                              // FIXME: sovrapposizione di eventi
+                              children: dayEvents
+                                  .where((event) =>
+                                      !event.giornaliero && event != _onTop)
+                                  .map<Widget>((oggi) => EventCard(
+                                        evento: oggi,
+                                        onTap: () =>
+                                            setState(() => _onTop = oggi),
+                                      ))
+                                  .followedBy([
+                                if (_onTop != null &&
+                                    dayEvents.contains(_onTop))
+                                  EventCard(evento: _onTop)
+                              ]).toList(),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    if (dayEvents.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          'Nessun evento programmato per questa giornata!',
+                          textAlign: TextAlign.center,
+                        ),
+                      )
                   ],
                 ),
-                if (dayEvents.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      'Nessun evento programmato per questa giornata!',
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-              ],
-            ),
-          )
-        ],
-      ), // scroll view
+              )
+            ],
+          ), // scroll view
+        ),
+        Align(
+          alignment: Alignment(0, -0.85),
+          child: CustomConnectionStatusBar(
+            width: MediaQuery.of(context).size.width / 3,
+          ),
+        ),
+      ],
     );
   }
 

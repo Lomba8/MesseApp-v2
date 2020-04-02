@@ -6,14 +6,16 @@ import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
-import 'package:Messedaglia/widgets/RangePicker.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 import 'package:http/http.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -23,6 +25,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share_extend/share_extend.dart';
+
+List<String> mesi = [
+  'Gen',
+  'Feb',
+  'Mar',
+  'Apr',
+  'Mag',
+  'Giu',
+  'Lug',
+  'Ago',
+  'Set',
+  'Ott',
+  'Nov',
+  'Dic'
+];
 
 class BachecaScreen extends StatefulWidget {
   @override
@@ -61,7 +78,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<int> _uploadFiles() async {
-    var uri = 'http://5c52c43c.ngrok.io/upload';
+    var uri = 'http://8f96b474.ngrok.io/upload';
     List<MultipartFile> newList = new List<MultipartFile>();
 
     var send = await http.post(uri, headers: {
@@ -91,7 +108,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
     files = [];
     frasi = {};
     var uri =
-        'http://5c52c43c.ngrok.io/ocr?pattern=${_textController.text.toString()}';
+        'http://8f96b474.ngrok.io/ocr?pattern=${_textController.text.toString()}';
     _highlight = _textController.text;
 
     http.Response res = await http.get(uri);
@@ -109,6 +126,79 @@ class _BachecaScreenState extends State<BachecaScreen> {
     pr.hide();
     if (files.isEmpty) _textController.clear();
     return files.isEmpty ? false : true;
+  }
+
+  showPickerDateRange(BuildContext context) {
+    Picker ps = new Picker(
+        hideHeader: true,
+        adapter: new DateTimePickerAdapter(
+          type: PickerDateTimeType.kYMD,
+          yearBegin: DateTime.now().year - 1,
+          yearEnd: DateTime.now().year,
+          months: mesi,
+        ),
+        onConfirm: (Picker picker, List value) {
+          dynamic _fineTmp =
+              (picker.adapter as DateTimePickerAdapter).value.toLocal();
+          _fineTmp = DateFormat('y-MM-dd').format(_fineTmp).split('-');
+          _fineTmp = _fineTmp.map(int.parse).toList();
+          _start = DateTime(_fineTmp[0], _fineTmp[1], _fineTmp[2]);
+        });
+
+    Picker pe = new Picker(
+        hideHeader: true,
+        adapter: new DateTimePickerAdapter(
+          type: PickerDateTimeType.kYMD,
+          yearBegin: DateTime.now().year - 1,
+          yearEnd: DateTime.now().year,
+          months: mesi,
+        ),
+        onConfirm: (Picker picker, List value) {
+          dynamic _fineTmp =
+              (picker.adapter as DateTimePickerAdapter).value.toLocal();
+          _fineTmp = DateFormat('y-MM-dd').format(_fineTmp).split('-');
+          _fineTmp = _fineTmp.map(int.parse).toList();
+          _end = DateTime(_fineTmp[0], _fineTmp[1], _fineTmp[2]);
+          setState(() {});
+        });
+
+    List<Widget> actions = [
+      FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: new Text("Cancella")),
+      FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+            ps.onConfirm(ps, ps.selecteds);
+            pe.onConfirm(pe, pe.selecteds);
+          },
+          child: new Text("Conferma"))
+    ];
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            title: Text("Scegli l'intervallo"),
+            actions: actions,
+            content: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text("Dal:\n"),
+                  ps.makePicker(),
+                  Text("\nAl:\n"),
+                  pe.makePicker()
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   @override
@@ -171,9 +261,16 @@ class _BachecaScreenState extends State<BachecaScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                     }),
-                title: Text(
-                  'BACHECA',
-                  style: Theme.of(context).textTheme.bodyText2,
+                title: Column(
+                  children: <Widget>[
+                    Text(
+                      'BACHECA',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    CustomConnectionStatusBar(
+                      width: MediaQuery.of(context).size.width / 3,
+                    ),
+                  ],
                 ),
                 elevation: 0,
                 pinned: true,
@@ -324,16 +421,15 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           ),
                           Expanded(
                             flex: 1,
-                            child: Container(
-                              child: IconButton(
+                            child: IconButton(
                                 icon: Icon(
                                   MdiIcons.calendarClock,
                                   size: 22,
                                 ),
-                                onPressed:
-                                    _uploadFiles, //TODO: spostarlo & select range of time
-                              ),
-                            ),
+                                onPressed: () => showPickerDateRange(
+                                    context) //TODO: usare flutter_holo_date_picker 🙃
+                                // _uploadFiles, //TODO: spostarlo & select range of time
+                                ),
                           ),
                           Expanded(
                             flex: 1,

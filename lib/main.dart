@@ -5,7 +5,6 @@ import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
-import 'package:Messedaglia/screens/offline.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -134,7 +133,7 @@ void setTheme(ThemeMode theme) async {
     default:
       prefs.setBool('DarkMode', null);
   }
-  print(theme.toString());
+  print('\n' + theme.toString());
 }
 
 ThemeMode get theme => _theme;
@@ -159,26 +158,6 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
   @override
   void initState() {
     super.initState();
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      if (connection_main == result) return;
-      print('NAVIGATOR ' + navigatorKey.currentWidget.toString());
-      connection_main = result;
-      if (route == 'login_screen') {
-        RestartWidget.restartApp(context);
-      } else {
-        if (result == ConnectivityResult.none) {
-          !alreadyPushed
-              ? navigatorKey.currentState
-                  .push(MaterialPageRoute(builder: (context) => Offline()))
-              : print(alreadyPushed);
-        } else if (alreadyPushed) {
-          alreadyPushed = false;
-          navigatorKey.currentState.pop(context);
-        }
-      }
-    });
   }
 
   @override
@@ -223,7 +202,6 @@ SharedPreferences prefs;
 ConnectivityResult connection;
 String appName, appVersion, platform, osVersion, route;
 bool alreadyPushed = false;
-var subscription;
 dynamic connection_main;
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 

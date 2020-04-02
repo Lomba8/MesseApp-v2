@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:android_intent/android_intent.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cupertino_tabbar/cupertino_tabbar.dart' as CupertinoTabBar;
+import 'package:flutter/gestures.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Preferences extends StatefulWidget {
@@ -14,7 +17,8 @@ class Preferences extends StatefulWidget {
 
 class _PreferencesState extends State<Preferences> {
   bool _darkTheme = theme == ThemeMode.dark;
-
+  int cupertinoTabBarIValue = theme == ThemeMode.dark ? 0 : 1;
+  int cupertinoTabBarIValueGetter() => cupertinoTabBarIValue;
   @override
   Widget build(BuildContext context) => Material(
       color: Theme.of(context).backgroundColor,
@@ -37,18 +41,42 @@ class _PreferencesState extends State<Preferences> {
               body: _Header()),
         ),
         SliverFillRemaining(
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                  title: Text('Tema scuro:'),
-                  trailing: Switch(
-                    value: _darkTheme,
-                    onChanged: (ok) => setState(() {
-                      _darkTheme = ok;
-                      setTheme(ok ? ThemeMode.dark : ThemeMode.light);
-                    }),
-                  ))
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                CupertinoTabBar.CupertinoTabBar(
+                  cupertinoTabBarIValue == 0
+                      ? const Color(0xFF537ec5) // azzurro
+                      : const Color(0xFFffd69f), //arancione
+
+                  cupertinoTabBarIValue == 0
+                      ? const Color(0xFF293a80) // blu
+                      : const Color(0xFFeb999a), // rosso
+                  [
+                    Icon(
+                      MdiIcons.weatherNight,
+                      size: cupertinoTabBarIValue == 0 ? 20.0 * 1.5 : 20.0,
+                    ),
+                    Icon(
+                      MdiIcons.whiteBalanceSunny,
+                      size: cupertinoTabBarIValue == 1 ? 20.0 * 1.5 : 20.0,
+                    )
+                  ],
+                  cupertinoTabBarIValueGetter,
+                  (int index) {
+                    setState(() {
+                      cupertinoTabBarIValue = index;
+                      setTheme(cupertinoTabBarIValue == 0
+                          ? ThemeMode.dark
+                          : ThemeMode.light);
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
         )
       ]));

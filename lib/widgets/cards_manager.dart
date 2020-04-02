@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
