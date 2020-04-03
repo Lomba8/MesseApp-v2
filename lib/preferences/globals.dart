@@ -215,6 +215,11 @@ class Globals {
     '.pps': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.pp': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.key': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
+    'vnd.ms-powerpoint': {
+      'icona': MdiIcons.filePowerpoint,
+      'colore': Color(0xFFCA4223)
+    },
+
     // '.zip': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)}, //  in relata è un .docx
     '.rar': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)},
     '.aif': {'icona': Icons.audiotrack, 'colore': Color(0xFF009AEF)},
@@ -233,6 +238,16 @@ class Globals {
     '.html': {'icona': MdiIcons.languageHtml5, 'colore': Color(0xFFDE4B25)},
     '.css': {'icona': MdiIcons.languageCss3, 'colore': Color(0xFF3596D0)},
     '.js': {'icona': MdiIcons.languageJavascript, 'colore': Color(0xFFf0D91D)},
+    '.jpg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.png': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.jpeg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.gif': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.heif': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.ico': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.webp': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    'jpg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    'jpeg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    'png': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
   };
 
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);
