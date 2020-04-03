@@ -185,9 +185,15 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                                 ),
                               ),
                               Text(
-                                path.name,
+                                path.name.isEmpty
+                                    ? 'Senza nome'
+                                    : path.name.contains('.')
+                                        ? path.name.substring(
+                                            0, path.name.lastIndexOf('.'))
+                                        : path.name,
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               )
                             ],
                           ),

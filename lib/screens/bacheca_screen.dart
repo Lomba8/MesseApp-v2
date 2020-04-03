@@ -78,7 +78,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<int> _uploadFiles() async {
-    var uri = 'http://8f96b474.ngrok.io/upload';
+    var uri = '*********/upload';
     List<MultipartFile> newList = new List<MultipartFile>();
 
     var send = await http.post(uri, headers: {
@@ -107,13 +107,13 @@ class _BachecaScreenState extends State<BachecaScreen> {
     pr.show();
     files = [];
     frasi = {};
-    var uri =
-        'http://8f96b474.ngrok.io/ocr?pattern=${_textController.text.toString()}';
+    var uri = '*********/ocr?pattern=${_textController.text.toString()}';
     _highlight = _textController.text;
 
     http.Response res = await http.get(uri);
     if (res.statusCode == 200) {
-      if (res.body == null) return false;
+      if (res.body == null || res.body.isEmpty) return false;
+
       jsonDecode(res.body).forEach((k, v) {
         // print(
         //     '$k=> volte: ${v['volte']}, frase: ${v['frase'].map((f) => f.trim())}');
@@ -124,6 +124,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
       return false;
     }
     pr.hide();
+    if (mounted) setState(() {});
     if (files.isEmpty) _textController.clear();
     return files.isEmpty ? false : true;
   }
@@ -204,6 +205,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   @override
   void initState() {
     _firstInputFocusNode = new FocusNode();
+    _uploadFiles();
   }
 
   @override
