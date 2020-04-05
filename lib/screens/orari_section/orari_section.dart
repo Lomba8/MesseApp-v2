@@ -2,13 +2,19 @@ import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/orari_section/absences_section.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:Messedaglia/main.dart' as main;
+import 'dart:io';
+
+import 'package:platform_alert_dialog/platform_alert_dialog.dart';
 
 class OrariSection extends StatefulWidget {
   @override
@@ -27,13 +33,16 @@ class _OrariSectionState extends State<OrariSection> {
   @override
   void initState() {
     super.initState();
+
     ImageDownloader.callback(onProgressUpdate: (String imageId, int progress) {
       setState(() {
         _progress = progress / 100;
         print(progress);
         if (_progress == 1) {
-          _downloading = false;
-          _progress = 0;
+          setState(() {
+            _downloading = false;
+            _progress = 0;
+          });
         }
       });
     });
@@ -120,14 +129,59 @@ class _OrariSectionState extends State<OrariSection> {
                     onPressed: selectedClass == null
                         ? null
                         : () async {
-                            downloadOrario(selectedClass).then((_) {
-                              _showNotificationWithDefaultSound(selectedClass);
-                            });
+                            final permissionValidator = EasyPermissionValidator(
+                              context: context,
+                              appName: 'Messe App',
+                            );
 
-                            setState(() {
-                              _downloading = true;
-                              _progress = 0;
-                            });
+                            var result = await permissionValidator.photos();
+
+                            if (result) {
+                              downloadOrario(selectedClass).then((_) {
+                                _showNotificationWithDefaultSound(
+                                    selectedClass);
+                              });
+
+                              setState(() {
+                                _downloading = true;
+                                _progress = 0;
+                              });
+                            } else {
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return PlatformAlertDialog(
+                                    title:
+                                        Text('Impossibile scaricare la foto'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text(
+                                              "Per scaricare l'orario bisogna autorizzare la applicazione"),
+                                          Text(
+                                              "Clicca su autorizza per abilitare il salvataggio della foto"),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      PlatformDialogAction(
+                                        child: Text('Cancella'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      PlatformDialogAction(
+                                        child: Text('Autorizza'),
+                                        actionType: ActionType.Preferred,
+                                        onPressed: () {
+                                          AppSettings.openLocationSettings();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
                           }),
               ),
             ],

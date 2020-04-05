@@ -1,5 +1,6 @@
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +9,6 @@ import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
 import 'home_screen.dart';
 import 'orari_screen.dart';
-
-import 'package:Messedaglia/main.dart' as main;
 
 class Menu extends StatefulWidget {
   static String id = "menu_screen";
@@ -30,7 +29,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    main.subscription.cancel();
+    subscription.cancel();
 
     super.dispose();
   }

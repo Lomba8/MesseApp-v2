@@ -1,5 +1,6 @@
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/utils/mapUtils.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 
@@ -45,16 +46,23 @@ class _MapScreenState extends State<MapScreen> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       Expanded(
-                        child: Text(
-                          'CARTINA',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              'CARTINA',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black
+                                      : Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            CustomConnectionStatusBar(
+                              width: MediaQuery.of(context).size.width / 3,
+                            ),
+                          ],
                         ),
                       ),
                       IconButton(
