@@ -27,8 +27,8 @@ class _OrariSectionState extends State<OrariSection> {
   double _progress = 0;
   Map<String, String> downloads = {};
 
-  void resetprefs() async => main.prefs
-      .setString('selectedClass', selectedClass = RegistroApi.cls = null);
+  void resetprefs() async =>
+      main.prefs.setString('selectedClass', selectedClass = session.cls);
 
   @override
   void initState() {
@@ -51,14 +51,14 @@ class _OrariSectionState extends State<OrariSection> {
   Future<void> downloadOrario(String classe) async {
     try {
       downloads[classe] =
-          await ImageDownloader.downloadImage(orari[classe + 'url']);
+          await ImageDownloader.downloadImage(orari[classe]['url']);
     } catch (e) {
       print(e);
     }
   }
 
   bool get _hasSaturday {
-    List orario = orari[selectedClass];
+    List orario = orari[selectedClass]['orari'];
     if (orario == null) return true;
     for (int i = 5; i < orario.length; i += 6) if (orario[i] != '') return true;
     return false;
@@ -312,8 +312,8 @@ class _OrariSectionState extends State<OrariSection> {
     int day = DateTime.now().weekday - 1;
     if (DateTime.now().hour >= 14) day = (day + 1) % 7;
     if (day == 6 || (day == 5 && !_hasSaturday)) return [];
-    for (int i = day; i < orari[selectedClass].length; i += 6)
-      if (orari[selectedClass][i] != '')
+    for (int i = day; i < orari[selectedClass]['orari'].length; i += 6)
+      if (orari[selectedClass]['orari'][i] != '')
         ore.add(Expanded(
           child: AspectRatio(
             aspectRatio: 1.5,
@@ -341,24 +341,24 @@ class _OrariSectionState extends State<OrariSection> {
     if (DateTime.now().hour >= 14) day = (day + 1) % 7;
     if (day == 6 || (day == 5 && !_hasSaturday))
       return []; // TODO: skip giornate senza lezione
-    for (int i = day; i < orari[selectedClass].length; i += 6)
-      if (orari[selectedClass][i] != '')
+    for (int i = day; i < orari[selectedClass]['orari'].length; i += 6)
+      if (orari[selectedClass]['orari'][i] != '')
         orario.add(Expanded(
             child: AspectRatio(
           aspectRatio: 1.3,
           child: GestureDetector(
             onTap: () => setState(() =>
-                (orari[selectedClass][i] == _selectedSbj ||
-                        orari[selectedClass][i] == '')
+                (orari[selectedClass]['orari'][i] == _selectedSbj ||
+                        orari[selectedClass]['orari'][i] == '')
                     ? _selectedSbj = null
-                    : _selectedSbj = orari[selectedClass][i]),
+                    : _selectedSbj = orari[selectedClass]['orari'][i]),
             child: AnimatedContainer(
               margin: EdgeInsets.all(4.0),
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
-                  color: colors[orari[selectedClass][i]]?.withOpacity(
+                  color: colors[orari[selectedClass]['orari'][i]]?.withOpacity(
                           _selectedSbj == null ||
-                                  _selectedSbj == orari[selectedClass][i]
+                                  _selectedSbj == orari[selectedClass]['orari'][i]
                               ? 1
                               : 0.1) ??
                       Colors.transparent,
@@ -369,7 +369,7 @@ class _OrariSectionState extends State<OrariSection> {
                           blurRadius: 5,
                           offset: Offset(3, 3),
                           color: (_selectedSbj == null ||
-                                  _selectedSbj == orari[selectedClass][i])
+                                  _selectedSbj == orari[selectedClass]['orari'][i])
                               ? Colors.black
                               : Colors.transparent)
                   ]),
@@ -377,11 +377,11 @@ class _OrariSectionState extends State<OrariSection> {
                 child: Padding(
                   padding: EdgeInsets.only(top: 3.0),
                   child: AutoSizeText(
-                    orari[selectedClass][i],
+                    orari[selectedClass]['orari'][i],
                     style: TextStyle(
                         letterSpacing: 0.0,
                         color: _selectedSbj == null ||
-                                _selectedSbj == orari[selectedClass][i]
+                                _selectedSbj == orari[selectedClass]['orari'][i]
                             ? Colors.black.withOpacity(0.75)
                             : Colors.white10),
                     textAlign: TextAlign.center,
@@ -396,7 +396,7 @@ class _OrariSectionState extends State<OrariSection> {
   }
 
   List<Widget> get _children {
-    List orario = orari[selectedClass];
+    List orario = orari[selectedClass]['orari'];
     if (orario == null) return [];
     bool saturday = _hasSaturday;
     List<Widget> children = [Container()];

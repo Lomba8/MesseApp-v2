@@ -48,7 +48,7 @@ List<String> keys = new List();
 
 final String _defaultBody = '''Buona giornata,
 \nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
-\n${RegistroApi.nome} ${RegistroApi.cognome}''';
+\n${main.session.nome} ${main.session.cognome}''';
 
 Color colore1 = Color(0xff6b0e82);
 Color colore2 = Color(0xffb231b2);

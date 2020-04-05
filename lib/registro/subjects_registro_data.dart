@@ -1,12 +1,13 @@
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:flutter/material.dart';
 
 class SubjectsRegistroData extends RegistroData {
-  SubjectsRegistroData()
-      : super('https://web.spaggiari.eu/rest/v1/students/%uid/subjects');
+  SubjectsRegistroData({@required RegistroApi account})
+      : super(url: 'https://web.spaggiari.eu/rest/v1/students/%uid/subjects', account: account, name: 'subjects');
 
   @override
-  Result parseData(json) {
+  Future<Result> parseData(json) async {
     try {
       data.clear();
       for (Map<String, dynamic> sbj in json['subjects']) {
@@ -40,5 +41,10 @@ class SubjectsRegistroData extends RegistroData {
   String getFirstSubject (String teacher) => data[teacher] is String ? data[teacher] : data[teacher]?.first;
 
   Map subjectTheme (String teacher) => Globals.subjects[getFirstSubject(teacher)];
+
+  @override
+  Future<void> create() {
+    // TODO: implement create
+  }
 
 }

@@ -1,3 +1,4 @@
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
@@ -39,7 +40,7 @@ class LessonsSection extends StatelessWidget {
           ),
           SliverList(
               delegate:
-                  SliverChildListDelegate(RegistroApi.lessons.data['sbj'].keys
+                  SliverChildListDelegate(session.lessons.data['sbj'].keys
                       .map<Widget>((sbj) => ListTile(
                             title: Text(
                               sbj,
@@ -119,7 +120,7 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                     Size.fromHeight(MediaQuery.of(context).size.width / 8)),
           ),
           SliverList(
-              delegate: SliverChildListDelegate(RegistroApi
+              delegate: SliverChildListDelegate(session
                   .lessons.data['sbj'][widget._sbj].reversed
                   .map<Widget>(
                     (Lezione l) => CustomExpansionTile(
@@ -134,8 +135,8 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                       ),
                       title: Text(DateFormat.MMMMEEEEd('it').format(l.date)),
                       subtitle: Text(
-                        (RegistroApi.subjects.data[l.author] == l.sbj ||
-                                    (RegistroApi.subjects.data[l.author]
+                        (session.subjects.data[l.author] == l.sbj ||
+                                    (session.subjects.data[l.author]
                                             ?.contains(l.sbj) ??
                                         false)
                                 ? ''

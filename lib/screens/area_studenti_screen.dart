@@ -29,9 +29,9 @@ class AreaStudenti extends StatefulWidget {
 
 class _AreaStudentiState extends State<AreaStudenti> {
   /*String _passedTime() {
-    if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
+    if (session.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
-        DateTime.now().difference(RegistroApi.agenda.lastUpdate);
+        DateTime.now().difference(session.agenda.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -54,7 +54,7 @@ class _AreaStudentiState extends State<AreaStudenti> {
   }
 
   Future<void> _refresh() async {
-    RegistroApi.agenda.getData().then((r) {
+    main.session.agenda.getData().then((r) {
       if (r.ok) _setStateIfAlive();
     });
     return null;
