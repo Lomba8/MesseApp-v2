@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     } else
       splash = false;
+    // downloadAll();
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
   }

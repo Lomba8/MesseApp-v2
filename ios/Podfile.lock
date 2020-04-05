@@ -1,6 +1,8 @@
 PODS:
   - android_intent (0.0.1):
     - Flutter
+  - "app_settings (3.0.0+1)":
+    - Flutter
   - connectivity (0.0.1):
     - Flutter
     - Reachability
@@ -22,6 +24,8 @@ PODS:
   - path_provider (0.0.1):
     - Flutter
   - pdf_viewer_plugin (0.0.1):
+    - Flutter
+  - "permission_handler (5.0.0+hotfix.3)":
     - Flutter
   - Reachability (3.2)
   - share_extend (0.0.1):
@@ -45,6 +49,7 @@ PODS:
 
 DEPENDENCIES:
   - android_intent (from `.symlinks/plugins/android_intent/ios`)
+  - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
@@ -56,6 +61,7 @@ DEPENDENCIES:
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - pdf_viewer_plugin (from `.symlinks/plugins/pdf_viewer_plugin/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - share_extend (from `.symlinks/plugins/share_extend/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
@@ -73,6 +79,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   android_intent:
     :path: ".symlinks/plugins/android_intent/ios"
+  app_settings:
+    :path: ".symlinks/plugins/app_settings/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
   connectivity_macos:
@@ -95,6 +103,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider/ios"
   pdf_viewer_plugin:
     :path: ".symlinks/plugins/pdf_viewer_plugin/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   share_extend:
     :path: ".symlinks/plugins/share_extend/ios"
   shared_preferences:
@@ -116,6 +126,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   android_intent: f144b3783d533cc5bc2cd04cdbd1dc2b6950bd69
+  app_settings: d103828c9f5d515c4df9ee754dabd443f7cedcf3
   connectivity: 6e94255659cc86dcbef1d452ad3e0491bb1b3e75
   connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
   device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
@@ -127,6 +138,7 @@ SPEC CHECKSUMS:
   package_info: 48b108e75b8802c2d5e126f208ef540561c98aef
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   pdf_viewer_plugin: 96ce5d974dd18dd3a5f17a3f50641d178e355434
+  permission_handler: 4a985b5448897c27fdeadde84f7452520c0e6c58
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   share_extend: b6748dc53695587891126a89533b862b92548c7b
   shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01

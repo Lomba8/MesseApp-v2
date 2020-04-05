@@ -72,7 +72,8 @@ class Calendar extends ResizableWidget {
           ),
         ),
         Row(
-          children: days.followedBy(['dom']).map((g) => Expanded(
+          children: ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
+              .map((g) => Expanded(
                       child: Text(
                     g,
                     textAlign: TextAlign.center,

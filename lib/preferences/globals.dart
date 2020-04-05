@@ -185,11 +185,22 @@ class Globals {
   };
 
   static Map<String, Map> estensioni = {
+    'pdf': {'icona': MdiIcons.filePdf, 'colore': Color(0xFFCA1B00)},
     '.pdf': {'icona': MdiIcons.filePdf, 'colore': Color(0xFFCA1B00)},
     '.odt': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.docx': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.pages': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    '.zip': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+
     'msword': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
+    'vnd.openxmlformats-officedocument.wordprocessingml.document': {
+      'icona': MdiIcons.fileWord,
+      'colore': Color(0xFF295492)
+    },
+    'vnd.oasis.opendocument.text': {
+      'icona': MdiIcons.fileWord,
+      'colore': Color(0xFF295492)
+    },
     '.txt': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.rtf': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
     '.doc': {'icona': MdiIcons.fileWord, 'colore': Color(0xFF295492)},
@@ -197,13 +208,19 @@ class Globals {
     '.xlsx': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
     '.xlsm': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
     '.numbers': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
+    'vnd.ms-office': {'icona': MdiIcons.fileExcel, 'colore': Color(0xFF1C6D42)},
     '.pptx': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.ppt': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.odp': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.pps': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.pp': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
     '.key': {'icona': MdiIcons.filePowerpoint, 'colore': Color(0xFFCA4223)},
-    '.zip': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)},
+    'vnd.ms-powerpoint': {
+      'icona': MdiIcons.filePowerpoint,
+      'colore': Color(0xFFCA4223)
+    },
+
+    // '.zip': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)}, //  in relata è un .docx
     '.rar': {'icona': MdiIcons.folderZipOutline, 'colore': Color(0xFFF5AE15)},
     '.aif': {'icona': Icons.audiotrack, 'colore': Color(0xFF009AEF)},
     '.mp3': {'icona': Icons.audiotrack, 'colore': Color(0xFF009AEF)},
@@ -221,6 +238,16 @@ class Globals {
     '.html': {'icona': MdiIcons.languageHtml5, 'colore': Color(0xFFDE4B25)},
     '.css': {'icona': MdiIcons.languageCss3, 'colore': Color(0xFF3596D0)},
     '.js': {'icona': MdiIcons.languageJavascript, 'colore': Color(0xFFf0D91D)},
+    '.jpg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.png': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.jpeg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.gif': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.heif': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.ico': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    '.webp': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    'jpg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    'jpeg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
+    'png': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
   };
 
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);

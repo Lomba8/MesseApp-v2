@@ -7,6 +7,7 @@ import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -117,15 +118,22 @@ class _AreaStudentiState extends State<AreaStudenti> {
             brightness: Theme.of(context).brightness,
             elevation: 0,
             backgroundColor: Colors.transparent,
-            title: Text(
-              "AREA STUDENTI",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
+            title: Column(
+              children: <Widget>[
+                Text(
+                  "AREA STUDENTI",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
+                ),
+                CustomConnectionStatusBar(
+                  width: MediaQuery.of(context).size.width / 3,
+                ),
+              ],
             ),
             bottom: PreferredSize(
                 child: Container(),

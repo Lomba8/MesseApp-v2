@@ -1,6 +1,8 @@
 import 'package:Messedaglia/screens/orari_section/lessons_section.dart';
 import 'package:Messedaglia/screens/orari_section/orari_section.dart';
+import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -14,13 +16,13 @@ class Orari extends StatefulWidget {
 }
 
 class _OrariState extends State<Orari> {
+  int _index = 1;
+  PageController _controller = PageController();
+
   @override
   void initState() {
     super.initState();
   }
-
-  int _index = 1;
-  PageController _controller = PageController();
 
   @override
   Widget build(BuildContext context) => Stack(
@@ -49,6 +51,12 @@ class _OrariState extends State<Orari> {
                 dotWidth: 10.0,
                 radius: 5.0,
               ),
+            ),
+          ),
+          Align(
+            alignment: Alignment(0.0, -0.85),
+            child: CustomConnectionStatusBar(
+              width: MediaQuery.of(context).size.width / 3,
             ),
           ),
         ],
