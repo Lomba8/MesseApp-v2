@@ -2,11 +2,10 @@ import 'dart:math';
 
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
-import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import 'package:intl/intl.dart';
 
 Map<String, Calendar> _instances = {};
@@ -73,8 +72,7 @@ class Calendar extends ResizableWidget {
           ),
         ),
         Row(
-          children: ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
-              .map((g) => Expanded(
+          children: days.followedBy(['dom']).map((g) => Expanded(
                       child: Text(
                     g,
                     textAlign: TextAlign.center,

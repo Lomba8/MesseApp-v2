@@ -44,8 +44,8 @@ void getSelected() =>
 Iterable<String> getSbjs(int day, [String cls]) sync* {
   cls ??= selectedClass;
   if (cls == null) return;
-  for (int i = day; i < orari[cls].length; i += 6)
-    if (orari[cls][i] != '') yield orari[cls][i];
+  for (int i = day; i < orari[cls]['orari'].length; i += 6)
+    if (orari[cls]['orari'][i] != '') yield orari[cls]['orari'][i];
 }
 
 final Map<String, Color> colors = {

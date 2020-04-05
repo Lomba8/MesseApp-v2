@@ -187,12 +187,6 @@ class RegistroApi {
     };
     int n = 0;
     toDownload.forEach((name, data) async {
-      if (data is VotiRegistroData) {
-        data.load();
-      } else {
-        dynamic json = await loadData(name);
-        if (json != null) if (data is VotiRegistroData) data.fromJson(json);
-      }
       await data.getData();
       callback(++n / (toDownload.length + downloaders.length));
     });
@@ -260,12 +254,16 @@ abstract class RegistroData {
       where: 'name = ? AND usrId = ?', whereArgs: [name, account.usrId]);
 
   Future<void> load() async {
-    await database.query('sections',
+    List section = (await database.query('sections',
         columns: ['etag', 'lastUpdate'],
         where: 'name = ? AND usrId = ?',
-        whereArgs: [name, account.usrId]);
+        whereArgs: [name, account.usrId]));
+    if (section.isNotEmpty) {
+      etag = section.first['etag'];
+      lastUpdate = DateTime.tryParse(section.first['lastUpdate']);
+    }
     data = (await database
-            .query('voti', where: 'usrId = ?', whereArgs: [account.usrId]))
+            .query(name, where: 'usrId = ?', whereArgs: [account.usrId]))
         .map((v) => Map.from(v))
         .toList();
   }
