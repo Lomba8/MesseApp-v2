@@ -29,9 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _username, _password;
   bool splash = true;
   bool _loading = false;
-  bool finished = false;
-
-  double _progress = 0;
+  
   VideoPlayerController _controller;
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
@@ -39,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
     main.route = 'login_screen';
 
     _controller = VideoPlayerController.asset('videos/loading.mp4')
@@ -48,22 +45,24 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {});
       });
     _controller.addListener(() {
-      if (_controller.value.isPlaying != true) {
-        finished = true;
+      if ((_controller.value.position?.inMicroseconds ?? 0)/(_controller.value.duration?.inMicroseconds ?? 1) >= 1) {
+        Navigator.of(this.context).pushReplacementNamed(Menu.id);
       }
     });
+    _controller.setVolume(0.0);
 
-    if (main.connection_main != ConnectivityResult.none && main.session != null) {
+    if (main.connection_main != ConnectivityResult.none &&
+        main.session != null) {
       main.session.login().then((ok) {
-        if (ok == '')
+        if (ok == '') {
           downloadAll();
-        else
+        } else
           setState(() => splash = false);
       });
-    } else splash = false;
+    } else
+      splash = false;
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
-    finished = false;
   }
 
   @override
@@ -75,20 +74,15 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void downloadAll() => main.session.downloadAll(
-          (double progress) => setState(() {
-                _progress = progress;
-                if (progress == 1)
-                  Navigator.of(this.context).pushReplacementNamed(Menu.id);
-              }),
-          downloaders: [
-            () async {
-              dynamic r;
-              r = await http.get('https://app.messe.dev/tutor');
-              await main.prefs.setString('tutor', '');
-              await main.prefs.setString('tutor', r.body);
-            }
-          ]);
+// Navigator.of(this.context).pushReplacementNamed(Menu.id);
+  void downloadAll() => main.session.downloadAll((v) {}, downloaders: [
+        () async {
+          dynamic r;
+          r = await http.get('https://app.messe.dev/tutor');
+          await main.prefs.setString('tutor', '');
+          await main.prefs.setString('tutor', r.body);
+        }
+      ]);
 
   void _submit(BuildContext context) async {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -173,8 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
         : 'images/loading_light.gif';
 
     if (splash) {
-      _controller.setVolume(0.0);
-      _controller.play();
+      if (!_controller.value.isPlaying) _controller.play();
 
       return Scaffold(
           backgroundColor: Colors.black,
@@ -183,37 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.7,
                     height: MediaQuery.of(context).size.width * 0.7,
-                    child: !finished
-                        ? VideoPlayer(_controller)
-                        : Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                fit: BoxFit.fitWidth,
-                                image: ExactAssetImage(
-                                    'images/gif-2.gif'), //FIXME con materiali di nico ma l'idea c'é
-                              ),
-                            ),
-                          ),
+                    child: VideoPlayer(_controller)
                   ),
                 )
               : Container(),
-          bottomNavigationBar: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).size.height * 0.05),
-              child: SizedBox(
-                height: 2.0,
-                child: LinearProgressIndicator(
-                  value: _progress,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Theme.of(context).accentColor),
-                ),
-              ),
-            ),
-          ));
+          );
     }
 
     return Scaffold(

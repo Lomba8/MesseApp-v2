@@ -37,8 +37,10 @@ void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     WidgetsFlutterBinding.ensureInitialized();
     await init();
-    await downloadOrari();
     session = accounts?.isNotEmpty ?? false ? accounts.first : null;
+    session?.load();
+
+    await downloadOrari();
     // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     // _signIn.signIn();
     notificationsPlugin.initialize(

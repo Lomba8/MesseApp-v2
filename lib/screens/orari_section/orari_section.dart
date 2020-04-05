@@ -258,8 +258,8 @@ class _OrariSectionState extends State<OrariSection> {
     int day = DateTime.now().weekday - 1;
     if (DateTime.now().hour >= 14) day = (day + 1) % 7;
     if (day == 6 || (day == 5 && !_hasSaturday)) return [];
-    for (int i = day; i < orari[selectedClass]['orario'].length; i += 6)
-      if (orari[selectedClass]['orario'][i] != '')
+    for (int i = day; i < orari[selectedClass]['orari'].length; i += 6)
+      if (orari[selectedClass]['orari'][i] != '')
         ore.add(Expanded(
           child: AspectRatio(
             aspectRatio: 1.5,
@@ -287,24 +287,24 @@ class _OrariSectionState extends State<OrariSection> {
     if (DateTime.now().hour >= 14) day = (day + 1) % 7;
     if (day == 6 || (day == 5 && !_hasSaturday))
       return []; // TODO: skip giornate senza lezione
-    for (int i = day; i < orari[selectedClass]['orario'].length; i += 6)
-      if (orari[selectedClass]['orario'][i] != '')
+    for (int i = day; i < orari[selectedClass]['orari'].length; i += 6)
+      if (orari[selectedClass]['orari'][i] != '')
         orario.add(Expanded(
             child: AspectRatio(
           aspectRatio: 1.3,
           child: GestureDetector(
             onTap: () => setState(() =>
-                (orari[selectedClass]['orario'][i] == _selectedSbj ||
-                        orari[selectedClass]['orario'][i] == '')
+                (orari[selectedClass]['orari'][i] == _selectedSbj ||
+                        orari[selectedClass]['orari'][i] == '')
                     ? _selectedSbj = null
-                    : _selectedSbj = orari[selectedClass]['orario'][i]),
+                    : _selectedSbj = orari[selectedClass]['orari'][i]),
             child: AnimatedContainer(
               margin: EdgeInsets.all(4.0),
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
-                  color: colors[orari[selectedClass]['orario'][i]]?.withOpacity(
+                  color: colors[orari[selectedClass]['orari'][i]]?.withOpacity(
                           _selectedSbj == null ||
-                                  _selectedSbj == orari[selectedClass]['orario'][i]
+                                  _selectedSbj == orari[selectedClass]['orari'][i]
                               ? 1
                               : 0.1) ??
                       Colors.transparent,
@@ -315,7 +315,7 @@ class _OrariSectionState extends State<OrariSection> {
                           blurRadius: 5,
                           offset: Offset(3, 3),
                           color: (_selectedSbj == null ||
-                                  _selectedSbj == orari[selectedClass]['orario'][i])
+                                  _selectedSbj == orari[selectedClass]['orari'][i])
                               ? Colors.black
                               : Colors.transparent)
                   ]),
@@ -323,11 +323,11 @@ class _OrariSectionState extends State<OrariSection> {
                 child: Padding(
                   padding: EdgeInsets.only(top: 3.0),
                   child: AutoSizeText(
-                    orari[selectedClass]['orario'][i],
+                    orari[selectedClass]['orari'][i],
                     style: TextStyle(
                         letterSpacing: 0.0,
                         color: _selectedSbj == null ||
-                                _selectedSbj == orari[selectedClass]['orario'][i]
+                                _selectedSbj == orari[selectedClass]['orari'][i]
                             ? Colors.black.withOpacity(0.75)
                             : Colors.white10),
                     textAlign: TextAlign.center,

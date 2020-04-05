@@ -55,10 +55,15 @@ Future<void> init() async {
               }()
                   .join(', ')) +
               ', url TEXT)'); continue c11;
-        c11: case 11: case 12: db.delete('agenda');
+        c11: case 11: case 12: db.delete('agenda'); continue c13;
+        c13: case 13: {
+          db.delete('auth');
+          db.delete('sections');
+          db.execute('DROP TABLE agenda');
+        }
       }
     },
-    version: 13,
+    version: 14,
   );
   accounts = (await database.query('auth'))
       .map((raw) => RegistroApi.parse(raw))

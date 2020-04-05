@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,8 @@ class AgendaRegistroData extends RegistroData {
     int year2 = int.parse(DateFormat.M().format(date)) < 9 ? 1 : 0;
     return '${date.year - year2}0901/${date.year + 1 - year2}0630';
   }
+
+  SplayTreeMap<DateTime, int> dates = SplayTreeMap<DateTime, int>();
 
   AgendaRegistroData({@required RegistroApi account})
       : super(
@@ -33,26 +37,19 @@ class AgendaRegistroData extends RegistroData {
         account.cls = m['classDesc']
             .substring(0, m['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
         ids.add(m['evtId']);
-        String date = m['evtDatetimeBegin']
-                .substring(0, m['evtDatetimeBegin'].length - 6) +
-            '.000Z';
+        String date = m['evtDatetimeBegin'].substring(0, 10) + 'T00:00:00Z';
         batch.insert(
           'agenda',
           {
             'id': m['evtId'],
-            'inizio': date,
-            'fine': m['evtDatetimeEnd']
-                    .substring(0, m['evtDatetimeBegin'].length - 6) +
-                '.000Z',
+            'date': date,
+            'inizio': m['evtDatetimeBegin'].substring(0, 19) + 'Z',
+            'fine': m['evtDatetimeEnd'].substring(0, 19) + 'Z',
             'giornaliero': m['isFullDay'] ? 1 : 0,
             'autore': m['authorName'],
             'info': m['notes'],
             'usrId': account.usrId,
-            'new': DateTime.now().isBefore(DateTime.utc(
-              int.parse(date.substring(0, 4)),
-              int.parse(date.substring(5, 7)),
-              int.parse(date.substring(8, 10)),
-            )) ? 1 : 0
+            'new': DateTime.now().isBefore(DateTime.parse(date)) ? 1 : 0
           },
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
@@ -60,8 +57,19 @@ class AgendaRegistroData extends RegistroData {
       batch.delete('agenda',
           where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
           whereArgs: [account.usrId]);
-      batch.query('agenda', where: 'usrId = ?', whereArgs: [account.usrId]);
-      data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+      batch.query('agenda',
+          where: 'usrId = ?', whereArgs: [account.usrId], orderBy: 'date');
+      dates = SplayTreeMap<DateTime, int>();
+      DateTime last;
+      int count = 0;
+      data = (await batch.commit()).last.map((v) {
+        if (DateTime.parse(v['date']) != last) {
+          last = DateTime.parse(v['date']);
+          dates[last] = count;
+        }
+        count++;
+        return Map.from(v);
+      }).toList();
 
       account.update(); // nel caso fosse stata cambiata la classe
       return Result(true, true);
@@ -70,6 +78,22 @@ class AgendaRegistroData extends RegistroData {
       print(stack);
     }
     return Result(false, false);
+  }
+
+  @override
+  Future<void> load() async {
+    await super.load();
+    data.sort((m1, m2) => m1['date'].compareTo(m2['date']) as int);
+    DateTime last;
+    int count = 0;
+    data = data.map((v) {
+      if (DateTime.parse(v['date']) != last) {
+        last = DateTime.parse(v['date']);
+        dates[last] = count;
+      }
+      count++;
+      return Map.from(v);
+    }).toList();
   }
 
   @override
@@ -82,16 +106,19 @@ class AgendaRegistroData extends RegistroData {
   }
 
   Iterable<Evento> getEvents(DateTime date) sync* {
-    for (Map raw in data) {
-      Evento evt = Evento.parse(account, raw);
-      if (evt.getDate() == date) yield evt;
+    int index = dates[date];
+    if (index == null) return;
+    for (Map evt in data.skip(index)) {
+      DateTime evtDate = DateTime.parse(evt['date']);
+      if (evtDate != date) return;
+      yield Evento.parse(account, evt);
     }
   }
 
   @override
   Future<void> create() async {
     await database.execute(
-        'CREATE TABLE IF NOT EXISTS agenda(id INTEGER PRIMARY KEY, inizio DATETIME, fine DATETIME, giornaliero INTEGER, autore TEXT, info TEXT, usrId INTEGER, new INTEGER)');
+        'CREATE TABLE IF NOT EXISTS agenda(id INTEGER PRIMARY KEY, date DATE, inizio DATETIME, fine DATETIME, giornaliero INTEGER, autore TEXT, info TEXT, usrId INTEGER, new INTEGER)');
   }
 }
 
