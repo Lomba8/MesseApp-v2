@@ -1,46 +1,55 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
-import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DidatticaRegistroData extends RegistroData {
-  DidatticaRegistroData()
-      : super('https://web.spaggiari.eu/rest/v1/students/%uid/didactics');
+  DidatticaRegistroData({@required RegistroApi account})
+      : super(
+            url: 'https://web.spaggiari.eu/rest/v1/students/%uid/didactics',
+            account: account, name: 'didactics');
 
   @override
-  Result parseData(json) {
+  Future<Result> parseData(json) async {
     json = json['didacticts'];
-    CustomDirectory data2 = CustomDirectory(name: '/', children: {});
+    CustomDirectory data2 = CustomDirectory(name: '/', children: {}, account: account);
 
     json.forEach((teacher) {
       data2.add(
           teacher['teacherName'],
           CustomDirectory(
             name: teacher['teacherName'],
+            account: account,
             children: Map.fromEntries(teacher['folders']
                 .map<MapEntry<String, CustomPath>>((folder) =>
                     MapEntry<String, CustomPath>(
                         folder['folderName'],
                         CustomDirectory(
                             name: folder['folderName'],
+                            account: account,
                             children: Map.fromEntries(folder['contents']
-                                .map<MapEntry<String, CustomPath>>((content) =>
-                                    MapEntry<String, CustomPath>(
+                                .map<MapEntry<String, CustomPath>>(
+                                    (content) => MapEntry<String, CustomPath>(
                                         content['contentName'],
                                         CustomFile(
-                                            name: content['contentName'],
-                                            type: content['objectType'],
-                                            lastUpdate:
-                                                DateTime.parse(content['shareDT'].replaceAll(':', '')),
-                                            id: content['contentId'],
-                                            oldLastUpdate: data is CustomDirectory ? data?.getFile(<String>[teacher['teacherName'], folder['folderName'], content['contentName']])?.lastUpdate : null)
-                                          ..download(onlyHeader: true)))
+                                          name: content['contentName'],
+                                          type: content['objectType'],
+                                          lastUpdate: DateTime.parse(
+                                              content['shareDT']
+                                                  .replaceAll(':', '')),
+                                          id: content['contentId'],
+                                          oldLastUpdate: data is CustomDirectory
+                                              ? data?.getFile(<String>[
+                                                  teacher['teacherName'],
+                                                  folder['folderName'],
+                                                  content['contentName']
+                                                ])?.lastUpdate
+                                              : null,
+                                          account: account,
+                                        )..download(onlyHeader: true)))
                                 .toList()))))
                 .toList()),
           ));
@@ -59,7 +68,13 @@ class DidatticaRegistroData extends RegistroData {
   @override
   void fromJson(Map<String, dynamic> json) {
     super.fromJson(json);
-    data = CustomDirectory.parse(json: json['data'], name: 'dir:/');
+    data = CustomDirectory.parse(
+        json: json['data'], name: 'dir:/', account: account);
+  }
+
+  @override
+  Future<void> create() {
+    // TODO: implement create
   }
 }
 
@@ -67,8 +82,9 @@ abstract class CustomPath {
   final String name;
   bool changed = false;
   CustomDirectory parent;
+  final RegistroApi account;
 
-  CustomPath(this.name);
+  CustomPath(this.name, {@required this.account});
 
   Iterable<String> getPath() sync* {
     if (parent != null) yield* parent.getPath();
@@ -79,21 +95,28 @@ abstract class CustomPath {
 class CustomDirectory extends CustomPath {
   final Map<String, CustomPath> children;
 
-  CustomDirectory({@required String name, @required this.children})
-      : super(name) {
+  CustomDirectory(
+      {@required String name,
+      @required this.children,
+      @required RegistroApi account})
+      : super(name, account: account) {
     for (CustomPath child in children.values) {
       child.parent = this;
       changed |= child.changed;
     }
   }
 
-  CustomDirectory.parse({@required String name, @required Map json})
+  CustomDirectory.parse(
+      {@required String name,
+      @required Map json,
+      @required RegistroApi account})
       : children = json.map((name, file) => MapEntry(
             name.substring(name.indexOf(':') + 1),
             name.startsWith('dir:')
-                ? CustomDirectory.parse(name: name, json: file)
-                : CustomFile.parse(name: name, json: file))),
-        super(name.substring('dir:'.length)) {
+                ? CustomDirectory.parse(
+                    name: name, json: file, account: account)
+                : CustomFile.parse(name: name, json: file, account: account))),
+        super(name.substring('dir:'.length), account: account) {
     for (CustomPath child in children.values) {
       child.parent = this;
       changed |= child.changed;
@@ -142,8 +165,9 @@ class CustomFile extends CustomPath {
       @required this.id,
       String fileName,
       int oldLastUpdate,
-      DateTime lastUpdate})
-      : super(name) {
+      DateTime lastUpdate,
+      @required RegistroApi account})
+      : super(name, account: account) {
     changed = lastUpdate.millisecondsSinceEpoch > (oldLastUpdate ?? 0);
     this.lastUpdate =
         max(oldLastUpdate ?? 0, lastUpdate.millisecondsSinceEpoch);
@@ -152,12 +176,12 @@ class CustomFile extends CustomPath {
   dynamic toJson() =>
       {'type': type, 'fileName': fileName, 'id': id, 'lastUpdate': lastUpdate};
 
-  CustomFile.parse({String name, Map json})
+  CustomFile.parse({String name, Map json, @required RegistroApi account})
       : type = json['type'],
         fileName = json['fileName'],
         id = json['id'],
         lastUpdate = json['lastUpdate'],
-        super(name.substring('file:'.length));
+        super(name.substring('file:'.length), account: account);
 
   void download({bool onlyHeader = false}) async {
     if (onlyHeader && type != 'file') return;
@@ -165,11 +189,11 @@ class CustomFile extends CustomPath {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
       'Content-Type': 'application/json',
       'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
-      'Z-Auth-Token': RegistroApi.token,
+      'Z-Auth-Token': account.token,
     };
     Function funct = onlyHeader ? http.head : http.get;
     http.Response res = await funct(
-        'https://web.spaggiari.eu/rest/v1/students/${RegistroApi.usrId}/didactics/item/$id',
+        'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/didactics/item/$id',
         headers: headers);
     if (onlyHeader) {
       fileName = res.headers['content-disposition'];

@@ -1,11 +1,11 @@
 import 'dart:math';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
-import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import 'package:intl/intl.dart';
 
 Map<String, Calendar> _instances = {};
@@ -32,8 +32,8 @@ class Calendar extends ResizableWidget {
   static final Curve _curve = Curves.easeIn;
 
   set currentDay(DateTime currentDay) {
-    _onDayChanged(_currentDay = currentDay,
-        RegistroApi.agenda.data.getEvents(currentDay));
+    _onDayChanged(
+        _currentDay = currentDay, session.agenda.getEvents(currentDay).toList());
   }
 
   @override
@@ -114,7 +114,7 @@ class Calendar extends ResizableWidget {
     // TODO: se il giorno selezionato è in un altro mese, che settimana prendiamo?
     // TODO: in modalità settimana le page devono andare di 7gg in 7gg
     DateTime firstDayOfMonth =
-        DateTime(DateTime.now().year, DateTime.now().month + index);
+        DateTime.utc(DateTime.now().year, DateTime.now().month + index);
     int month = firstDayOfMonth.month;
     DateTime firstDayRendered;
     DateTime startDay = firstDayRendered =
@@ -189,13 +189,13 @@ class Calendar extends ResizableWidget {
                   child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: ((RegistroApi.agenda.data as EventList<Evento>)
-                                  .getEvents(day) ??
-                              [])
-                          .map((e) => e.getDot(week == safeWeek
-                              ? 1
-                              : max(0, weekFactor * 1.25 - 0.25)))
-                          .toList()),
+                      children: session.agenda
+                              .getEvents(day)
+                              ?.map((e) => e.getDot(week == safeWeek
+                                  ? 1
+                                  : max(0, weekFactor * 1.25 - 0.25)))
+                              ?.toList() ??
+                          []),
                 )
               ]),
               shape: CircleBorder(

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
@@ -31,7 +32,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   DateTime _currentDate;
   bool _value = false;
 
-  EventList<Evento> get e => RegistroApi.agenda.data;
+  List get e => session.agenda.data;
 
   List<Evento> dayEvents = List<Evento>();
   List<Lezione> dayLessons = List<Lezione>();
@@ -40,14 +41,14 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   double lunghezzaDash = 0;
 
   void initState() {
-    _currentDate =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    dayEvents = e.events[_currentDate] ?? [];
-    RegistroApi.agenda.getData().then((r) {
+    _currentDate = DateTime.utc(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    dayEvents = session.agenda.getEvents(_currentDate).toList() ?? [];
+    session.agenda.getData().then((r) {
       if (!r.reload || !mounted) return;
-      _currentDate = DateTime(
+      _currentDate = DateTime.utc(
           DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      dayEvents = e.events[_currentDate] ?? [];
+      dayEvents = session.agenda.getEvents(_currentDate).toList() ?? [];
       setState(() {});
     });
 
@@ -65,9 +66,9 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
 
   // TODO: ripristinare lastUpdate
   /*String _passedTime() {
-    if (RegistroApi.agenda.lastUpdate == null) return 'mai aggiornato';
+    if (session.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference =
-        DateTime.now().difference(RegistroApi.agenda.lastUpdate);
+        DateTime.now().difference(session.agenda.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -86,7 +87,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   }*/
 
   Future<void> _refresh() async {
-    RegistroApi.agenda.getData().then((r) {
+    session.agenda.getData().then((r) {
       if (r.ok) _setStateIfAlive();
     });
     return null;
@@ -117,7 +118,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                             if (dayEvents != null && dayEvents.isNotEmpty)
                               dayEvents.forEach((event) => event.seen());
                             dayEvents = events ?? [];
-                            dayLessons = RegistroApi.lessons.data['date'][day];
+                            dayLessons = session.lessons.data['date'][day];
                             _currentDate = day;
                             lunghezzaDash = 0;
                             _value = !_value;
@@ -134,10 +135,8 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                             .map((l) => ListTile(
                                   title: Text(l.sbj),
                                   subtitle: Text(
-                                    (RegistroApi.subjects.data[l.author] ==
-                                                    l.sbj ||
-                                                (RegistroApi
-                                                        .subjects.data[l.author]
+                                    (session.subjects.data[l.author] == l.sbj ||
+                                                (session.subjects.data[l.author]
                                                         ?.contains(l.sbj) ??
                                                     false)
                                             ? ''
@@ -411,20 +410,20 @@ class EventCard extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-                color: RegistroApi.subjects.data[evento.autore] == null ||
-                        RegistroApi.subjects.data[evento.autore] is String
-                    ? (Globals.subjects[RegistroApi.subjects.data[evento.autore]] ??
+                color: session.subjects.data[evento.autore] == null ||
+                        session.subjects.data[evento.autore] is String
+                    ? (Globals.subjects[session.subjects.data[evento.autore]] ??
                                 {})['colore']
                             ?.withOpacity(0.7) ??
                         (Theme.of(context).brightness == Brightness.dark
                             ? Colors.white10
                             : Colors.black12)
                     : null,
-                gradient: RegistroApi.subjects.data[evento.autore] is List
+                gradient: session.subjects.data[evento.autore] is List
                     ? LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: RegistroApi.subjects.data[evento.autore].reversed
+                        colors: session.subjects.data[evento.autore].reversed
                             .map<Color>(
                                 (sbj) => (Globals.subjects[sbj]['colore'] as Color))
                             .toList())
@@ -435,8 +434,8 @@ class EventCard extends StatelessWidget {
                 Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
-                    children: RegistroApi.subjects.data[evento.autore] is List
-                        ? RegistroApi.subjects.data[evento.autore]
+                    children: session.subjects.data[evento.autore] is List
+                        ? session.subjects.data[evento.autore]
                             .map<Widget>((sbj) => Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Icon(
@@ -450,14 +449,13 @@ class EventCard extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.all(8),
                               child: Icon(
-                                (Globals.subjects[RegistroApi
+                                (Globals.subjects[session
                                             .subjects.data[evento.autore]] ??
                                         {})['icona'] ??
                                     MdiIcons.sleep,
                                 size: 25.0,
                                 color:
-                                    RegistroApi.subjects.data[evento.autore] !=
-                                            null
+                                    session.subjects.data[evento.autore] != null
                                         ? Colors.black
                                         : Colors.white,
                               ),
@@ -539,7 +537,7 @@ class EventCard extends StatelessWidget {
             ),
           ),
           Center(
-            child: evento.nuovo ?? true
+            child: evento.isNew ?? true
                 ? Icon(
                     Icons.brightness_1,
                     color: Colors.yellow,
@@ -551,4 +549,4 @@ class EventCard extends StatelessWidget {
       );
 }
 
-DateTime getDayFromDT(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+DateTime getDayFromDT(DateTime dt) => DateTime.utc(dt.year, dt.month, dt.day);

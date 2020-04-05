@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
@@ -48,7 +49,7 @@ class BachecaScreen extends StatefulWidget {
 
 class _BachecaScreenState extends State<BachecaScreen> {
   Comunicazione _expanded;
-  var data = RegistroApi.bacheca.data;
+  var data = session.bacheca.data;
   final TextEditingController _textController = new TextEditingController();
   FocusNode _firstInputFocusNode;
   String _highlight = '';
@@ -61,8 +62,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
   DateTime _start, _end;
 
   Future<void> _refresh() async {
-    await RegistroApi.bacheca.getData();
-    data = RegistroApi.bacheca.data;
+    await session.bacheca.getData();
+    data = session.bacheca.data;
     setState(() {});
     rebuildAllChildren(context);
     files = [];
@@ -83,10 +84,10 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
     var send = await http.post(uri, headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'token': RegistroApi.token,
-      'uuid': RegistroApi.uname.substring(1),
+      'token': session.token,
+      'uuid': session.uname.substring(1),
     }, body: {
-      'ids': RegistroApi.bacheca.data
+      'ids': session.bacheca.data
           .where((circolare) => !circolare.attachments.isEmpty)
           .map((circolare) {
             return json.encode({

@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/screens/voti_details_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -26,7 +28,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    RegistroApi.voti.getData().then((r) {
+    session.voti.getData().then((r) {
       if (r.ok) _setStateIfAlive();
     });
   }
@@ -43,9 +45,8 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
 
   String _passedTime() {
     // FIXME: i temporizzatori per l'aggiornamento dell'ultimo controllo si accumulano
-    if (RegistroApi.voti.lastUpdate == null) return 'mai aggiornato';
-    Duration difference =
-        DateTime.now().difference(RegistroApi.voti.lastUpdate);
+    if (session.voti.lastUpdate == null) return 'mai aggiornato';
+    Duration difference = DateTime.now().difference(session.voti.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -64,7 +65,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _refresh() async {
-    Result r = await RegistroApi.voti.getData();
+    Result r = await session.voti.getData();
     if (r.ok) _setStateIfAlive();
   }
 
@@ -73,17 +74,16 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
     return Stack(
       children: [
         LiquidPullToRefresh(
-          onRefresh: () => _refresh(),
-          showChildOpacityTransition: false,
-          child: CustomScrollView(
-            scrollDirection: Axis.vertical,
-            slivers: <Widget>[
+            onRefresh: () => _refresh(),
+            showChildOpacityTransition: false,
+            child: CustomScrollView(scrollDirection: Axis.vertical, slivers: <
+                Widget>[
               ExpansionSliver(ExpansionSliverDelegate(context,
-                  title: RegistroApi.voti.periods[0],
+                  title: session.voti.periods[0],
                   body: _Header(
                       (period) => setState(() {
                             _value = !_value;
-                            RegistroApi.voti.period = period;
+                            session.voti.period = period;
                           }),
                       _passedTime),
                   value: _value)),
@@ -93,9 +93,8 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                     Padding(
                         padding: EdgeInsets.all(30.0 - 15.0),
                         child: Column(
-                          children:
-                              RegistroApi.voti.sbjsWithMarks.expand((sbj) {
-                            double average = RegistroApi.voti.average(sbj);
+                          children: session.voti.sbjsWithMarks().expand((sbj) {
+                            double average = session.voti.average(sbj);
                             return [
                               ListTile(
                                   onLongPress: () => null,
@@ -103,10 +102,11 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => VotiDetails(
-                                                  sbj['voti'],
-                                                  sbj['subjectDesc']))).then(
-                                          (value) {
-                                        sbj['voti'].forEach((v) => v.seen());
+                                                  session.voti
+                                                      .sbjVoti(sbj)
+                                                      .toList(),
+                                                  sbj))).then((value) async {
+                                        session.voti.allSeen(sbj: sbj);
                                         _setStateIfAlive();
                                       }),
                                   leading: Stack(
@@ -116,12 +116,12 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                                         style: TextStyle(
                                           fontFamily: 'CoreSansRounded',
                                           fontWeight:
-                                              RegistroApi.voti.hasNewMarks(sbj)
+                                              session.voti.hasNewMarks(sbj)
                                                   ? FontWeight.bold
                                                   : FontWeight.normal,
                                         ),
                                       ),
-                                      RegistroApi.voti.hasNewMarks(sbj)
+                                      session.voti.hasNewMarks(sbj)
                                           ? Positioned(
                                               bottom: 6,
                                               left: 0,
@@ -143,35 +143,35 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => VotiDetails(
-                                                  sbj['voti'],
-                                                  sbj['subjectDesc']))).then(
-                                          (value) {
-                                        sbj['voti'].forEach((v) => v.seen());
+                                                  session.voti
+                                                      .sbjVoti(sbj)
+                                                      .toList(),
+                                                  sbj))).then((value) {
+                                        session.voti.allSeen(sbj: sbj);
                                         _setStateIfAlive();
                                       }),
                                     ),
                                   ),
                                   title: Text(
-                                    sbj['subjectDesc'],
+                                    sbj,
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         letterSpacing: 1.0,
                                         fontWeight:
-                                            RegistroApi.voti.hasNewMarks(sbj)
+                                            session.voti.hasNewMarks(sbj)
                                                 ? FontWeight.bold
                                                 : FontWeight.normal,
-                                        fontSize:
-                                            RegistroApi.voti.hasNewMarks(sbj)
-                                                ? Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText2
-                                                        .fontSize +
-                                                    1.0
-                                                : Theme.of(context)
+                                        fontSize: session.voti.hasNewMarks(sbj)
+                                            ? Theme.of(context)
                                                     .textTheme
                                                     .bodyText2
-                                                    .fontSize),
+                                                    .fontSize +
+                                                1.0
+                                            : Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                .fontSize),
                                   )),
                               Container(
                                   height: 2,
@@ -192,9 +192,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ])),
         Align(
           alignment: Alignment(0.0, -0.85),
           child: CustomConnectionStatusBar(
@@ -216,8 +214,8 @@ class _Header extends ResizableWidget {
 
   @override
   Widget build(BuildContext context, [double heightFactor]) {
-    double average = RegistroApi.voti.averagePeriodo(0);
-    int newVotiCount = RegistroApi.voti.newVotiPeriodCount;
+    double average = session.voti.averagePeriodo(0);
+    int newVotiCount = session.voti.newVotiPeriodCount;
     return Container(
         height: (maxExtent(context) - minExtent(context)) * heightFactor +
             minExtent(context),
@@ -250,15 +248,14 @@ class _Header extends ResizableWidget {
                   onPeriodChangedCallback(1);
                 },
                 child: Text(
-                  RegistroApi.voti.periods[1],
+                  session.voti.periods[1],
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 shape: Border(
                     bottom: BorderSide(
-                        color:
-                            Voto.getColor(RegistroApi.voti.averagePeriodo(2)),
+                        color: Voto.getColor(session.voti.averagePeriodo(2)),
                         width: 5)),
               ),
             ),
@@ -278,11 +275,10 @@ class _Header extends ResizableWidget {
                 },
                 shape: Border(
                     bottom: BorderSide(
-                        color:
-                            Voto.getColor(RegistroApi.voti.averagePeriodo(2)),
+                        color: Voto.getColor(session.voti.averagePeriodo(2)),
                         width: 5)),
                 child: Text(
-                  RegistroApi.voti.periods[2],
+                  session.voti.periods[2],
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -313,7 +309,7 @@ class _Header extends ResizableWidget {
                   ? IconButton(
                       icon: Icon(Icons.clear_all),
                       onPressed: () {
-                        RegistroApi.voti.allSeen();
+                        session.voti.allSeen();
                         onPeriodChangedCallback(0);
                       })
                   : null,

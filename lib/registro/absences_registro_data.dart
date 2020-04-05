@@ -1,13 +1,14 @@
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
 
 class AbsencesRegistroData extends RegistroData {
-  AbsencesRegistroData()
+  AbsencesRegistroData({@required RegistroApi account})
       : super(
-            'https://web.spaggiari.eu/rest/v1/students/%uid/absences/details');
+            url: 'https://web.spaggiari.eu/rest/v1/students/%uid/absences/details', account: account, name: 'absences');
 
   @override
-  Result parseData(json) {
+  Future<Result> parseData(json) async {
     json = json['events'];
     data = <DateTime, Assenza>{};
 
@@ -38,6 +39,11 @@ class AbsencesRegistroData extends RegistroData {
     super.fromJson(json);
     data = json['data'].map((date, absence) =>
         MapEntry(DateTime.parse(date), Assenza.fromJson(absence)));
+  }
+
+  @override
+  Future<void> create() {
+    // TODO: implement create
   }
 }
 

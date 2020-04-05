@@ -38,7 +38,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print(state.toString());
 
-    RegistroApi.save();
+    main.session.save();
   }
 
   @override
