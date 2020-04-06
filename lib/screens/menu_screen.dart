@@ -1,3 +1,4 @@
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
@@ -38,7 +39,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print(state.toString());
 
-    main.session.save();
+    session.save();
   }
 
   @override

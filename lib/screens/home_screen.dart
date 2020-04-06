@@ -133,23 +133,23 @@ class _HomeState extends State<Home> {
             elevation: 0,
             pinned: true,
             backgroundColor: Colors.transparent,
-            title: Column(
-              children: <Widget>[
+            title: /*Column(
+              children: <Widget>[*/
                 Text(
-                  '${main.session.nome} ${main.session.cognome}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold),
-                ),
-                CustomConnectionStatusBar(
+              '${main.session.nome} ${main.session.cognome}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold),
+            ),
+            /*CustomConnectionStatusBar(
                   width: MediaQuery.of(context).size.width / 3,
                 ),
               ],
-            ),
+            ),*/
             leading: MaterialButton(
               child: Icon(MdiIcons.account,
                   color: Theme.of(context).brightness == Brightness.light
@@ -173,9 +173,16 @@ class _HomeState extends State<Home> {
                       )),
             ],
             bottom: PreferredSize(
-                child: Container(),
-                preferredSize:
-                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+              child: Container(
+                height: MediaQuery.of(context).size.width / 8,
+                alignment: Alignment.center,
+                child: CustomConnectionStatusBar(
+                  width: MediaQuery.of(context).size.width / 3,
+                ),
+              ),
+              preferredSize:
+                  Size.fromHeight(MediaQuery.of(context).size.width / 8),
+            ),
             flexibleSpace: CustomPaint(
               painter: BackgroundPainter(Theme.of(context)),
               size: Size.infinite,

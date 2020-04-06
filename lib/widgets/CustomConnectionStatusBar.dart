@@ -1,8 +1,5 @@
 library connection_status_bar;
 
-import 'dart:async';
-import 'dart:io';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
@@ -12,12 +9,14 @@ class CustomConnectionStatusBar extends StatefulWidget {
       title; // lo ho tolto pero si puo mettere sostistuendo il Text() a riga 82 con widget.title
   final double width;
   final double height;
+  final double radius;
 
   CustomConnectionStatusBar({
     Key key,
     this.height = 25,
     this.width = double.maxFinite,
     this.color = Colors.redAccent,
+    this.radius = 20.0,
     this.title = const Text(
       'Please check your internet connection',
       style: TextStyle(color: Colors.white, fontSize: 14),
@@ -53,7 +52,7 @@ class _CustomConnectionStatusBarState extends State<CustomConnectionStatusBar> {
         bottom: false,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(widget.radius),
             color: _hasConnection ? Colors.transparent : widget.color,
           ),
           width: widget.width,
