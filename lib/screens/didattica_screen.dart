@@ -1,7 +1,6 @@
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/didattica_registro_data.dart';
-import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:flutter/material.dart';
@@ -172,14 +171,18 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                                             Colors.white54,
                                       ),
                                       if (path is CustomDirectory)
-                                        Icon(
-                                          (session.subjects
-                                                  .subjectTheme(path.name) ??
-                                              session.subjects.subjectTheme(
-                                                  path.parent?.name) ??
-                                              {})['icona'],
-                                          size: 40,
-                                          color: Colors.white,
+                                        Positioned(
+                                          right: 15,
+                                          bottom: 25,
+                                          child: Icon(
+                                            (session.subjects
+                                                    .subjectTheme(path.name) ??
+                                                session.subjects.subjectTheme(
+                                                    path.parent?.name) ??
+                                                {})['icona'],
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                     ],
                                   ),
