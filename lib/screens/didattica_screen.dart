@@ -2,7 +2,6 @@ import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/didattica_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:flutter/material.dart';
 
 class DidatticaScreen extends StatefulWidget {
@@ -52,16 +51,9 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                 onPressed: () {
                   Navigator.pop(context);
                 }),
-            title: Column(
-              children: <Widget>[
-                Text(
-                  'DIDATTICA',
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-                CustomConnectionStatusBar(
-                  width: MediaQuery.of(context).size.width / 3,
-                ),
-              ],
+            title: Text(
+              'DIDATTICA',
+              style: Theme.of(context).textTheme.bodyText2,
             ),
             elevation: 0,
             pinned: true,

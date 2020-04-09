@@ -170,6 +170,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
 
   @override
   Widget build(BuildContext context) {
+    Context = context;
     return MaterialApp(
       theme: Globals.lightTheme,
       navigatorKey: navigatorKey,
@@ -209,8 +210,8 @@ SharedPreferences prefs;
 
 ConnectivityResult connection;
 String appName, appVersion, platform, osVersion, route;
-bool alreadyPushed = false;
 dynamic connection_main;
+BuildContext Context;
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 
 //TODO: flare_spalsh_screen quando lutente e gia loggato
