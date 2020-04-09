@@ -2,7 +2,6 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
@@ -176,12 +175,10 @@ class _HomeState extends State<Home> {
               child: Container(
                 height: MediaQuery.of(context).size.width / 8,
                 alignment: Alignment.center,
-                child: CustomConnectionStatusBar(
-                  width: MediaQuery.of(context).size.width / 3,
-                ),
+                child: Offstage(),
               ),
               preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.width / 8),
+                  Size.fromHeight(MediaQuery.of(context).size.width / 7),
             ),
             flexibleSpace: CustomPaint(
               painter: BackgroundPainter(Theme.of(context)),

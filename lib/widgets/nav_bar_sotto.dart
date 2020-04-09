@@ -1,4 +1,3 @@
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
@@ -73,7 +72,8 @@ class _NavBarSottoState extends State<NavBarSotto>
       parent: _animationController,
       curve: Interval(0.3, 1),
     ));
-    _cornerAnimation = Tween<double>(begin: 12.5, end: 0).animate(CurvedAnimation(
+    _cornerAnimation =
+        Tween<double>(begin: 12.5, end: 0).animate(CurvedAnimation(
       parent: _animationController,
       curve: Interval(0.8, 1),
     ));

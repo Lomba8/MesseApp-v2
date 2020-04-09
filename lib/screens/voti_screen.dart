@@ -5,7 +5,6 @@ import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/screens/voti_details_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
@@ -71,136 +70,122 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        LiquidPullToRefresh(
-            onRefresh: () => _refresh(),
-            showChildOpacityTransition: false,
-            child: CustomScrollView(scrollDirection: Axis.vertical, slivers: <
-                Widget>[
-              ExpansionSliver(ExpansionSliverDelegate(context,
-                  title: session.voti.periods[0],
-                  body: _Header(
-                      (period) => setState(() {
-                            _value = !_value;
-                            session.voti.period = period;
-                          }),
-                      _passedTime),
-                  value: _value)),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    Padding(
-                        padding: EdgeInsets.all(30.0 - 15.0),
-                        child: Column(
-                          children: session.voti.sbjsWithMarks().expand((sbj) {
-                            double average = session.voti.average(sbj);
-                            return [
-                              ListTile(
-                                  onLongPress: () => null,
-                                  onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => VotiDetails(
-                                                  session.voti
-                                                      .sbjVoti(sbj)
-                                                      .toList(),
-                                                  sbj))).then((value) async {
-                                        session.voti.allSeen(sbj: sbj);
-                                        _setStateIfAlive();
-                                      }),
-                                  leading: Stack(
-                                    children: [
-                                      Text(
-                                        '  ' + average.toStringAsPrecision(2),
-                                        style: TextStyle(
-                                          fontFamily: 'CoreSansRounded',
-                                          fontWeight:
-                                              session.voti.hasNewMarks(sbj)
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                        ),
-                                      ),
-                                      session.voti.hasNewMarks(sbj)
-                                          ? Positioned(
-                                              bottom: 6,
-                                              left: 0,
-                                              child: Icon(
-                                                Icons.brightness_1,
-                                                size: 10,
-                                                color: Colors.yellow,
-                                              ),
-                                            )
-                                          : SizedBox(),
-                                    ],
-                                  ),
-                                  trailing: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 10,
-                                    child: IconButton(
-                                      icon: Icon(Icons.arrow_forward_ios),
-                                      onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => VotiDetails(
-                                                  session.voti
-                                                      .sbjVoti(sbj)
-                                                      .toList(),
-                                                  sbj))).then((value) {
-                                        session.voti.allSeen(sbj: sbj);
-                                        _setStateIfAlive();
-                                      }),
+    return LiquidPullToRefresh(
+        onRefresh: () => _refresh(),
+        showChildOpacityTransition: false,
+        child:
+            CustomScrollView(scrollDirection: Axis.vertical, slivers: <Widget>[
+          ExpansionSliver(ExpansionSliverDelegate(context,
+              title: session.voti.periods[0],
+              body: _Header(
+                  (period) => setState(() {
+                        _value = !_value;
+                        session.voti.period = period;
+                      }),
+                  _passedTime),
+              value: _value)),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                    padding: EdgeInsets.all(30.0 - 15.0),
+                    child: Column(
+                      children: session.voti.sbjsWithMarks().expand((sbj) {
+                        double average = session.voti.average(sbj);
+                        return [
+                          ListTile(
+                              onLongPress: () => null,
+                              onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => VotiDetails(
+                                              session.voti
+                                                  .sbjVoti(sbj)
+                                                  .toList(),
+                                              sbj))).then((value) async {
+                                    session.voti.allSeen(sbj: sbj);
+                                    _setStateIfAlive();
+                                  }),
+                              leading: Stack(
+                                children: [
+                                  Text(
+                                    '  ' + average.toStringAsPrecision(2),
+                                    style: TextStyle(
+                                      fontFamily: 'CoreSansRounded',
+                                      fontWeight: session.voti.hasNewMarks(sbj)
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
                                   ),
-                                  title: Text(
-                                    sbj,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        letterSpacing: 1.0,
-                                        fontWeight:
-                                            session.voti.hasNewMarks(sbj)
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                        fontSize: session.voti.hasNewMarks(sbj)
-                                            ? Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2
-                                                    .fontSize +
-                                                1.0
-                                            : Theme.of(context)
+                                  session.voti.hasNewMarks(sbj)
+                                      ? Positioned(
+                                          bottom: 6,
+                                          left: 0,
+                                          child: Icon(
+                                            Icons.brightness_1,
+                                            size: 10,
+                                            color: Colors.yellow,
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                ],
+                              ),
+                              trailing: Container(
+                                width: MediaQuery.of(context).size.width / 10,
+                                child: IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios),
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => VotiDetails(
+                                              session.voti
+                                                  .sbjVoti(sbj)
+                                                  .toList(),
+                                              sbj))).then((value) {
+                                    session.voti.allSeen(sbj: sbj);
+                                    _setStateIfAlive();
+                                  }),
+                                ),
+                              ),
+                              title: Text(
+                                sbj,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    letterSpacing: 1.0,
+                                    fontWeight: session.voti.hasNewMarks(sbj)
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: session.voti.hasNewMarks(sbj)
+                                        ? Theme.of(context)
                                                 .textTheme
                                                 .bodyText2
-                                                .fontSize),
-                                  )),
-                              Container(
-                                  height: 2,
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 25.0),
-                                  child: LinearProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Voto.getColor(average)),
-                                      value: average / 10,
-                                      backgroundColor: Voto.getColor(average)
-                                          .withAlpha(50))),
-                              SizedBox(
-                                height: 20.0,
-                              )
-                            ];
-                          }).toList(),
-                        ))
-                  ],
-                ),
-              ),
-            ])),
-        Align(
-          alignment: Alignment(0.0, -0.85),
-          child: CustomConnectionStatusBar(
-            width: MediaQuery.of(context).size.width / 3,
+                                                .fontSize +
+                                            1.0
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            .fontSize),
+                              )),
+                          Container(
+                              height: 2,
+                              padding: EdgeInsets.symmetric(horizontal: 25.0),
+                              child: LinearProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Voto.getColor(average)),
+                                  value: average / 10,
+                                  backgroundColor:
+                                      Voto.getColor(average).withAlpha(50))),
+                          SizedBox(
+                            height: 20.0,
+                          )
+                        ];
+                      }).toList(),
+                    ))
+              ],
+            ),
           ),
-        ),
-      ],
-    );
+        ]));
   }
 }
 

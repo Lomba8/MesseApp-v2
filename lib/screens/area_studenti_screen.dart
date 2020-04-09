@@ -7,7 +7,6 @@ import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -129,9 +128,6 @@ class _AreaStudentiState extends State<AreaStudenti> {
                           : Colors.white,
                       fontSize: 30,
                       fontWeight: FontWeight.bold),
-                ),
-                CustomConnectionStatusBar(
-                  width: MediaQuery.of(context).size.width / 3,
                 ),
               ],
             ),

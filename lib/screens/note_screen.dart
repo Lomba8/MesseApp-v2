@@ -1,6 +1,4 @@
-
 import 'package:Messedaglia/main.dart';
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:flutter/material.dart';
 
 class NoteScreen extends StatelessWidget {
@@ -8,8 +6,5 @@ class NoteScreen extends StatelessWidget {
   Widget build(BuildContext context) => Material(
           child: Column(children: [
         Text(session.note.json),
-        CustomConnectionStatusBar(
-          width: MediaQuery.of(context).size.width / 3,
-        ),
       ]));
 }

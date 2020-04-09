@@ -7,7 +7,6 @@ import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
-import 'package:Messedaglia/widgets/CustomConnectionStatusBar.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
@@ -264,16 +263,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                     }),
-                title: Column(
-                  children: <Widget>[
-                    Text(
-                      'BACHECA',
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                    CustomConnectionStatusBar(
-                      width: MediaQuery.of(context).size.width / 3,
-                    ),
-                  ],
+                title: Text(
+                  'BACHECA',
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
                 elevation: 0,
                 pinned: true,
