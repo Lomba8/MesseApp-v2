@@ -3,15 +3,18 @@ import 'dart:io';
 
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class BachecaRegistroData extends RegistroData {
   BachecaRegistroData({@required RegistroApi account})
       : super(
             url: 'https://web.spaggiari.eu/rest/v1/students/%uid/noticeboard',
-            account: account, name: 'bacheca');
+            account: account,
+            name: 'bacheca');
 
   Map<String, bool> bachecaNewFlags = {};
 
@@ -20,6 +23,7 @@ class BachecaRegistroData extends RegistroData {
     json = json['items'];
     List<Comunicazione> data2 = <Comunicazione>[];
     Map<String, bool> bachecaNewFlags2 = {};
+    Batch batch = database.batch();
     json.forEach((c) {
       if (c['cntStatus'] == 'deleted') return;
       data2.add(Comunicazione(
@@ -35,10 +39,40 @@ class BachecaRegistroData extends RegistroData {
       bachecaNewFlags2[c['pubId'].toString()] =
           (bachecaNewFlags[c['pubId'].toString()] ?? !c['readStatus']) ||
               c['cntHasChanged'];
+
+      batch.insert(
+          'bacheca',
+          {
+            'id': c['pubId'],
+            'usrId': account.usrId,
+            'evt': c['evtCode'],
+            'start_date':
+                DateTime.parse(c['cntValidFrom']).toLocal().toIso8601String(),
+            'end_date':
+                DateTime.parse(c['cntValidTo']).toLocal().toIso8601String(),
+            'valid': c['cntValidInRange'].toString(),
+            'title': c['cntTitle'],
+            'attachments': jsonEncode(c['attachments']),
+            'new': 1
+          },
+          conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
     data = data2..sort();
     bachecaNewFlags = bachecaNewFlags2;
+
+    batch.delete('bacheca',
+        where:
+            'usrId = ? AND end_date > ?', //FIXME: C. 025-20-P Indicazioni per lo svolgimento delle ore di sostituzione non si vede
+        whereArgs: [
+          account.usrId,
+          DateTime(
+                  DateTime.now().year, DateTime.now().month, DateTime.now().day)
+              .toString()
+        ]);
+    batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
+    var query = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+    //debugPrint(query.toString());
     return Result(true, true);
   }
 
@@ -53,7 +87,9 @@ class BachecaRegistroData extends RegistroData {
   @override
   void fromJson(Map<String, dynamic> json) {
     super.fromJson(json);
-    data = json['data'].map((c) => Comunicazione.fromJson(c, account: account)).toList();
+    data = json['data']
+        .map((c) => Comunicazione.fromJson(c, account: account))
+        .toList();
     bachecaNewFlags = json['newFlags']
         .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
   }
@@ -63,12 +99,14 @@ class BachecaRegistroData extends RegistroData {
   }
 
   @override
-  Future<void> create() {
-    // TODO: implement create
+  Future<void> create() async {
+    await database.execute(
+        'CREATE TABLE IF NOT EXISTS bacheca(id INTEGER PRIMARY KEY, usrId INTEGER, evt TEXT, start_date DATE, end_date DATE, valid INTEGER, new INTEGER, title TEXT, content TEXT, attachments TEXT)');
   }
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
+  // csotruttore che vada crearea una nuova conmunicazione da un amappa che contirne tutte lecolonne che ono state salvate nel database, quelle di riga 67 deve prednere i valori ed insreirli nella istanza che vado a creare
   final RegistroApi account;
   final String evt;
   final int id;

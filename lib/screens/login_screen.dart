@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:video_player/video_player.dart';
+import 'package:circular_splash_transition/circular_splash_transition.dart';
 
 import '../registro/registro.dart';
 import 'menu_screen.dart';
@@ -29,10 +30,15 @@ class _LoginScreenState extends State<LoginScreen> {
   String _username, _password;
   bool splash = true;
   bool _loading = false;
-  
+
   VideoPlayerController _controller;
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
+
+  CircularSplashController _splash_controller = CircularSplashController(
+    color: Theme.of(main.Context).primaryColor, //optional, default is White.
+    duration: Duration(milliseconds: 300), //optional.
+  );
 
   @override
   void initState() {
@@ -45,8 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {});
       });
     _controller.addListener(() {
-      if ((_controller.value.position?.inMicroseconds ?? 0)/(_controller.value.duration?.inMicroseconds ?? 1) >= 1) {
-        Navigator.of(this.context).pushReplacementNamed(Menu.id);
+      if ((_controller.value.position?.inMicroseconds ?? 0) /
+              (_controller.value.duration?.inMicroseconds ?? 1) >=
+          1) {
+        _splash_controller.pushReplacementNamed(context, Menu.id);
+        // Navigator.of(this.context).pushReplacementNamed(Menu.id);
       }
     });
     _controller.setVolume(0.0);
@@ -72,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _secondInputFocusNode?.dispose();
     _controller.dispose();
     main.route = '';
+    _splash_controller.dispose();
     super.dispose();
   }
 
@@ -170,144 +180,151 @@ class _LoginScreenState extends State<LoginScreen> {
     if (splash) {
       if (!_controller.value.isPlaying) _controller.play();
 
-      return Scaffold(
+      return CircularSplash(
+        controller: _splash_controller,
+        child: Scaffold(
           backgroundColor: Colors.black,
           body: _controller.value.initialized
               ? Center(
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: MediaQuery.of(context).size.width * 0.7,
-                    child: VideoPlayer(_controller)
-                  ),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: MediaQuery.of(context).size.width * 0.7,
+                      child: VideoPlayer(_controller)),
                 )
               : Container(),
-          );
+        ),
+      );
     }
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: Builder(
-        builder: (context) => GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          onVerticalDragCancel: () => FocusScope.of(context).unfocus(),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    width: 100.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(
-                      color: !_loading
-                          ? Theme.of(context).primaryColor
-                          : Colors.transparent,
-                      image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: !_loading
-                            ? ExactAssetImage(_image)
-                            : AssetImage(
-                                _loader), // link loader https://icons8.com/preloaders/
+    return CircularSplash(
+      controller: _splash_controller,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Builder(
+          builder: (context) => GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            onVerticalDragCancel: () => FocusScope.of(context).unfocus(),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      width: 100.0,
+                      height: 100.0,
+                      decoration: BoxDecoration(
+                        color: !_loading
+                            ? Theme.of(context).primaryColor
+                            : Colors.transparent,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: !_loading
+                              ? ExactAssetImage(_image)
+                              : AssetImage(
+                                  _loader), // link loader https://icons8.com/preloaders/
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: media.size.height / 40,
-                  ),
-                  Text(
-                    'Messe App',
-                    style: TextStyle(
-                      color: (Theme.of(context).brightness == Brightness.dark)
-                          ? Globals.bluScolorito
-                          : Globals.violaScolorito,
-                      fontSize: 20.0,
-                      fontFamily: 'CoreSansRounded',
+                    SizedBox(
+                      height: media.size.height / 40,
                     ),
-                  ),
-                  SizedBox(height: media.size.height / 15),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30.0, vertical: 10.0),
-                          child: TextFormField(
-                            decoration:
-                                InputDecoration(labelText: 'Nome utente'),
-                            focusNode: _firstInputFocusNode,
-                            textInputAction: TextInputAction.next,
-                            autocorrect: false,
-                            validator: (input) {
-                              if (input.length < 9) {
-                                return "L'username deve essere lungo 9 caratteri";
-                                _btnController.reset();
-                              } //FIXME ci si puo loggare anche con la email
-                              else if (input[0].toUpperCase() != 'G' &&
-                                  input[0].toUpperCase() != 'S') {
-                                _btnController.reset();
-
-                                return 'Sono accettati solo gli account studente (S) e genitore (G)';
-                              } else
-                                return null;
-                            },
-                            onChanged: (input) => _username = input.trim(),
-                            onFieldSubmitted: (v) => FocusScope.of(context)
-                                .requestFocus(_secondInputFocusNode),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30.0, vertical: 10.0),
-                          child: TextFormField(
-                            focusNode: _secondInputFocusNode,
-                            decoration: InputDecoration(labelText: 'Password'),
-                            textInputAction: TextInputAction.send,
-                            autocorrect: false,
-                            validator: (input) {
-                              if (input.length == 0) {
-                                _btnController.reset();
-
-                                return 'Inserire una password valida';
-                              } else
-                                return null;
-                            },
-                            onChanged: (input) => _password = input.trim(),
-                            onFieldSubmitted: (str) {
-                              _btnController.success();
-                              _submit(context);
-                            },
-                            obscureText: true,
-                          ),
-                        ),
-                        SizedBox(
-                          height: media.size.height / 15,
-                        ),
-                        RoundedLoadingButton(
-                            controller: _btnController,
-                            animateOnTap: true,
-                            onPressed: () => _submit(context),
-                            color: Theme.of(context).primaryColor,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 80.0, vertical: 10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                                width: 90.0,
-                                child: Text(
-                                  'Login',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                              ),
-                            ))
-                      ],
+                    Text(
+                      'Messe App',
+                      style: TextStyle(
+                        color: (Theme.of(context).brightness == Brightness.dark)
+                            ? Globals.bluScolorito
+                            : Globals.violaScolorito,
+                        fontSize: 20.0,
+                        fontFamily: 'CoreSansRounded',
+                      ),
                     ),
-                  )
-                ],
+                    SizedBox(height: media.size.height / 15),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30.0, vertical: 10.0),
+                            child: TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: 'Nome utente'),
+                              focusNode: _firstInputFocusNode,
+                              textInputAction: TextInputAction.next,
+                              autocorrect: false,
+                              validator: (input) {
+                                if (input.length < 9) {
+                                  return "L'username deve essere lungo 9 caratteri";
+                                  _btnController.reset();
+                                } //FIXME ci si puo loggare anche con la email
+                                else if (input[0].toUpperCase() != 'G' &&
+                                    input[0].toUpperCase() != 'S') {
+                                  _btnController.reset();
+
+                                  return 'Sono accettati solo gli account studente (S) e genitore (G)';
+                                } else
+                                  return null;
+                              },
+                              onChanged: (input) => _username = input.trim(),
+                              onFieldSubmitted: (v) => FocusScope.of(context)
+                                  .requestFocus(_secondInputFocusNode),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30.0, vertical: 10.0),
+                            child: TextFormField(
+                              focusNode: _secondInputFocusNode,
+                              decoration:
+                                  InputDecoration(labelText: 'Password'),
+                              textInputAction: TextInputAction.send,
+                              autocorrect: false,
+                              validator: (input) {
+                                if (input.length == 0) {
+                                  _btnController.reset();
+
+                                  return 'Inserire una password valida';
+                                } else
+                                  return null;
+                              },
+                              onChanged: (input) => _password = input.trim(),
+                              onFieldSubmitted: (str) {
+                                _btnController.success();
+                                _submit(context);
+                              },
+                              obscureText: true,
+                            ),
+                          ),
+                          SizedBox(
+                            height: media.size.height / 15,
+                          ),
+                          RoundedLoadingButton(
+                              controller: _btnController,
+                              animateOnTap: true,
+                              onPressed: () => _submit(context),
+                              color: Theme.of(context).primaryColor,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 80.0, vertical: 10.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                  width: 90.0,
+                                  child: Text(
+                                    'Login',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                  ),
+                                ),
+                              ))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

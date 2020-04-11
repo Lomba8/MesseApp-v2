@@ -210,6 +210,7 @@ SharedPreferences prefs;
 
 ConnectivityResult connection;
 String appName, appVersion, platform, osVersion, route;
+bool maintenance = false;
 dynamic connection_main;
 BuildContext Context;
 //q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
