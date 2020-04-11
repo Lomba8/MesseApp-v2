@@ -70,13 +70,6 @@ class _BachecaScreenState extends State<BachecaScreen> {
     _highlight = '';
   }
 
-  Future<List<Comunicazione>> search(String search) async {
-    await Future.delayed(Duration(seconds: 2));
-    return List.generate(search.length, (int index) {
-      return; // Comunicazione(); TODO
-    });
-  }
-
   Future<int> _uploadFiles() async {
     var uri = '*********/upload';
     List<MultipartFile> newList = new List<MultipartFile>();
@@ -205,7 +198,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
   @override
   void initState() {
     _firstInputFocusNode = new FocusNode();
-    _uploadFiles();
+    //_uploadFiles();
+    print(data);
   }
 
   @override
