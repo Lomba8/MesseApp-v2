@@ -27,13 +27,13 @@ class BachecaRegistroData extends RegistroData {
     json.forEach((c) {
       if (c['cntStatus'] == 'deleted') return;
       data2.add(Comunicazione(
-        c['evtCode'],
-        c['pubId'],
-        DateTime.parse(c['cntValidFrom']).toLocal(),
-        DateTime.parse(c['cntValidTo']).toLocal(),
-        c['cntValidInRange'],
-        c['cntTitle'],
-        c['attachments'],
+        evt: c['evtCode'],
+        id: c['pubId'],
+        start_date: DateTime.parse(c['cntValidFrom']).toLocal(),
+        end_date: DateTime.parse(c['cntValidTo']).toLocal(),
+        valid: c['cntValidInRange'],
+        title: c['cntTitle'],
+        attachments: c['attachments'].isEmpty ? {} : c['attachments'][0],
         account: account,
       ));
       bachecaNewFlags2[c['pubId'].toString()] =
@@ -50,29 +50,26 @@ class BachecaRegistroData extends RegistroData {
                 DateTime.parse(c['cntValidFrom']).toLocal().toIso8601String(),
             'end_date':
                 DateTime.parse(c['cntValidTo']).toLocal().toIso8601String(),
-            'valid': c['cntValidInRange'].toString(),
+            'valid': c['cntValidInRange'] ? 1 : 0,
             'title': c['cntTitle'],
-            'attachments': jsonEncode(c['attachments']),
+            'attachments':
+                jsonEncode(c['attachments'].isEmpty ? {} : c['attachments'][0]),
             'new': 1
           },
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
-    data = data2..sort();
+    //data = data2..sort();
     bachecaNewFlags = bachecaNewFlags2;
 
-    batch.delete('bacheca',
-        where:
-            'usrId = ? AND end_date > ?', //FIXME: C. 025-20-P Indicazioni per lo svolgimento delle ore di sostituzione non si vede
-        whereArgs: [
-          account.usrId,
-          DateTime(
-                  DateTime.now().year, DateTime.now().month, DateTime.now().day)
-              .toString()
-        ]);
+    batch.delete('bacheca', where: 'usrId = ? AND end_date < ?', whereArgs: [
+      account.usrId,
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
+          .toString()
+    ]);
     batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
-    var query = (await batch.commit()).last.map((v) => Map.from(v)).toList();
-    //debugPrint(query.toString());
+    data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+    //debugPrint(jsonDecode(query).toString());
     return Result(true, true);
   }
 
@@ -103,6 +100,23 @@ class BachecaRegistroData extends RegistroData {
     await database.execute(
         'CREATE TABLE IF NOT EXISTS bacheca(id INTEGER PRIMARY KEY, usrId INTEGER, evt TEXT, start_date DATE, end_date DATE, valid INTEGER, new INTEGER, title TEXT, content TEXT, attachments TEXT)');
   }
+
+  @override
+  Future<void> load() async {
+    super.load();
+    data = data.map((e) {
+      return Comunicazione(
+          account: account,
+          attachments: jsonDecode(e.attachments),
+          content: e.content ?? null,
+          end_date: e.end_date,
+          evt: e.evt,
+          id: e.id,
+          start_date: e.start_date,
+          title: e.title,
+          valid: e.valid ? true : false);
+    }).toList();
+  }
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
@@ -114,6 +128,8 @@ class Comunicazione extends Comparable<Comunicazione> {
   final bool valid;
   final String title;
   String content;
+  final Map attachments;
+
   void loadContent(void Function() callback) async {
     http.Response r = await http.post(
         'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/read/$evt/$id/101',
@@ -152,10 +168,16 @@ class Comunicazione extends Comparable<Comunicazione> {
   bool get isNew => session.bacheca.bachecaNewFlags[id.toString()] ?? true;
   void seen() => session.bacheca.bachecaNewFlags[id.toString()] = false;
 
-  final List attachments;
-  Comunicazione(this.evt, this.id, this.start_date, this.end_date, this.valid,
-      this.title, this.attachments,
-      {this.content, @required this.account});
+  Comunicazione(
+      {this.evt,
+      this.id,
+      this.start_date,
+      this.end_date,
+      this.valid,
+      this.title,
+      this.attachments,
+      this.content,
+      @required this.account});
 
   @override
   int compareTo(Comunicazione other) => -start_date.compareTo(other.start_date);

@@ -57,9 +57,11 @@ class VotiRegistroData extends RegistroData {
     return Result(false, false);
   }
 
-  Iterable<String> sbjsWithMarks ([int period = 0]) {
-    return Set.from(
-        data.where((v) => periods[period] == 'TOTALE' || v['period'] == periods[period]).map((v) => v['sbj']));
+  Iterable<String> sbjsWithMarks([int period = 0]) {
+    return Set.from(data
+        .where((v) =>
+            periods[period] == 'TOTALE' || v['period'] == periods[period])
+        .map((v) => v['sbj']));
   }
 
   set period(int i) {
@@ -70,16 +72,30 @@ class VotiRegistroData extends RegistroData {
 
   // FIXME: non salva sul db
   void allSeen({String sbj}) {
-    data.where((v) => (v['period'] == periods[0] || periods[0] == 'TOTALE') && (sbj == null || v['sbj'] == sbj)).forEach((v) => v['new'] = 0);
-    print ('seeing: $sbj');
-    database.update('voti', {'new': 0},
-        where: 'usrId = ?'+(sbj == null ? '' : ' AND sbj = ?')+(periods[0] == 'TOTALE' ? '' : ' AND period = ?'),
-        whereArgs: [account.usrId, if (sbj != null) sbj, if (periods[0] != 'TOTALE') periods[0]]).then((value) => print(value));
+    data
+        .where((v) =>
+            (v['period'] == periods[0] || periods[0] == 'TOTALE') &&
+            (sbj == null || v['sbj'] == sbj))
+        .forEach((v) => v['new'] = 0);
+    print('seeing: $sbj');
+    database
+        .update('voti', {'new': 0},
+            where: 'usrId = ?' +
+                (sbj == null ? '' : ' AND sbj = ?') +
+                (periods[0] == 'TOTALE' ? '' : ' AND period = ?'),
+            whereArgs: [
+              account.usrId,
+              if (sbj != null) sbj,
+              if (periods[0] != 'TOTALE') periods[0]
+            ])
+        .then((value) => print(value));
   }
 
   Iterable<Voto> sbjVoti(String sbj, [int period = 0]) {
     return data
-        .where((v) => (periods[period] == 'TOTALE' || v['period'] == periods[period]) && v['sbj'] == sbj)
+        .where((v) =>
+            (periods[period] == 'TOTALE' || v['period'] == periods[period]) &&
+            v['sbj'] == sbj)
         .map<Voto>((v) => Voto.parse(v));
   }
 
@@ -109,8 +125,11 @@ class VotiRegistroData extends RegistroData {
   bool hasNewMarks(String sbj) => sbjVoti(sbj).any((v) => v.isNew);
 
   int get newVotiTot => data.where((v) => v['new'] == 1).length;
-  int get newVotiPeriodCount =>
-      data.where((v) => v['new'] == 1 && (v['period'] == periods[0] || periods[0] == 'TOTALE')).length;
+  int get newVotiPeriodCount => data
+      .where((v) =>
+          v['new'] == 1 &&
+          (v['period'] == periods[0] || periods[0] == 'TOTALE'))
+      .length;
 
   @override
   Future<void> create() async {
@@ -126,7 +145,13 @@ class Voto extends Comparable<Voto> {
   bool isNew;
   String votoStr, info;
 
-  Voto({var id, num voto, @required this.votoStr, this.info, String data, this.isNew = true}) {
+  Voto(
+      {var id,
+      num voto,
+      @required this.votoStr,
+      this.info,
+      String data,
+      this.isNew = true}) {
     _id = id;
     this.voto = voto?.toDouble();
     _data = DateTime.parse(data);
