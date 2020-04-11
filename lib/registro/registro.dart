@@ -198,19 +198,20 @@ class RegistroApi {
 
   void save() async {
     saveData(subjects, 'subjects');
-    saveData(bacheca, 'bacheca');
+    saveData(bacheca, 'bacheca'); // togliere quando si implemmenta il regiter
     saveData(lessons, 'lessons');
     saveData(absences, 'absences');
     saveData(didactics, 'didactics');
   }
 
   Future<void> load() async {
+    // se sei offline ricaarica da locale
     voti.load();
-    agenda.load();
+    agenda.load(); // fra riga 209 e 210 scrivo bacheca.load()
     dynamic data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
-    data = await loadData('bacheca');
-    if (data != null) bacheca.fromJson(data);
+    data = await loadData('bacheca'); // togliere anchce questo
+    if (data != null) bacheca.fromJson(data); // e questo
     data = await loadData('lessons');
     if (data != null) lessons.fromJson(data);
     data = await loadData('absences');
