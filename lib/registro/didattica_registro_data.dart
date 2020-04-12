@@ -10,12 +10,14 @@ class DidatticaRegistroData extends RegistroData {
   DidatticaRegistroData({@required RegistroApi account})
       : super(
             url: 'https://web.spaggiari.eu/rest/v1/students/%uid/didactics',
-            account: account, name: 'didactics');
+            account: account,
+            name: 'didactics');
 
   @override
   Future<Result> parseData(json) async {
     json = json['didacticts'];
-    CustomDirectory data2 = CustomDirectory(name: '/', children: {}, account: account);
+    CustomDirectory data2 =
+        CustomDirectory(name: '/', children: {}, account: account);
 
     json.forEach((teacher) {
       data2.add(
