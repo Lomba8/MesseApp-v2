@@ -103,18 +103,18 @@ class BachecaRegistroData extends RegistroData {
 
   @override
   Future<void> load() async {
-    super.load();
+    await super.load();
     data = data.map((e) {
       return Comunicazione(
           account: account,
-          attachments: jsonDecode(e.attachments),
-          content: e.content ?? null,
-          end_date: e.end_date,
-          evt: e.evt,
-          id: e.id,
-          start_date: e.start_date,
-          title: e.title,
-          valid: e.valid ? true : false);
+          attachments: jsonDecode(e['attachments']),
+          content: e['content'] ?? null,
+          end_date: DateTime.parse(e['end_date']).toLocal(),
+          evt: e['evt'],
+          id: e['id'],
+          start_date: DateTime.parse(e['start_date']).toLocal(),
+          title: e['title'],
+          valid: e['valid'] == 1 ? true : false);
     }).toList();
   }
 }

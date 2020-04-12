@@ -199,7 +199,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   void initState() {
     _firstInputFocusNode = new FocusNode();
     //_uploadFiles();
-    print(data);
+    print('upload() files spostare');
   }
 
   @override
