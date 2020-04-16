@@ -22,10 +22,11 @@ class BachecaRegistroData extends RegistroData {
   Future<Result> parseData(json) async {
     json = json['items'];
     List<Comunicazione> data2 = <Comunicazione>[];
-    Map<String, bool> bachecaNewFlags2 = {};
+    //Map<String, bool> bachecaNewFlags2 = {};
+    List<int> deleted_ids = new List();
     Batch batch = database.batch();
     json.forEach((c) {
-      if (c['cntStatus'] == 'deleted') return;
+      if (c['cntStatus'] == 'deleted') deleted_ids.add(c['pubId']);
       data2.add(Comunicazione(
         evt: c['evtCode'],
         id: c['pubId'],
@@ -35,10 +36,11 @@ class BachecaRegistroData extends RegistroData {
         title: c['cntTitle'],
         attachments: c['attachments'].isEmpty ? {} : c['attachments'][0],
         account: account,
+        deleted: (c['cntStatus'] == 'deleted') ? true : false,
       ));
-      bachecaNewFlags2[c['pubId'].toString()] =
-          (bachecaNewFlags[c['pubId'].toString()] ?? !c['readStatus']) ||
-              c['cntHasChanged'];
+      // bachecaNewFlags2[c['pubId'].toString()] =
+      //     (bachecaNewFlags[c['pubId'].toString()] ?? !c['readStatus']) ||
+      //         c['cntHasChanged'];
 
       batch.insert(
           'bacheca',
@@ -54,51 +56,68 @@ class BachecaRegistroData extends RegistroData {
             'title': c['cntTitle'],
             'attachments':
                 jsonEncode(c['attachments'].isEmpty ? {} : c['attachments'][0]),
-            'new': 1
+            'new': 1,
+            'deleted': (c['cntStatus'] == 'deleted') ? 1 : 0,
           },
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
     //data = data2..sort();
-    bachecaNewFlags = bachecaNewFlags2;
+    // bachecaNewFlags = bachecaNewFlags2;
 
-    batch.delete('bacheca', where: 'usrId = ? AND end_date < ?', whereArgs: [
-      account.usrId,
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
-          .toString()
-    ]);
+    deleted_ids.forEach((id) {
+      batch.rawUpdate('UPDATE bacheca SET deleted = 1 WHERE id = ?', [id]);
+    });
+
+    batch.delete('bacheca',
+        where: 'usrId = ? AND deleted = 1', whereArgs: [account.usrId]);
+
     batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
+
     data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+
+    data = data.map((e) {
+      return Comunicazione(
+        account: account,
+        attachments: jsonDecode(e['attachments']),
+        content: e['content'] ?? null,
+        end_date: DateTime.parse(e['end_date']).toLocal(),
+        evt: e['evt'],
+        id: e['id'],
+        start_date: DateTime.parse(e['start_date']).toLocal(),
+        title: e['title'],
+        valid: e['valid'] == 1 ? true : false,
+        isNew: e['new'] == 1 ? true : false,
+        deleted: e['deleted'] == 1 ? true : false,
+      );
+    }).toList()
+      ..sort();
     //debugPrint(jsonDecode(query).toString());
     return Result(true, true);
   }
 
-  @override
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> tr = super.toJson();
-    tr['data'] = data;
-    tr['newFlags'] = bachecaNewFlags;
-    return tr;
-  }
+  // @override
+  // Map<String, dynamic> toJson() {
+  //   Map<String, dynamic> tr = super.toJson();
+  //   tr['data'] = data;
+  //   tr['newFlags'] = bachecaNewFlags;
+  //   return tr;
+  // }
 
-  @override
-  void fromJson(Map<String, dynamic> json) {
-    super.fromJson(json);
-    data = json['data']
-        .map((c) => Comunicazione.fromJson(c, account: account))
-        .toList();
-    bachecaNewFlags = json['newFlags']
-        .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
-  }
-
-  bool hasNewMarks(String id) {
-    return bachecaNewFlags[id] ?? false;
-  }
+  // @override
+  // void fromJson(Map<String, dynamic> json) {
+  //   super.fromJson(json);
+  //   data = json['data']
+  //       .map((c) => Comunicazione.fromJson(c, account: account))
+  //       .toList();
+  //   bachecaNewFlags = json['newFlags']
+  //       .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
+  // }
 
   @override
   Future<void> create() async {
     await database.execute(
-        'CREATE TABLE IF NOT EXISTS bacheca(id INTEGER PRIMARY KEY, usrId INTEGER, evt TEXT, start_date DATE, end_date DATE, valid INTEGER, new INTEGER, title TEXT, content TEXT, attachments TEXT)');
+        'CREATE TABLE IF NOT EXISTS bacheca(id INTEGER PRIMARY KEY, usrId INTEGER, evt TEXT, start_date DATE, end_date DATE, valid BIT, new BIT, deleted BIT, title TEXT, content TEXT, attachments TEXT)');
   }
 
   @override
@@ -106,26 +125,29 @@ class BachecaRegistroData extends RegistroData {
     await super.load();
     data = data.map((e) {
       return Comunicazione(
-          account: account,
-          attachments: jsonDecode(e['attachments']),
-          content: e['content'] ?? null,
-          end_date: DateTime.parse(e['end_date']).toLocal(),
-          evt: e['evt'],
-          id: e['id'],
-          start_date: DateTime.parse(e['start_date']).toLocal(),
-          title: e['title'],
-          valid: e['valid'] == 1 ? true : false);
-    }).toList();
+        account: account,
+        attachments: jsonDecode(e['attachments']),
+        content: e['content'] ?? null,
+        end_date: DateTime.parse(e['end_date']).toLocal(),
+        evt: e['evt'],
+        id: e['id'],
+        start_date: DateTime.parse(e['start_date']).toLocal(),
+        title: e['title'],
+        valid: e['valid'] == 1 ? true : false,
+        isNew: e['new'] == 1 ? true : false,
+        deleted: e['deleted'] == 1 ? true : false,
+      );
+    }).toList()
+      ..sort();
   }
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
-  // csotruttore che vada crearea una nuova conmunicazione da un amappa che contirne tutte lecolonne che ono state salvate nel database, quelle di riga 67 deve prednere i valori ed insreirli nella istanza che vado a creare
   final RegistroApi account;
   final String evt;
   final int id;
   final DateTime start_date, end_date;
-  final bool valid;
+  bool valid, isNew, deleted;
   final String title;
   String content;
   final Map attachments;
@@ -165,8 +187,14 @@ class Comunicazione extends Comparable<Comunicazione> {
     return file;
   }
 
-  bool get isNew => session.bacheca.bachecaNewFlags[id.toString()] ?? true;
-  void seen() => session.bacheca.bachecaNewFlags[id.toString()] = false;
+  //bool get isNew => session.bacheca.bachecaNewFlags[id.toString()] ?? true; TODO
+  //void seen() => session.bacheca.bachecaNewFlags[id.toString()] = false;    TODO
+  Future<void> seen() async {
+    this.isNew = false;
+    var res = await database
+        .rawUpdate('UPDATE bacheca SET new = 0 WHERE id = ?', [this.id]);
+    //print(res);
+  }
 
   Comunicazione(
       {this.evt,
@@ -177,31 +205,39 @@ class Comunicazione extends Comparable<Comunicazione> {
       this.title,
       this.attachments,
       this.content,
+      this.isNew,
+      this.deleted,
       @required this.account});
 
   @override
-  int compareTo(Comunicazione other) => -start_date.compareTo(other.start_date);
+  int compareTo(Comunicazione other) {
+    if (start_date.isAtSameMomentAs(other.start_date)) {
+      return title.compareTo(other.title); // FIXME on funziona
+    }
+    return -start_date.compareTo(other.start_date);
+  }
 
-  Map<String, dynamic> toJson() => {
-        'evt': evt,
-        'id': id,
-        'start_date': start_date.toIso8601String(),
-        'end_date': end_date.toIso8601String(),
-        'valid': valid,
-        'title': title,
-        'content': content,
-        'attachments': attachments
-      };
+  // Map<String, dynamic> toJson() => {
+  //       'evt': evt,
+  //       'id': id,
+  //       'start_date': start_date.toIso8601String(),
+  //       'end_date': end_date.toIso8601String(),
+  //       'valid': valid,
+  //       'title': title,
+  //       'content': content,
+  //       'attachments': attachments
+  //     };
 
-  Comunicazione.fromJson(Map json, {@required this.account})
-      : evt = json['evt'],
-        id = json['id'],
-        start_date = DateTime.parse(json['start_date']),
-        end_date = DateTime.parse(json['end_date']),
-        valid = json['valid'],
-        title = json['title'],
-        attachments = json['attachments'],
-        content = json['content'];
+  // Comunicazione.fromJson(Map json, {@required this.account})
+  //     : evt = json['evt'],
+  //       id = json['id'],
+  //       start_date = DateTime.parse(json['start_date']),
+  //       end_date = DateTime.parse(json['end_date']),
+  //       valid = json['valid'],
+  //       title = json['title'],
+  //       attachments = json['attachments'],
+
+  //       content = json['content'];
 }
 
 String encodePath(String name) {
