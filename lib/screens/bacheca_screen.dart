@@ -133,6 +133,11 @@ class _BachecaScreenState extends State<BachecaScreen> {
     return files.isEmpty ? false : true;
   }
 
+  bool xorBool(bool item1, bool item2) {
+    var xorValue = (item1 ? 1 : 0) ^ (item2 ? 1 : 0);
+    return (xorValue == 1 ? true : false);
+  }
+
   @override
   void initState() {
     _firstInputFocusNode = new FocusNode();
@@ -243,7 +248,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                             secondaryAnimation) =>
                                         CustomDialog(),
                                   ).then((annulla) {
-                                    if ((_start == null || _end == null) &&
+                                    if (xorBool(_start == null, _end == null) &&
                                         !annulla) {
                                       _end = _start = null;
                                       showNew = false;
@@ -289,7 +294,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                             'Inserire sia la data iniziale che la data finale',
                                       ).show(context);
                                     } else if (annulla) {
+                                    } else if (!annulla) {
                                       setState(() {});
+                                      rebuildAllChildren(context);
                                     }
                                   });
                                 }, //TODO options dialog come quello di google drive: showPickerDateRange, show only valid pdf, only new?, etc...
@@ -752,6 +759,7 @@ class _CustomDialogState extends State<CustomDialog> {
               onPressed: () => Navigator.of(context).pop(true),
               child: Text('Annulla')),
           FlatButton(
+            color: Theme.of(context).accentColor,
             onPressed: () {
               if (dal && _start == null) {
                 _start =
@@ -763,7 +771,13 @@ class _CustomDialogState extends State<CustomDialog> {
               }
               Navigator.of(context).pop(false);
             },
-            child: Text('Cerca'),
+            child: Text(
+              'Cerca',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           )
         ],
         content: Container(
