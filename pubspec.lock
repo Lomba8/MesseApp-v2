@@ -148,13 +148,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  f_datetimerangepicker:
-    dependency: "direct main"
-    description:
-      name: f_datetimerangepicker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.3"
   ffi:
     dependency: transitive
     description:
@@ -239,20 +232,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  flutter_picker:
-    dependency: "direct main"
-    description:
-      name: flutter_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.3"
-  flutter_svg:
-    dependency: "direct main"
-    description:
-      name: flutter_svg
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.17.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
