@@ -28,23 +28,8 @@ import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share_extend/share_extend.dart';
 
-List<String> mesi = [
-  'Gen',
-  'Feb',
-  'Mar',
-  'Apr',
-  'Mag',
-  'Giu',
-  'Lug',
-  'Ago',
-  'Set',
-  'Ott',
-  'Nov',
-  'Dic'
-];
-
-bool showNew = false; // icons8 Eye Unchecked , tick & double tick,
-bool showValid = false; // expired icon8,
+bool showValid = prefs.getBool('showValid') ?? false;
+bool showNew = prefs.getBool('showNew') ?? false;
 
 DateTime _start = null, _end = null;
 
@@ -81,7 +66,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   }
 
   Future<int> _uploadFiles() async {
-    var uri = '*********/upload';
+    var uri = 'http://bd466fb4.ngrok.io/upload';
     List<MultipartFile> newList = new List<MultipartFile>();
 
     var send = await http.post(uri, headers: {
@@ -101,7 +86,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
           .toList()
           .toString()
     });
-    debugPrint(send.toString());
+    //debugPrint(send.toString());
     return send.statusCode;
   }
 
@@ -309,7 +294,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 width: 5.0,
                               ),
                               GestureDetector(
-                                onTap: () {
+                                onTap: () async {
+                                  prefs.setBool('showNew', false);
+                                  prefs.setBool('showValid', false);
                                   if (_displayErrorText == true)
                                     _displayErrorText = false;
                                   HapticFeedback.heavyImpact();
@@ -464,12 +451,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 return b !=
                                     null; // ritorna circolare:valida e NON valida + nuova e NON nuova
                               }
-                            } else if (_start == null || _end == null) {
-                              return b !=
-                                  null; // solo _start o _end sono state selsionate, quindi non e valido il filtro delle circolari
-                            }
+                            } // non serve un else if (_start == null && _end == null) perche nel .then((annull)){...} ce gia il check del bottone premuto e delle variabili _start & _end
                           }).map<Widget>((c) {
-                            // TODO filter by inactive
                             if (files.isEmpty) {
                               bool _expand = false;
                               return Container(
@@ -808,6 +791,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           activeColor: Theme.of(context).accentColor,
                           value: showValid,
                           onChanged: (_valid) {
+                            prefs.setBool('showValid', _valid);
                             setState(() {
                               showValid = _valid;
                             });
@@ -835,6 +819,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           activeColor: Theme.of(context).accentColor,
                           value: showNew,
                           onChanged: (_new) {
+                            prefs.setBool('showNew', _new);
                             setState(() {
                               showNew = _new;
                             });
