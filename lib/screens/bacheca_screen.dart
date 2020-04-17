@@ -44,7 +44,7 @@ List<String> mesi = [
 ];
 
 bool showNew = false; // icons8 Eye Unchecked , tick & double tick,
-bool showValid = true; // expired icon8,
+bool showValid = false; // expired icon8,
 
 DateTime _start = null, _end = null;
 
@@ -67,6 +67,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   AnimationController _controller;
   Animation _animation;
+
+  bool _displayErrorText = false;
 
   Future<void> _refresh() async {
     await session.bacheca.getData();
@@ -109,7 +111,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
     files = [];
     frasi = {};
     var uri =
-        'http://38326b01.ngrok.io/ocr?pattern=${_textController.text.toString()}';
+        'http://bd466fb4.ngrok.io/ocr?pattern=${_textController.text.toString()}';
     _highlight = _textController.text;
 
     http.Response res = await http.get(uri);
@@ -214,75 +216,138 @@ class _BachecaScreenState extends State<BachecaScreen> {
                 delegate: SliverChildListDelegate(
                   [
                     Container(
-                        height: 100,
-                        margin: EdgeInsets.only(
-                          bottom: 10.0,
-                          left: 15.0,
-                          right: 15.0,
-                        ),
-                        child: CustomFloatingSearchBar(
-                          children: [Offstage()],
-                          trailing: SizedBox(
-                            width: 23 + 5 + 25.0,
-                            child: Row(
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () async {
-                                    showGeneralDialog(
-                                      // FIXME ho commentato linea 1802 del file /Users/gg/flutter/packages/flutter/lib/src/widgets/routes.dart perche se no non potevo mettere isDismissible:true
-                                      barrierDismissible: true,
-                                      transitionDuration:
-                                          const Duration(milliseconds: 200),
-                                      context: context,
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          CustomDialog(),
-                                    ).then((value) {
-                                      setState(() {});
-                                    });
-                                  }, //TODO options dialog come quello di google drive: showPickerDateRange, show only valid pdf, only new?, etc...
-                                  child: Icon(
-                                    Icons.tune,
-                                    size: 23,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5.0,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.heavyImpact();
-                                    setState(() {
-                                      _textController.clear();
-                                      _start = _end = null;
+                      height: 100,
+                      margin: EdgeInsets.only(
+                        bottom: 10.0,
+                        left: 15.0,
+                        right: 15.0,
+                      ),
+                      child: CustomFloatingSearchBar(
+                        pinned: true,
+                        children: [Offstage()],
+                        trailing: SizedBox(
+                          width: 23 + 5 + 25.0,
+                          child: Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () async {
+                                  if (_displayErrorText == true)
+                                    _displayErrorText = false;
+                                  showGeneralDialog(
+                                    // FIXME ho commentato linea 1802 del file /Users/gg/flutter/packages/flutter/lib/src/widgets/routes.dart perche se no non potevo mettere isDismissible:true
+                                    barrierDismissible: false,
+                                    transitionDuration:
+                                        const Duration(milliseconds: 200),
+                                    context: context,
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        CustomDialog(),
+                                  ).then((annulla) {
+                                    if ((_start == null || _end == null) &&
+                                        !annulla) {
+                                      _end = _start = null;
                                       showNew = false;
-                                      showValid = true;
-                                      files = [];
-                                      frasi = {};
-                                      _highlight = '';
-                                    });
-                                    rebuildAllChildren(context);
-                                  },
-                                  child: Icon(
-                                    Icons.clear,
-                                    size: 25,
-                                  ),
+                                      showValid = false;
+                                      Flushbar(
+                                        margin: EdgeInsets.all(30.0),
+                                        padding: EdgeInsets.all(20),
+                                        borderRadius: 20,
+                                        backgroundGradient: LinearGradient(
+                                          colors: [
+                                            Globals.bluScolorito,
+                                            Theme.of(context).accentColor
+                                          ],
+                                          stops: [0.3, 1],
+                                        ),
+                                        boxShadows: [
+                                          BoxShadow(
+                                            color: Colors.black45,
+                                            offset: Offset(3, 3),
+                                            blurRadius: 6,
+                                          ),
+                                        ],
+                                        duration: Duration(seconds: 3),
+                                        isDismissible: true,
+                                        icon: Icon(
+                                          Icons.error_outline,
+                                          size: 35,
+                                          color:
+                                              Theme.of(context).backgroundColor,
+                                        ),
+                                        shouldIconPulse: true,
+                                        animationDuration: Duration(seconds: 1),
+                                        // All of the previous Flushbars could be dismissed by swiping down
+                                        // now we want to swipe to the sides
+                                        dismissDirection:
+                                            FlushbarDismissDirection.HORIZONTAL,
+                                        // The default curve is Curves.easeOut
+                                        forwardAnimationCurve:
+                                            Curves.fastOutSlowIn,
+                                        title:
+                                            'Errore durante la ricerca delle circolari: ',
+                                        message:
+                                            'Inserire sia la data iniziale che la data finale',
+                                      ).show(context);
+                                    } else if (annulla) {
+                                      setState(() {});
+                                    }
+                                  });
+                                }, //TODO options dialog come quello di google drive: showPickerDateRange, show only valid pdf, only new?, etc...
+                                child: Icon(
+                                  Icons.tune,
+                                  size: 23,
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(
+                                width: 5.0,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  if (_displayErrorText == true)
+                                    _displayErrorText = false;
+                                  HapticFeedback.heavyImpact();
+                                  setState(() {
+                                    _textController.clear();
+                                    _start = _end = null;
+                                    showNew = false;
+                                    showValid = false;
+                                    files = [];
+                                    frasi = {};
+                                    _highlight = '';
+                                  });
+                                  rebuildAllChildren(context);
+                                },
+                                child: Icon(
+                                  Icons.clear,
+                                  size: 25,
+                                ),
+                              ),
+                            ],
                           ),
-                          controller: _textController,
-                          decoration: InputDecoration(
-                            enabledBorder: InputBorder.none,
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            hintText: 'Inserire la parola chiave..',
-                            helperMaxLines: 1,
-                            disabledBorder: InputBorder.none,
-                            focusColor: Colors.transparent,
-                            focusedBorder: InputBorder.none,
-                            focusedErrorBorder: InputBorder.none,
+                        ),
+                        controller: _textController,
+                        decoration: InputDecoration(
+                          enabledBorder: InputBorder.none,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          hintText: _displayErrorText
+                              ? 'Inserire una parola o frase valide'
+                              : 'Inserire la parola chiave..',
+                          hintStyle: TextStyle(
+                            color: _displayErrorText
+                                ? Colors.red.withOpacity(0.8)
+                                : Colors.white70,
                           ),
-                          onSubmit: (String value) {
+                          helperMaxLines: 1,
+                          disabledBorder: InputBorder.none,
+                          focusColor: Colors.transparent,
+                          focusedBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                        ),
+                        onTap: () => _displayErrorText = false,
+                        onSubmit: (String value) {
+                          if (value == '') {
+                            setState(() => _displayErrorText = true);
+                          } else
                             _ocr().then((value) {
                               if (value) {
                                 setState(() {});
@@ -326,178 +391,75 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 ).show(context);
                               }
                             });
-                          },
-                        )
-                        /* Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 8,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 15.0, bottom: 15.0),
-                              child: TextFormField(
-                                autocorrect: false,
-                                focusNode: _firstInputFocusNode,
-                                controller: _textController,
-                                decoration: InputDecoration(
-                                  enabledBorder: InputBorder.none,
-                                  fillColor: Colors.white10,
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.auto,
-                                  hintText: 'Inserire la parola chiave..',
-                                  helperMaxLines: 1,
-                                  filled: true,
-                                  prefixIcon: GestureDetector(
-                                      onTap: () {
-                                        _ocr().then((value) {
-                                          if (value) {
-                                            setState(() {});
-                                            rebuildAllChildren(context);
-                                          } else {
-                                            Flushbar(
-                                              margin: EdgeInsets.all(30.0),
-                                              padding: EdgeInsets.all(20),
-                                              borderRadius: 20,
-                                              backgroundGradient:
-                                                  LinearGradient(
-                                                colors: [
-                                                  Globals.bluScolorito,
-                                                  Theme.of(context).accentColor
-                                                ],
-                                                stops: [0.3, 1],
-                                              ),
-                                              boxShadows: [
-                                                BoxShadow(
-                                                  color: Colors.black45,
-                                                  offset: Offset(3, 3),
-                                                  blurRadius: 6,
-                                                ),
-                                              ],
-                                              duration: Duration(seconds: 3),
-                                              isDismissible: true,
-                                              icon: Icon(
-                                                Icons.error_outline,
-                                                size: 35,
-                                                color: Theme.of(context)
-                                                    .backgroundColor,
-                                              ),
-                                              shouldIconPulse: true,
-                                              animationDuration:
-                                                  Duration(seconds: 1),
-                                              // All of the previous Flushbars could be dismissed by swiping down
-                                              // now we want to swipe to the sides
-                                              dismissDirection:
-                                                  FlushbarDismissDirection
-                                                      .HORIZONTAL,
-                                              // The default curve is Curves.easeOut
-                                              forwardAnimationCurve:
-                                                  Curves.fastOutSlowIn,
-                                              title:
-                                                  'Parola o frase inesistenti',
-                                              message:
-                                                  'Reinserire la parola chiave',
-                                            ).show(context);
-                                          }
-                                        });
-                                      },
-                                      child: Icon(Icons.search)),
-                                  disabledBorder: InputBorder.none,
-                                ),
-                                maxLines: 1,
-                                onFieldSubmitted: (value) {
-                                  _ocr().then((value) {
-                                    if (value) {
-                                      setState(() {});
-                                      rebuildAllChildren(context);
-                                    } else {
-                                      Flushbar(
-                                        padding: EdgeInsets.all(20),
-                                        margin: EdgeInsets.all(30.0),
-
-                                        borderRadius: 20,
-                                        backgroundGradient: LinearGradient(
-                                          colors: [
-                                            Globals.bluScolorito,
-                                            Theme.of(context).accentColor
-                                          ],
-                                          stops: [0.3, 1],
-                                        ),
-                                        boxShadows: [
-                                          BoxShadow(
-                                            color: Colors.black45,
-                                            offset: Offset(3, 3),
-                                            blurRadius: 6,
-                                          ),
-                                        ],
-                                        duration: Duration(seconds: 3),
-                                        isDismissible: true,
-                                        icon: Icon(
-                                          Icons.error_outline,
-                                          size: 35,
-                                          color:
-                                              Theme.of(context).backgroundColor,
-                                        ),
-                                        shouldIconPulse: true,
-                                        animationDuration: Duration(seconds: 1),
-                                        // All of the previous Flushbars could be dismissed by swiping down
-                                        // now we want to swipe to the sides
-                                        dismissDirection:
-                                            FlushbarDismissDirection.HORIZONTAL,
-                                        // The default curve is Curves.easeOut
-                                        forwardAnimationCurve:
-                                            Curves.fastOutSlowIn,
-                                        title: 'Parola o frase inesistenti',
-                                        message: 'Reinserire la parola chiave',
-                                      ).show(context);
-                                    }
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: IconButton(
-                                icon: Icon(
-                                  MdiIcons.calendarClock,
-                                  size: 22,
-                                ),
-                                onPressed: () => showPickerDateRange(
-                                    context) //TODO: usare flutter_holo_date_picker 🙃
-                                // _uploadFiles, //TODO: spostarlo & select range of time
-                                ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: IconButton(
-                              enableFeedback: true,
-                              icon: Icon(Icons.clear),
-                              onPressed: () {
-                                HapticFeedback.heavyImpact();
-                                setState(() {
-                                  _textController.clear();
-                                  _start = _end = null;
-                                  files = [];
-                                  frasi = {};
-                                  _highlight = '';
-                                });
-
-                                rebuildAllChildren(context);
-                              },
-                            ),
-                          ),
-                        ],
-                      ), */
-                        ),
+                        },
+                      ),
+                    ),
                     Stack(
                       overflow: Overflow.visible,
                       children: <Widget>[
                         Container(
                           margin: EdgeInsets.only(top: 15.0),
                           child: Column(
-                              children: data.where((d) {
-                            Comunicazione _filterCircolari(Comunicazione c) {
-                              // TODO: fare funzione da pseudocodice
+                              children: data.where((b) {
+                            if (_start != null && _end != null) {
+                              // check se l'utente ha impostaato un range di date
+                              if (b.start_date.isAfter(_start) &&
+                                  b.end_date.isAfter(_end)) {
+                                // check se la circolare e nel range di date selezionate dall'utente
+                                if (showValid) {
+                                  // mostra solo circolari valide
+                                  if (b.valid) {
+                                    // check se la circolare e valida
+                                    if (showNew) {
+                                      // mostra solo circolari nuove
+                                      return b.isNew ==
+                                          true; // ritorna circolare: nel range di date & valida & nuova
+                                    }
+                                    return b !=
+                                        null; // ritorna circolare: nel range di date & valida + nuova e NON nuova
+                                  }
+                                  return false; // circolare NON valida quindi non la ritorna
+                                } else {
+                                  // mostra circolari valide e NON valide
+                                  if (showNew) {
+                                    // mostra solo circolari nuove
+                                    return b.isNew ==
+                                        true; // ritorna circolare: nel range di date & nuova + valide e NON valide
+                                  }
+                                  return b !=
+                                      null; // ritorna circolare :nel range di date + valida e NON valida + nuova e NON nuova
+                                }
+                              }
+                              return false; // circolare NON corrisponde al range quindi non la ritorna
+
+                            } else if (_start == null && _end == null) {
+                              // check se non e stato impostato un range di date daal'utente
+                              if (showValid) {
+                                // mostra solo circolari valide
+                                if (b.valid) {
+                                  // check se la circolare e valida
+                                  if (showNew) {
+                                    // mostra solo circolari nuove
+                                    return b.isNew ==
+                                        true; // ritorna circolare: & nuova + valide
+                                  }
+                                  return b !=
+                                      null; // ritorna circolare:  valida  + nuova e NON nuova
+                                }
+                                return false; // circolare NON valida quindi non la ritorna
+                              } else {
+                                // mostra circolari valide e NON valide
+                                if (showNew) {
+                                  // mostra solo circolari nuove
+                                  return b.isNew ==
+                                      true; // ritorna circolare: & nuova + valide e NON valide
+                                }
+                                return b !=
+                                    null; // ritorna circolare:valida e NON valida + nuova e NON nuova
+                              }
+                            } else if (_start == null || _end == null) {
+                              return b !=
+                                  null; // solo _start o _end sono state selsionate, quindi non e valido il filtro delle circolari
                             }
                           }).map<Widget>((c) {
                             // TODO filter by inactive
@@ -787,9 +749,20 @@ class _CustomDialogState extends State<CustomDialog> {
         ),
         actions: <Widget>[
           FlatButton(
-              onPressed: () => Navigator.pop(context), child: Text('Annulla')),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Annulla')),
           FlatButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if (dal && _start == null) {
+                _start =
+                    DateTime(_now.year, _now.month, _now.day - 1, 23, 59, 59);
+              }
+              if (al && _end == null) {
+                _end = DateTime(
+                    _now.year, _now.month + 1, _now.day - 1, 23, 59, 59);
+              }
+              Navigator.of(context).pop(false);
+            },
             child: Text('Cerca'),
           )
         ],
@@ -807,7 +780,7 @@ class _CustomDialogState extends State<CustomDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Attive',
+                        'Solo attive',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontFamily: 'CoreSans',
@@ -834,7 +807,7 @@ class _CustomDialogState extends State<CustomDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Nuove',
+                        'Solo nuove',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontFamily: 'CoreSans',
@@ -892,7 +865,7 @@ class _CustomDialogState extends State<CustomDialog> {
                       fontSize: 15.0,
                     ),
                   ),
-                  initialDate: DateTime(_now.year),
+                  initialDate: DateTime(_now.year, _now.month + 1, _now.day),
                   firstDate: DateTime(_now.year - 1),
                   lastDate: DateTime(_now.year + 1),
                   dateFormat: "dd-MMM-yyyy",
@@ -900,7 +873,6 @@ class _CustomDialogState extends State<CustomDialog> {
                   looping: false,
                   onChange: (dateTime, selectedIndex) {
                     if (dal) {
-                      print(dateTime);
                       _start = dateTime;
                     }
                   },
@@ -942,15 +914,14 @@ class _CustomDialogState extends State<CustomDialog> {
                       fontSize: 15.0,
                     ),
                   ),
-                  initialDate: DateTime(_now.year),
-                  firstDate: DateTime(_now.year - 1),
+                  initialDate: DateTime(_now.year, _now.month + 1, _now.day),
+                  firstDate: DateTime(_now.year - 1, _now.month + 1),
                   lastDate: DateTime(_now.year + 1),
                   dateFormat: "dd-MMM-yyyy",
                   locale: DateTimePickerLocale.it,
                   looping: false,
                   onChange: (dateTime, selectedIndex) {
                     if (al) {
-                      print(dateTime);
                       _end = dateTime;
                     }
                   },
