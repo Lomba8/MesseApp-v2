@@ -125,6 +125,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   @override
   void initState() {
+    print('nuove:' + showNew.toString());
+    print('valide: ' + showValid.toString());
     _firstInputFocusNode = new FocusNode();
     //_uploadFiles();
     print('upload() files spostare');
@@ -216,7 +218,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         pinned: true,
                         children: [Offstage()],
                         trailing: SizedBox(
-                          width: 23 + 5 + 25.0,
+                          width: 26 + 8 + 28.0,
                           child: Row(
                             children: <Widget>[
                               GestureDetector(
@@ -287,11 +289,11 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 }, //TODO options dialog come quello di google drive: showPickerDateRange, show only valid pdf, only new?, etc...
                                 child: Icon(
                                   Icons.tune,
-                                  size: 23,
+                                  size: 26,
                                 ),
                               ),
                               SizedBox(
-                                width: 5.0,
+                                width: 8.0,
                               ),
                               GestureDetector(
                                 onTap: () async {
@@ -313,7 +315,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 },
                                 child: Icon(
                                   Icons.clear,
-                                  size: 25,
+                                  size: 28,
                                 ),
                               ),
                             ],
@@ -394,64 +396,27 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         Container(
                           margin: EdgeInsets.only(top: 15.0),
                           child: Column(
-                              children: data.where((b) {
+                              children: data.where((d) {
                             if (_start != null && _end != null) {
-                              // check se l'utente ha impostaato un range di date
-                              if (b.start_date.isAfter(_start) &&
-                                  b.end_date.isAfter(_end)) {
-                                // check se la circolare e nel range di date selezionate dall'utente
-                                if (showValid) {
-                                  // mostra solo circolari valide
-                                  if (b.valid) {
-                                    // check se la circolare e valida
-                                    if (showNew) {
-                                      // mostra solo circolari nuove
-                                      return b.isNew ==
-                                          true; // ritorna circolare: nel range di date & valida & nuova
-                                    }
-                                    return b !=
-                                        null; // ritorna circolare: nel range di date & valida + nuova e NON nuova
-                                  }
-                                  return false; // circolare NON valida quindi non la ritorna
-                                } else {
-                                  // mostra circolari valide e NON valide
-                                  if (showNew) {
-                                    // mostra solo circolari nuove
-                                    return b.isNew ==
-                                        true; // ritorna circolare: nel range di date & nuova + valide e NON valide
-                                  }
-                                  return b !=
-                                      null; // ritorna circolare :nel range di date + valida e NON valida + nuova e NON nuova
-                                }
-                              }
-                              return false; // circolare NON corrisponde al range quindi non la ritorna
-
-                            } else if (_start == null && _end == null) {
-                              // check se non e stato impostato un range di date daal'utente
-                              if (showValid) {
-                                // mostra solo circolari valide
-                                if (b.valid) {
-                                  // check se la circolare e valida
-                                  if (showNew) {
-                                    // mostra solo circolari nuove
-                                    return b.isNew ==
-                                        true; // ritorna circolare: & nuova + valide
-                                  }
-                                  return b !=
-                                      null; // ritorna circolare:  valida  + nuova e NON nuova
-                                }
-                                return false; // circolare NON valida quindi non la ritorna
-                              } else {
-                                // mostra circolari valide e NON valide
-                                if (showNew) {
-                                  // mostra solo circolari nuove
-                                  return b.isNew ==
-                                      true; // ritorna circolare: & nuova + valide e NON valide
-                                }
-                                return b !=
-                                    null; // ritorna circolare:valida e NON valida + nuova e NON nuova
-                              }
-                            } // non serve un else if (_start == null && _end == null) perche nel .then((annull)){...} ce gia il check del bottone premuto e delle variabili _start & _end
+                              if (d.start_date.isAfter(_start) &&
+                                  d.end_date.isAfter(_end)) {
+                                return d.start_date.isAfter(_start) &&
+                                    d.end_date.isAfter(_end);
+                              } else
+                                return false;
+                            } else
+                              return d !=
+                                  null; // non serve un else if (_start == null && _end == null) perche nel .then((annull)){...} ce gia il check del bottone premuto e delle variabili _start & _end
+                          }).where((v) {
+                            if (showValid) {
+                              return v.valid == true;
+                            } else
+                              return v != null;
+                          }).where((n) {
+                            if (showNew) {
+                              return n.isNew == true;
+                            } else
+                              return n != null;
                           }).map<Widget>((c) {
                             if (files.isEmpty) {
                               bool _expand = false;
@@ -739,11 +704,15 @@ class _CustomDialogState extends State<CustomDialog> {
         ),
         actions: <Widget>[
           FlatButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop(true);
+              },
               child: Text('Annulla')),
           FlatButton(
             color: Theme.of(context).accentColor,
             onPressed: () {
+              HapticFeedback.mediumImpact();
               if (dal && _start == null) {
                 _start =
                     DateTime(_now.year, _now.month, _now.day - 1, 23, 59, 59);
@@ -864,7 +833,7 @@ class _CustomDialogState extends State<CustomDialog> {
                       fontSize: 15.0,
                     ),
                   ),
-                  initialDate: DateTime(_now.year, _now.month + 1, _now.day),
+                  initialDate: DateTime(_now.year, _now.month, _now.day),
                   firstDate: DateTime(_now.year - 1),
                   lastDate: DateTime(_now.year + 1),
                   dateFormat: "dd-MMM-yyyy",
