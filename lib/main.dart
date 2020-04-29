@@ -43,7 +43,9 @@ void main() {
     // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     // _signIn.signIn();
     notificationsPlugin.initialize(
-      InitializationSettings(AndroidInitializationSettings('@mipmap/splash'),
+      InitializationSettings(
+          AndroidInitializationSettings(
+              'app_icon'), // Messedaglia/android/app/src/main/res/drawable/app_icon.png
           IOSInitializationSettings()),
       onSelectNotification: (payload) async {
         if (notificationCallbacks[payload] == null) return;
