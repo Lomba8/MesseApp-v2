@@ -7,6 +7,7 @@ import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class BachecaRegistroData extends RegistroData {
@@ -117,7 +118,7 @@ class BachecaRegistroData extends RegistroData {
   @override
   Future<void> create() async {
     await database.execute(
-        'CREATE TABLE IF NOT EXISTS bacheca(id INTEGER PRIMARY KEY, usrId INTEGER, evt TEXT, start_date DATE, end_date DATE, valid BIT, new BIT, deleted BIT, title TEXT, content TEXT, attachments TEXT)');
+        'CREATE TABLE IF NOT EXISTS bacheca(id INTEGER PRIMARY KEY, usrId INTEGER, evt TEXT, start_date DATE, end_date DATE, valid BIT, new BIT, deleted BIT, title TEXT, content TEXT, pdf BLOB, attachments TEXT)');
   }
 
   @override
@@ -139,6 +140,7 @@ class BachecaRegistroData extends RegistroData {
       );
     }).toList()
       ..sort();
+    print('prova');
   }
 }
 
@@ -153,38 +155,62 @@ class Comunicazione extends Comparable<Comunicazione> {
   final Map attachments;
 
   void loadContent(void Function() callback) async {
-    http.Response r = await http.post(
-        'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/read/$evt/$id/101',
-        headers: {
-          'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
-          'Content-Type': 'application/json',
-          'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
-          'Z-Auth-Token': account.token,
-        });
-    Map json = jsonDecode(r.body);
-    content = json['item']['text'];
-    callback();
+    try {
+      http.Response r = await http.post(
+          'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/read/$evt/$id/101',
+          headers: {
+            'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
+            'Content-Type': 'application/json',
+            'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
+            'Z-Auth-Token': account.token,
+          });
+      Map json = jsonDecode(r.body);
+      this.content = json['item']['text'];
+      int inserted = await database.rawUpdate(
+          'UPDATE bacheca SET content = ? WHERE id = ?',
+          [this.content, this.id]);
+      print(inserted.toString());
+      await seen();
+      callback();
+    } catch (e) {
+      callback();
+      print(e);
+    }
   }
 
   Future<File> downloadPdf() async {
     http.Response r;
-    File assetFile;
-    File file;
-    var dir;
+    var dir = await getTemporaryDirectory();
+    File file = File('${dir.path}/${encodePath(title)}.pdf');
+    var bytes;
+    List<Map> exists =
+        await database.rawQuery('SELECT pdf FROM bacheca WHERE id=${this.id}');
+    exists.first.forEach((key, value) => bytes = value);
 
-    r = await http.get(
-      'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/attach/$evt/$id/1',
-      headers: {
-        'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
-        'Content-Type': 'application/json',
-        'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
-        'Z-Auth-Token': account.token,
-      },
-    );
-    dir = await getTemporaryDirectory();
-    file = File('${dir.path}/${encodePath(title)}.pdf');
-    await file.writeAsBytes(r.bodyBytes);
-    return file;
+    if (bytes != null) {
+      await file.writeAsBytes(bytes);
+      return file;
+    } else {
+      try {
+        r = await http.get(
+          'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/attach/$evt/$id/1',
+          headers: {
+            'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
+            'Content-Type': 'application/json',
+            'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
+            'Z-Auth-Token': account.token,
+          },
+        );
+        await file.writeAsBytes(r.bodyBytes);
+        int inserted = await database.rawUpdate(
+            'UPDATE bacheca SET pdf = ? WHERE id = ?', [r.bodyBytes, this.id]);
+        // print(inserted.toString());
+        return file;
+      } catch (e) {
+        print(e);
+        return null;
+      }
+    }
   }
 
   //bool get isNew => session.bacheca.bachecaNewFlags[id.toString()] ?? true; TODO

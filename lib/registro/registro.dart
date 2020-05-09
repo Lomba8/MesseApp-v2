@@ -268,6 +268,7 @@ abstract class RegistroData {
             .query(name, where: 'usrId = ?', whereArgs: [account.usrId]))
         .map((v) => Map.from(v))
         .toList();
+    print('prova');
   }
 
   Future<Result> getData() async {

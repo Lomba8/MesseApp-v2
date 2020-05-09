@@ -28,7 +28,7 @@ class _OrariSectionState extends State<OrariSection> {
   Map<String, String> downloads = {};
 
   void resetprefs() async =>
-      main.prefs.setString('selectedClass', selectedClass = session.cls);
+      main.prefs.setString('selectedClass', selectedClass = null);
 
   @override
   void initState() {
@@ -152,14 +152,14 @@ class _OrariSectionState extends State<OrariSection> {
                                 builder: (BuildContext context) {
                                   return PlatformAlertDialog(
                                     title:
-                                        Text('Impossibile scaricare la foto'),
+                                        Text('Impossibile scaricare la foto.'),
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: <Widget>[
                                           Text(
-                                              "Per scaricare l'orario bisogna autorizzare la applicazione"),
+                                              "Per scaricare l'orario bisogna autorizzare la applicazione."),
                                           Text(
-                                              "Clicca su autorizza per abilitare il salvataggio della foto"),
+                                              "Clicca su 'autorizza' per abilitare il salvataggio della foto."),
                                         ],
                                       ),
                                     ),
@@ -358,7 +358,8 @@ class _OrariSectionState extends State<OrariSection> {
               decoration: BoxDecoration(
                   color: colors[orari[selectedClass]['orari'][i]]?.withOpacity(
                           _selectedSbj == null ||
-                                  _selectedSbj == orari[selectedClass]['orari'][i]
+                                  _selectedSbj ==
+                                      orari[selectedClass]['orari'][i]
                               ? 1
                               : 0.1) ??
                       Colors.transparent,
@@ -369,7 +370,8 @@ class _OrariSectionState extends State<OrariSection> {
                           blurRadius: 5,
                           offset: Offset(3, 3),
                           color: (_selectedSbj == null ||
-                                  _selectedSbj == orari[selectedClass]['orari'][i])
+                                  _selectedSbj ==
+                                      orari[selectedClass]['orari'][i])
                               ? Colors.black
                               : Colors.transparent)
                   ]),

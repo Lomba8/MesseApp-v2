@@ -4,9 +4,11 @@ import 'package:Messedaglia/registro/lessons_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:marquee/marquee.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LessonsSection extends StatelessWidget {
@@ -39,33 +41,44 @@ class LessonsSection extends StatelessWidget {
             ),
           ),
           SliverList(
-              delegate:
-                  SliverChildListDelegate(session.lessons.data['sbj'].keys
-                      .map<Widget>((sbj) => ListTile(
-                            title: Text(
-                              sbj,
+              delegate: SliverChildListDelegate(session.lessons.data['sbj'].keys
+                  .map<Widget>((sbj) => SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 55,
+                        child: ListTile(
+                          title: AutoSizeText(
+                            sbj,
+                            overflowReplacement: Marquee(
+                              text: sbj,
+                              blankSpace: 40.0,
                               style: Theme.of(context).textTheme.bodyText2,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
+                              pauseAfterRound: Duration(milliseconds: 800),
                             ),
-                            leading: Container(
-                              child: CircleAvatar(
-                                child: Icon(
-                                  (Globals.subjects[sbj] ?? {})['icona'] ??
-                                      MdiIcons.sleep,
-                                  color: Colors.black,
-                                ),
-                                backgroundColor:
-                                    (Globals.subjects[sbj] ?? {})['colore']
-                                        ?.withOpacity(0.7),
+                            style: Theme.of(context).textTheme.bodyText2,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            minFontSize: 20.0,
+                            maxFontSize: 20.0,
+                          ),
+                          leading: Container(
+                            child: CircleAvatar(
+                              child: Icon(
+                                (Globals.subjects[sbj] ?? {})['icona'] ??
+                                    MdiIcons.sleep,
+                                color: Colors.black,
                               ),
+                              backgroundColor:
+                                  (Globals.subjects[sbj] ?? {})['colore']
+                                      ?.withOpacity(0.7),
                             ),
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LessonsDetails(sbj))),
-                          ))
-                      .toList()))
+                          ),
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LessonsDetails(sbj))),
+                        ),
+                      ))
+                  .toList()))
         ],
       );
 }
