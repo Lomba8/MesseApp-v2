@@ -1,5 +1,9 @@
 # Messe-app-v2
 
+### TODO ISSUES
+
+- [ ] accounts non creati se app starta offline
+
 ## Status
 
 ![](https://github.com/Lomba8/messe-app-status/blob/master/Messe-app%2C%2010:1:20.png)
