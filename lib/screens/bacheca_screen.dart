@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:marquee/marquee.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
@@ -125,8 +126,6 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   @override
   void initState() {
-    print('nuove:' + showNew.toString());
-    print('valide: ' + showValid.toString());
     _firstInputFocusNode = new FocusNode();
     //_uploadFiles();
     print('upload() files spostare');
@@ -432,7 +431,6 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 child: CustomExpansionTile(
                                   onExpansionChanged: (isExpanded) async {
                                     _expand = isExpanded;
-                                    await c.seen();
 
                                     setState(() {
                                       _expand = !_expand;
@@ -460,14 +458,16 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     onPressed: c.attachments.isEmpty
                                         ? null
                                         : () async {
-                                            await c.seen();
+                                            if (c.isNew)
+                                              c.loadContent(
+                                                  () => setState(() {}));
 
                                             await pr.show();
-                                            // show hud with colors
+
                                             var _pathh = await c.downloadPdf();
                                             pr.hide();
-                                            _pathh = _pathh.path;
-                                            if (mounted) {
+                                            _pathh = _pathh?.path;
+                                            if (mounted && _pathh != null) {
                                               setState(() {});
                                               Navigator.push(
                                                 context,
@@ -705,7 +705,7 @@ class _CustomDialogState extends State<CustomDialog> {
         actions: <Widget>[
           FlatButton(
               onPressed: () {
-                HapticFeedback.lightImpact();
+                HapticFeedback.mediumImpact();
                 Navigator.of(context).pop(true);
               },
               child: Text('Annulla')),
@@ -917,17 +917,17 @@ class PDFScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).accentColor,
           flexibleSpace: Container(
             margin: EdgeInsets.fromLTRB(60.0, 70.0, 60.0, 0.0),
-            child: Text(
-              title,
-              maxLines: 5,
-              textAlign: TextAlign.left,
+            child: Marquee(
+              text: ' ' + title,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 13.0,
+                fontSize: 15.0,
                 wordSpacing: 1.2,
               ),
-              overflow: TextOverflow.ellipsis,
-              softWrap: true,
+              scrollAxis: Axis.horizontal,
+              blankSpace: 70.0,
+              velocity: 80.0,
+              pauseAfterRound: Duration(seconds: 1),
             ),
           ),
           actions: <Widget>[
