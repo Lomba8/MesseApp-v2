@@ -58,7 +58,8 @@ class _OrariSectionState extends State<OrariSection> {
   }
 
   bool get _hasSaturday {
-    List orario = orari[selectedClass]['orari'];
+    List orario =
+        orari.containsKey(selectedClass) ? orari[selectedClass]['orari'] : null;
     if (orario == null) return true;
     for (int i = 5; i < orario.length; i += 6) if (orario[i] != '') return true;
     return false;
@@ -398,7 +399,8 @@ class _OrariSectionState extends State<OrariSection> {
   }
 
   List<Widget> get _children {
-    List orario = orari[selectedClass]['orari'];
+    List orario =
+        orari.containsKey(selectedClass) ? orari[selectedClass]['orari'] : null;
     if (orario == null) return [];
     bool saturday = _hasSaturday;
     List<Widget> children = [Container()];
