@@ -237,8 +237,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     if (xorBool(_start == null, _end == null) &&
                                         !annulla) {
                                       _end = _start = null;
-                                      showNew = false;
-                                      showValid = false;
+
                                       Flushbar(
                                         margin: EdgeInsets.all(30.0),
                                         padding: EdgeInsets.all(20),
@@ -397,9 +396,9 @@ class _BachecaScreenState extends State<BachecaScreen> {
                           child: Column(
                               children: data.where((d) {
                             if (_start != null && _end != null) {
-                              if (d.start_date.isAfter(_start) &&
+                              if (d.start_date.isBefore(_start) &&
                                   d.end_date.isAfter(_end)) {
-                                return d.start_date.isAfter(_start) &&
+                                return d.start_date.isBefore(_start) &&
                                     d.end_date.isAfter(_end);
                               } else
                                 return false;
@@ -449,38 +448,54 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     minFontSize: 13.0,
                                     maxFontSize: 15.0,
                                   ),
-                                  leading: IconButton(
-                                    icon: Icon(MdiIcons.filePdf),
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
-                                    onPressed: c.attachments.isEmpty
-                                        ? null
-                                        : () async {
-                                            if (c.isNew)
-                                              c.loadContent(
-                                                  () => setState(() {}));
+                                  leading: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: c.attachments.isEmpty
+                                            ? null
+                                            : () async {
+                                                if (c.isNew)
+                                                  c.loadContent(
+                                                      () => setState(() {}));
 
-                                            await pr.show();
+                                                await pr.show();
 
-                                            var _pathh = await c.downloadPdf();
-                                            pr.hide();
-                                            _pathh = _pathh?.path;
-                                            if (mounted && _pathh != null) {
-                                              setState(() {});
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PDFScreen(
-                                                    path: _pathh,
-                                                    title: c.title,
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
+                                                var _pathh =
+                                                    await c.downloadPdf();
+                                                pr.hide();
+                                                _pathh = _pathh?.path;
+                                                if (mounted && _pathh != null) {
+                                                  setState(() {});
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PDFScreen(
+                                                        path: _pathh,
+                                                        title: c.title,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                        child: Icon(
+                                          MdiIcons.filePdf,
+                                          size: 24,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${c.start_date.day.toString().padLeft(2, '0')}/${c.start_date.month.toString().padLeft(2, '0')}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
+                                        style: TextStyle(fontSize: 8),
+                                      ),
+                                    ],
                                   ),
                                   trailing: (isExpanded) => AnimatedCrossFade(
                                     duration: Duration(milliseconds: 300),
@@ -575,39 +590,54 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     minFontSize: 13.0,
                                     maxFontSize: 15.0,
                                   ),
-                                  leading: IconButton(
-                                    icon: Icon(MdiIcons.filePdf),
-                                    color: c.isNew
-                                        ? Colors.yellow
-                                        : Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                    onPressed: c.attachments.isEmpty
-                                        ? null
-                                        : () async {
-                                            await c.seen();
-                                            await c.loadContent(
-                                                () => setState(() {}));
-                                            await pr.show();
-                                            // show hud with colors
-                                            var _pathh = await c.downloadPdf();
-                                            pr.hide();
-                                            _pathh = _pathh.path;
-                                            if (mounted) {
-                                              setState(() {});
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PDFScreen(
-                                                    path: _pathh,
-                                                    title: c.title,
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
+                                  leading: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: c.attachments.isEmpty
+                                            ? null
+                                            : () async {
+                                                if (c.isNew)
+                                                  c.loadContent(
+                                                      () => setState(() {}));
+
+                                                await pr.show();
+
+                                                var _pathh =
+                                                    await c.downloadPdf();
+                                                pr.hide();
+                                                _pathh = _pathh?.path;
+                                                if (mounted && _pathh != null) {
+                                                  setState(() {});
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PDFScreen(
+                                                        path: _pathh,
+                                                        title: c.title,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                        child: Icon(
+                                          MdiIcons.filePdf,
+                                          size: 24,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${c.start_date.day.toString().padLeft(2, '0')}/${c.start_date.month.toString().padLeft(2, '0')}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
+                                        style: TextStyle(fontSize: 8),
+                                      ),
+                                    ],
                                   ),
                                   trailing: (isExpanded) => AnimatedCrossFade(
                                     duration: Duration(milliseconds: 300),
@@ -686,7 +716,8 @@ class CustomDialog extends StatefulWidget {
 }
 
 class _CustomDialogState extends State<CustomDialog> {
-  bool dal = false, al = false;
+  bool dal = _start == null ? false : true;
+  bool al = _start == null ? false : true;
   DateTime _now = DateTime.now();
 
   @override
@@ -817,6 +848,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           activeColor: Theme.of(context).accentColor,
                           value: dal,
                           onChanged: (_dal) {
+                            _start = null;
                             setState(() {
                               dal = _dal;
                             });
@@ -833,7 +865,9 @@ class _CustomDialogState extends State<CustomDialog> {
                       fontSize: 15.0,
                     ),
                   ),
-                  initialDate: DateTime(_now.year, _now.month, _now.day),
+                  initialDate: _start != null
+                      ? _start
+                      : DateTime(_now.year, _now.month, _now.day),
                   firstDate: DateTime(_now.year - 1),
                   lastDate: DateTime(_now.year + 1),
                   dateFormat: "dd-MMM-yyyy",
@@ -866,6 +900,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           activeColor: Theme.of(context).accentColor,
                           value: al,
                           onChanged: (_al) {
+                            _end = null;
                             setState(() {
                               al = _al;
                             });
@@ -882,8 +917,10 @@ class _CustomDialogState extends State<CustomDialog> {
                       fontSize: 15.0,
                     ),
                   ),
-                  initialDate: DateTime(_now.year, _now.month + 1, _now.day),
-                  firstDate: DateTime(_now.year - 1, _now.month + 1),
+                  initialDate: _end != null
+                      ? _end
+                      : DateTime(_now.year, _now.month + 1, _now.day),
+                  firstDate: DateTime(_now.year - 1),
                   lastDate: DateTime(_now.year + 1),
                   dateFormat: "dd-MMM-yyyy",
                   locale: DateTimePickerLocale.it,
