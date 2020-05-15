@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;
@@ -23,7 +24,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Uint8List avatar = main.prefs.getString('avatar') != ''
+  Uint8List avatar = (main.prefs.getString('avatar') != '' &&
+          main.prefs.getString('avatar') != null)
       ? base64Decode(main.prefs.getString('avatar'))
       : null;
   File image;
@@ -53,8 +55,9 @@ class _HomeState extends State<Home> {
                   centerTitle: true,
                   elevation: 0,
                   backgroundColor: Colors.transparent,
-                  title: Text(
+                  title: AutoSizeText(
                     'Ciao ${main.session.nome.split(' ').first}',
+                    maxLines: 1,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.light
@@ -204,7 +207,7 @@ class _HomeState extends State<Home> {
               // scrolled, if the content is bigger than the available
               // height of the sheet.
               return Container(
-                height: MediaQuery.of(context).size.height / 3,
+                height: MediaQuery.of(context).size.height / 2,
                 child: Center(
                   child: Text(
                     'This is the content of the sheet',
