@@ -7,10 +7,13 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:marquee/marquee.dart';
 
 import '../registro/registro.dart';
 
@@ -66,6 +69,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
   Future<void> _refresh() async {
     Result r = await session.voti.getData();
     if (r.ok) _setStateIfAlive();
+    HapticFeedback.mediumImpact();
   }
 
   @override
@@ -75,7 +79,9 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
         showChildOpacityTransition: false,
         child:
             CustomScrollView(scrollDirection: Axis.vertical, slivers: <Widget>[
-          ExpansionSliver(ExpansionSliverDelegate(context,
+          ExpansionSliver(
+            ExpansionSliverDelegate(
+              context,
               title: session.voti.periods[0],
               body: _Header(
                   (period) => setState(() {
@@ -83,7 +89,9 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                         session.voti.period = period;
                       }),
                   _passedTime),
-              value: _value)),
+              value: _value,
+            ),
+          ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
@@ -93,80 +101,117 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                       children: session.voti.sbjsWithMarks().expand((sbj) {
                         double average = session.voti.average(sbj);
                         return [
-                          ListTile(
-                              onLongPress: () => null,
-                              onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => VotiDetails(
-                                              session.voti
-                                                  .sbjVoti(sbj)
-                                                  .toList(),
-                                              sbj))).then((value) async {
-                                    session.voti.allSeen(sbj: sbj);
-                                    _setStateIfAlive();
-                                  }),
-                              leading: Stack(
-                                children: [
-                                  Text(
-                                    '  ' + average.toStringAsPrecision(2),
+                          SizedBox(
+                            height: 55,
+                            child: ListTile(
+                                onLongPress: () => null,
+                                onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => VotiDetails(
+                                                session.voti
+                                                    .sbjVoti(sbj)
+                                                    .toList(),
+                                                sbj))).then((value) async {
+                                      session.voti.allSeen(sbj: sbj);
+                                      _setStateIfAlive();
+                                    }),
+                                leading: Stack(
+                                  children: [
+                                    Text(
+                                      '  ' + average.toStringAsPrecision(2),
+                                      style: TextStyle(
+                                        fontFamily: 'CoreSansRounded',
+                                        fontWeight:
+                                            session.voti.hasNewMarks(sbj)
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                      ),
+                                    ),
+                                    session.voti.hasNewMarks(sbj)
+                                        ? Positioned(
+                                            bottom: 6,
+                                            left: 0,
+                                            child: Icon(
+                                              Icons.brightness_1,
+                                              size: 10,
+                                              color: Colors.yellow,
+                                            ),
+                                          )
+                                        : SizedBox(),
+                                  ],
+                                ),
+                                trailing: Container(
+                                  width: MediaQuery.of(context).size.width / 10,
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_forward_ios),
+                                    onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => VotiDetails(
+                                                session.voti
+                                                    .sbjVoti(sbj)
+                                                    .toList(),
+                                                sbj))).then((value) {
+                                      session.voti.allSeen(sbj: sbj);
+                                      _setStateIfAlive();
+                                    }),
+                                  ),
+                                ),
+                                title: AutoSizeText(
+                                  sbj,
+                                  maxLines: 1,
+                                  minFontSize: session.voti.hasNewMarks(sbj)
+                                      ? Theme.of(context)
+                                              .textTheme
+                                              .bodyText2
+                                              .fontSize +
+                                          1.0
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyText2
+                                          .fontSize,
+                                  overflowReplacement: Marquee(
+                                    pauseAfterRound:
+                                        Duration(milliseconds: 800),
+                                    blankSpace: 20,
+                                    velocity: 50,
+                                    text: sbj,
                                     style: TextStyle(
-                                      fontFamily: 'CoreSansRounded',
+                                        letterSpacing: 1.0,
+                                        fontWeight:
+                                            session.voti.hasNewMarks(sbj)
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                        fontSize: session.voti.hasNewMarks(sbj)
+                                            ? Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText2
+                                                    .fontSize +
+                                                1.0
+                                            : Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                .fontSize),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      letterSpacing: 1.0,
                                       fontWeight: session.voti.hasNewMarks(sbj)
                                           ? FontWeight.bold
                                           : FontWeight.normal,
-                                    ),
-                                  ),
-                                  session.voti.hasNewMarks(sbj)
-                                      ? Positioned(
-                                          bottom: 6,
-                                          left: 0,
-                                          child: Icon(
-                                            Icons.brightness_1,
-                                            size: 10,
-                                            color: Colors.yellow,
-                                          ),
-                                        )
-                                      : SizedBox(),
-                                ],
-                              ),
-                              trailing: Container(
-                                width: MediaQuery.of(context).size.width / 10,
-                                child: IconButton(
-                                  icon: Icon(Icons.arrow_forward_ios),
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => VotiDetails(
-                                              session.voti
-                                                  .sbjVoti(sbj)
-                                                  .toList(),
-                                              sbj))).then((value) {
-                                    session.voti.allSeen(sbj: sbj);
-                                    _setStateIfAlive();
-                                  }),
-                                ),
-                              ),
-                              title: Text(
-                                sbj,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    letterSpacing: 1.0,
-                                    fontWeight: session.voti.hasNewMarks(sbj)
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                    fontSize: session.voti.hasNewMarks(sbj)
-                                        ? Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize +
-                                            1.0
-                                        : Theme.of(context)
-                                            .textTheme
-                                            .bodyText2
-                                            .fontSize),
-                              )),
+                                      fontSize: session.voti.hasNewMarks(sbj)
+                                          ? Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2
+                                                  .fontSize +
+                                              1.0
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .bodyText2
+                                              .fontSize),
+                                )),
+                          ),
                           Container(
                               height: 2,
                               padding: EdgeInsets.symmetric(horizontal: 25.0),

@@ -16,6 +16,8 @@ class _DidatticaScreenData extends State<DidatticaScreen>
   AnimationController _animationController;
   Animation<double> _animation1, _animation2;
 
+  //TODO implementare il liquidpulltorefresh con HapticFeedback.mediumImpact(); alla fine
+
   @override
   void initState() {
     _animationController = AnimationController(

@@ -1,5 +1,6 @@
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -30,8 +31,9 @@ class VotiDetailsState extends State<VotiDetails> {
             brightness: Theme.of(context).brightness,
             elevation: 0,
             backgroundColor: Colors.transparent,
-            title: Text(
+            title: AutoSizeText(
               widget.sbjDesc,
+              maxLines: 1,
               style: Theme.of(context).textTheme.bodyText2,
             ),
             bottom: PreferredSize(

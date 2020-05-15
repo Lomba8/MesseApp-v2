@@ -64,6 +64,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
     files = [];
     frasi = {};
     _highlight = '';
+    HapticFeedback.mediumImpact();
   }
 
   Future<int> _uploadFiles() async {
@@ -448,41 +449,17 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     minFontSize: 13.0,
                                     maxFontSize: 15.0,
                                   ),
-                                  leading: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: c.attachments.isEmpty
-                                            ? null
-                                            : () async {
-                                                if (c.isNew)
-                                                  c.loadContent(
-                                                      () => setState(() {}));
-
-                                                await pr.show();
-
-                                                var _pathh =
-                                                    await c.downloadPdf();
-                                                pr.hide();
-                                                _pathh = _pathh?.path;
-                                                if (mounted && _pathh != null) {
-                                                  setState(() {});
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PDFScreen(
-                                                        path: _pathh,
-                                                        title: c.title,
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                        child: Icon(
+                                  leading: SizedBox(
+                                    width:
+                                        45.0, //FIXME esiste una maniera migliore per scegliere la larghezza dato ch deve avere una larghezza definita il 'leading'
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Icon(
                                           MdiIcons.filePdf,
                                           size: 24,
                                           color: Theme.of(context).brightness ==
@@ -490,12 +467,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                               ? Colors.white
                                               : Colors.black,
                                         ),
-                                      ),
-                                      Text(
-                                        '${c.start_date.day.toString().padLeft(2, '0')}/${c.start_date.month.toString().padLeft(2, '0')}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
-                                        style: TextStyle(fontSize: 8),
-                                      ),
-                                    ],
+                                        Text(
+                                          '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
+                                          style: TextStyle(fontSize: 8),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   trailing: (isExpanded) => AnimatedCrossFade(
                                     duration: Duration(milliseconds: 300),
@@ -590,41 +567,17 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     minFontSize: 13.0,
                                     maxFontSize: 15.0,
                                   ),
-                                  leading: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: c.attachments.isEmpty
-                                            ? null
-                                            : () async {
-                                                if (c.isNew)
-                                                  c.loadContent(
-                                                      () => setState(() {}));
-
-                                                await pr.show();
-
-                                                var _pathh =
-                                                    await c.downloadPdf();
-                                                pr.hide();
-                                                _pathh = _pathh?.path;
-                                                if (mounted && _pathh != null) {
-                                                  setState(() {});
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PDFScreen(
-                                                        path: _pathh,
-                                                        title: c.title,
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                        child: Icon(
+                                  leading: SizedBox(
+                                    width:
+                                        45.0, //FIXME esiste una maniera migliore per scegliere la larghezza dato ch deve avere una larghezza definita il 'leading'
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Icon(
                                           MdiIcons.filePdf,
                                           size: 24,
                                           color: Theme.of(context).brightness ==
@@ -632,12 +585,12 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                               ? Colors.white
                                               : Colors.black,
                                         ),
-                                      ),
-                                      Text(
-                                        '${c.start_date.day.toString().padLeft(2, '0')}/${c.start_date.month.toString().padLeft(2, '0')}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
-                                        style: TextStyle(fontSize: 8),
-                                      ),
-                                    ],
+                                        Text(
+                                          '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
+                                          style: TextStyle(fontSize: 8),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   trailing: (isExpanded) => AnimatedCrossFade(
                                     duration: Duration(milliseconds: 300),
@@ -928,6 +881,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   onChange: (dateTime, selectedIndex) {
                     if (al) {
                       _end = dateTime;
+                      print(_end.toIso8601String());
                     }
                   },
                 ),

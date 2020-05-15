@@ -160,7 +160,7 @@ class _OrariSectionState extends State<OrariSection> {
                                           Text(
                                               "Per scaricare l'orario bisogna autorizzare la applicazione."),
                                           Text(
-                                              "Clicca su 'autorizza' per abilitare il salvataggio della foto."),
+                                              "Clicca su 'Autorizza' per abilitare il salvataggio della foto."),
                                         ],
                                       ),
                                     ),

@@ -9,6 +9,7 @@ import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -92,6 +93,8 @@ void main() {
           ? _theme = ThemeMode.dark
           : _theme = ThemeMode.light;
     }
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
     runApp(RestartWidget(
       child: MaterialAppWithTheme(),
     ));

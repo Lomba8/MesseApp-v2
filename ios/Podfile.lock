@@ -15,10 +15,14 @@ PODS:
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
+  - flutter_plugin_android_lifecycle (0.0.1):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - image_downloader (0.0.1):
+    - Flutter
+  - image_picker (0.0.1):
     - Flutter
   - open_file (0.0.1):
     - Flutter
@@ -62,7 +66,9 @@ DEPENDENCIES:
   - ext_storage (from `.symlinks/plugins/ext_storage/ios`)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_plugin_android_lifecycle (from `.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
   - image_downloader (from `.symlinks/plugins/image_downloader/ios`)
+  - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - open_file (from `.symlinks/plugins/open_file/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -101,8 +107,12 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_plugin_android_lifecycle:
+    :path: ".symlinks/plugins/flutter_plugin_android_lifecycle/ios"
   image_downloader:
     :path: ".symlinks/plugins/image_downloader/ios"
+  image_picker:
+    :path: ".symlinks/plugins/image_picker/ios"
   open_file:
     :path: ".symlinks/plugins/open_file/ios"
   package_info:
@@ -143,8 +153,10 @@ SPEC CHECKSUMS:
   ext_storage: 4eaf3a84d5594106e2ebcc2502248cfde53c8fa1
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
+  flutter_plugin_android_lifecycle: dc0b544e129eebb77a6bfb1239d4d1c673a60a35
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   image_downloader: 0cce746db85ab8e068b7bcf8acacbdf71bca185e
+  image_picker: 66aa71bc96850a90590a35d4c4a2907b0d823109
   open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
   package_info: 48b108e75b8802c2d5e126f208ef540561c98aef
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
