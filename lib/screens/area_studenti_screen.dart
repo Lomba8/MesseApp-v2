@@ -10,6 +10,7 @@ import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:http/http.dart' as http;
 import 'package:Messedaglia/main.dart' as main;
@@ -56,6 +57,8 @@ class _AreaStudentiState extends State<AreaStudenti> {
     main.session.agenda.getData().then((r) {
       if (r.ok) _setStateIfAlive();
     });
+    HapticFeedback.mediumImpact();
+
     return null;
   }
 

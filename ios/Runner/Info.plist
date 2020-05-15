@@ -30,7 +30,7 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Download foto orari</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Download foto orari</string>
+	<string>Download foto orari, selezione avatar</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

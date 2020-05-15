@@ -12,6 +12,7 @@ import 'package:marquee/marquee.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LessonsSection extends StatelessWidget {
+  //TODO implementare il liquidpulltorefresh con HapticFeedback.mediumImpact(); alla fine
   @override
   Widget build(BuildContext context) => CustomScrollView(
         slivers: <Widget>[
@@ -101,9 +102,10 @@ class _LessonsDetailsState extends State<LessonsDetails> {
             brightness: Theme.of(context).brightness,
             elevation: 0,
             centerTitle: true,
-            title: Text(
+            title: AutoSizeText(
               widget._sbj,
-              overflow: TextOverflow.fade,
+              maxLines: 1,
+              maxFontSize: 30,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black

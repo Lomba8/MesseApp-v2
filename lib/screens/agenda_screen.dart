@@ -10,6 +10,7 @@ import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
@@ -89,6 +90,8 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
     session.agenda.getData().then((r) {
       if (r.ok) _setStateIfAlive();
     });
+    HapticFeedback.mediumImpact();
+
     return null;
   }
 

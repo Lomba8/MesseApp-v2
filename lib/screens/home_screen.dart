@@ -5,6 +5,7 @@ import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:Messedaglia/main.dart' as main;
@@ -123,7 +124,11 @@ class _HomeState extends State<Home> {
     }
     return LiquidPullToRefresh(
       showChildOpacityTransition: false,
-      onRefresh: () => main.session.downloadAll((d) {}),
+      onRefresh: () {
+        // TODO _refresh()
+        main.session.downloadAll((d) {});
+        HapticFeedback.mediumImpact();
+      },
       child: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
