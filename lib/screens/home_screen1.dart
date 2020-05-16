@@ -274,30 +274,29 @@ class _HomeState extends State<Home> {
               fontWeight: FontWeight.bold,
               fontFamily: 'CoreSansRounded',
               fontSize: 15),
+          interval: 1,
           getTitles: (value) {
             switch (value.toInt()) {
               case 0:
-                return trimestre ? '' : 'GEN';
+                return 'SET';
               case 1:
-                return trimestre ? 'SET' : '';
+                return 'OTT';
               case 2:
-                return trimestre ? '' : 'FEB';
+                return 'NOV';
               case 3:
-                return trimestre ? '' : '';
+                return 'DIC';
               case 4:
-                return trimestre ? 'OTT' : 'MAR';
+                return 'GEN';
               case 5:
-                return trimestre ? '' : '';
+                return 'FEB';
               case 6:
-                return trimestre ? '' : 'APR';
+                return 'MAR';
               case 7:
-                return trimestre ? 'NOV' : '';
+                return 'APR';
               case 8:
-                return trimestre ? '' : 'MAG';
+                return 'MAG';
               case 9:
-                return trimestre ? '' : '';
-              case 10:
-                return trimestre ? 'DIC' : 'GIU';
+                return 'GIU';
             }
             return '';
           },
@@ -311,53 +310,28 @@ class _HomeState extends State<Home> {
             fontFamily: 'CoreSansRounded',
             fontSize: 15,
           ),
-          getTitles: (value) {
-            switch (value.toInt()) {
-              case 0:
-                return '';
-              case 1:
-                return '';
-              case 2:
-                return '3';
-              case 3:
-                return '';
-              case 4:
-                return '4';
-              case 5:
-                return '';
-              case 6:
-                return '6';
-              case 7:
-                return '';
-              case 8:
-                return '8';
-              case 9:
-                return '';
-              case 10:
-                return '10';
-            }
-            return '';
-          },
+          interval: 2,
+          getTitles: (value) => value < 2 ? null : value.ceil().toString(),
           reservedSize: 20,
           margin: 12,
         ),
       ),
       borderData: FlBorderData(show: false),
-      minX: 0,
-      maxX: 11,
+      minX: trimestre ? 0 : 4,
+      maxX: trimestre ? 3 : 9,
       minY: 0,
       maxY: 10,
       lineBarsData: [
         LineChartBarData(
-          spots: [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2.2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 10),
-          ],
+          spots: () {
+            List<FlSpot> tr = <FlSpot>[];
+            main.session.voti.averageByMonth().forEach((i, avg) {
+              if (!avg.isNaN &&
+                  i >= (trimestre ? 0 : 4) &&
+                  i < (trimestre ? 4 : 10)) tr.add(FlSpot(i.toDouble(), avg));
+            });
+            return tr;
+          }(),
           isCurved: true,
           colors: gradientColors,
           barWidth: 5,
