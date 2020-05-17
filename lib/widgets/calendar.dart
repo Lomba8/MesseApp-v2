@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
-import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +32,7 @@ class Calendar extends ResizableWidget {
 
   set currentDay(DateTime currentDay) {
     _onDayChanged(
-        _currentDay = currentDay, session.agenda.getEvents(currentDay).toList());
+        _currentDay = currentDay, session.agenda.getEvents(currentDay));
   }
 
   @override

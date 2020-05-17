@@ -94,7 +94,9 @@ void main() {
           : _theme = ThemeMode.light;
     }
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+    SystemChrome.setEnabledSystemUIOverlays(
+      [Platform.isIOS ? SystemUiOverlay.top : SystemUiOverlay.bottom],
+    );
     runApp(RestartWidget(
       child: MaterialAppWithTheme(),
     ));
