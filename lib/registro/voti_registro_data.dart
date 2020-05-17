@@ -126,7 +126,7 @@ class VotiRegistroData extends RegistroData {
         n;
   }
 
-  Map<int, double> averageByMonth () {
+  Map<int, double> averageByMonth ({bool currentPeriod = false}) {
     List<double> sums = List.filled(10, 0.0);
     List<int> counts = List.filled(10, 0);
     data.where((Voto v) => !v.isBlue).forEach((Voto v) {

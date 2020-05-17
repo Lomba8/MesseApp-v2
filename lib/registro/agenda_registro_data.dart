@@ -17,7 +17,7 @@ class AgendaRegistroData extends RegistroData {
     return '${date.year - year2}0901/${date.year + 1 - year2}0630';
   }
 
-  SplayTreeMap<DateTime, int> dates = SplayTreeMap<DateTime, int>();
+  SplayTreeMap<DateTime, List<Evento>> dates = SplayTreeMap<DateTime, List<Evento>>();
 
   AgendaRegistroData({@required RegistroApi account})
       : super(
@@ -59,16 +59,11 @@ class AgendaRegistroData extends RegistroData {
           whereArgs: [account.usrId]);
       batch.query('agenda',
           where: 'usrId = ?', whereArgs: [account.usrId], orderBy: 'date');
-      dates = SplayTreeMap<DateTime, int>();
-      DateTime last;
-      int count = 0;
-      data = (await batch.commit()).last.map((v) {
-        if (DateTime.parse(v['date']) != last) {
-          last = DateTime.parse(v['date']);
-          dates[last] = count;
-        }
-        count++;
-        return Map.from(v);
+      dates = SplayTreeMap<DateTime, List<Evento>>();
+      data = (await batch.commit()).last.map<Evento>((v) {
+        final Evento evt = Evento.parse(account, v);
+        (dates[evt.getDate()] ??= <Evento>[]).add(evt);
+        return evt;
       }).toList();
 
       account.update(); // nel caso fosse stata cambiata la classe
@@ -83,37 +78,14 @@ class AgendaRegistroData extends RegistroData {
   @override
   Future<void> load() async {
     await super.load();
-    data.sort((m1, m2) => m1['date'].compareTo(m2['date']) as int);
-    DateTime last;
-    int count = 0;
-    data = data.map((v) {
-      if (DateTime.parse(v['date']) != last) {
-        last = DateTime.parse(v['date']);
-        dates[last] = count;
-      }
-      count++;
-      return Map.from(v);
+    data = data.map<Evento>((v) {
+      final Evento evt = Evento.parse(account, v);
+      (dates[evt.getDate()] ??= <Evento>[]).add(evt);
+      return evt;
     }).toList();
   }
 
-  @override
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> tr = super.toJson();
-    tr['eventList'] = {};
-    (data as EventList<Evento>).events.forEach(
-        (key, value) => tr['eventList'][key.toIso8601String()] = value);
-    return tr;
-  }
-
-  Iterable<Evento> getEvents(DateTime date) sync* {
-    int index = dates[date];
-    if (index == null) return;
-    for (Map evt in data.skip(index)) {
-      DateTime evtDate = DateTime.parse(evt['date']);
-      if (evtDate != date) return;
-      yield Evento.parse(account, evt);
-    }
-  }
+  List<Evento> getEvents(DateTime date) => dates[date] ?? <Evento>[];
 
   @override
   Future<void> create() async {
@@ -143,9 +115,7 @@ class Evento implements EventInterface {
   DateTime getDate() => DateTime.utc(inizio.year, inizio.month, inizio.day);
 
   void seen() {
-    session.agenda.data
-        .where((evt) => evt['id'] == _evtId)
-        .forEach((evt) => evt['new'] = false);
+    isNew = false;
     database.update('agenda', {'new': 0},
         where: 'id = ? AND usrId = ?', whereArgs: [_evtId, account.usrId]);
   }
