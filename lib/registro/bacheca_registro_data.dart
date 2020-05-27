@@ -217,7 +217,7 @@ class Comunicazione extends Comparable<Comunicazione> {
   //void seen() => session.bacheca.bachecaNewFlags[id.toString()] = false;    TODO
   Future<void> seen() async {
     this.isNew = false;
-    var res = await database
+    int res = await database
         .rawUpdate('UPDATE bacheca SET new = 0 WHERE id = ?', [this.id]);
     //print(res);
   }

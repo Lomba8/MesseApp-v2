@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Messedaglia/iPhoneXXS11Pro2.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
@@ -162,20 +163,23 @@ class _HomeState extends State<Home> {
                     preferredSize:
                         Size.fromHeight(MediaQuery.of(context).size.width / 7),
                   ),
-                  flexibleSpace: CustomPaint(
-                    painter: BackgroundPainter(Theme.of(context)),
-                    size: Size.infinite,
+                  flexibleSpace: Container(
+                    width: MediaQuery.of(context).size.width,
+                    constraints: BoxConstraints.expand(),
+                    child: AppBarNico(),
                   ),
+                  // CustomPaint(
+                  //   painter: BackgroundPainter(Theme.of(context)),
+                  //   size: Size.infinite,
+                  // ),
                 ),
                 SliverList(
                     delegate: SliverChildListDelegate(<Widget>[
                   Container(
-                    margin: EdgeInsets.only(top: 20.0, right: 10.0),
+                    margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
                     height: MediaQuery.of(context).size.height / 4,
                     width: double.infinity,
-                    child: LineChart(
-                      mainData(),
-                    ),
+                    child: mainData(),
                   ),
                 ]))
               ],
@@ -222,130 +226,208 @@ class _HomeState extends State<Home> {
     );
   }
 
-  List<Color> gradientColors = [
-    // TODO lista di colori a seconda della lista di voti per rispecchiare la sufficienza
-    const Color(0xff23b6e6),
-    const Color(0xff02d39a),
-  ];
+  List<Color> greenGradient = [
+    Color(0xFF004000),
+    Color(0xFF008000),
+    Color(0xFF00bf00),
+    Color(0xFF00ff00),
+    Color(0xFF80ff80)
+  ].reversed.toList();
 
-  LineChartData mainData() {
-    return LineChartData(
-      lineTouchData: LineTouchData(
-        enabled: true,
-        handleBuiltInTouches: true,
-        touchSpotThreshold: 10, // default
-        touchCallback: null, // default
-        fullHeightTouchLine: false, // default
-        touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.transparent,
-          tooltipRoundedRadius: 0.0,
-          tooltipPadding: EdgeInsets.all(0.0),
-          tooltipBottomMargin: 20,
-          maxContentWidth: 120,
-          getTooltipItems: (touchedSpots) {
-            return touchedSpots.map((e) {
-              return LineTooltipItem(
-                (e.y % 1) == 0
-                    ? e.y.floor().toString()
-                    : e.y.toString().replaceAll('.', ','),
-                TextStyle(
-                  color: Colors.white70,
-                  fontFamily: 'CoreSansROunded',
-                  fontSize: 13,
-                ),
-              );
-            }).toList();
+  List<Color> redGradient = [
+    Color(0xFF400000),
+    Color(0xFF800000),
+    Color(0xFFbf0000),
+    Color(0xFFff0000),
+    //Color(0xFFff4040)
+    Color(0xFFff9100)
+  ].reversed.toList();
+
+  // List<Color> greenGradient = [
+  //   Color(0xFF004000),
+  //   Color(0xFF008000),
+  //   Color(0xFF00bf00),
+  //   Color(0xFF54db18),
+  //   Color(0xFF28f81e)
+  // ].reversed.toList();
+
+  // List<Color> redGradient = [
+  //   Color(0xFF400000),
+  //   Color(0xFF800000),
+  //   Color(0xFFbf0000),
+  //   Color(0xFFff0000),
+  //   Color(0xFFff4040)
+  // ].reversed.toList();
+
+  BarChart mainData() {
+    List<Color> gradientColors = new List();
+
+    List<FlSpot> tr = <FlSpot>[];
+
+    () {
+      main.session.voti.averageByMonth().forEach((i, avg) {
+        if (!avg.isNaN && i >= (trimestre ? 0 : 4) && i < (trimestre ? 4 : 10))
+          tr.add(FlSpot(i.toDouble(), avg));
+      });
+      return tr;
+    }();
+
+    tr.forEach((average) {
+      print(average.y.toInt());
+      switch (average.y.toInt()) {
+        case 1:
+          return gradientColors.add(redGradient[1]);
+        case 2:
+          return gradientColors.add(redGradient[2]);
+        case 3:
+          return gradientColors.add(redGradient[3]);
+        case 4:
+          return gradientColors.add(redGradient[4]);
+        case 5:
+          return gradientColors.add(redGradient[5]);
+        case 6:
+          return gradientColors.add(greenGradient[1]);
+        case 7:
+          return gradientColors.add(greenGradient[2]);
+        case 8:
+          return gradientColors.add(greenGradient[3]);
+        case 9:
+          return gradientColors.add(greenGradient[4]);
+        case 10:
+          return gradientColors
+              .add(greenGradient[5]); // vrede, verde scuro , rosso
+      }
+    });
+
+    // **************************************************************************************
+
+    final Color leftBarColor = const Color(0xff53fdd7);
+    final Color rightBarColor = const Color(0xffff5182);
+    final double width = 7;
+
+    List<BarChartGroupData> rawBarGroups;
+    List<BarChartGroupData> showingBarGroups;
+
+    int touchedGroupIndex;
+
+    final items = [
+      BarChartGroupData(
+          x: 0,
+          barRods: [BarChartRodData(y: 8, color: Colors.lightBlueAccent)],
+          showingTooltipIndicators: [0]),
+      BarChartGroupData(
+          x: 1,
+          barRods: [BarChartRodData(y: 10, color: Colors.lightBlueAccent)],
+          showingTooltipIndicators: [0]),
+      BarChartGroupData(
+          x: 2,
+          barRods: [BarChartRodData(y: 14, color: Colors.lightBlueAccent)],
+          showingTooltipIndicators: [0]),
+      BarChartGroupData(
+          x: 3,
+          barRods: [BarChartRodData(y: 15, color: Colors.lightBlueAccent)],
+          showingTooltipIndicators: [0]),
+      BarChartGroupData(
+          x: 3,
+          barRods: [BarChartRodData(y: 13, color: Colors.lightBlueAccent)],
+          showingTooltipIndicators: [0]),
+      BarChartGroupData(
+          x: 3,
+          barRods: [BarChartRodData(y: 10, color: Colors.lightBlueAccent)],
+          showingTooltipIndicators: [0]),
+    ];
+
+    rawBarGroups = items;
+
+    showingBarGroups = rawBarGroups;
+
+    return BarChart(
+      BarChartData(
+        maxY: 10,
+        barTouchData: BarTouchData(
+          touchTooltipData: BarTouchTooltipData(
+            tooltipBottomMargin: 8,
+            tooltipBgColor: Colors.transparent,
+            // getTooltipItem: (
+            //   BarChartGroupData group,
+            //   int groupIndex,
+            //   BarChartRodData rod,
+            //   int rodIndex,
+            // ) {
+            //   return BarTooltipItem(
+            //     rod.y.round().toString(),
+            //     TextStyle(
+            //       color: Colors.white,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   );
+            // },
+          ),
+          touchCallback: (BarTouchResponse response) {
+            return BarTooltipItem(
+              response.touchInput.getOffset().dy.toStringAsFixed(1),
+              TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            );
           },
         ),
-      ),
-      gridData: FlGridData(
-        show: false,
-        drawVerticalLine: false,
-        drawHorizontalLine: true,
-        horizontalInterval: 2.0,
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 22,
-          textStyle: const TextStyle(
-              color: Color(0xff68737d),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: SideTitles(
+            showTitles: true,
+            textStyle: const TextStyle(
+              color: Color(0xff67727d),
               fontWeight: FontWeight.bold,
               fontFamily: 'CoreSansRounded',
-              fontSize: 15),
-          interval: 1,
-          getTitles: (value) {
-            switch (value.toInt()) {
-              case 0:
-                return 'SET';
-              case 1:
-                return 'OTT';
-              case 2:
-                return 'NOV';
-              case 3:
-                return 'DIC';
-              case 4:
-                return 'GEN';
-              case 5:
-                return 'FEB';
-              case 6:
-                return 'MAR';
-              case 7:
-                return 'APR';
-              case 8:
-                return 'MAG';
-              case 9:
-                return 'GIU';
-            }
-            return '';
-          },
-          margin: 8,
-        ),
-        leftTitles: SideTitles(
-          showTitles: true,
-          textStyle: const TextStyle(
-            color: Color(0xff67727d),
-            fontWeight: FontWeight.bold,
-            fontFamily: 'CoreSansRounded',
-            fontSize: 15,
+              fontSize: 15,
+            ),
+            margin: 8,
+            getTitles: (value) {
+              switch (value.toInt()) {
+                case 0:
+                  return 'SET';
+                case 1:
+                  return 'OTT';
+                case 2:
+                  return 'NOV';
+                case 3:
+                  return 'DIC';
+                case 4:
+                  return 'GEN';
+                case 5:
+                  return 'FEB';
+                case 6:
+                  return 'MAR';
+                case 7:
+                  return 'APR';
+                case 8:
+                  return 'MAG';
+                case 9:
+                  return 'GIU';
+              }
+              return '';
+            },
           ),
-          interval: 2,
-          getTitles: (value) => value < 2 ? null : value.ceil().toString(),
-          reservedSize: 20,
-          margin: 12,
+          leftTitles: SideTitles(
+            showTitles: true,
+            textStyle: const TextStyle(
+              color: Color(0xff67727d),
+              fontWeight: FontWeight.bold,
+              fontFamily: 'CoreSansRounded',
+              fontSize: 15,
+            ),
+            margin: 12,
+            reservedSize: 10,
+            getTitles: (value) => value < 2 ? null : value.ceil().toString(),
+          ),
         ),
+        borderData: FlBorderData(
+          show: false,
+        ),
+        barGroups: showingBarGroups,
       ),
-      borderData: FlBorderData(show: false),
-      minX: trimestre ? 0 : 4,
-      maxX: trimestre ? 3 : 9,
-      minY: 0,
-      maxY: 10,
-      lineBarsData: [
-        LineChartBarData(
-          spots: () {
-            List<FlSpot> tr = <FlSpot>[];
-            main.session.voti.averageByMonth().forEach((i, avg) {
-              if (!avg.isNaN &&
-                  i >= (trimestre ? 0 : 4) &&
-                  i < (trimestre ? 4 : 10)) tr.add(FlSpot(i.toDouble(), avg));
-            });
-            return tr;
-          }(),
-          isCurved: true,
-          colors: gradientColors,
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            colors:
-                gradientColors.map((color) => color.withOpacity(0.3)).toList(),
-          ),
-        ),
-      ],
     );
   }
 }
