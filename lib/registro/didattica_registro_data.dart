@@ -194,9 +194,14 @@ class CustomFile extends CustomPath {
       'Z-Auth-Token': account.token,
     };
     Function funct = onlyHeader ? http.head : http.get;
-    http.Response res = await funct(
-        'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/didactics/item/$id',
-        headers: headers);
+    http.Response res;
+    try {
+      res = await funct(
+          'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/didactics/item/$id',
+          headers: headers);
+    } catch (e) {
+      throw (e);
+    }
     if (onlyHeader) {
       fileName = res.headers['content-disposition'];
       fileName = fileName
