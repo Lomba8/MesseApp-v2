@@ -1,8 +1,13 @@
 import 'package:Messedaglia/main.dart';
+import 'package:Messedaglia/screens/bacheca_screen.dart';
+import 'package:Messedaglia/screens/didattica_screen.dart';
+import 'package:Messedaglia/screens/map_screen.dart';
+import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
@@ -19,33 +24,127 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   int selected = 2;
   List<Widget> screens = [Orari(), Agenda(), Home(), Voti(), AreaStudenti()];
 
+  bool sheetExtended = false;
+  SheetController sheetController;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    sheetController = SheetController();
+    sheetController.expand();
     super.initState();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print(state.toString());
-
     session.save();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: SlidingSheet(
+        controller: sheetController,
+
         body: Builder(builder: (context) => screens[selected]),
-        bottomNavigationBar: NavBarSotto(
-          (pos) => setState(() => selected = pos),
-        ));
+        elevation: 10,
+        cornerRadius: 20,
+        duration: Duration(milliseconds: 900),
+
+        //color: Colors.black,
+        snapSpec: SnapSpec(
+          positioning: SnapPositioning.relativeToAvailableSpace,
+          snappings: [SnapSpec.footerSnap, 0.45], //[SnapSpec.footerSnap, 0.5],
+          snap: true,
+          initialSnap: 0.45,
+        ),
+        listener: (state) {
+          if (sheetExtended != state.isExpanded)
+            setState(() {
+              sheetExtended = state.isExpanded;
+            });
+        },
+        cornerRadiusOnFullscreen: 0,
+        footerBuilder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical:
+                    1.0), //FIXME non mi piace che is veda l'animated container perche occupa troppo spazio nello schermo però senza non si capisce in quale schermata si è
+            child: NavBarSotto(
+              (pos) async {
+                if (pos == 2) {
+                  sheetController.snapToExtent(state.maxExtent,
+                      duration: Duration(milliseconds: 200));
+                } else
+                  await sheetController.snapToExtent(state.minExtent,
+                      duration: Duration(milliseconds: 200));
+                setState(() => selected = pos);
+              },
+            ),
+          );
+        },
+        isBackdropInteractable: true,
+        addTopViewPaddingOnFullscreen: true,
+        headerBuilder: (context, state) => Container(
+          width: 30,
+          height: 5,
+          margin: EdgeInsets.all(state.isExpanded ? 15 : 5),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2.5), color: Colors.grey),
+        ),
+        builder: (context, state) {
+          return Container(
+            height: 500,
+            child: Center(
+              child: Icon(
+                Icons.ac_unit,
+                color: Colors.red,
+              ),
+            ),
+          );
+        },
+        /*builder: (context, state) => GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          children: <Widget>[
+            Section(
+              sezione: 'Autogestione', // mappa Globals.icone[sezione]
+              colore: 'verde', // mappa Globals.sezioni[colore]
+              page: MapScreen(),
+            ),
+            Section(
+              sezione: 'Alternanza',
+              colore: 'blu',
+            ),
+            Section(
+              sezione: 'Bacheca',
+              colore: 'arancione',
+              page: BachecaScreen(),
+            ),
+            Section(
+              sezione: 'Didattica',
+              colore: 'rosa',
+              page: DidatticaScreen(),
+            ),
+            Section(
+              sezione: 'App Panini',
+              colore: 'rosso',
+              //action: _listaPanini,
+            ),
+            Section(
+              sezione: 'Tutoraggi',
+              colore: 'viola',
+              page: TutoraggiScreen(),
+            ),
+          ],
+        ),*/
+      ),
+    );
   }
 }
 

@@ -176,7 +176,7 @@ class _HomeState extends State<Home> {
                 SliverList(
                     delegate: SliverChildListDelegate(<Widget>[
                   Container(
-                    margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
+                    margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
                     height: MediaQuery.of(context).size.height / 4,
                     width: double.infinity,
                     child: BarChart(
@@ -188,42 +188,42 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
-        Container(
-          // margin:
-          //     EdgeInsets.only(top: MediaQuery.of(context).size.height / 2),
-          child: SlidingSheet(
-            elevation: 10,
-            cornerRadius: 40,
-            snapSpec: const SnapSpec(
-              // Enable snapping. This is true by default.
-              snap: true,
-              // Set custom snapping points.
-              snappings: [0.4, 0.7, 1.0],
-              // Define to what the snappings relate to. In this case,
-              // the total available space that the sheet can expand to.
-              positioning: SnapPositioning.relativeToAvailableSpace,
-            ),
-            // The body widget will be displayed under the SlidingSheet
-            // and a parallax effect can be applied to it.
-            body: Center(
-              child: Text('This widget is below the SlidingSheet'),
-            ),
-            builder: (context, state) {
-              // This is the content of the sheet that will get
-              // scrolled, if the content is bigger than the available
-              // height of the sheet.
-              return Container(
-                height: MediaQuery.of(context).size.height / 2,
-                child: Center(
-                  child: Text(
-                    'This is the content of the sheet',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+        // Container(
+        //   // margin:
+        //   //     EdgeInsets.only(top: MediaQuery.of(context).size.height / 2),
+        //   child: SlidingSheet(
+        //     elevation: 10,
+        //     cornerRadius: 40,
+        //     snapSpec: const SnapSpec(
+        //       // Enable snapping. This is true by default.
+        //       snap: true,
+        //       // Set custom snapping points.
+        //       snappings: [0.4, 0.7, 1.0],
+        //       // Define to what the snappings relate to. In this case,
+        //       // the total available space that the sheet can expand to.
+        //       positioning: SnapPositioning.relativeToAvailableSpace,
+        //     ),
+        //     // The body widget will be displayed under the SlidingSheet
+        //     // and a parallax effect can be applied to it.
+        //     body: Center(
+        //       child: Text('This widget is below the SlidingSheet'),
+        //     ),
+        //     builder: (context, state) {
+        //       // This is the content of the sheet that will get
+        //       // scrolled, if the content is bigger than the available
+        //       // height of the sheet.
+        //       return Container(
+        //         height: MediaQuery.of(context).size.height / 2,
+        //         child: Center(
+        //           child: Text(
+        //             'This is the content of the sheet',
+        //             style: TextStyle(color: Colors.black),
+        //           ),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ),
       ],
     );
   }
