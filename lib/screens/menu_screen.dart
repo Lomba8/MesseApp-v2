@@ -1,8 +1,13 @@
 import 'package:Messedaglia/main.dart';
+import 'package:Messedaglia/screens/bacheca_screen.dart';
+import 'package:Messedaglia/screens/didattica_screen.dart';
+import 'package:Messedaglia/screens/map_screen.dart';
+import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
@@ -18,6 +23,8 @@ class Menu extends StatefulWidget {
 class MenuState extends State<Menu> with WidgetsBindingObserver {
   int selected = 2;
   List<Widget> screens = [Orari(), Agenda(), Home(), Voti(), AreaStudenti()];
+
+  bool sheetExtended = false;
 
   @override
   void initState() {
@@ -42,10 +49,89 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        //backgroundColor: Colors.black,
+        elevation: 10,
+        title: Text("TEST", style: TextStyle(fontWeight: FontWeight.bold),),
+        centerTitle: true,
+        shape: sheetExtended
+            ? null
+            : RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
+              ),
+      ),
+      body: SlidingSheet(
         body: Builder(builder: (context) => screens[selected]),
-        bottomNavigationBar: NavBarSotto(
-          (pos) => setState(() => selected = pos),
-        ));
+        elevation: 10,
+        cornerRadius: 20,
+        duration: Duration(milliseconds: 900),
+        
+        //color: Colors.black,
+        snapSpec: SnapSpec(
+          positioning: SnapPositioning.relativeToAvailableSpace,
+          snappings: [SnapSpec.headerFooterSnap, 1],
+          snap: true,
+        ),
+        listener: (state) {
+          if (sheetExtended != state.isExpanded) setState(() {
+            sheetExtended = state.isExpanded;
+          });
+        },
+        cornerRadiusOnFullscreen: 0,
+        footerBuilder: (context, state) {
+          return NavBarSotto(
+            (pos) => setState(() => selected = pos),
+          );
+        },
+        isBackdropInteractable: true,
+        addTopViewPaddingOnFullscreen: true,
+        headerBuilder: (context, state) => Container(
+          width: 30,
+          height: 5,
+          margin: EdgeInsets.all(state.isExpanded ? 15 : 5),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2.5), color: Colors.grey),
+        ),
+        builder: (context, state) => Container(height: state.maxScrollExtent - state.minExtent,),
+        /*builder: (context, state) => GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          children: <Widget>[
+            Section(
+              sezione: 'Autogestione', // mappa Globals.icone[sezione]
+              colore: 'verde', // mappa Globals.sezioni[colore]
+              page: MapScreen(),
+            ),
+            Section(
+              sezione: 'Alternanza',
+              colore: 'blu',
+            ),
+            Section(
+              sezione: 'Bacheca',
+              colore: 'arancione',
+              page: BachecaScreen(),
+            ),
+            Section(
+              sezione: 'Didattica',
+              colore: 'rosa',
+              page: DidatticaScreen(),
+            ),
+            Section(
+              sezione: 'App Panini',
+              colore: 'rosso',
+              //action: _listaPanini,
+            ),
+            Section(
+              sezione: 'Tutoraggi',
+              colore: 'viola',
+              page: TutoraggiScreen(),
+            ),
+          ],
+        ),*/
+      ),
+    );
   }
 }
 

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
+import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _HomeState extends State<Home> {
             child: CustomScrollView(
               physics: NeverScrollableScrollPhysics(),
               slivers: <Widget>[
-                SliverAppBar(
+                /*SliverAppBar(
                   brightness: Theme.of(context).brightness,
                   centerTitle: true,
                   elevation: 0,
@@ -166,7 +167,7 @@ class _HomeState extends State<Home> {
                     painter: BackgroundPainter(Theme.of(context)),
                     size: Size.infinite,
                   ),
-                ),
+                ),*/
                 SliverList(
                     delegate: SliverChildListDelegate(<Widget>[
                   Container(
@@ -180,42 +181,6 @@ class _HomeState extends State<Home> {
                 ]))
               ],
             ),
-          ),
-        ),
-        Container(
-          // margin:
-          //     EdgeInsets.only(top: MediaQuery.of(context).size.height / 2),
-          child: SlidingSheet(
-            elevation: 10,
-            cornerRadius: 40,
-            snapSpec: const SnapSpec(
-              // Enable snapping. This is true by default.
-              snap: true,
-              // Set custom snapping points.
-              snappings: [0.4, 0.7, 1.0],
-              // Define to what the snappings relate to. In this case,
-              // the total available space that the sheet can expand to.
-              positioning: SnapPositioning.relativeToAvailableSpace,
-            ),
-            // The body widget will be displayed under the SlidingSheet
-            // and a parallax effect can be applied to it.
-            body: Center(
-              child: Text('This widget is below the SlidingSheet'),
-            ),
-            builder: (context, state) {
-              // This is the content of the sheet that will get
-              // scrolled, if the content is bigger than the available
-              // height of the sheet.
-              return Container(
-                height: MediaQuery.of(context).size.height / 2,
-                child: Center(
-                  child: Text(
-                    'This is the content of the sheet',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              );
-            },
           ),
         ),
       ],

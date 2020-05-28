@@ -110,78 +110,40 @@ class _AreaStudentiState extends State<AreaStudenti> {
 
   @override
   Widget build(BuildContext context) {
-    return LiquidPullToRefresh(
-      onRefresh: _refresh,
-      showChildOpacityTransition: false, // refresh callback
-      child: CustomScrollView(
-        scrollDirection: Axis.vertical,
-        slivers: <Widget>[
-          SliverAppBar(
-            brightness: Theme.of(context).brightness,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            title: Column(
-              children: <Widget>[
-                Text(
-                  "AREA STUDENTI",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            bottom: PreferredSize(
-                child: Container(),
-                preferredSize:
-                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-            pinned: true,
-            centerTitle: true,
-            flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
-              size: Size.infinite,
-            ),
-          ),
-          SliverGrid.count(
-            crossAxisCount: 2,
+    return CustomScrollView(
+      scrollDirection: Axis.vertical,
+      slivers: <Widget>[
+        SliverAppBar(
+          brightness: Theme.of(context).brightness,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          title: Column(
             children: <Widget>[
-              Section(
-                sezione: 'Autogestione', // mappa Globals.icone[sezione]
-                colore: 'verde', // mappa Globals.sezioni[colore]
-                page: MapScreen(),
-              ),
-              Section(
-                sezione: 'Alternanza',
-                colore: 'blu',
-                page: null,
-              ),
-              Section(
-                sezione: 'Bacheca',
-                colore: 'arancione',
-                page: BachecaScreen(),
-              ),
-              Section(
-                sezione: 'Didattica',
-                colore: 'rosa',
-                page: DidatticaScreen(),
-              ),
-              Section(
-                sezione: 'App Panini',
-                colore: 'rosso',
-                action: _listaPanini,
-              ),
-              Section(
-                sezione: 'Tutoraggi',
-                colore: 'viola',
-                page: TutoraggiScreen(),
+              Text(
+                "AREA STUDENTI",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold),
               ),
             ],
-          )
-        ],
-      ),
+          ),
+          bottom: PreferredSize(
+              child: Container(),
+              preferredSize:
+                  Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+          pinned: true,
+          centerTitle: true,
+          flexibleSpace: CustomPaint(
+            painter: BackgroundPainter(Theme.of(context)),
+            size: Size.infinite,
+          ),
+        ),
+        
+      ],
     );
   }
 }

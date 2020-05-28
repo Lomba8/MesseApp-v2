@@ -28,7 +28,7 @@ class Globals {
 
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.
-    textTheme: TextTheme(
+    /*textTheme: TextTheme(
       headline5: TextStyle(
           fontSize: 72.0,
           fontWeight: FontWeight.bold,
@@ -43,7 +43,7 @@ class Globals {
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
           color: Color.fromRGBO(0, 0, 0, 1)),
-    ),
+    ),*/
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -75,7 +75,7 @@ class Globals {
 
     // Define the default TextTheme. Use this to specify the default
     // text styling for headlines, titles, bodies of text, and more.
-    textTheme: TextTheme(
+    /*textTheme: TextTheme(
       headline5: TextStyle(
         fontSize: 75,
         fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class Globals {
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
           color: Color.fromRGBO(255, 255, 255, 1)),
-    ),
+    ),*/
   );
 
   static Color bluScolorito = Color.fromRGBO(105, 181, 201, 0.5);
