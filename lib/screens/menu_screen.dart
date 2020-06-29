@@ -1,12 +1,14 @@
-import 'package:Messedaglia/main.dart';
+import 'package:Messedaglia/main.dart' as main;
+import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
-import 'package:Messedaglia/screens/map_screen.dart';
-import 'package:Messedaglia/screens/tutoraggi_screen.dart';
+import 'package:Messedaglia/screens/note_screen.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'agenda_screen.dart';
@@ -21,16 +23,16 @@ class Menu extends StatefulWidget {
 }
 
 class MenuState extends State<Menu> with WidgetsBindingObserver {
-  int selected = 2;
   List<Widget> screens = [Orari(), Agenda(), Home(), Voti(), AreaStudenti()];
 
   bool sheetExtended = false;
   SheetController sheetController;
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     sheetController = SheetController();
-    sheetController.expand();
+
     super.initState();
   }
 
@@ -42,7 +44,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    session.save();
+    main.session.save();
   }
 
   @override
@@ -51,7 +53,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
       body: SlidingSheet(
         controller: sheetController,
 
-        body: Builder(builder: (context) => screens[selected]),
+        body: Builder(builder: (context) => screens[active]),
         elevation: 10,
         cornerRadius: 20,
         duration: Duration(milliseconds: 900),
@@ -59,9 +61,9 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         //color: Colors.black,
         snapSpec: SnapSpec(
           positioning: SnapPositioning.relativeToAvailableSpace,
-          snappings: [SnapSpec.footerSnap, 0.45], //[SnapSpec.footerSnap, 0.5],
+          snappings: [SnapSpec.footerSnap, 1], //[SnapSpec.footerSnap, 0.5],
           snap: true,
-          initialSnap: 0.45,
+          initialSnap: SnapSpec.expanded,
         ),
         listener: (state) {
           if (sheetExtended != state.isExpanded)
@@ -72,9 +74,9 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         cornerRadiusOnFullscreen: 0,
         footerBuilder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical:
-                    1.0), //FIXME non mi piace che is veda l'animated container perche occupa troppo spazio nello schermo però senza non si capisce in quale schermata si è
+            padding: const EdgeInsets.only(
+                bottom:
+                    15.0), //FIXME non mi piace che is veda l'animated container perche occupa troppo spazio nello schermo però senza non si capisce in quale schermata si è
             child: NavBarSotto(
               (pos) async {
                 if (pos == 2) {
@@ -83,7 +85,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                 } else
                   await sheetController.snapToExtent(state.minExtent,
                       duration: Duration(milliseconds: 200));
-                setState(() => selected = pos);
+                setState(() => active = pos);
               },
             ),
           );
@@ -93,59 +95,277 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         headerBuilder: (context, state) => Container(
           width: 30,
           height: 5,
-          margin: EdgeInsets.all(state.isExpanded ? 15 : 5),
+          margin: EdgeInsets.all(5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2.5), color: Colors.grey),
         ),
         builder: (context, state) {
-          return Container(
-            height: 500,
-            child: Center(
-              child: Icon(
-                Icons.ac_unit,
-                color: Colors.red,
+          void _push(int position) {
+            sheetController.snapToExtent(state.minExtent,
+                duration: Duration(milliseconds: 200));
+            active = position;
+            setState(() {});
+          }
+
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 5.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => _push(3),
+                              child: Transform.scale(
+                                scale: 1.2,
+                                child: SvgPicture.asset(
+                                    'icons/grade4.svg'), // 1 & 3 NO dire 4 ma ce anche il 2
+                              ),
+                            ),
+                            main.session.voti.newVotiTot > 0
+                                ? Icon(
+                                    Icons.brightness_1,
+                                    color: Colors.yellow,
+                                    size: 12,
+                                  )
+                                : Offstage(),
+                          ],
+                        ),
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => _push(1),
+                              child: Transform.scale(
+                                  scale: 1.2,
+                                  child:
+                                      SvgPicture.asset('icons/calendar.svg')),
+                            ),
+                            main.session.agenda
+                                        .getEvents(getDayFromDT(DateTime.now())
+                                            .add(Duration(days: 1)))
+                                        .length >
+                                    0
+                                ? Icon(
+                                    Icons.brightness_1,
+                                    color: Colors.yellow,
+                                    size: 12,
+                                  )
+                                : Offstage(),
+                          ],
+                        ),
+                        Stack(
+                          //TODO implement newFiles
+                          alignment: Alignment.topRight,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                  context, DidatticaScreen.id),
+                              child: SvgPicture.asset('icons/file.svg'),
+                            ),
+                            Icon(
+                              Icons.brightness_1,
+                              color: Colors.yellow,
+                              size: 12,
+                            ),
+                          ],
+                        ),
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                  context, BachecaScreen.id),
+                              child: SvgPicture.asset('icons/inbox.svg'),
+                            ),
+                            main.session.bacheca.newComunicazioni > 0
+                                ? Icon(
+                                    Icons.brightness_1,
+                                    color: Colors.yellow,
+                                    size: 12,
+                                  )
+                                : Offstage(),
+                          ],
+                        ),
+                        Stack(
+                          //TODO implement new note
+                          alignment: Alignment.topRight,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () =>
+                                  Navigator.pushNamed(context, NoteScreen.id),
+                              child: SvgPicture.asset('icons/sad1.svg'),
+                            ),
+                            Icon(
+                              Icons.brightness_1,
+                              color: Colors.yellow,
+                              size: 12,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Divider(
+                    color: Colors.black,
+                    height: 3,
+                    thickness: 2,
+                    indent: 25,
+                    endIndent: 25,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: HomeScreenWidgets(),
+                  )
+                ],
               ),
             ),
           );
         },
-        /*builder: (context, state) => GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          children: <Widget>[
-            Section(
-              sezione: 'Autogestione', // mappa Globals.icone[sezione]
-              colore: 'verde', // mappa Globals.sezioni[colore]
-              page: MapScreen(),
-            ),
-            Section(
-              sezione: 'Alternanza',
-              colore: 'blu',
-            ),
-            Section(
-              sezione: 'Bacheca',
-              colore: 'arancione',
-              page: BachecaScreen(),
-            ),
-            Section(
-              sezione: 'Didattica',
-              colore: 'rosa',
-              page: DidatticaScreen(),
-            ),
-            Section(
-              sezione: 'App Panini',
-              colore: 'rosso',
-              //action: _listaPanini,
-            ),
-            Section(
-              sezione: 'Tutoraggi',
-              colore: 'viola',
-              page: TutoraggiScreen(),
-            ),
-          ],
-        ),*/
       ),
     );
   }
+}
+
+class HomeScreenWidgets extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Flexible(
+          flex: 1,
+          child: Column(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width / 2,
+                height: 100,
+                color: Colors.red,
+              )
+            ],
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          child: Column(
+            children: _votiWidget().toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+_votiWidget() {
+  List<Widget> voti = new List();
+
+  main.session.voti.data.where((voto) => voto.isNew == true).forEach((voto) {
+    voti.add(
+      SizedBox(
+        height: 50 + 10.0,
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 10.0,
+            ),
+            Material(
+              color: Voto.getColor(voto.voto).withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10.0),
+              elevation: 10.0,
+              child: ListTile(
+                dense: true,
+                leading: Container(
+                  margin: EdgeInsets.only(left: 10),
+                  width: 30.0,
+                  alignment: Alignment.center,
+                  decoration: new BoxDecoration(
+                    color: Voto.getColor(
+                        voto.voto), //TODO: colore dinamico a seconda del voto
+                    shape: BoxShape.circle,
+                  ),
+                  child: AutoSizeText(
+                    voto.votoStr,
+                    maxLines: 1,
+                    maxFontSize: 20,
+                    style: TextStyle(
+                      fontFamily: 'CoresansRounded',
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                title: AutoSizeText.rich(
+                  TextSpan(
+                    text: voto.sbj + '\n',
+                    style: TextStyle(fontSize: 13),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: voto.dataWithSlashes,
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                  maxLines: 3,
+                  maxFontSize: 15,
+                  minFontSize: 8,
+                  style: TextStyle(
+                    fontFamily: 'CoresansRounded',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                // AutoSizeText(
+                //   voto.sbj + '\n' + voto.dataWithSlashes,
+                //   maxLines: 2,
+                //   maxFontSize: 15,
+                //   minFontSize: 8,
+                //   textAlign: TextAlign.center,
+                //   style: TextStyle(
+                //     fontFamily: 'CoresansRounded',
+                //     color: Colors.black,
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
+                // trailing: SizedBox(
+                //   width: 35,
+                //   child: AutoSizeText(
+                //     voto.dataWithSlashes, //FIXME manca parte della data
+                //     maxLines: 1,
+                //     minFontSize: 8,
+                //     maxFontSize: 15,
+                //     textAlign: TextAlign.center,
+                //     style: TextStyle(
+                //       fontFamily: 'CoresansRounded',
+                //       color: Colors.black,
+                //       fontWeight: FontWeight.w600,
+                //       fontSize: 15,
+                //     ),
+                //   ),
+                // ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+  return voti;
 }
 
 class BackgroundPainter extends CustomPainter {

@@ -93,27 +93,8 @@ class BachecaRegistroData extends RegistroData {
       );
     }).toList()
       ..sort();
-    //debugPrint(jsonDecode(query).toString());
     return Result(true, true);
   }
-
-  // @override
-  // Map<String, dynamic> toJson() {
-  //   Map<String, dynamic> tr = super.toJson();
-  //   tr['data'] = data;
-  //   tr['newFlags'] = bachecaNewFlags;
-  //   return tr;
-  // }
-
-  // @override
-  // void fromJson(Map<String, dynamic> json) {
-  //   super.fromJson(json);
-  //   data = json['data']
-  //       .map((c) => Comunicazione.fromJson(c, account: account))
-  //       .toList();
-  //   bachecaNewFlags = json['newFlags']
-  //       .map<String, bool>((k, v) => MapEntry<String, bool>(k, v));
-  // }
 
   @override
   Future<void> create() async {
@@ -140,8 +121,9 @@ class BachecaRegistroData extends RegistroData {
       );
     }).toList()
       ..sort();
-    print('prova');
   }
+
+  int get newComunicazioni => data.where((v) => v.isNew == true).length;
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
@@ -169,7 +151,6 @@ class Comunicazione extends Comparable<Comunicazione> {
       int inserted = await database.rawUpdate(
           'UPDATE bacheca SET content = ? WHERE id = ?',
           [this.content, this.id]);
-      print(inserted.toString());
       await seen();
       callback();
     } catch (e) {
@@ -204,7 +185,7 @@ class Comunicazione extends Comparable<Comunicazione> {
         await file.writeAsBytes(r.bodyBytes);
         int inserted = await database.rawUpdate(
             'UPDATE bacheca SET pdf = ? WHERE id = ?', [r.bodyBytes, this.id]);
-        // print(inserted.toString());
+
         return file;
       } catch (e) {
         print(e);
@@ -219,7 +200,6 @@ class Comunicazione extends Comparable<Comunicazione> {
     this.isNew = false;
     int res = await database
         .rawUpdate('UPDATE bacheca SET new = 0 WHERE id = ?', [this.id]);
-    //print(res);
   }
 
   Comunicazione(
@@ -242,28 +222,6 @@ class Comunicazione extends Comparable<Comunicazione> {
     }
     return -start_date.compareTo(other.start_date);
   }
-
-  // Map<String, dynamic> toJson() => {
-  //       'evt': evt,
-  //       'id': id,
-  //       'start_date': start_date.toIso8601String(),
-  //       'end_date': end_date.toIso8601String(),
-  //       'valid': valid,
-  //       'title': title,
-  //       'content': content,
-  //       'attachments': attachments
-  //     };
-
-  // Comunicazione.fromJson(Map json, {@required this.account})
-  //     : evt = json['evt'],
-  //       id = json['id'],
-  //       start_date = DateTime.parse(json['start_date']),
-  //       end_date = DateTime.parse(json['end_date']),
-  //       valid = json['valid'],
-  //       title = json['title'],
-  //       attachments = json['attachments'],
-
-  //       content = json['content'];
 }
 
 String encodePath(String name) {

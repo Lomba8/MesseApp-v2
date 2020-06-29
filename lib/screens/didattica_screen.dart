@@ -5,6 +5,8 @@ import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:flutter/material.dart';
 
 class DidatticaScreen extends StatefulWidget {
+  static final String id = 'didattica_screen';
+
   @override
   _DidatticaScreenData createState() => _DidatticaScreenData();
 }

@@ -48,7 +48,8 @@ class VotiRegistroData extends RegistroData {
           where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
           whereArgs: [account.usrId]);
       batch.query('voti', where: 'usrId = ?', whereArgs: [account.usrId]);
-      data = (await batch.commit()).last.map<Voto>((v) => Voto.parse(v)).toList();
+      data =
+          (await batch.commit()).last.map<Voto>((v) => Voto.parse(v)).toList();
       return Result(true, true);
     } catch (e, stack) {
       print(e);
@@ -58,7 +59,7 @@ class VotiRegistroData extends RegistroData {
   }
 
   @override
-  Future<void> load () async {
+  Future<void> load() async {
     await super.load();
     data = data.map<Voto>((v) => Voto.parse(v)).toList();
   }
@@ -96,13 +97,10 @@ class VotiRegistroData extends RegistroData {
         .then((value) => print(value));
   }
 
-
-
   Iterable<Voto> sbjVoti(String sbj, [int period = 0]) {
-    return data
-        .where((Voto v) =>
-            (periods[period] == 'TOTALE' || v.period == periods[period]) &&
-            v.sbj == sbj);
+    return data.where((Voto v) =>
+        (periods[period] == 'TOTALE' || v.period == periods[period]) &&
+        v.sbj == sbj);
   }
 
   double average(String sbj, [int period = 0]) {
@@ -126,14 +124,15 @@ class VotiRegistroData extends RegistroData {
         n;
   }
 
-  Map<int, double> averageByMonth ({bool currentPeriod = false}) {
+  Map<int, double> averageByMonth({bool currentPeriod = false}) {
     List<double> sums = List.filled(10, 0.0);
     List<int> counts = List.filled(10, 0);
     data.where((Voto v) => !v.isBlue).forEach((Voto v) {
-      counts[(v._data.month+3)%12]++;
-      sums[(v._data.month+3)%12] += v.voto;
+      counts[(v._data.month + 3) % 12]++;
+      sums[(v._data.month + 3) % 12] += v.voto;
     });
-    return Map.fromIterables(Iterable.generate(10, (i) => i), Iterable.generate(10, (i) => sums[i]/counts[i]));
+    return Map.fromIterables(Iterable.generate(10, (i) => i),
+        Iterable.generate(10, (i) => sums[i] / counts[i]));
   }
 
   int _countNewMarks(String sbj) => sbjVoti(sbj).where((v) => v.isNew).length;
@@ -143,8 +142,7 @@ class VotiRegistroData extends RegistroData {
   int get newVotiTot => data.where((Voto v) => v.isNew).length;
   int get newVotiPeriodCount => data
       .where((Voto v) =>
-          v.isNew &&
-          (v.period == periods[0] || periods[0] == 'TOTALE'))
+          v.isNew && (v.period == periods[0] || periods[0] == 'TOTALE'))
       .length;
 
   @override
@@ -189,9 +187,12 @@ class Voto extends Comparable<Voto> {
     if (value < 6) return Colors.deepOrange[900];
     return Colors.green[700];
   }
+
   bool get isBlue => voto == null || voto < 0 || voto.isNaN;
 
   String get data => DateFormat.yMMMMd('it').format(_data);
+
+  String get dataWithSlashes => DateFormat.yMd('it').format(_data);
 
   Map<String, dynamic> toJson() => {
         'evtId': _id,

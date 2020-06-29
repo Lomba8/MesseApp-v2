@@ -3,8 +3,15 @@ import 'dart:io';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/agenda_screen.dart';
+import 'package:Messedaglia/screens/area_studenti_screen.dart';
+import 'package:Messedaglia/screens/bacheca_screen.dart';
+import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/note_screen.dart';
+import 'package:Messedaglia/screens/orari_screen.dart';
+import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:flutter/foundation.dart';
@@ -158,6 +165,11 @@ _MaterialAppWithThemeState _currentState;
 class MaterialAppWithTheme extends StatefulWidget {
   final Menu menu = Menu();
   final LoginScreen loginScreen = LoginScreen();
+  final Voti voti = Voti();
+  final DidatticaScreen didatticaScreen = DidatticaScreen();
+  final Agenda agenda = Agenda();
+  final BachecaScreen bachecaScreen = BachecaScreen();
+  final NoteScreen noteScreen = NoteScreen();
 
   @override
   State<StatefulWidget> createState() =>
@@ -188,7 +200,12 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
       initialRoute: LoginScreen.id,
       routes: {
         Menu.id: (context) => widget.menu,
-        LoginScreen.id: (context) => widget.loginScreen
+        LoginScreen.id: (context) => widget.loginScreen,
+        Voti.id: (context) => Material(child: widget.voti),
+        DidatticaScreen.id: (context) => widget.didatticaScreen,
+        NoteScreen.id: (context) => widget.noteScreen,
+        Agenda.id: (context) => widget.agenda,
+        BachecaScreen.id: (context) => widget.bachecaScreen
       },
       //home: MapScreen(),
     );

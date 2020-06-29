@@ -35,6 +35,8 @@ bool showNew = prefs.getBool('showNew') ?? false;
 DateTime _start = null, _end = null;
 
 class BachecaScreen extends StatefulWidget {
+  static final String id = 'bacheca_screen';
+
   @override
   _BachecaScreenState createState() => _BachecaScreenState();
 }

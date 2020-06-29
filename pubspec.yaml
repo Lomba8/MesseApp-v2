@@ -81,13 +81,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-flutter_icons:
-  ios: true
-  android: true
-  image_path_ios: "images/Icon IOS dark.png"
-  image_path_android: "images/Icon ANDROID.png"
-  adaptive_icon_background: "images/Icon Background.png"
-  adaptive_icon_foreground: "images/Icon Foreground.png"
+# flutter_icons:
+#   ios: true
+#   android: true
+#   image_path_ios: "images/Icon IOS dark.png"
+#   image_path_android: "images/Icon ANDROID.png"
+#   adaptive_icon_background: "images/Icon Background.png"
+#   adaptive_icon_foreground: "images/Icon Foreground.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -104,6 +104,7 @@ flutter:
     - images/
     - flare/
     - videos/
+    - icons/
     #  - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

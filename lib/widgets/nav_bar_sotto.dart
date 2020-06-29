@@ -43,6 +43,8 @@ final List items = [
       color: Color.fromRGBO(91, 34, 196, 1)) // rgb(91, 34, 196)
 ];
 
+int active = 2;
+
 class NavBarSotto extends StatefulWidget {
   final Function(int index) onTap;
   NavBarSotto(this.onTap);
@@ -53,7 +55,6 @@ class NavBarSotto extends StatefulWidget {
 
 class _NavBarSottoState extends State<NavBarSotto>
     with SingleTickerProviderStateMixin {
-  int active = 2;
   bool _connected = true;
   AnimationController _animationController;
   Animation<double> _heightAnimation;
