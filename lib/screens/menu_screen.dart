@@ -53,7 +53,11 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
       body: SlidingSheet(
         controller: sheetController,
 
-        body: Builder(builder: (context) => screens[active]),
+        body: Builder(
+            builder: (context) => Container(
+                  child: screens[active],
+                  margin: EdgeInsets.only(bottom: 100.0),
+                )),
         elevation: 10,
         cornerRadius: 20,
         duration: Duration(milliseconds: 900),
@@ -107,6 +111,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
             setState(() {});
           }
 
+          //FIXME: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
             child: SingleChildScrollView(
@@ -273,94 +278,100 @@ _votiWidget() {
 
   main.session.voti.data.where((voto) => voto.isNew == true).forEach((voto) {
     voti.add(
-      SizedBox(
-        height: 50 + 10.0,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 10.0,
-            ),
-            Material(
-              color: Voto.getColor(voto.voto).withOpacity(0.5),
-              borderRadius: BorderRadius.circular(10.0),
-              elevation: 10.0,
-              child: ListTile(
-                dense: true,
-                leading: Container(
-                  margin: EdgeInsets.only(left: 10),
-                  width: 30.0,
-                  alignment: Alignment.center,
-                  decoration: new BoxDecoration(
-                    color: Voto.getColor(
-                        voto.voto), //TODO: colore dinamico a seconda del voto
-                    shape: BoxShape.circle,
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
+          height: 50 + 10.0,
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
+              Material(
+                color: Voto.getColor(voto.voto).withOpacity(0.5),
+                borderRadius: BorderRadius.circular(10.0),
+                // elevation: 10.0,  //TODO: elelvation or not?
+                child: ListTile(
+                  dense: true,
+                  leading: Container(
+                    margin: EdgeInsets.only(left: 10),
+                    width: 30.0,
+                    alignment: Alignment.center,
+                    decoration: new BoxDecoration(
+                      color: Voto.getColor(
+                          voto.voto), //TODO: colore dinamico a seconda del voto
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: AutoSizeText(
+                        voto.votoStr,
+                        maxLines: 1,
+                        maxFontSize: 15,
+                        style: TextStyle(
+                          fontFamily: 'CoresansRounded',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: AutoSizeText(
-                    voto.votoStr,
-                    maxLines: 1,
-                    maxFontSize: 20,
+                  title: AutoSizeText.rich(
+                    TextSpan(
+                      text: voto.sbj + '\n',
+                      style: TextStyle(fontSize: 13, color: Colors.black87),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: voto.dataWithSlashes,
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    maxLines: 3,
+                    maxFontSize: 15,
+                    minFontSize: 8,
                     style: TextStyle(
                       fontFamily: 'CoresansRounded',
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 20,
+                      fontSize: 10,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                title: AutoSizeText.rich(
-                  TextSpan(
-                    text: voto.sbj + '\n',
-                    style: TextStyle(fontSize: 13),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: voto.dataWithSlashes,
-                        style: TextStyle(fontSize: 10),
-                      ),
-                    ],
-                  ),
-                  maxLines: 3,
-                  maxFontSize: 15,
-                  minFontSize: 8,
-                  style: TextStyle(
-                    fontFamily: 'CoresansRounded',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 10,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
 
-                // AutoSizeText(
-                //   voto.sbj + '\n' + voto.dataWithSlashes,
-                //   maxLines: 2,
-                //   maxFontSize: 15,
-                //   minFontSize: 8,
-                //   textAlign: TextAlign.center,
-                //   style: TextStyle(
-                //     fontFamily: 'CoresansRounded',
-                //     color: Colors.black,
-                //     fontWeight: FontWeight.w600,
-                //   ),
-                // ),
-                // trailing: SizedBox(
-                //   width: 35,
-                //   child: AutoSizeText(
-                //     voto.dataWithSlashes, //FIXME manca parte della data
-                //     maxLines: 1,
-                //     minFontSize: 8,
-                //     maxFontSize: 15,
-                //     textAlign: TextAlign.center,
-                //     style: TextStyle(
-                //       fontFamily: 'CoresansRounded',
-                //       color: Colors.black,
-                //       fontWeight: FontWeight.w600,
-                //       fontSize: 15,
-                //     ),
-                //   ),
-                // ),
+                  // AutoSizeText(
+                  //   voto.sbj + '\n' + voto.dataWithSlashes,
+                  //   maxLines: 2,
+                  //   maxFontSize: 15,
+                  //   minFontSize: 8,
+                  //   textAlign: TextAlign.center,
+                  //   style: TextStyle(
+                  //     fontFamily: 'CoresansRounded',
+                  //     color: Colors.black,
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
+                  // trailing: SizedBox(
+                  //   width: 35,
+                  //   child: AutoSizeText(
+                  //     voto.dataWithSlashes, //FIXME manca parte della data
+                  //     maxLines: 1,
+                  //     minFontSize: 8,
+                  //     maxFontSize: 15,
+                  //     textAlign: TextAlign.center,
+                  //     style: TextStyle(
+                  //       fontFamily: 'CoresansRounded',
+                  //       color: Colors.black,
+                  //       fontWeight: FontWeight.w600,
+                  //       fontSize: 15,
+                  //     ),
+                  //   ),
+                  // ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

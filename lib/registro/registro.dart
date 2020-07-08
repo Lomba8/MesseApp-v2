@@ -207,12 +207,10 @@ class RegistroApi {
   Future<void> load() async {
     // se sei offline ricaarica da locale
     voti.load();
-    agenda.load(); // fra riga 209 e 210 scrivo bacheca.load()
+    agenda.load();
     bacheca.load();
     dynamic data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
-    //data = await loadData('bacheca'); // togliere anchce questo
-    //if (data != null) bacheca.fromJson(data); // e questo
     data = await loadData('lessons');
     if (data != null) lessons.fromJson(data);
     data = await loadData('absences');
