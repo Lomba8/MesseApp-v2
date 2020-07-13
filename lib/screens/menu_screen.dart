@@ -201,7 +201,6 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                           ],
                         ),
                         Stack(
-                          //TODO implement new note
                           alignment: Alignment.topRight,
                           children: <Widget>[
                             GestureDetector(
@@ -209,11 +208,13 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                   Navigator.pushNamed(context, NoteScreen.id),
                               child: SvgPicture.asset('icons/sad1.svg'),
                             ),
-                            Icon(
-                              Icons.brightness_1,
-                              color: Colors.yellow,
-                              size: 12,
-                            ),
+                            main.session.absences.newAssenze > 0
+                                ? Icon(
+                                    Icons.brightness_1,
+                                    color: Colors.yellow,
+                                    size: 12,
+                                  )
+                                : Offstage(),
                           ],
                         ),
                       ],
@@ -323,7 +324,7 @@ _votiWidget() {
                       style: TextStyle(fontSize: 13, color: Colors.black87),
                       children: <TextSpan>[
                         TextSpan(
-                          text: voto.dataWithSlashes,
+                          text: voto.dateWithSlashes,
                           style: TextStyle(fontSize: 10),
                         ),
                       ],
