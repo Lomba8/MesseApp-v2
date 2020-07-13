@@ -35,7 +35,6 @@ class AbsencesRegistroData extends RegistroData {
         account: account,
       );
       data[DateTime.parse(absence['evtDate'])] = assenza;
-      print(absence['justifReasonDesc'].toString());
       batch.insert(
           'absences',
           {
@@ -65,7 +64,7 @@ class AbsencesRegistroData extends RegistroData {
           account: account,
           hour: e['hour'],
           id: e['id'],
-          isNew: e['isNew'] == 1 ? true : false,
+          isNew: e['new'] == 1 ? true : false,
           justification: e['justification'],
           justified: e['justified'] == 1 ? true : false,
           type: e['type'],
@@ -109,7 +108,7 @@ class AbsencesRegistroData extends RegistroData {
           account: account,
           hour: e['hour'],
           id: e['id'],
-          isNew: e['isNew'] == 1 ? true : false,
+          isNew: e['new'] == 1 ? true : false,
           justification: e['justification'],
           justified: e['justified'] == 1 ? true : false,
           type: e['type'],
@@ -121,7 +120,7 @@ class AbsencesRegistroData extends RegistroData {
     data = dataTmp;
   }
 
-  int get newComunicazioni => data.where((v) => v.isNew == true).length;
+  int get newAssenze => data.values.where((v) => v.isNew == true).length;
 }
 
 class Assenza {
@@ -132,7 +131,7 @@ class Assenza {
   final dynamic value; // ?  (non lo ho messo nel database)
   final bool justified;
   final String justification;
-  final bool isNew;
+  bool isNew;
 
   Assenza({
     @required this.account,
@@ -145,16 +144,22 @@ class Assenza {
     @required this.isNew,
   });
 
-  Map<String, dynamic> toJson() => {
-        'hour': hour,
-        'value': value,
-        'justified': justified,
-        'justification': justification
-      };
-  static Assenza fromJson(Map json) => Assenza(
-      hour: json['hour'],
-      value: json['value'],
-      justified: json['justified'],
-      justification: json['justification'],
-      type: null);
+  Future<void> seen() async {
+    this.isNew = false;
+    int res = await database
+        .rawUpdate('UPDATE note SET new = 0 WHERE id = ?', [this.id]);
+  }
+
+  // Map<String, dynamic> toJson() => {
+  //       'hour': hour,
+  //       'value': value,
+  //       'justified': justified,
+  //       'justification': justification
+  //     };
+  // static Assenza fromJson(Map json) => Assenza(
+  //     hour: json['hour'],
+  //     value: json['value'],
+  //     justified: json['justified'],
+  //     justification: json['justification'],
+  //     type: null);
 }

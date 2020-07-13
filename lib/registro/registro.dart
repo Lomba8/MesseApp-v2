@@ -198,8 +198,8 @@ class RegistroApi {
 
   void save() async {
     saveData(subjects, 'subjects');
-    saveData(bacheca, 'bacheca'); // togliere quando si implemmenta il regiter
-    saveData(lessons, 'lessons');
+    saveData(bacheca, 'bacheca'); // togliere quando si implemmenta il register
+    saveData(lessons, 'lessons'); // fatto
     saveData(absences, 'absences');
     saveData(didactics, 'didactics');
   }
@@ -209,12 +209,12 @@ class RegistroApi {
     voti.load();
     agenda.load();
     bacheca.load();
+    absences.load();
+    note.load();
     dynamic data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
     data = await loadData('lessons');
     if (data != null) lessons.fromJson(data);
-    data = await loadData('absences');
-    if (data != null) absences.fromJson(data);
     data = await loadData('didacticd');
     if (data != null) didactics.fromJson(data);
   }

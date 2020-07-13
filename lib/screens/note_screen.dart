@@ -9,6 +9,6 @@ class NoteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
           child: Column(children: [
-        Text(session.note.json),
+        //Text(session.note.json),
       ]));
 }

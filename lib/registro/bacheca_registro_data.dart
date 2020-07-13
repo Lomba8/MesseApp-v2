@@ -22,26 +22,10 @@ class BachecaRegistroData extends RegistroData {
   @override
   Future<Result> parseData(json) async {
     json = json['items'];
-    List<Comunicazione> data2 = <Comunicazione>[];
-    //Map<String, bool> bachecaNewFlags2 = {};
     List<int> deleted_ids = new List();
     Batch batch = database.batch();
     json.forEach((c) {
       if (c['cntStatus'] == 'deleted') deleted_ids.add(c['pubId']);
-      data2.add(Comunicazione(
-        evt: c['evtCode'],
-        id: c['pubId'],
-        start_date: DateTime.parse(c['cntValidFrom']).toLocal(),
-        end_date: DateTime.parse(c['cntValidTo']).toLocal(),
-        valid: c['cntValidInRange'],
-        title: c['cntTitle'],
-        attachments: c['attachments'].isEmpty ? {} : c['attachments'][0],
-        account: account,
-        deleted: (c['cntStatus'] == 'deleted') ? true : false,
-      ));
-      // bachecaNewFlags2[c['pubId'].toString()] =
-      //     (bachecaNewFlags[c['pubId'].toString()] ?? !c['readStatus']) ||
-      //         c['cntHasChanged'];
 
       batch.insert(
           'bacheca',
@@ -62,9 +46,6 @@ class BachecaRegistroData extends RegistroData {
           },
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
-
-    //data = data2..sort();
-    // bachecaNewFlags = bachecaNewFlags2;
 
     deleted_ids.forEach((id) {
       batch.rawUpdate('UPDATE bacheca SET deleted = 1 WHERE id = ?', [id]);

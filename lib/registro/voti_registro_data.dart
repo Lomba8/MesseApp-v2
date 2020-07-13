@@ -192,7 +192,7 @@ class Voto extends Comparable<Voto> {
 
   String get data => DateFormat.yMMMMd('it').format(_data);
 
-  String get dataWithSlashes => DateFormat.yMd('it').format(_data);
+  String get dateWithSlashes => DateFormat.yMd('it').format(_data);
 
   Map<String, dynamic> toJson() => {
         'evtId': _id,
