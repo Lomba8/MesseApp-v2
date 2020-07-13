@@ -111,6 +111,8 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
             setState(() {});
           }
 
+          print(main.session.note.newNote);
+
           //FIXME: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
@@ -208,7 +210,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                   Navigator.pushNamed(context, NoteScreen.id),
                               child: SvgPicture.asset('icons/sad1.svg'),
                             ),
-                            main.session.absences.newAssenze > 0
+                            main.session.note.newNote > 0
                                 ? Icon(
                                     Icons.brightness_1,
                                     color: Colors.yellow,

@@ -84,15 +84,21 @@ class NoteRegistroData extends RegistroData {
       return Nota(
           account: account,
           autore: e['autore'],
-          date: DateTime.tryParse(e['date']).toLocal(),
-          inizio: DateTime.tryParse(e['inizio']).toLocal(),
-          fine: DateTime.tryParse(e['fine']).toLocal(),
+          date:
+              e['date'] != null ? DateTime.tryParse(e['date']).toLocal() : null,
+          inizio: e['inizio'] != null
+              ? DateTime.tryParse(e['inizio']).toLocal()
+              : null,
+          fine:
+              e['fine'] != null ? DateTime.tryParse(e['fine']).toLocal() : null,
           id: e['id'],
           isNew: e['new'] == 1 ? true : false,
           motivazione: e['evt'],
           tipologia: e['tipologia']);
     }).toList();
   }
+
+  int get newNote => data.where((v) => v.isNew == true).length;
 }
 
 class Nota {
