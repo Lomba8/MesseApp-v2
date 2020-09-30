@@ -174,17 +174,21 @@ class _HomeState extends State<Home> {
                   // ),
                 ),
                 SliverList(
-                    delegate: SliverChildListDelegate(<Widget>[
-                  Container(
-                    //TODO: scegliere un widget alternativo da displayare se non cis ono voti
-                    margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
-                    height: MediaQuery.of(context).size.height / 4,
-                    width: double.infinity,
-                    child: BarChart(
-                      mainBarData(),
-                    ),
+                  delegate: SliverChildListDelegate(
+                    <Widget>[
+                      Container(
+                        //TODO: scegliere un widget alternativo da displayare se non cis ono voti
+                        margin:
+                            EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
+                        height: MediaQuery.of(context).size.height / 4,
+                        width: double.infinity,
+                        child: BarChart(
+                          mainBarData(),
+                        ),
+                      ),
+                    ],
                   ),
-                ]))
+                ),
               ],
             ),
           ),

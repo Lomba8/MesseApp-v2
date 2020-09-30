@@ -111,8 +111,6 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
             setState(() {});
           }
 
-          print(main.session.note.newNote);
-
           //FIXME: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
@@ -268,7 +266,7 @@ class HomeScreenWidgets extends StatelessWidget {
         Flexible(
           flex: 1,
           child: Column(
-            children: _votiWidget().toList(),
+            children: _votiWidget(),
           ),
         ),
       ],
