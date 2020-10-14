@@ -157,6 +157,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                             main.session.agenda
                                         .getEvents(getDayFromDT(DateTime.now())
                                             .add(Duration(days: 1)))
+                                        .where((e) => e.isNew == true)
                                         .length >
                                     0
                                 ? Icon(

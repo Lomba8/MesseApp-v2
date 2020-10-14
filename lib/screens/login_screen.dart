@@ -6,6 +6,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:circular_splash_transition/circular_splash_transition.dart';
@@ -21,7 +22,8 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   FocusNode _firstInputFocusNode;
@@ -45,7 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     main.route = 'login_screen';
 
-    _controller = VideoPlayerController.asset('videos/loading.mp4')  //FIXME: usare animazioni AE con libreria 
+    _controller = VideoPlayerController.asset(
+        'videos/loading.mp4') //FIXME: usare animazioni AE con libreria
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});

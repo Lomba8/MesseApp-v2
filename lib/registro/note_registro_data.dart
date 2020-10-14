@@ -47,7 +47,9 @@ class NoteRegistroData extends RegistroData {
       });
     });
 
-    batch.query('note', where: 'usrId = ?', whereArgs: [account.usrId]);
+    batch.query('note', where: 'usrId = ?', whereArgs: [
+      account.usrId
+    ]); //TODO add  batch.delete('noe', where: 'usrId = ? AND id NOT IN (${ids.join(', ')})', whereArgs: [account.usrId]);
 
     data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
 
@@ -122,7 +124,13 @@ class Nota {
       this.inizio,
       this.fine});
 
-  String get dateWithSlashes => DateFormat.yMd('it').format(date);
+  static String getDateWithSlashes(date) => DateFormat.yMd('it').format(date);
+  static String getDateWithSlashesShort(date) =>
+      DateFormat.d('it').format(date) +
+      '/' +
+      DateFormat.M('it').format(date) +
+      '/' +
+      DateFormat.y('it').format(date).split('').sublist(2).join().toString();
 
   Future<void> seen() async {
     this.isNew = false;
@@ -130,7 +138,8 @@ class Nota {
         .rawUpdate('UPDATE bacheca SET new = 0 WHERE id = ?', [this.id]);
   }
 
-  String get tipologiaReadable {
+  // String get type => getTipo(tipologia);
+  static String getTipo(String tipologia) {
     switch (tipologia) {
       case 'NTTE':
         return 'Annotazione';

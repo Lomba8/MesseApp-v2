@@ -51,8 +51,9 @@ class BachecaRegistroData extends RegistroData {
       batch.rawUpdate('UPDATE bacheca SET deleted = 1 WHERE id = ?', [id]);
     });
 
-    batch.delete('bacheca',
-        where: 'usrId = ? AND deleted = 1', whereArgs: [account.usrId]);
+    batch.delete('bacheca', where: 'usrId = ? AND deleted = 1', whereArgs: [
+      account.usrId
+    ]); //TODO add  batch.delete('bacheca', where: 'usrId = ? AND id NOT IN (${ids.join(', ')})', whereArgs: [account.usrId]);
 
     batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
 

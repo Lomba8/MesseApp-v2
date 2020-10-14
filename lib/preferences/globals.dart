@@ -183,6 +183,19 @@ class Globals {
     'Didattica': Icon(MdiIcons
         .fileMultiple), //  fileMultiple, folderAccount, folderMultiple, folderSearch, fileDocumentEdit, folderEdit,
   };
+  static Map<String, IconData> iconeNote = {
+    'NTWN': MdiIcons.alert,
+    'NTTE': MdiIcons.accountAlert,
+    'NTCL': MdiIcons.alert,
+    'NTST': MdiIcons.alert,
+  };
+
+  static Map<String, Color> coloriNote = {
+    'NTWN': Colors.yellow,
+    'NTTE': Colors.yellow[800],
+    'NTCL': Colors.deepOrange,
+    'NTST': Colors.redAccent[700],
+  };
 
   static Map<String, Map> estensioni = {
     'pdf': {'icona': MdiIcons.filePdf, 'colore': Color(0xFFCA1B00)},

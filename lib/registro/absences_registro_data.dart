@@ -55,6 +55,8 @@ class AbsencesRegistroData extends RegistroData {
 
     batch.query('absences', where: 'usrId = ?', whereArgs: [account.usrId]);
 
+    //TODO add  batch.absences('voti', where: 'usrId = ? AND id NOT IN (${ids.join(', ')})', whereArgs: [account.usrId]);
+
     data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
 
     dynamic dataTmp = <DateTime, Assenza>{};
