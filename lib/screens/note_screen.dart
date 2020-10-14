@@ -1,4 +1,4 @@
-developedimport 'package:Messedaglia/main.dart' as main;
+import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/note_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
