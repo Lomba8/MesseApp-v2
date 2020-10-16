@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
 
 class NoteRegistroData extends RegistroData {
   NoteRegistroData({@required RegistroApi account})
@@ -22,55 +26,66 @@ class NoteRegistroData extends RegistroData {
 
   @override
   Future<Result> parseData(json) async {
-    json.forEach((tipologia, note) {
-      note.forEach((nota) {
-        batch.insert(
-            'note',
-            {
-              'id': nota['evtId'],
-              'usrId': account.usrId,
-              'evt': nota['evtText'],
-              'date': tipologia != 'NTST'
-                  ? DateTime.parse(nota['evtDate']).toIso8601String()
-                  : null,
-              'inizio': tipologia == 'NTST'
-                  ? DateTime.parse(nota['evtBegin']).toIso8601String()
-                  : null,
-              'fine': tipologia == 'NTST'
-                  ? DateTime.parse(nota['evtEnd']).toIso8601String()
-                  : null,
-              'new': 1,
-              'autore': nota['authorName'],
-              'tipologia': tipologia
-            },
-            conflictAlgorithm: ConflictAlgorithm.ignore);
+    try {
+      List<int> ids = [];
+
+      json.forEach((tipologia, note) {
+        note.forEach((nota) {
+          ids.add(nota['evtId']);
+
+          batch.insert(
+              'note',
+              {
+                'id': nota['evtId'],
+                'usrId': account.usrId,
+                'evt': nota['evtText'],
+                'date': tipologia != 'NTST'
+                    ? DateTime.parse(nota['evtDate']).toIso8601String()
+                    : null,
+                'inizio': tipologia == 'NTST'
+                    ? DateTime.parse(nota['evtBegin']).toIso8601String()
+                    : null,
+                'fine': tipologia == 'NTST'
+                    ? DateTime.parse(nota['evtEnd']).toIso8601String()
+                    : null,
+                'new': 1,
+                'autore': nota['authorName'],
+                'tipologia': tipologia
+              },
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+        });
       });
-    });
+      batch.delete('note',
+          where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
+          whereArgs: [account.usrId]);
+      batch.query('note', where: 'usrId = ?', whereArgs: [account.usrId]);
 
-    batch.query('note', where: 'usrId = ?', whereArgs: [
-      account.usrId
-    ]); //TODO add  batch.delete('noe', where: 'usrId = ? AND id NOT IN (${ids.join(', ')})', whereArgs: [account.usrId]);
+      data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
 
-    data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+      data = data.map((e) {
+        return Nota(
+            account: account,
+            autore: e['autore'],
+            date: e['date'] != null
+                ? DateTime.tryParse(e['date']).toLocal()
+                : null,
+            inizio: e['inizio'] != null
+                ? DateTime.tryParse(e['inizio']).toLocal()
+                : null,
+            fine: e['fine'] != null
+                ? DateTime.tryParse(e['fine']).toLocal()
+                : null,
+            id: e['id'],
+            isNew: e['new'] == 1 ? true : false,
+            motivazione: e['evt'],
+            tipologia: e['tipologia']);
+      }).toList();
 
-    data = data.map((e) {
-      return Nota(
-          account: account,
-          autore: e['autore'],
-          date:
-              e['date'] != null ? DateTime.tryParse(e['date']).toLocal() : null,
-          inizio: e['inizio'] != null
-              ? DateTime.tryParse(e['inizio']).toLocal()
-              : null,
-          fine:
-              e['fine'] != null ? DateTime.tryParse(e['fine']).toLocal() : null,
-          id: e['id'],
-          isNew: e['new'] == 1 ? true : false,
-          motivazione: e['evt'],
-          tipologia: e['tipologia']);
-    }).toList();
-
-    return Result(true, true);
+      return Result(true, true);
+    } catch (e, stack) {
+      print(stack);
+    }
+    return Result(false, false);
   }
 
   @override
@@ -100,7 +115,8 @@ class NoteRegistroData extends RegistroData {
     }).toList();
   }
 
-  int get newNote => data.where((v) => v.isNew == true).length;
+  int get newNote =>
+      data.length > 0 ? data.where((v) => v.isNew == true).length : 0;
 }
 
 class Nota {
@@ -135,20 +151,20 @@ class Nota {
   Future<void> seen() async {
     this.isNew = false;
     int res = await database
-        .rawUpdate('UPDATE bacheca SET new = 0 WHERE id = ?', [this.id]);
+        .rawUpdate('UPDATE note SET new = 0 WHERE id = ?', [this.id]);
   }
 
   // String get type => getTipo(tipologia);
   static String getTipo(String tipologia) {
     switch (tipologia) {
       case 'NTTE':
-        return 'Annotazione';
+        return 'Annotazioni';
       case 'NTCL':
-        return 'Nota Disciplinare';
+        return 'Note Disciplinari';
       case 'NTWN':
-        return 'Richiamo';
+        return 'Richiami';
       case 'NTST':
-        return 'Sanzione Disciplinare';
+        return 'Sanzioni Disciplinare';
       default:
         return 'Nota';
     }

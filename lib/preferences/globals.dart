@@ -166,28 +166,29 @@ class Globals {
     },
   };
 
-  static Map<String, Icon> icone = {
+  static Map<String, Icon> iconeAreaStudenti = {
     // TODO: scegliere icone
     'Alternanza':
         Icon(Icons.headset_mic), // headset_mic, work, home_work, euro, weekend
-    'App Panini': Icon(Icons.smartphone),
+    'Giustificazioni': Icon(MdiIcons.calendarAlert, size: 30), //transitTransfer
     'Autogestione': Icon(Icons.map),
 
     'Bacheca': Icon(Icons
         .markunread_mailbox), // drafts, description, markunread_mailbox, inbox, attach_file, local_post_office, insert_drive_file
     'Note': Icon(Icons.sentiment_dissatisfied), //feedback,
 
-    'Tutoraggi': Icon(Icons
-        .person_add), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
+    'Tutoraggi': Icon(Icons.person_add,
+        size:
+            30), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
 
     'Didattica': Icon(MdiIcons
         .fileMultiple), //  fileMultiple, folderAccount, folderMultiple, folderSearch, fileDocumentEdit, folderEdit,
   };
   static Map<String, IconData> iconeNote = {
     'NTWN': MdiIcons.alert,
-    'NTTE': MdiIcons.accountAlert,
-    'NTCL': MdiIcons.alert,
-    'NTST': MdiIcons.alert,
+    'NTTE': MdiIcons.whistle,
+    'NTCL': MdiIcons.handcuffs,
+    'NTST': MdiIcons.graveStone,
   };
 
   static Map<String, Color> coloriNote = {
@@ -195,6 +196,22 @@ class Globals {
     'NTTE': Colors.yellow[800],
     'NTCL': Colors.deepOrange,
     'NTST': Colors.redAccent[700],
+  };
+
+  static Map<String, IconData> iconeAssenze = {
+    'Motivi di salute': MdiIcons.stethoscope,
+    'Motivi di famiglia': MdiIcons.accountGroup,
+    'Altri motivi': MdiIcons.help,
+    'Problemi di trasporto / traffico': MdiIcons.busClock,
+    'Sciopero': MdiIcons.earth,
+    'Ritardo Breve': MdiIcons.alarmBell,
+    '': MdiIcons.help,
+  };
+
+  static Map<String, Color> coloriAssenze = {
+    'ABA0': Colors.red,
+    'ABR0': Colors.orange,
+    'ABU0': Colors.yellow,
   };
 
   static Map<String, Map> estensioni = {

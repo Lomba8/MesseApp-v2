@@ -246,6 +246,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  flutter_neumorphic:
+    dependency: "direct main"
+    description:
+      name: flutter_neumorphic
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.8"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -360,7 +367,7 @@ packages:
       name: material_design_icons_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.4995"
+    version: "4.0.5755"
   meta:
     dependency: transitive
     description:

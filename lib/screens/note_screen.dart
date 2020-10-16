@@ -9,9 +9,12 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 import '../main.dart';
 
-class NoteScreen extends StatefulWidget {
-  //TODO implementare il liquidpulltorefresh con HapticFeedback.mediumImpact(); alla fine
+ScrollController _controller1;
+ScrollController _controller2;
+ScrollController _controller3;
+ScrollController _controller4;
 
+class NoteScreen extends StatefulWidget {
   static final String id = 'note_screen';
 
   @override
@@ -32,41 +35,12 @@ class _NoteScreenState extends State<NoteScreen> {
     return null;
   }
 
-  ScrollController _controller1;
-  ScrollController _controller2;
-  ScrollController _controller3;
-  ScrollController _controller4;
-
   @override
   void initState() {
     _controller1 = ScrollController();
     _controller2 = ScrollController();
     _controller3 = ScrollController();
     _controller4 = ScrollController();
-    _controller1.addListener(() {
-      if (_controller1.hasListeners) {
-        print(_controller1.position.atEdge);
-      }
-    });
-    _controller2.addListener(() {
-      if (_controller2.hasListeners) {
-        // print(_controller2.position.atEdge);
-        print('cancellata nota n:' +
-            (_controller2.offset.toInt() / 300)
-                .toInt()
-                .toString()); //TODO implememntarlo con batch.delete e creare un metodo nella classe Nota
-      }
-    });
-    _controller3.addListener(() {
-      if (_controller3.hasListeners) {
-        print(_controller3.position.atEdge);
-      }
-    });
-    _controller4.addListener(() {
-      if (_controller4.hasListeners) {
-        print(_controller4.position.atEdge);
-      }
-    });
 
     super.initState();
   }
@@ -116,30 +90,38 @@ class _NoteScreenState extends State<NoteScreen> {
                   preferredSize: Size.fromHeight(size.width / 8)),
             ),
             SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  NoteListView(
-                    size: size,
-                    type: 'NTWN',
-                    controller: _controller1,
-                  ),
-                  NoteListView(
-                    size: size,
-                    type: 'NTTE',
-                    controller: _controller2,
-                  ),
-                  NoteListView(
-                    size: size,
-                    type: 'NTCL',
-                    controller: _controller3,
-                  ),
-                  NoteListView(
-                    size: size,
-                    type: 'NTST',
-                    controller: _controller4,
-                  ),
-                ],
-              ),
+              delegate: main.session.note.data.length > 0
+                  ? SliverChildListDelegate(
+                      [
+                        NoteListView(
+                          size: size,
+                          type: 'NTWN',
+                          controller: _controller1,
+                        ),
+                        NoteListView(
+                          size: size,
+                          type: 'NTTE',
+                          controller: _controller2,
+                        ),
+                        NoteListView(
+                          size: size,
+                          type: 'NTCL',
+                          controller: _controller3,
+                        ),
+                        NoteListView(
+                          size: size,
+                          type: 'NTST',
+                          controller: _controller4,
+                        ),
+                      ],
+                    )
+                  : SliverChildListDelegate(
+                      [
+                        Center(
+                          child: Text('Non ci sono note!'),
+                        )
+                      ],
+                    ),
             ),
           ],
         ),
@@ -150,7 +132,7 @@ class _NoteScreenState extends State<NoteScreen> {
   }
 }
 
-class NoteListView extends StatelessWidget {
+class NoteListView extends StatefulWidget {
   const NoteListView({
     Key key,
     @required this.size,
@@ -163,8 +145,54 @@ class NoteListView extends StatelessWidget {
   final ScrollController controller;
 
   @override
+  _NoteListViewState createState() => _NoteListViewState();
+}
+
+class _NoteListViewState extends State<NoteListView> {
+  @override
+  void initState() {
+    widget.controller.addListener(() async {
+      if (widget.controller.hasListeners) {
+        int n = widget.controller.offset.toInt() ~/ 300;
+        int ntte = main.session.note.data
+            .where((nota) => nota.tipologia == "NTTE")
+            .length;
+        int ntcl = main.session.note.data
+            .where((nota) => nota.tipologia == "NTCL")
+            .length;
+        int ntwn = main.session.note.data
+            .where((nota) => nota.tipologia == "NTWN")
+            .length;
+
+        if (widget.type == "NTTE") {
+          print('cancellata nota ntte:' + (n).toString());
+          await main.session.note.data[n].seen();
+          setState(() {});
+          if (main.session.note.data[n].isNew) {}
+        } else if (widget.type == "NTCL") {
+          print('cancellata nota ntcl:' + (ntte + n).toString());
+          await main.session.note.data[ntte + n].seen();
+          setState(() {});
+        } else if (widget.type == "NTWN") {
+          print('cancellata nota ntwn:' + (ntte + ntcl + n).toString());
+          await main.session.note.data[ntte + ntcl + n].seen();
+          setState(() {});
+        } else if (widget.type == "NTST") {
+          print('cancellata nota nntst:' + (ntte + ntcl + ntwn + n).toString());
+          await main.session.note.data[ntte + ntcl + ntwn + n].seen();
+          setState(() {});
+        }
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (main.session.note.data.where((nota) => nota.tipologia == type).length <
+    if (main.session.note.data
+            .where((nota) => nota.tipologia == widget.type)
+            .length <
         1)
       return Offstage();
     else
@@ -178,7 +206,7 @@ class NoteListView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  '• ' + Nota.getTipo(type),
+                  '• ' + Nota.getTipo(widget.type),
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white60
@@ -192,24 +220,25 @@ class NoteListView extends StatelessWidget {
               height: 5.0,
             ),
             SizedBox(
-              height: size.height / 5.5,
+              height: widget.size.height / 5.5,
               child: ListView.builder(
-                  controller: controller,
+                  controller: widget.controller,
                   scrollDirection: Axis.horizontal,
                   itemCount: main.session.note.data
-                      .where((nota) => nota.tipologia == type)
+                      .where((nota) => nota.tipologia == widget.type)
                       .length,
                   itemBuilder: (BuildContext context, int index) {
                     List note = main.session.note.data
-                        .where((nota) => nota.tipologia == type)
+                        .where((nota) => nota.tipologia == widget.type)
                         .toList();
+                    note[0]?.seen();
                     return Row(
                       children: <Widget>[
                         SizedBox(
                           width: 10.0,
                         ),
                         Card(
-                          size: size,
+                          size: widget.size,
                           nota: note[index],
                         ),
                       ],
@@ -222,7 +251,7 @@ class NoteListView extends StatelessWidget {
   }
 }
 
-class Card extends StatelessWidget {
+class Card extends StatefulWidget {
   const Card({
     Key key,
     @required this.size,
@@ -233,13 +262,18 @@ class Card extends StatelessWidget {
   final Nota nota;
 
   @override
+  _CardState createState() => _CardState();
+}
+
+class _CardState extends State<Card> {
+  @override
   Widget build(BuildContext context) => GestureDetector(
         onDoubleTap: () => showDialog(
           context: context,
           builder: (context) => Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: 10.0,
-                vertical: MediaQuery.of(context).size.height / 6),
+                vertical: MediaQuery.of(context).size.height / 7),
             child: Dialog(
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Color(0xFF33333D)
@@ -248,12 +282,12 @@ class Card extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20)),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: _buildContent(context),
+                  child: _buildContent(context, true),
                 )),
           ),
         ),
         child: Container(
-          width: size.height / 3,
+          width: widget.size.height / 3,
           padding: EdgeInsets.all(10.0),
           child: Container(
               decoration: BoxDecoration(
@@ -268,17 +302,17 @@ class Card extends StatelessWidget {
                       ? Color(0xFF33333D)
                       : Color(0xFFD2D1D7)),
               padding: const EdgeInsets.all(10.0),
-              child: _buildContent(context)),
+              child: _buildContent(context, false)),
         ),
       );
 
-  Widget _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context, bool grande) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Container(
           decoration: BoxDecoration(
-              color: Globals.coloriNote[nota.tipologia],
+              color: Globals.coloriNote[widget.nota.tipologia],
               borderRadius: BorderRadius.circular(10.0)),
           child: Row(
             children: <Widget>[
@@ -288,7 +322,7 @@ class Card extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(8),
-                    child: Icon(Globals.iconeNote[nota.tipologia],
+                    child: Icon(Globals.iconeNote[widget.nota.tipologia],
                         size: 25.0, color: Colors.black),
                   ),
                 ],
@@ -302,7 +336,7 @@ class Card extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                AutoSizeText(nota?.autore ?? 'Preside',
+                AutoSizeText(widget.nota?.autore ?? 'Preside',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     minFontSize: 10.0,
@@ -316,19 +350,36 @@ class Card extends StatelessWidget {
                   height: 10.0,
                 ),
                 Expanded(
-                  child: AutoSizeText(nota.motivazione,
-                      overflow: TextOverflow.ellipsis,
-                      minFontSize: 12.0,
-                      maxFontSize: 13.0,
-                      maxLines: 6,
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white54
-                            : Colors.black54,
-                      )),
+                  child: grande
+                      ? SingleChildScrollView(
+                          child: AutoSizeText(widget.nota.motivazione,
+                              overflow: TextOverflow.ellipsis,
+                              minFontSize: 13.0,
+                              maxFontSize: 15.0,
+                              maxLines: 100,
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white54
+                                    : Colors.black54,
+                                height: 1.2,
+                              )),
+                        )
+                      : AutoSizeText(widget.nota.motivazione,
+                          overflow: TextOverflow.ellipsis,
+                          minFontSize: 12.0,
+                          maxFontSize: 13.0,
+                          maxLines: 6,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white54
+                                    : Colors.black54,
+                          )),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 2.0, top: 0.0),
+                  padding:
+                      EdgeInsets.only(bottom: 2.0, top: grande ? 10.0 : 0.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -339,12 +390,13 @@ class Card extends StatelessWidget {
                       ),
                       SizedBox(width: 5.0),
                       Text(
-                        nota?.date != null
-                            ? Nota.getDateWithSlashes(nota?.date)
-                            : Nota.getDateWithSlashesShort(nota?.inizio) +
+                        widget.nota?.date != null
+                            ? Nota.getDateWithSlashes(widget.nota?.date)
+                            : Nota.getDateWithSlashesShort(
+                                    widget.nota?.inizio) +
                                 ' - ' +
-                                Nota.getDateWithSlashesShort(nota?.fine),
-                        style: TextStyle(fontSize: 11.0),
+                                Nota.getDateWithSlashesShort(widget.nota?.fine),
+                        style: TextStyle(fontSize: grande ? 14 : 11.0),
                       ),
                     ],
                   ),
@@ -354,7 +406,7 @@ class Card extends StatelessWidget {
           ),
         ),
         Center(
-          child: nota.isNew ?? true
+          child: widget.nota.isNew ?? true
               ? Icon(
                   Icons.brightness_1,
                   color: Colors.yellow,

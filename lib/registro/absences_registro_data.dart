@@ -5,6 +5,7 @@ import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 
 class AbsencesRegistroData extends RegistroData {
@@ -15,67 +16,80 @@ class AbsencesRegistroData extends RegistroData {
             account: account,
             name: 'absences');
 
+  /*
+                ABA0: Assenza
+                ABR0: Ritardo
+                ABU0: Uscita
+            */
+
   @override
   Future<Result> parseData(json) async {
-    json = json['events'];
-    data = <DateTime, Assenza>{};
-    Batch batch = database.batch();
+    try {
+      List<int> ids = [];
 
-    for (Map absence in json) {
-      Assenza assenza = Assenza(
-        id: absence['evtId'],
-        hour: absence['evtHPos'],
-        value: absence['evtValue'],
-        justified: absence['isJustified'],
-        justification: absence['justifReasonDesc'],
-        type: absence['evtCode'] == 'ABA0'
-            ? 'assenza'
-            : absence['evtCode'] == 'ABR0' ? 'ritardo' : 'uscita',
-        isNew: true,
-        account: account,
-      );
-      data[DateTime.parse(absence['evtDate'])] = assenza;
-      batch.insert(
-          'absences',
-          {
-            'id': absence['evtId'],
-            'usrId': account.usrId,
-            'type': absence['evtCode'] == 'ABA0'
-                ? 'assenza'
-                : absence['evtCode'] == 'ABR0' ? 'ritardo' : 'uscita',
-            'date':
-                DateTime.parse(absence['evtDate']).toLocal().toIso8601String(),
-            'new': 1,
-            'hour': absence['evtHPos'],
-            'justification': absence['justifReasonDesc'], // NON LO SALVA
-            'justified': absence['isJustified'] ? 1 : 0,
-          },
-          conflictAlgorithm: ConflictAlgorithm.ignore);
+      json = json['events'];
+      data = <DateTime, Assenza>{};
+      Batch batch = database.batch();
+
+      for (Map absence in json) {
+        ids.add(absence['evtId']);
+
+        // Assenza assenza = Assenza(
+        //   id: absence['evtId'],
+        //   hour: absence['evtHPos'],
+        //   value: absence['evtValue'],
+        //   justified: absence['isJustified'],
+        //   justification: absence['justifReasonDesc'],
+        //   type: absence['evtCode'] == 'ABA0'
+        //       ? 'assenza'
+        //       : absence['evtCode'] == 'ABR0' ? 'ritardo' : 'uscita',
+        //   isNew: true,
+        //   account: account,
+        // );
+        // data[DateTime.parse(absence['evtDate'])] = assenza;
+        batch.insert(
+            'absences',
+            {
+              'id': absence['evtId'],
+              'usrId': account.usrId,
+              'type': absence['evtCode'],
+              'date': DateTime.parse(absence['evtDate'])
+                  .toLocal()
+                  .toIso8601String(),
+              'new': 1,
+              'hour': absence['evtHPos'],
+              'justification': absence['justifReasonDesc'],
+              'justified': absence['isJustified'] ? 1 : 0,
+            },
+            conflictAlgorithm: ConflictAlgorithm.ignore);
+      }
+      batch.delete('absences',
+          where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
+          whereArgs: [account.usrId]);
+      batch.query('absences', where: 'usrId = ?', whereArgs: [account.usrId]);
+
+      data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+    } catch (e, stack) {
+      print(stack);
     }
 
-    batch.query('absences', where: 'usrId = ?', whereArgs: [account.usrId]);
+    // dynamic dataTmp = <DateTime, Assenza>{};
 
-    //TODO add  batch.absences('voti', where: 'usrId = ? AND id NOT IN (${ids.join(', ')})', whereArgs: [account.usrId]);
+    // data.forEach((e) {
+    //   Assenza assenza = Assenza(
+    //       account: account,
+    //       hour: e['hour'],
+    //       id: e['id'],
+    //       isNew: e['new'] == 1 ? true : false,
+    //       justification: e['justification'],
+    //       justified: e['justified'] == 1 ? true : false,
+    //       type: e['type'],
+    //       value: e['value']);
 
-    data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+    //   dataTmp[DateTime.parse(e['evtDate'])] = assenza;
+    // });
 
-    dynamic dataTmp = <DateTime, Assenza>{};
-
-    data.forEach((e) {
-      Assenza assenza = Assenza(
-          account: account,
-          hour: e['hour'],
-          id: e['id'],
-          isNew: e['new'] == 1 ? true : false,
-          justification: e['justification'],
-          justified: e['justified'] == 1 ? true : false,
-          type: e['type'],
-          value: e['value']);
-
-      dataTmp[DateTime.parse(e['date'])] = assenza;
-    });
-
-    data = dataTmp;
+    // data = dataTmp;
     return Result(true, true);
   }
 
@@ -110,6 +124,7 @@ class AbsencesRegistroData extends RegistroData {
           account: account,
           hour: e['hour'],
           id: e['id'],
+          date: DateTime.tryParse(e['date']),
           isNew: e['new'] == 1 ? true : false,
           justification: e['justification'],
           justified: e['justified'] == 1 ? true : false,
@@ -133,12 +148,14 @@ class Assenza {
   final dynamic value; // ?  (non lo ho messo nel database)
   final bool justified;
   final String justification;
+  final DateTime date;
   bool isNew;
 
   Assenza({
     @required this.account,
     @required this.id,
     @required this.hour,
+    @required this.date,
     @required this.value,
     @required this.justified,
     @required this.justification,
@@ -152,6 +169,27 @@ class Assenza {
         .rawUpdate('UPDATE note SET new = 0 WHERE id = ?', [this.id]);
   }
 
+  static String getDateWithSlashes(date) => DateFormat.yMd('it').format(date);
+  static String getDateWithSlashesShort(date) =>
+      DateFormat.d('it').format(date) +
+      '/' +
+      DateFormat.M('it').format(date) +
+      '/' +
+      DateFormat.y('it').format(date).split('').sublist(2).join().toString();
+
+  // String get type => getTipo(tipologia);
+  static String getTipo(String tipologia) {
+    switch (tipologia) {
+      case 'ABA0':
+        return 'Assenze';
+      case 'ABR0':
+        return 'Ritardi';
+      case 'ABU0':
+        return 'Uscite';
+      default:
+        return 'Eventi';
+    }
+  }
   // Map<String, dynamic> toJson() => {
   //       'hour': hour,
   //       'value': value,

@@ -206,11 +206,11 @@ class RegistroApi {
 
   Future<void> load() async {
     // se sei offline ricaarica da locale
-    voti.load();
-    agenda.load();
-    bacheca.load();
-    absences.load();
-    note.load();
+    await voti.load();
+    await agenda.load();
+    await bacheca.load();
+    await absences.load();
+    await note.load();
     dynamic data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
     data = await loadData('lessons');

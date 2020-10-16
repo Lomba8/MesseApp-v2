@@ -21,44 +21,52 @@ class BachecaRegistroData extends RegistroData {
 
   @override
   Future<Result> parseData(json) async {
-    json = json['items'];
-    List<int> deleted_ids = new List();
-    Batch batch = database.batch();
-    json.forEach((c) {
-      if (c['cntStatus'] == 'deleted') deleted_ids.add(c['pubId']);
+    try {
+      List<int> ids = [];
+      json = json['items'];
+      List<int> deleted_ids = new List();
+      Batch batch = database.batch();
+      json.forEach((c) {
+        if (c['cntStatus'] == 'deleted') deleted_ids.add(c['pubId']);
+        ids.add(c['evtId']);
 
-      batch.insert(
-          'bacheca',
-          {
-            'id': c['pubId'],
-            'usrId': account.usrId,
-            'evt': c['evtCode'],
-            'start_date':
-                DateTime.parse(c['cntValidFrom']).toLocal().toIso8601String(),
-            'end_date':
-                DateTime.parse(c['cntValidTo']).toLocal().toIso8601String(),
-            'valid': c['cntValidInRange'] ? 1 : 0,
-            'title': c['cntTitle'],
-            'attachments':
-                jsonEncode(c['attachments'].isEmpty ? {} : c['attachments'][0]),
-            'new': 1,
-            'deleted': (c['cntStatus'] == 'deleted') ? 1 : 0,
-          },
-          conflictAlgorithm: ConflictAlgorithm.ignore);
-    });
+        batch.insert(
+            'bacheca',
+            {
+              'id': c['pubId'],
+              'usrId': account.usrId,
+              'evt': c['evtCode'],
+              'start_date':
+                  DateTime.parse(c['cntValidFrom']).toLocal().toIso8601String(),
+              'end_date':
+                  DateTime.parse(c['cntValidTo']).toLocal().toIso8601String(),
+              'valid': c['cntValidInRange'] ? 1 : 0,
+              'title': c['cntTitle'],
+              'attachments': jsonEncode(
+                  c['attachments'].isEmpty ? {} : c['attachments'][0]),
+              'new': 1,
+              'deleted': (c['cntStatus'] == 'deleted') ? 1 : 0,
+            },
+            conflictAlgorithm: ConflictAlgorithm.ignore);
+      });
 
-    deleted_ids.forEach((id) {
-      batch.rawUpdate('UPDATE bacheca SET deleted = 1 WHERE id = ?', [id]);
-    });
+      deleted_ids.forEach((id) {
+        batch.rawUpdate('UPDATE bacheca SET deleted = 1 WHERE id = ?', [id]);
+      });
 
-    batch.delete('bacheca', where: 'usrId = ? AND deleted = 1', whereArgs: [
-      account.usrId
-    ]); //TODO add  batch.delete('bacheca', where: 'usrId = ? AND id NOT IN (${ids.join(', ')})', whereArgs: [account.usrId]);
+      batch.delete('bacheca',
+          where: 'usrId = ? AND deleted = 1', whereArgs: [account.usrId]);
 
-    batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
+      batch.delete('bacheca',
+          where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
+          whereArgs: [account.usrId]);
 
-    data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+      batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
 
+      data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+    } catch (e, stack) {
+      print(stack);
+    }
     data = data.map((e) {
       return Comunicazione(
         account: account,

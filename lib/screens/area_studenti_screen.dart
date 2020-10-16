@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
@@ -60,47 +61,6 @@ class _AreaStudentiState extends State<AreaStudenti> {
     HapticFeedback.mediumImpact();
 
     return null;
-  }
-
-  _listaPanini() async {
-    const url = 'https://pagni.altervista.org/istituto/lista.php';
-    if (await canLaunch(url)) {
-      await launch(url,
-          forceSafariVC: true,
-          enableJavaScript: true,
-          forceWebView: true,
-          headers: {'User-Agent': 'MesseApp <3'});
-    } else {
-      Flushbar(
-        padding: EdgeInsets.all(10),
-        borderRadius: 20,
-        backgroundGradient: LinearGradient(
-          colors: Globals.sezioni['viola']['gradientColors'],
-          stops: [0.3, 0.6, 1],
-        ),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black45,
-            offset: Offset(3, 3),
-            blurRadius: 6,
-          ),
-        ],
-        duration: Duration(seconds: 5),
-        isDismissible: true,
-        icon: Icon(
-          Icons.error_outline,
-          size: 35,
-          color: Theme.of(context).backgroundColor,
-        ),
-        shouldIconPulse: true,
-        animationDuration: Duration(seconds: 1),
-        dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-        // The default curve is Curves.easeOut
-        forwardAnimationCurve: Curves.fastOutSlowIn,
-        title: 'Errore nell\'aprire l\'url:',
-        message: '$url',
-      ).show(context);
-    }
   }
 
   @override
@@ -169,9 +129,9 @@ class _AreaStudentiState extends State<AreaStudenti> {
                 page: DidatticaScreen(),
               ),
               Section(
-                sezione: 'App Panini',
+                sezione: 'Giustificazioni',
                 colore: 'rosso',
-                action: _listaPanini,
+                page: AbsencesScreen(),
               ),
               Section(
                 sezione: 'Tutoraggi',
@@ -241,7 +201,7 @@ class Section extends StatelessWidget {
                     focal: Alignment(1.0, 1.0),
                   ),
                 ),
-                child: Globals.icone[sezione], //icona
+                child: Globals.iconeAreaStudenti[sezione], //icona
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
