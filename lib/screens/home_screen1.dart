@@ -303,6 +303,7 @@ class _HomeState extends State<Home> {
     }();
 
     return BarChartData(
+      alignment: BarChartAlignment.spaceAround,
       barTouchData: BarTouchData(
         touchTooltipData: BarTouchTooltipData(
           tooltipBgColor: Colors.transparent,
@@ -401,7 +402,7 @@ class _HomeState extends State<Home> {
             }
             return '';
           },
-          reservedSize: 10,
+          reservedSize: 15,
           margin: 15,
         ),
       ),

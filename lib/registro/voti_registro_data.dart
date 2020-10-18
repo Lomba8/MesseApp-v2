@@ -50,6 +50,8 @@ class VotiRegistroData extends RegistroData {
       batch.query('voti', where: 'usrId = ?', whereArgs: [account.usrId]);
       data =
           (await batch.commit()).last.map<Voto>((v) => Voto.parse(v)).toList();
+      await account.update(); // nel caso fosse stata cambiata la classe
+
       return Result(true, true);
     } catch (e, stack) {
       print(e);

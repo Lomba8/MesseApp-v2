@@ -8,11 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:neumorphic/neumorphic.dart';
-
-ScrollController _controller1;
-ScrollController _controller2;
-ScrollController _controller3;
 
 class AbsencesScreen extends StatefulWidget {
   @override
@@ -33,21 +28,15 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
     return null;
   }
 
-  bool giustificare = true;
+  bool daGiustificare = true;
 
   @override
   void initState() {
     super.initState();
-    _controller1 = ScrollController();
-    _controller2 = ScrollController();
-    _controller3 = ScrollController();
   }
 
   @override
   void dispose() {
-    _controller1.dispose();
-    _controller2.dispose();
-    _controller3.dispose();
     super.dispose();
   }
 
@@ -57,55 +46,69 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
 
     return Scaffold(
       body: LiquidPullToRefresh(
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                brightness: Theme.of(context).brightness,
-                leading: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white60
-                          : Colors.black54,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                title: Text(
-                  'GIUSTIFICAZIONI',
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-                elevation: 0,
-                pinned: true,
-                centerTitle: true,
-                backgroundColor: Colors.transparent,
-                flexibleSpace: CustomPaint(
-                  painter: BackgroundPainter(Theme.of(context)),
-                  size: Size.infinite,
-                ),
-                bottom: PreferredSize(
-                    child: Container(),
-                    preferredSize: Size.fromHeight(size.width / 8)),
+        showChildOpacityTransition: false,
+        onRefresh: _refresh,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              brightness: Theme.of(context).brightness,
+              leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white60
+                        : Colors.black54,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              title: Text(
+                'GIUSTIFICAZIONI',
+                style: Theme.of(context).textTheme.bodyText2,
               ),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.only(left: 15.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.502),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: FlatButton(
-                              onPressed: () {/*TODO*/},
+              elevation: 0,
+              pinned: true,
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              flexibleSpace: CustomPaint(
+                painter: BackgroundPainter(Theme.of(context)),
+                size: Size.infinite,
+              ),
+              bottom: PreferredSize(
+                  child: Container(),
+                  preferredSize: Size.fromHeight(size.width / 8)),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(left: 15.0),
+                          // decoration: BoxDecoration(
+                          //   color: Colors.white.withOpacity(0.502),
+                          //   borderRadius: BorderRadius.circular(10.0),
+                          // ),
+                          child: FlatButton(
+                            onPressed: () {
+                              daGiustificare = !daGiustificare;
+                              setState(() {});
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.white70,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
                               child: Text(
-                                giustificare
+                                daGiustificare
                                     ? 'Da Giustificare'
                                     : 'Giustificate',
                                 style: TextStyle(
@@ -114,116 +117,183 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
                                   color: Colors.white70,
                                 ),
                               ),
-                              splashColor: Colors.white.withOpacity(0.3),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 0.0),
                             ),
+                            splashColor: Colors.white.withOpacity(0.3),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 0.0),
                           ),
-                          FlatButton.icon(
-                            onPressed: () {/*TODO*/},
-                            icon: Icon(
-                              MdiIcons.informationVariant,
-                              size: 30.0,
-                              color: Colors.white70,
-                            ),
-                            label: Offstage(),
-                          )
-                        ],
+                        ),
+                        FlatButton.icon(
+                          onPressed: () {/*TODO*/},
+                          icon: Icon(
+                            MdiIcons.informationVariant,
+                            size: 30.0,
+                            color: Colors.white70,
+                          ),
+                          label: Offstage(),
+                        )
+                      ],
+                    ),
+                  ),
+                  if (main.session.absences.data.values.every((v) => (v
+                              .justified ==
+                          main.session.absences.data.values.first.justified)) &&
+                      main.session.absences.data.values.first.justified ==
+                          true &&
+                      daGiustificare)
+                    SizedBox(
+                      height: size.height / 5.5,
+                      child: Center(
+                        child: Text(
+                          'Tutto giustificato',
+                          style: TextStyle(
+                            fontFamily: 'CoreSans',
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                    AbsencesListView(
+                  if (main.session.absences.data.values.every((v) => (v
+                              .justified ==
+                          main.session.absences.data.values.first.justified)) &&
+                      main.session.absences.data.values.first.justified ==
+                          false &&
+                      !daGiustificare)
+                    SizedBox(
+                      height: size.height / 5.5,
+                      child: Center(
+                        child: Text(
+                          'Tutto da giustificare',
+                          style: TextStyle(
+                            fontFamily: 'CoreSans',
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  AbsencesListView(
                       type: 'ABA0',
-                      controller: _controller1,
                       size: size,
-                    ),
-                    AbsencesListView(
+                      ancoraDaGiustificare: daGiustificare),
+                  AbsencesListView(
                       type: 'ABR0',
-                      controller: _controller2,
                       size: size,
-                    ),
-                    AbsencesListView(
+                      ancoraDaGiustificare: daGiustificare),
+                  AbsencesListView(
                       type: 'ABU0',
-                      controller: _controller3,
                       size: size,
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-          onRefresh: _refresh),
+                      ancoraDaGiustificare: daGiustificare)
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
 
 class AbsencesListView extends StatefulWidget {
-  const AbsencesListView({Key key, this.size, this.type, this.controller})
+  AbsencesListView({Key key, this.size, this.type, this.ancoraDaGiustificare})
       : super(key: key);
 
   final Size size;
   final String type;
-  final ScrollController controller;
+  final bool ancoraDaGiustificare;
 
   @override
   _AbsencesListViewState createState() => _AbsencesListViewState();
 }
 
 class _AbsencesListViewState extends State<AbsencesListView> {
-  List<Assenza> assenze = List();
   @override
   void initState() {
     super.initState();
-    //TODO controllers stuff
-    main.session.absences.data
-        .forEach((k, v) => v.type == widget.type ? assenze.add(v) : null);
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Assenza> assenze = List();
+    main.session.absences.data.forEach((k, v) {
+      if (v.type == widget.type) assenze.add(v);
+    });
+    String eventi = assenze
+                .where((e) => e.justified == !widget.ancoraDaGiustificare)
+                .length >
+            0
+        ? assenze
+            .where((e) => e.justified == !widget.ancoraDaGiustificare)
+            .length
+            .toString()
+        : '';
     return Padding(
       padding: EdgeInsets.only(bottom: 20.0, left: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                ' • ' + Assenza.getTipo(widget.type),
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white60
-                      : Colors.black54,
-                  fontSize: 23,
+          if (assenze
+                  .where((e) => e.justified == !widget.ancoraDaGiustificare)
+                  .length >
+              0)
+            Text(
+              ' • (' + eventi + ') ' + Assenza.getTipo(widget.type),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white60
+                    : Colors.black54,
+                fontSize: 23,
+              ),
+            ),
+          SizedBox(
+            height: 10.0,
+          ),
+          if (assenze.isEmpty)
+            SizedBox(
+              height: widget.size.height / 5.5,
+              child: Center(
+                child: Text(
+                  'Nessun evento',
+                  style: TextStyle(
+                    fontFamily: 'CoreSans',
+                    color: Colors.white,
+                  ),
                 ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          SizedBox(
-            height: widget.size.height / 5.5,
-            child: ListView.builder(
-                controller: widget.controller,
-                scrollDirection: Axis.horizontal,
-                itemCount: assenze.length,
-                itemBuilder: (BuildContext context, int index) {
-                  assenze[0]?.seen();
-                  return Row(
-                    children: <Widget>[
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      AbsenceCard(
-                        size: widget.size,
-                        assenza: assenze[index],
-                      ),
-                    ],
-                  );
-                }),
-          ),
+              ),
+            ),
+          if (assenze.isNotEmpty &&
+              assenze
+                      .where((e) => e.justified == !widget.ancoraDaGiustificare)
+                      .length >
+                  0)
+            SizedBox(
+              height: widget.size.height / 5.5,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: assenze
+                      .where((e) => e.justified == !widget.ancoraDaGiustificare)
+                      .length,
+                  itemBuilder: (BuildContext context, int index) {
+                    assenze[0]?.seen();
+                    return Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10.0),
+                          margin: EdgeInsets.only(right: 10.0),
+                          child: AbsenceCard(
+                            size: widget.size,
+                            assenza: assenze
+                                .where((e) =>
+                                    e.justified == !widget.ancoraDaGiustificare)
+                                .toList()[index],
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+            ),
         ],
       ),
     );
@@ -246,149 +316,103 @@ class AbsenceCard extends StatefulWidget {
 
 class _AbsenceCardState extends State<AbsenceCard> {
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        onDoubleTap: () => showDialog(
-          context: context,
-          builder: (context) => Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: MediaQuery.of(context).size.height / 7),
-            child: Dialog(
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Color(0xFF33333D)
-                    : Color(0xFFD2D1D7),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: _buildContent(context, true),
-                )),
-          ),
+  Widget build(BuildContext context) => Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
         ),
+        margin: EdgeInsets.zero,
+        clipBehavior: Clip.none,
+        color: Colors.transparent,
+        elevation: 5.0,
         child: Container(
-          width: widget.size.height / 3,
-          padding: EdgeInsets.all(10.0),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 3.0,
-                        spreadRadius: 4.5)
-                  ],
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Color(0xFF33333D)
-                      : Color(0xFFD2D1D7)),
-              padding: const EdgeInsets.all(10.0),
-              child: _buildContent(context, false)),
-        ),
+            width: widget.size.height / 3,
+            padding: EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Color(0xFF33333D)
+                    : Color(0xFFD2D1D7)),
+            child: _buildContent(context, false)),
       );
 
   Widget _buildContent(BuildContext context, bool grande) {
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Container(
+          margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
           decoration: BoxDecoration(
               color: Globals.coloriAssenze[widget.assenza.type],
               borderRadius: BorderRadius.circular(10.0)),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(
-                        Globals.iconeAssenze[widget.assenza.justification],
-                        size: 25.0,
-                        color: Colors.black),
-                  ),
-                ],
+              Padding(
+                padding: widget.assenza.justification.isNotEmpty
+                    ? EdgeInsets.fromLTRB(30, 8, 0, 8)
+                    : EdgeInsets.fromLTRB(70, 8, 0, 8),
+                child: Icon(Globals.iconeAssenze[widget.assenza.justification],
+                    size: 25.0, color: Colors.black),
               ),
+              widget.assenza.justification.isNotEmpty
+                  ? Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: AutoSizeText(
+                              widget.assenza.justification.contains('traffico')
+                                  ? 'Traffico'
+                                  : widget.assenza.justification,
+                              maxLines: 2,
+                              wrapWords: true,
+                              softWrap: true,
+                              maxFontSize: 15.0,
+                              minFontSize: 15.0,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Offstage(),
             ],
           ),
         ),
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(left: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: widget.assenza.hour != null
+                  ? MainAxisAlignment.spaceAround
+                  : MainAxisAlignment.center,
               children: <Widget>[
-                AutoSizeText('Da mettere ora',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    minFontSize: 10.0,
-                    maxFontSize: 15.0,
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'CoreSans',
-                    )),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Expanded(
-                  child: grande
-                      ? SingleChildScrollView(
-                          child: AutoSizeText('cosa?',
-                              overflow: TextOverflow.ellipsis,
-                              minFontSize: 13.0,
-                              maxFontSize: 15.0,
-                              maxLines: 100,
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white54
-                                    : Colors.black54,
-                                height: 1.2,
-                              )),
-                        )
-                      : AutoSizeText('cosa?',
-                          overflow: TextOverflow.ellipsis,
-                          minFontSize: 12.0,
-                          maxFontSize: 13.0,
-                          maxLines: 6,
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white54
-                                    : Colors.black54,
-                          )),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsets.only(bottom: 2.0, top: grande ? 10.0 : 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Icon(
-                        Icons.access_time,
-                        size: 14.0,
-                      ),
-                      SizedBox(width: 5.0),
-                      Text(
-                        Assenza.getDateWithSlashes(widget.assenza.date),
-                        style: TextStyle(fontSize: grande ? 14 : 11.0),
-                      ),
-                    ],
+                widget.assenza.hour != null
+                    ? AutoSizeText(
+                        widget.assenza.hour.toString() + 'ᵃ' + ' ora',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        minFontSize: 10.0,
+                        maxFontSize: 15.0,
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          fontFamily: 'CoreSans',
+                        ),
+                      )
+                    : Offstage(),
+                Text(
+                  Assenza.getDateWithSlashes(widget.assenza.date),
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    fontFamily: 'CoreSans',
                   ),
                 )
               ],
             ),
           ),
-        ),
-        Center(
-          child: widget.assenza.isNew ?? true
-              ? Icon(
-                  Icons.brightness_1,
-                  color: Colors.yellow,
-                  size: 15.0,
-                )
-              : SizedBox(),
         ),
       ],
     );

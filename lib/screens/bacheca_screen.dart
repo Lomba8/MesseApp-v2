@@ -497,9 +497,11 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                                     ? Colors.white
                                                     : Colors.black,
                                           ),
-                                          Text(
+                                          AutoSizeText(
                                             '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
                                             style: TextStyle(fontSize: 8),
+                                            maxLines: 1,
+                                            minFontSize: 6.0,
                                           ),
                                         ],
                                       ),

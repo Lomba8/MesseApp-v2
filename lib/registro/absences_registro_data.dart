@@ -21,6 +21,7 @@ class AbsencesRegistroData extends RegistroData {
                 ABR0: Ritardo
                 ABU0: Uscita
             */
+  Batch batch = database.batch();
 
   @override
   Future<Result> parseData(json) async {
@@ -28,8 +29,8 @@ class AbsencesRegistroData extends RegistroData {
       List<int> ids = [];
 
       json = json['events'];
+
       data = <DateTime, Assenza>{};
-      Batch batch = database.batch();
 
       for (Map absence in json) {
         ids.add(absence['evtId']);
@@ -69,28 +70,24 @@ class AbsencesRegistroData extends RegistroData {
       batch.query('absences', where: 'usrId = ?', whereArgs: [account.usrId]);
 
       data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+
+      dynamic dataTmp = <DateTime, Assenza>{};
+
+      data.forEach((e) {
+        Assenza assenza = Assenza.parse(e);
+
+        dataTmp[DateTime.parse(e['evtDate'])] = assenza;
+      });
+
+      data = dataTmp;
+
+      await account.update(); // nel caso fosse stata cambiata la classe
+
+      return Result(true, true);
     } catch (e, stack) {
       print(stack);
+      return Result(false, false);
     }
-
-    // dynamic dataTmp = <DateTime, Assenza>{};
-
-    // data.forEach((e) {
-    //   Assenza assenza = Assenza(
-    //       account: account,
-    //       hour: e['hour'],
-    //       id: e['id'],
-    //       isNew: e['new'] == 1 ? true : false,
-    //       justification: e['justification'],
-    //       justified: e['justified'] == 1 ? true : false,
-    //       type: e['type'],
-    //       value: e['value']);
-
-    //   dataTmp[DateTime.parse(e['evtDate'])] = assenza;
-    // });
-
-    // data = dataTmp;
-    return Result(true, true);
   }
 
   // @override
@@ -117,19 +114,11 @@ class AbsencesRegistroData extends RegistroData {
   @override
   Future<void> load() async {
     await super.load();
+
     dynamic dataTmp = <DateTime, Assenza>{};
 
     data.forEach((e) {
-      Assenza assenza = Assenza(
-          account: account,
-          hour: e['hour'],
-          id: e['id'],
-          date: DateTime.tryParse(e['date']),
-          isNew: e['new'] == 1 ? true : false,
-          justification: e['justification'],
-          justified: e['justified'] == 1 ? true : false,
-          type: e['type'],
-          value: e['value']);
+      Assenza assenza = Assenza.parse(e);
 
       dataTmp[DateTime.parse(e['date'])] = assenza;
     });
@@ -137,18 +126,19 @@ class AbsencesRegistroData extends RegistroData {
     data = dataTmp;
   }
 
-  int get newAssenze => data.values.where((v) => v.isNew == true).length;
+  int get newAssenze =>
+      data.length > 0 ? data.values.where((v) => v.isNew == true).length : 0;
 }
 
 class Assenza {
-  final RegistroApi account;
-  final int id;
-  final String type;
-  final int hour;
-  final dynamic value; // ?  (non lo ho messo nel database)
-  final bool justified;
-  final String justification;
-  final DateTime date;
+  RegistroApi account;
+  int id;
+  String type;
+  int hour;
+  dynamic value; // ?  (non lo ho messo nel database)
+  bool justified;
+  String justification;
+  DateTime date;
   bool isNew;
 
   Assenza({
@@ -162,6 +152,18 @@ class Assenza {
     @required this.type,
     @required this.isNew,
   });
+
+  Assenza.parse(Map raw) {
+    this.account = account;
+    this.hour = raw['hour'];
+    this.id = raw['id'];
+    this.date = DateTime.tryParse(raw['date']);
+    this.isNew = raw['new'] == 1 ? true : false;
+    this.justification = raw['justification'];
+    this.justified = raw['justified'] == 1 ? true : false;
+    this.type = raw['type'];
+    this.value = raw['value'];
+  }
 
   Future<void> seen() async {
     this.isNew = false;

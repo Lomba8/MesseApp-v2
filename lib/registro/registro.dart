@@ -197,7 +197,7 @@ class RegistroApi {
   }
 
   void save() async {
-    saveData(subjects, 'subjects');
+    saveData(subjects, 'subjects'); //FIXME toglierlo?
     saveData(bacheca, 'bacheca'); // togliere quando si implemmenta il register
     saveData(lessons, 'lessons'); // fatto
     saveData(absences, 'absences');

@@ -17,7 +17,8 @@ class AgendaRegistroData extends RegistroData {
     return '${date.year - year2}0901/${date.year + 1 - year2}0630';
   }
 
-  SplayTreeMap<DateTime, List<Evento>> dates = SplayTreeMap<DateTime, List<Evento>>();
+  SplayTreeMap<DateTime, List<Evento>> dates =
+      SplayTreeMap<DateTime, List<Evento>>();
 
   AgendaRegistroData({@required RegistroApi account})
       : super(
@@ -66,13 +67,13 @@ class AgendaRegistroData extends RegistroData {
         return evt;
       }).toList();
 
-      account.update(); // nel caso fosse stata cambiata la classe
+      await account.update(); // nel caso fosse stata cambiata la classe
       return Result(true, true);
     } catch (e, stack) {
       print(e);
       print(stack);
+      return Result(false, false);
     }
-    return Result(false, false);
   }
 
   @override

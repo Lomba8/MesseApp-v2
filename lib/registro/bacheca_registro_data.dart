@@ -64,26 +64,18 @@ class BachecaRegistroData extends RegistroData {
       batch.query('bacheca', where: 'usrId = ?', whereArgs: [account.usrId]);
 
       data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
+
+      data = data.map((e) {
+        return Comunicazione.parse(e);
+      }).toList()
+        ..sort();
+      await account.update(); // nel caso fosse stata cambiata la classe
+
+      return Result(true, true);
     } catch (e, stack) {
       print(stack);
+      return Result(false, false);
     }
-    data = data.map((e) {
-      return Comunicazione(
-        account: account,
-        attachments: jsonDecode(e['attachments']),
-        content: e['content'] ?? null,
-        end_date: DateTime.parse(e['end_date']).toLocal(),
-        evt: e['evt'],
-        id: e['id'],
-        start_date: DateTime.parse(e['start_date']).toLocal(),
-        title: e['title'],
-        valid: e['valid'] == 1 ? true : false,
-        isNew: e['new'] == 1 ? true : false,
-        deleted: e['deleted'] == 1 ? true : false,
-      );
-    }).toList()
-      ..sort();
-    return Result(true, true);
   }
 
   @override
@@ -96,35 +88,51 @@ class BachecaRegistroData extends RegistroData {
   Future<void> load() async {
     await super.load();
     data = data.map((e) {
-      return Comunicazione(
-        account: account,
-        attachments: jsonDecode(e['attachments']),
-        content: e['content'] ?? null,
-        end_date: DateTime.parse(e['end_date']).toLocal(),
-        evt: e['evt'],
-        id: e['id'],
-        start_date: DateTime.parse(e['start_date']).toLocal(),
-        title: e['title'],
-        valid: e['valid'] == 1 ? true : false,
-        isNew: e['new'] == 1 ? true : false,
-        deleted: e['deleted'] == 1 ? true : false,
-      );
+      return Comunicazione.parse(e);
     }).toList()
       ..sort();
   }
 
-  int get newComunicazioni => data.where((v) => v.isNew == true).length;
+  int get newComunicazioni =>
+      data.length > 0 ? data.where((v) => v.isNew == true).length : 0;
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
-  final RegistroApi account;
-  final String evt;
-  final int id;
-  final DateTime start_date, end_date;
+  RegistroApi account;
+  String evt;
+  int id;
+  DateTime start_date, end_date;
   bool valid, isNew, deleted;
-  final String title;
+  String title;
   String content;
-  final Map attachments;
+  Map attachments;
+
+  Comunicazione(
+      {this.evt,
+      this.id,
+      this.start_date,
+      this.end_date,
+      this.valid,
+      this.title,
+      this.attachments,
+      this.content,
+      this.isNew,
+      this.deleted,
+      @required this.account});
+
+  Comunicazione.parse(Map raw) {
+    account = account;
+    attachments = jsonDecode(raw['attachments']);
+    content = raw['content'] ?? null;
+    end_date = DateTime.parse(raw['end_date']).toLocal();
+    evt = raw['evt'];
+    id = raw['id'];
+    start_date = DateTime.parse(raw['start_date']).toLocal();
+    title = raw['title'];
+    valid = raw['valid'] == 1 ? true : false;
+    isNew = raw['new'] == 1 ? true : false;
+    deleted = raw['deleted'] == 1 ? true : false;
+  }
 
   void loadContent(void Function() callback) async {
     try {
@@ -191,19 +199,6 @@ class Comunicazione extends Comparable<Comunicazione> {
     int res = await database
         .rawUpdate('UPDATE bacheca SET new = 0 WHERE id = ?', [this.id]);
   }
-
-  Comunicazione(
-      {this.evt,
-      this.id,
-      this.start_date,
-      this.end_date,
-      this.valid,
-      this.title,
-      this.attachments,
-      this.content,
-      this.isNew,
-      this.deleted,
-      @required this.account});
 
   @override
   int compareTo(Comunicazione other) {

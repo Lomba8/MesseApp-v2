@@ -60,26 +60,8 @@ class NoteRegistroData extends RegistroData {
           whereArgs: [account.usrId]);
       batch.query('note', where: 'usrId = ?', whereArgs: [account.usrId]);
 
-      data = (await batch.commit()).last.map((v) => Map.from(v)).toList();
-
-      data = data.map((e) {
-        return Nota(
-            account: account,
-            autore: e['autore'],
-            date: e['date'] != null
-                ? DateTime.tryParse(e['date']).toLocal()
-                : null,
-            inizio: e['inizio'] != null
-                ? DateTime.tryParse(e['inizio']).toLocal()
-                : null,
-            fine: e['fine'] != null
-                ? DateTime.tryParse(e['fine']).toLocal()
-                : null,
-            id: e['id'],
-            isNew: e['new'] == 1 ? true : false,
-            motivazione: e['evt'],
-            tipologia: e['tipologia']);
-      }).toList();
+      data =
+          (await batch.commit()).last.map<Nota>((v) => Nota.parse(v)).toList();
 
       return Result(true, true);
     } catch (e, stack) {
@@ -97,22 +79,7 @@ class NoteRegistroData extends RegistroData {
   @override
   Future<void> load() async {
     await super.load();
-    data = data.map((e) {
-      return Nota(
-          account: account,
-          autore: e['autore'],
-          date:
-              e['date'] != null ? DateTime.tryParse(e['date']).toLocal() : null,
-          inizio: e['inizio'] != null
-              ? DateTime.tryParse(e['inizio']).toLocal()
-              : null,
-          fine:
-              e['fine'] != null ? DateTime.tryParse(e['fine']).toLocal() : null,
-          id: e['id'],
-          isNew: e['new'] == 1 ? true : false,
-          motivazione: e['evt'],
-          tipologia: e['tipologia']);
-    }).toList();
+    data = data.map<Nota>((v) => Nota.parse(v)).toList();
   }
 
   int get newNote =>
@@ -120,13 +87,13 @@ class NoteRegistroData extends RegistroData {
 }
 
 class Nota {
-  final RegistroApi account;
-  final int id;
-  final String motivazione;
-  final DateTime date;
-  final DateTime inizio, fine;
-  final String autore;
-  final String tipologia;
+  RegistroApi account;
+  int id;
+  String motivazione;
+  DateTime date;
+  DateTime inizio, fine;
+  String autore;
+  String tipologia;
   bool isNew;
 
   Nota(
@@ -139,6 +106,22 @@ class Nota {
       @required this.isNew,
       this.inizio,
       this.fine});
+
+  Nota.parse(Map raw) {
+    this.account = account;
+    this.id = raw['id'];
+    this.motivazione = raw['evt'];
+    this.date =
+        raw['date'] != null ? DateTime.tryParse(raw['date']).toLocal() : null;
+    this.autore = raw['autore'];
+    this.tipologia = raw['tipologia'];
+    this.isNew = raw['new'] == 1 ? true : false;
+    this.inizio = raw['inizio'] != null
+        ? DateTime.tryParse(raw['inizio']).toLocal()
+        : null;
+    this.fine =
+        raw['fine'] != null ? DateTime.tryParse(raw['fine']).toLocal() : null;
+  }
 
   static String getDateWithSlashes(date) => DateFormat.yMd('it').format(date);
   static String getDateWithSlashesShort(date) =>
