@@ -94,7 +94,6 @@ class _NoteScreenState extends State<NoteScreen> {
                   ? SliverChildListDelegate(
                       [
                         NoteListView(
-                          //FIXME cambaire aspect ratio perche su cell piccoli non si vede niente
                           size: size,
                           type: 'NTWN',
                           controller: _controller1,
@@ -221,7 +220,7 @@ class _NoteListViewState extends State<NoteListView> {
               height: 5.0,
             ),
             SizedBox(
-              height: widget.size.height / 5.5,
+              height: widget.size.height / 4,
               child: ListView.builder(
                   controller: widget.controller,
                   scrollDirection: Axis.horizontal,
@@ -238,7 +237,7 @@ class _NoteListViewState extends State<NoteListView> {
                         SizedBox(
                           width: 10.0,
                         ),
-                        Card(
+                        NotaCard(
                           size: widget.size,
                           nota: note[index],
                         ),
@@ -252,8 +251,8 @@ class _NoteListViewState extends State<NoteListView> {
   }
 }
 
-class Card extends StatefulWidget {
-  const Card({
+class NotaCard extends StatefulWidget {
+  const NotaCard({
     Key key,
     @required this.size,
     @required this.nota,
@@ -263,10 +262,10 @@ class Card extends StatefulWidget {
   final Nota nota;
 
   @override
-  _CardState createState() => _CardState();
+  _NotaCardState createState() => _NotaCardState();
 }
 
-class _CardState extends State<Card> {
+class _NotaCardState extends State<NotaCard> {
   @override
   Widget build(BuildContext context) => GestureDetector(
         onDoubleTap: () => showDialog(
@@ -288,7 +287,7 @@ class _CardState extends State<Card> {
           ),
         ),
         child: Container(
-          width: widget.size.height / 3,
+          width: widget.size.height / 2.5,
           padding: EdgeInsets.all(10.0),
           child: Container(
               decoration: BoxDecoration(

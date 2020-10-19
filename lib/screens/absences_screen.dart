@@ -172,7 +172,6 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
                       ),
                     ),
                   AbsencesListView(
-                      //FIXME cambaire aspect ratio perche su cell piccoli non si vede niente.
                       type: 'ABA0',
                       size: size,
                       ancoraDaGiustificare: daGiustificare),
@@ -248,7 +247,7 @@ class _AbsencesListViewState extends State<AbsencesListView> {
           ),
           if (assenze.isEmpty)
             SizedBox(
-              height: widget.size.height / 5.5,
+              height: widget.size.height / 5,
               child: Center(
                 child: Text(
                   'Nessun evento',
@@ -265,7 +264,7 @@ class _AbsencesListViewState extends State<AbsencesListView> {
                       .length >
                   0)
             SizedBox(
-              height: widget.size.height / 5.5,
+              height: widget.size.height / 5,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: assenze
@@ -324,7 +323,7 @@ class _AbsenceCardState extends State<AbsenceCard> {
         color: Colors.transparent,
         elevation: 5.0,
         child: Container(
-            width: widget.size.height / 3,
+            width: widget.size.height / 2.7,
             padding: EdgeInsets.all(20.0),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),

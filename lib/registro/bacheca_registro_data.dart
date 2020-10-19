@@ -121,7 +121,6 @@ class Comunicazione extends Comparable<Comunicazione> {
       @required this.account});
 
   Comunicazione.parse(Map raw) {
-    account = account;
     attachments = jsonDecode(raw['attachments']);
     content = raw['content'] ?? null;
     end_date = DateTime.parse(raw['end_date']).toLocal();
@@ -137,12 +136,12 @@ class Comunicazione extends Comparable<Comunicazione> {
   void loadContent(void Function() callback) async {
     try {
       http.Response r = await http.post(
-          'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/read/$evt/$id/101',
+          'https://web.spaggiari.eu/rest/v1/students/${session.usrId}/noticeboard/read/$evt/$id/101',
           headers: {
             'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
             'Content-Type': 'application/json',
             'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
-            'Z-Auth-Token': account.token,
+            'Z-Auth-Token': session.token,
           });
       Map json = jsonDecode(r.body);
       this.content = json['item']['text'];
@@ -172,12 +171,12 @@ class Comunicazione extends Comparable<Comunicazione> {
     } else {
       try {
         r = await http.get(
-          'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/noticeboard/attach/$evt/$id/1',
+          'https://web.spaggiari.eu/rest/v1/students/${session.usrId}/noticeboard/attach/$evt/$id/1',
           headers: {
             'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
             'Content-Type': 'application/json',
             'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
-            'Z-Auth-Token': account.token,
+            'Z-Auth-Token': session.token,
           },
         );
         await file.writeAsBytes(r.bodyBytes);
