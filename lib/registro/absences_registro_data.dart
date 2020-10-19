@@ -128,6 +128,21 @@ class AbsencesRegistroData extends RegistroData {
 
   int get newAssenze =>
       data.length > 0 ? data.values.where((v) => v.isNew == true).length : 0;
+
+  double giorniRestanti() {
+    double ore = 0;
+    List<Assenza> _assenze = data.values.toList();
+    _assenze.forEach((assenza) {
+      if (assenza.type == 'ABA0') {
+        ore += 5; //FIXME lunghezza dei giorni
+      } else if (assenza.type == 'ABR0') {
+        ore += assenza.hour;
+      } else if (assenza.type == 'ABU0') {
+        ore += (5 - assenza.hour); //FIXME lunghezza dei giorni
+      }
+    });
+    return ore;
+  }
 }
 
 class Assenza {

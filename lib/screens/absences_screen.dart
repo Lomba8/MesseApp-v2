@@ -14,7 +14,8 @@ class AbsencesScreen extends StatefulWidget {
   _AbsencesScreenState createState() => _AbsencesScreenState();
 }
 
-class _AbsencesScreenState extends State<AbsencesScreen> {
+class _AbsencesScreenState extends State<AbsencesScreen>
+    with SingleTickerProviderStateMixin {
   void _setStateIfAlive() {
     if (mounted) setState(() {});
   }
@@ -94,37 +95,93 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
                           //   borderRadius: BorderRadius.circular(10.0),
                           // ),
                           child: FlatButton(
-                            onPressed: () {
-                              daGiustificare = !daGiustificare;
-                              setState(() {});
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.white70,
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                daGiustificare
-                                    ? 'Da Giustificare'
-                                    : 'Giustificate',
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  fontFamily: 'CoreSans',
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ),
-                            splashColor: Colors.white.withOpacity(0.3),
+                            onPressed: () {},
                             padding: EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 0.0),
+                            child: Column(
+                              children: <Widget>[
+                                Stack(
+                                  children: <Widget>[
+                                    SizedBox(
+                                      width: size.width * 0.5,
+                                    ),
+                                    SizedBox(height: 20),
+                                    GestureDetector(
+                                      onTap: () {
+                                        daGiustificare = !daGiustificare;
+                                        setState(() {});
+                                      },
+                                      child: Text(
+                                        'Da Giustificare',
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          fontFamily: 'CoreSans',
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned.fill(
+                                      child: Align(
+                                        alignment: Alignment(1, 1),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            daGiustificare = !daGiustificare;
+                                            setState(() {});
+                                          },
+                                          child: Text(
+                                            'Giustificate',
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontFamily: 'CoreSans',
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 20,
+                                      child: AnimatedContainer(
+                                        margin: EdgeInsets.only(
+                                            left: daGiustificare
+                                                ? 0
+                                                : size.width * 0.315),
+                                        width: daGiustificare
+                                            ? size.width * 0.25
+                                            : size.width * 0.18,
+                                        height: 0.7,
+                                        duration: Duration(milliseconds: 150),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.white70,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Container(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         FlatButton.icon(
-                          onPressed: () {/*TODO*/},
+                          onPressed: () {
+                            setState(() {
+                              daGiustificare = !daGiustificare;
+                            });
+                            print('giorni: ' +
+                                (main.session.absences.giorniRestanti() ~/ 5)
+                                    .toString());
+                            print('ore: ' +
+                                (main.session.absences
+                                        .giorniRestanti()
+                                        .remainder(5))
+                                    .toString());
+                          },
                           icon: Icon(
                             MdiIcons.informationVariant,
                             size: 30.0,
