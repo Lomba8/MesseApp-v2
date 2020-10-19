@@ -94,6 +94,7 @@ class _NoteScreenState extends State<NoteScreen> {
                   ? SliverChildListDelegate(
                       [
                         NoteListView(
+                          //FIXME cambaire aspect ratio perche su cell piccoli non si vede niente
                           size: size,
                           type: 'NTWN',
                           controller: _controller1,

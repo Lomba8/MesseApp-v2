@@ -172,6 +172,7 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
                       ),
                     ),
                   AbsencesListView(
+                      //FIXME cambaire aspect ratio perche su cell piccoli non si vede niente.
                       type: 'ABA0',
                       size: size,
                       ancoraDaGiustificare: daGiustificare),
@@ -217,15 +218,7 @@ class _AbsencesListViewState extends State<AbsencesListView> {
     main.session.absences.data.forEach((k, v) {
       if (v.type == widget.type) assenze.add(v);
     });
-    String eventi = assenze
-                .where((e) => e.justified == !widget.ancoraDaGiustificare)
-                .length >
-            0
-        ? assenze
-            .where((e) => e.justified == !widget.ancoraDaGiustificare)
-            .length
-            .toString()
-        : '';
+
     return Padding(
       padding: EdgeInsets.only(bottom: 20.0, left: 10.0),
       child: Column(
@@ -236,7 +229,13 @@ class _AbsencesListViewState extends State<AbsencesListView> {
                   .length >
               0)
             Text(
-              ' • (' + eventi + ') ' + Assenza.getTipo(widget.type),
+              ' • (' +
+                  assenze
+                      .where((e) => e.justified == !widget.ancoraDaGiustificare)
+                      .length
+                      .toString() +
+                  ') ' +
+                  Assenza.getTipo(widget.type),
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white60
