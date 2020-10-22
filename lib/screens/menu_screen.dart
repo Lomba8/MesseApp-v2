@@ -1,5 +1,9 @@
 import 'package:Messedaglia/main.dart' as main;
+import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/registro/absences_registro_data.dart';
+import 'package:Messedaglia/registro/note_registro_data.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
+import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/note_screen.dart';
@@ -22,11 +26,13 @@ class Menu extends StatefulWidget {
   MenuState createState() => MenuState();
 }
 
+SheetController sheetController;
+SheetState _state;
+
 class MenuState extends State<Menu> with WidgetsBindingObserver {
   List<Widget> screens = [Orari(), Agenda(), Home(), Voti(), AreaStudenti()];
 
   bool sheetExtended = false;
-  SheetController sheetController;
 
   @override
   void initState() {
@@ -104,13 +110,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
               borderRadius: BorderRadius.circular(2.5), color: Colors.grey),
         ),
         builder: (context, state) {
-          void _push(int position) {
-            sheetController.snapToExtent(state.minExtent,
-                duration: Duration(milliseconds: 200));
-            active = position;
-            setState(() {});
-          }
-
+          _state = state;
           //FIXME: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
@@ -128,7 +128,10 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                           alignment: Alignment.topRight,
                           children: <Widget>[
                             GestureDetector(
-                              onTap: () => _push(3),
+                              onTap: () {
+                                _push(3);
+                                setState(() {});
+                              },
                               child: Transform.scale(
                                 scale: 1.2,
                                 child: SvgPicture.asset(
@@ -246,29 +249,46 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   }
 }
 
-class HomeScreenWidgets extends StatelessWidget {
+void _push(int position) {
+  sheetController.snapToExtent(_state.minExtent,
+      duration: Duration(milliseconds: 200));
+  active = position;
+}
+
+class HomeScreenWidgets extends StatefulWidget {
+  @override
+  _HomeScreenWidgetsState createState() => _HomeScreenWidgetsState();
+}
+
+class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Flexible(
           flex: 1,
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width / 2,
-                height: 100,
-                color: Colors.red,
-              )
-            ],
+          child: Container(
+            alignment: Alignment.topCenter,
+            width: MediaQuery.of(context).size.width / 2,
+            // color: Colors.red,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: (_noteWidget(context))
+                  .followedBy(_assenzeWidget(setState(() {}), context))
+                  .toList(),
+            ),
           ),
         ),
         Flexible(
           flex: 1,
-          child: Column(
-            children: _votiWidget(),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 2,
+            child: Column(
+              children: _votiWidget(setState(() {}), context),
+            ),
           ),
         ),
       ],
@@ -276,8 +296,144 @@ class HomeScreenWidgets extends StatelessWidget {
   }
 }
 
-_votiWidget() {
-  List<Widget> voti = new List();
+_noteWidget(BuildContext context) {
+  List<Widget> note = List();
+
+  main.session.note.data.where((n) => n.isNew == true).forEach((nota) {
+    note.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        child: SizedBox(
+          height: 80 + 20.0,
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
+              Expanded(
+                child: Material(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFF33333D)
+                      : Color(0xFFD2D1D7),
+                  borderRadius: BorderRadius.circular(10.0),
+                  elevation: 10.0, //TODO: elelvation or not?
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(NoteScreen.id);
+                    },
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Icon(
+                          Globals.iconeNote[nota.tipologia],
+                          color: Globals.coloriNote[nota.tipologia],
+                          size: 30,
+                        ),
+                        AutoSizeText(
+                          nota?.date != null
+                              ? Nota.getDateWithSlashes(nota?.date)
+                              : Nota.getDateWithSlashesShort(nota?.inizio) +
+                                  ' - ' +
+                                  Nota.getDateWithSlashesShort(nota?.fine),
+                          maxLines: 1,
+                          minFontSize: 11,
+                          maxFontSize: 15,
+                          style: TextStyle(
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  });
+  return note.reversed.toList();
+}
+
+_assenzeWidget(void _fn, BuildContext context) {
+  List<Widget> assenze = List();
+
+  main.session.absences.data.values
+      .where((a) => a.justified == false)
+      .forEach((assenza) {
+    assenze.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: SizedBox(
+          height: 80.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
+              Expanded(
+                child: Material(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFF33333D)
+                      : Color(0xFFD2D1D7),
+                  borderRadius: BorderRadius.circular(10.0),
+                  elevation: 10.0, //TODO: elelvation or not?
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(AbsencesScreen.id);
+                    },
+                    dense: true,
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(
+                            right: 10,
+                            bottom: 10,
+                          ),
+                          width: 35.0,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Globals.coloriAssenze[assenza.type],
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Globals.iconeAssenze[assenza.justification],
+                            color: Colors.black,
+                            size: 20,
+                          ),
+                        ),
+                        AutoSizeText(
+                          Assenza.getDateWithSlashes(assenza.date),
+                          maxLines: 1,
+                          maxFontSize: 13,
+                          minFontSize: 8,
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.white70,
+                            fontFamily: 'CoreSans',
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  });
+  return assenze.reversed.toList();
+}
+
+_votiWidget(void _fn, BuildContext context) {
+  List<Widget> voti = List();
 
   main.session.voti.data.where((voto) => voto.isNew == true).forEach((voto) {
     voti.add(
@@ -291,10 +447,16 @@ _votiWidget() {
                 height: 10.0,
               ),
               Material(
-                color: Voto.getColor(voto.voto).withOpacity(0.5),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Color(0xFF33333D)
+                    : Color(0xFFD2D1D7),
                 borderRadius: BorderRadius.circular(10.0),
-                // elevation: 10.0,  //TODO: elelvation or not?
+                elevation: 10.0, //TODO: elelvation or not?
                 child: ListTile(
+                  onTap: () {
+                    _push(3);
+                    _fn;
+                  },
                   dense: true,
                   leading: Container(
                     margin: EdgeInsets.only(left: 10),
@@ -323,7 +485,7 @@ _votiWidget() {
                   title: AutoSizeText.rich(
                     TextSpan(
                       text: voto.sbj + '\n',
-                      style: TextStyle(fontSize: 13, color: Colors.black87),
+                      style: TextStyle(fontSize: 13, color: Colors.white70),
                       children: <TextSpan>[
                         TextSpan(
                           text: voto.dateWithSlashes,
@@ -342,35 +504,6 @@ _votiWidget() {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
-                  // AutoSizeText(
-                  //   voto.sbj + '\n' + voto.dataWithSlashes,
-                  //   maxLines: 2,
-                  //   maxFontSize: 15,
-                  //   minFontSize: 8,
-                  //   textAlign: TextAlign.center,
-                  //   style: TextStyle(
-                  //     fontFamily: 'CoresansRounded',
-                  //     color: Colors.black,
-                  //     fontWeight: FontWeight.w600,
-                  //   ),
-                  // ),
-                  // trailing: SizedBox(
-                  //   width: 35,
-                  //   child: AutoSizeText(
-                  //     voto.dataWithSlashes, //FIXME manca parte della data
-                  //     maxLines: 1,
-                  //     minFontSize: 8,
-                  //     maxFontSize: 15,
-                  //     textAlign: TextAlign.center,
-                  //     style: TextStyle(
-                  //       fontFamily: 'CoresansRounded',
-                  //       color: Colors.black,
-                  //       fontWeight: FontWeight.w600,
-                  //       fontSize: 15,
-                  //     ),
-                  //   ),
-                  // ),
                 ),
               ),
             ],
@@ -379,7 +512,7 @@ _votiWidget() {
       ),
     );
   });
-  return voti;
+  return voti.reversed.toList();
 }
 
 class BackgroundPainter extends CustomPainter {

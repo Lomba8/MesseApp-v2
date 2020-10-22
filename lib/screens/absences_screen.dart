@@ -10,6 +10,8 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AbsencesScreen extends StatefulWidget {
+  static final String id = 'assenze_screen';
+
   @override
   _AbsencesScreenState createState() => _AbsencesScreenState();
 }
