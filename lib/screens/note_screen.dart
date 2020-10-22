@@ -228,10 +228,13 @@ class _NoteListViewState extends State<NoteListView> {
                       .where((nota) => nota.tipologia == widget.type)
                       .length,
                   itemBuilder: (BuildContext context, int index) {
-                    List note = main.session.note.data
+                    List<Nota> note = main.session.note.data
                         .where((nota) => nota.tipologia == widget.type)
                         .toList();
-                    note[0]?.seen();
+                    if (note[0].isNew)
+                      () async {
+                        await note[0]?.seen();
+                      }();
                     return Row(
                       children: <Widget>[
                         SizedBox(

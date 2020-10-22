@@ -30,14 +30,26 @@ class _AbsencesScreenState extends State<AbsencesScreen>
   }
 
   bool daGiustificare = true;
+  Animation<double> _heightAnimation;
+  AnimationController _animationController;
 
   @override
   void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    _heightAnimation =
+        Tween<double>(begin: 0, end: 1).animate(_animationController)
+          ..addListener(() {
+            setState(() {
+              // The state that has changed here is the animation object’s value.
+            });
+          });
     super.initState();
   }
 
   @override
   void dispose() {
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -82,115 +94,144 @@ class _AbsencesScreenState extends State<AbsencesScreen>
             SliverList(
               delegate: SliverChildListDelegate(
                 [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(left: 15.0),
-                          // decoration: BoxDecoration(
-                          //   color: Colors.white.withOpacity(0.502),
-                          //   borderRadius: BorderRadius.circular(10.0),
-                          // ),
-                          child: FlatButton(
-                            onPressed: () {},
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 0.0),
-                            child: Column(
-                              children: <Widget>[
-                                Stack(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      width: size.width * 0.5,
-                                    ),
-                                    SizedBox(height: 20),
-                                    GestureDetector(
-                                      onTap: () {
-                                        daGiustificare = !daGiustificare;
-                                        setState(() {});
-                                      },
-                                      child: Text(
-                                        'Da Giustificare',
-                                        style: TextStyle(
-                                          fontSize: 15.0,
-                                          fontFamily: 'CoreSans',
-                                          color: Colors.white70,
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) => Container(
+                      margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(left: 15.0),
+                            child: FlatButton(
+                              onPressed: () {},
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 0.0),
+                              child: Column(
+                                children: <Widget>[
+                                  Stack(
+                                    children: <Widget>[
+                                      SizedBox(
+                                        width: size.width * 0.5,
+                                      ),
+                                      SizedBox(height: 20),
+                                      GestureDetector(
+                                        onTap: () {
+                                          daGiustificare = !daGiustificare;
+                                          setState(() {});
+                                        },
+                                        child: Text(
+                                          'Da Giustificare',
+                                          style: TextStyle(
+                                            fontSize: 15.0,
+                                            fontFamily: 'CoreSans',
+                                            color: Colors.white70,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Positioned.fill(
-                                      child: Align(
-                                        alignment: Alignment(1, 1),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            daGiustificare = !daGiustificare;
-                                            setState(() {});
-                                          },
-                                          child: Text(
-                                            'Giustificate',
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              fontFamily: 'CoreSans',
-                                              color: Colors.white70,
+                                      Positioned.fill(
+                                        bottom: 5,
+                                        child: Align(
+                                          alignment: Alignment(1, 1),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              daGiustificare = !daGiustificare;
+                                              setState(() {});
+                                            },
+                                            child: Text(
+                                              'Giustificate',
+                                              style: TextStyle(
+                                                fontSize: 15.0,
+                                                fontFamily: 'CoreSans',
+                                                color: Colors.white70,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Positioned(
-                                      top: 20,
-                                      child: AnimatedContainer(
-                                        margin: EdgeInsets.only(
-                                            left: daGiustificare
-                                                ? 0
-                                                : size.width * 0.315),
-                                        width: daGiustificare
-                                            ? size.width * 0.25
-                                            : size.width * 0.18,
-                                        height: 0.7,
-                                        duration: Duration(milliseconds: 150),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: Colors.white70,
-                                              width: 1.5,
+                                      Positioned(
+                                        top: 20,
+                                        child: AnimatedContainer(
+                                          margin: EdgeInsets.only(
+                                              left: daGiustificare
+                                                  ? 0
+                                                  : size.width * 0.315),
+                                          width: daGiustificare
+                                              ? size.width * 0.25
+                                              : size.width * 0.18,
+                                          height: 0.7,
+                                          duration: Duration(milliseconds: 150),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: Colors.white70,
+                                                width: 1.5,
+                                              ),
                                             ),
                                           ),
+                                          child: Container(),
                                         ),
-                                        child: Container(),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          FlatButton.icon(
+                            onPressed: () {
+                              if (_animationController.value == 0.0)
+                                _animationController.forward();
+                              else if (_animationController.value == 1.0)
+                                _animationController.reverse();
+                            },
+                            icon: Icon(
+                              MdiIcons.informationVariant,
+                              size: 30.0,
+                              color: Colors.white70,
+                            ),
+                            label: Offstage(),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.only(
+                          bottom: _heightAnimation.value * 20,
+                          left: 20.0,
+                        ),
+                        height: _heightAnimation.value * 60,
+                        child: Center(
+                          //TODO finish implementing orari classi diverse
+
+                          child: Text(
+                            'Puoi fare ancora:\n' +
+                                ' • ' +
+                                (main.session.absences.giorniRestanti() ~/ 5)
+                                    .toString() +
+                                ' giorni di assenza\n' +
+                                ' • ' +
+                                main.session.absences
+                                    .giorniRestanti()
+                                    .remainder(5)
+                                    .toInt()
+                                    .toString() +
+                                ' ore di assenza',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              height: 1.5,
+                              fontFamily: 'CoreSans',
+                              letterSpacing: 1.6,
                             ),
                           ),
                         ),
-                        FlatButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              daGiustificare = !daGiustificare;
-                            });
-                            print('giorni: ' +
-                                (main.session.absences.giorniRestanti() ~/ 5)
-                                    .toString());
-                            print('ore: ' +
-                                (main.session.absences
-                                        .giorniRestanti()
-                                        .remainder(5))
-                                    .toString());
-                          },
-                          icon: Icon(
-                            MdiIcons.informationVariant,
-                            size: 30.0,
-                            color: Colors.white70,
-                          ),
-                          label: Offstage(),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   if (main.session.absences.data.values.every((v) => (v
                               .justified ==
@@ -229,17 +270,25 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                       ),
                     ),
                   AbsencesListView(
-                      type: 'ABA0',
-                      size: size,
-                      ancoraDaGiustificare: daGiustificare),
+                    type: 'ABA0',
+                    size: size,
+                    ancoraDaGiustificare: daGiustificare,
+                  ),
                   AbsencesListView(
-                      type: 'ABR0',
-                      size: size,
-                      ancoraDaGiustificare: daGiustificare),
+                    type: 'ABR0',
+                    size: size,
+                    ancoraDaGiustificare: daGiustificare,
+                  ),
                   AbsencesListView(
-                      type: 'ABU0',
-                      size: size,
-                      ancoraDaGiustificare: daGiustificare)
+                    type: 'ABU0',
+                    size: size,
+                    ancoraDaGiustificare: daGiustificare,
+                  ),
+                  AbsencesListView(
+                    type: 'ABR1',
+                    size: size,
+                    ancoraDaGiustificare: daGiustificare,
+                  ),
                 ],
               ),
             )

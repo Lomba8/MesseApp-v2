@@ -206,6 +206,7 @@ class RegistroApi {
 
   Future<void> load() async {
     // se sei offline ricaarica da locale
+    print('load');
     await voti.load();
     await agenda.load();
     await bacheca.load();

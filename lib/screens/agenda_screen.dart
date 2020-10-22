@@ -100,7 +100,6 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
     return LiquidPullToRefresh(
       backgroundColor: Color.fromRGBO(66, 66, 66, 1),
       color: Theme.of(context).accentColor,
-      //key: _refreshIndicatorKey,	// key if you want to add
       onRefresh: _refresh,
       showChildOpacityTransition: false, // refresh callback
       child: CustomScrollView(
@@ -108,70 +107,73 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
         slivers: <Widget>[
           ExpansionSliver(ExpansionSliverDelegate(context,
               title: 'AGENDA',
-              body: Calendar(
-                  _currentDate,
-                  (day, events) => setState(() {
-                        dayEvents.forEach((evt) => evt.seen());
-                        dayEvents = events;
-                        //dayLessons = session.lessons.data['date'][day];
-                        _currentDate = day;
-                        lunghezzaDash = 0;
-                        _value = !_value;
-                      }),
-                  'agenda'),
+              body: Calendar(_currentDate, (day, events) async {
+                dayEvents.forEach((evt) async => await evt.seen());
+                setState(() {
+                  dayEvents = events;
+                  dayEvents.forEach((evt) async => await evt.seen());
+                  //dayLessons = session.lessons.data['date'][day];
+                  _currentDate = day;
+                  lunghezzaDash = 0;
+                  _value = !_value;
+                });
+              }, 'agenda'),
               value: _value)),
           SliverList(
             delegate: SliverChildListDelegate(
               [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children:
-                      dayEvents.where((evt) => evt.giornaliero).map((evento) => Stack(
-                      alignment: Alignment(-0.9, 0.0),
-                      overflow: Overflow.visible,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 8.0),
-                          width: 34.0,
-                          height: 38.0,
-                          decoration: BoxDecoration(color: Colors.white10),
-                          child: SizedBox(),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: (_currentDate.day < 10) ? 18.5 : 12.5,
-                            top: 12.0,
-                          ),
-                          child: Text(
-                            _currentDate.day.toString(),
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontFamily: 'CoreSans',
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                          ),
-                        ),
-                        Icon(
-                          Icons.calendar_today,
-                          size: 50.0,
-                          color: Colors.green[200],
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            size.width / 6.0,
-                            size.height / 50.0,
-                            size.width / 19.0,
-                            size.height / 50.0,
-                          ),
-                          child: EventCard(
-                            evento: evento,
-                          ),
-                        ),
-                      ],
-                    )).toList(),
+                  children: dayEvents
+                      .where((evt) => evt.giornaliero)
+                      .map((evento) => Stack(
+                            alignment: Alignment(-0.9, 0.0),
+                            overflow: Overflow.visible,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 8.0),
+                                width: 34.0,
+                                height: 38.0,
+                                decoration:
+                                    BoxDecoration(color: Colors.white10),
+                                child: SizedBox(),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: (_currentDate.day < 10) ? 18.5 : 12.5,
+                                  top: 12.0,
+                                ),
+                                child: Text(
+                                  _currentDate.day.toString(),
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontFamily: 'CoreSans',
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.calendar_today,
+                                size: 50.0,
+                                color: Colors.green[200],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  size.width / 6.0,
+                                  size.height / 50.0,
+                                  size.width / 19.0,
+                                  size.height / 50.0,
+                                ),
+                                child: EventCard(
+                                  evento: evento,
+                                ),
+                              ),
+                            ],
+                          ))
+                      .toList(),
                 ),
                 if (dayEvents.any((evento) => !evento.giornaliero))
                   Row(
@@ -287,51 +289,53 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: onTap,
-      onDoubleTap: () => showDialog(
-        context: context,
-        builder: (context) => Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: 10.0,
-              vertical: MediaQuery.of(context).size.height / 6),
-          child: Dialog(
-              backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? Color(0xFF33333D)
-                  : Color(0xFFD2D1D7),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: _buildContent(context, true),
-              )),
-        ),
-      ),
-      child: Container(
-        margin: EdgeInsets.only(
-            top: !evento.giornaliero
-                ? 70 *
-                    ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
-                        evento.inizio.minute / 30)
-                : 0.0),
-        height: !evento.giornaliero
-            ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
-            : MediaQuery.of(context).size.height / 5.5,
-        padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black26, blurRadius: 3.0, spreadRadius: 4.5)
-                ],
-                //border: Border.all(color: Colors.white24),
-                color: Theme.of(context).brightness == Brightness.dark
+        onTap: onTap,
+        onDoubleTap: () => showDialog(
+          context: context,
+          builder: (context) => Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: MediaQuery.of(context).size.height / 6),
+            child: Dialog(
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Color(0xFF33333D)
-                    : Color(0xFFD2D1D7)),
-            padding: const EdgeInsets.all(10.0),
-            child: _buildContent(context, false)),
-      ),
-    );
+                    : Color(0xFFD2D1D7),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: _buildContent(context, true),
+                )),
+          ),
+        ),
+        child: Container(
+          margin: EdgeInsets.only(
+              top: !evento.giornaliero
+                  ? 70 *
+                      ((evento.inizio.hour - _AgendaState.timelineStart) * 2 +
+                          evento.inizio.minute / 30)
+                  : 0.0),
+          height: !evento.giornaliero
+              ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
+              : MediaQuery.of(context).size.height / 5.5,
+          padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
+          child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 3.0,
+                        spreadRadius: 4.5)
+                  ],
+                  //border: Border.all(color: Colors.white24),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFF33333D)
+                      : Color(0xFFD2D1D7)),
+              padding: const EdgeInsets.all(10.0),
+              child: _buildContent(context, false)),
+        ),
+      );
 
   Widget _buildContent(BuildContext context, bool grande) => Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,

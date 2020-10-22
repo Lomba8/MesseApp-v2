@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class AbsencesRegistroData extends RegistroData {
                 ABA0: Assenza
                 ABR0: Ritardo
                 ABU0: Uscita
+                ABR1: Ritardo Breve
             */
   Batch batch = database.batch();
 
@@ -76,7 +78,7 @@ class AbsencesRegistroData extends RegistroData {
       data.forEach((e) {
         Assenza assenza = Assenza.parse(e);
 
-        dataTmp[DateTime.parse(e['evtDate'])] = assenza;
+        dataTmp[DateTime.parse(e['date'])] = assenza;
       });
 
       data = dataTmp;
@@ -182,8 +184,9 @@ class Assenza {
 
   Future<void> seen() async {
     this.isNew = false;
-    int res = await database
-        .rawUpdate('UPDATE note SET new = 0 WHERE id = ?', [this.id]);
+    int res = await database.rawUpdate(
+        'UPDATE note SET new = 0 WHERE id = ? AND usrId = ?',
+        [this.id, session.usrId]);
   }
 
   static String getDateWithSlashes(date) => DateFormat.yMd('it').format(date);
@@ -203,6 +206,8 @@ class Assenza {
         return 'Ritardi';
       case 'ABU0':
         return 'Uscite';
+      case 'ABR1':
+        return 'Ritardi Brevi';
       default:
         return 'Eventi';
     }

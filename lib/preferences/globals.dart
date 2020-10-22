@@ -212,6 +212,7 @@ class Globals {
     'ABA0': Colors.red,
     'ABR0': Colors.orange,
     'ABU0': Colors.yellow,
+    'ABR1': Colors.amber
   };
 
   static Map<String, Map> estensioni = {

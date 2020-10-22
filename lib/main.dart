@@ -37,15 +37,17 @@ import 'package:connectivity/connectivity.dart';
     hostedDomain: 'messedaglia.edu.it');*/
 
 RegistroApi session;
+List vacanze;
 
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     WidgetsFlutterBinding.ensureInitialized();
     await init();
     session = accounts?.isNotEmpty ?? false ? accounts.first : null;
-    session?.load();
+    await session?.load();
 
     await downloadOrari();
+
     // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     // _signIn.signIn();
     notificationsPlugin.initialize(
@@ -61,6 +63,7 @@ void main() {
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     prefs = await SharedPreferences.getInstance();
+
     final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
     appName = pkgInfo.appName;
     appVersion = pkgInfo.version;

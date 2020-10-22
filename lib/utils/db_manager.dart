@@ -1,4 +1,5 @@
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -7,6 +8,10 @@ Database database;
 final List<String> days = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab'];
 
 Future<void> init() async {
+  // var databasesPath = await getDatabasesPath();
+  // String path = join(databasesPath, 'database.db');
+  // await deleteDatabase(path);
+
   database = await openDatabase(
     join(await getDatabasesPath(), 'database.db'),
     onCreate: (db, version) {
@@ -47,20 +52,29 @@ Future<void> init() async {
             continue c8;
           }
         c8:
-        case 8: case 9: case 10:
+        case 8:
+        case 9:
+        case 10:
           db.execute('CREATE TABLE orari(cls TEXT PRIMARY KEY, ' +
               (() sync* {
                 for (String day in days)
                   for (int hour = 0; hour < 6; hour++) yield '$day$hour TEXT';
               }()
                   .join(', ')) +
-              ', url TEXT)'); continue c11;
-        c11: case 11: case 12: db.delete('agenda'); continue c13;
-        c13: case 13: {
-          db.delete('auth');
-          db.delete('sections');
-          db.execute('DROP TABLE agenda');
-        }
+              ', url TEXT)');
+          continue c11;
+        c11:
+        case 11:
+        case 12:
+          db.delete('agenda');
+          continue c13;
+        c13:
+        case 13:
+          {
+            db.delete('auth');
+            db.delete('sections');
+            db.execute('DROP TABLE agenda');
+          }
       }
     },
     version: 14,

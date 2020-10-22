@@ -109,16 +109,17 @@ class Evento implements EventInterface {
     giornaliero = raw['giornaliero'] == 1;
     autore = raw['autore'];
     info = raw['info'];
-    isNew = raw['new'] == 1;
+    isNew = raw['new'] == 1 ? true : false;
   }
 
   @override
   DateTime getDate() => DateTime.utc(inizio.year, inizio.month, inizio.day);
 
-  void seen() {
-    isNew = false;
-    database.update('agenda', {'new': 0},
-        where: 'id = ? AND usrId = ?', whereArgs: [_evtId, account.usrId]);
+  Future seen() async {
+    this.isNew = false;
+    int res = await database.rawUpdate(
+        'UPDATE agenda SET new = 0 WHERE id = ? AND usrId = ?',
+        [this._evtId, account.usrId]);
   }
 
   @override

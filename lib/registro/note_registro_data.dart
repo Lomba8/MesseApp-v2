@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
+import 'package:Messedaglia/main.dart' as main;
 
 class NoteRegistroData extends RegistroData {
   NoteRegistroData({@required RegistroApi account})
@@ -131,10 +132,11 @@ class Nota {
       '/' +
       DateFormat.y('it').format(date).split('').sublist(2).join().toString();
 
-  Future<void> seen() async {
+  Future seen() async {
     this.isNew = false;
-    int res = await database
-        .rawUpdate('UPDATE note SET new = 0 WHERE id = ?', [this.id]);
+    int res = await database.rawUpdate(
+        'UPDATE note SET new = 0 WHERE id = ? AND usrId = ?',
+        [this.id, main.session.usrId]);
   }
 
   // String get type => getTipo(tipologia);

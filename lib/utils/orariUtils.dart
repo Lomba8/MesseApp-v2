@@ -12,24 +12,29 @@ Map orari = {};
 // TODO: senza load il salvataggio su db è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
 Future downloadOrari() async {
   try {
-    http.Response res = await http.get(
-        'https://raw.githubusercontent.com/Lomba8/MesseApp-v2/master/orari.json');
-    Map json = jsonDecode(res.body);
-    Batch batch = database.batch();
-    json.keys.where((cls) => !cls.endsWith('url')).forEach((cls) {
-      batch.insert('orari', Map.fromEntries(() sync* {
-        yield MapEntry('cls', cls);
-        for (int ora = 0; ora < 6; ora++)
-          for (int day = 0; day < 6; day++)
-            yield MapEntry('${days[day]}$ora', json[cls][day + ora * 6]);
-        yield MapEntry('url', json[cls + 'url']);
-      }()), conflictAlgorithm: ConflictAlgorithm.replace);
-      orari[cls] = {
-        'orari': json[cls],
-        'url': json[cls+'url']
-      };
-    });
-    batch.commit();
+    http.Response res = await http.get('https://app.messe.dev/orari');
+    if (res.statusCode == 200) {
+      var jsonResponse = jsonDecode(res.body);
+      Batch batch = database.batch();
+      jsonResponse.forEach((key, value) {
+        batch.insert('orari', Map.fromEntries(() sync* {
+          yield MapEntry('cls', key);
+          for (int ora = 0; ora < 6; ora++)
+            for (int day = 0; day < 6; day++)
+              yield MapEntry(
+                  '${days[day]}$ora', jsonResponse[key][key][day + ora * 6]);
+          yield MapEntry('url', jsonResponse[key]["url"]);
+        }()), conflictAlgorithm: ConflictAlgorithm.replace);
+        orari[key] = {
+          'orari': jsonResponse[key][key],
+          'url': jsonResponse[key]["url"]
+        };
+      });
+
+      batch.commit();
+    } else {
+      print('Request failed with status: ${res.statusCode}.');
+    }
   } catch (e, s) {
     print(e);
     print(s);

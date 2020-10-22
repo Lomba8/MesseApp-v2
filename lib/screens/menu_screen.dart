@@ -154,10 +154,11 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                   child:
                                       SvgPicture.asset('icons/calendar.svg')),
                             ),
-                            main.session.agenda
-                                        .getEvents(getDayFromDT(DateTime.now())
-                                            .add(Duration(days: 1)))
-                                        .where((e) => e.isNew == true)
+                            main.session.agenda.data
+                                        .where((e) =>
+                                            e.isNew == true &&
+                                            e.inizio.isAfter(DateTime.now()) ==
+                                                true)
                                         .length >
                                     0
                                 ? Icon(

@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
-import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/widgets/CutomFloatingSearchBar.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -17,20 +15,18 @@ import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:flutter_holo_date_picker/widget/date_picker_widget.dart';
 import 'package:http/http.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:marquee/marquee.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:Messedaglia/main.dart' as main;
 
-bool showValid = prefs.getBool('showValid') ?? false;
-bool showNew = prefs.getBool('showNew') ?? false;
+bool showValid = main.prefs.getBool('showValid') ?? false;
+bool showNew = main.prefs.getBool('showNew') ?? false;
 
 DateTime _start = null, _end = null;
 
@@ -43,7 +39,7 @@ class BachecaScreen extends StatefulWidget {
 
 class _BachecaScreenState extends State<BachecaScreen> {
   Comunicazione _expanded;
-  var data = session.bacheca.data;
+  var data = main.session.bacheca.data;
   final TextEditingController _textController = new TextEditingController();
   FocusNode _firstInputFocusNode;
   String _highlight = '';
@@ -59,8 +55,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
   bool _displayErrorText = false;
 
   Future<void> _refresh() async {
-    await session.bacheca.getData();
-    data = session.bacheca.data;
+    await main.session.bacheca.getData();
+    data = main.session.bacheca.data;
     setState(() {});
     rebuildAllChildren(context);
     files = [];
@@ -75,10 +71,10 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
     var send = await http.post(uri, headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'token': session.token,
-      'uuid': session.uname.substring(1),
+      'token': main.session.token,
+      'uuid': main.session.uname.substring(1),
     }, body: {
-      'ids': session.bacheca.data
+      'ids': main.session.bacheca.data
           .where((circolare) => !circolare.attachments.isEmpty)
           .map((circolare) {
             return json.encode({
@@ -281,13 +277,13 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                         message:
                                             'Inserire sia la data iniziale che la data finale',
                                       ).show(context);
-                                    } else if (annulla) {
                                     } else if (!annulla) {
+                                      data = main.session.bacheca.data;
                                       setState(() {});
                                       rebuildAllChildren(context);
                                     }
                                   });
-                                }, //TODO options dialog come quello di google drive: showPickerDateRange, show only valid pdf, only new?, etc...
+                                },
                                 child: Icon(
                                   Icons.tune,
                                   size: 26,
@@ -298,8 +294,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                               ),
                               GestureDetector(
                                 onTap: () async {
-                                  prefs.setBool('showNew', false);
-                                  prefs.setBool('showValid', false);
+                                  main.prefs.setBool('showNew', false);
+                                  main.prefs.setBool('showValid', false);
                                   if (_displayErrorText == true)
                                     _displayErrorText = false;
                                   HapticFeedback.heavyImpact();
@@ -455,27 +451,44 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     onTap: c.attachments.isEmpty
                                         ? null
                                         : () async {
-                                            if (c.isNew)
-                                              c.loadContent(
-                                                  () => setState(() {}));
+                                            int n;
 
-                                            await pr.show();
+                                            if (c.attachments.length == 1)
+                                              n = 1;
+                                            else {
+                                              if (Platform.isAndroid)
+                                                n = await _settingModalBottomSheet(
+                                                    context, c);
+                                              else if (Platform.isIOS)
+                                                n = await _cupertinoAction(
+                                                    context, c);
+                                              else
+                                                n = await _settingModalBottomSheet(
+                                                    context, c);
+                                            }
+                                            if (n != null) {
+                                              if (c.isNew)
+                                                c.loadContent(
+                                                    () => setState(() {}));
+                                              await pr.show();
 
-                                            var _pathh = await c.downloadPdf();
-                                            pr.hide();
-                                            _pathh = _pathh?.path;
-                                            if (mounted && _pathh != null) {
-                                              setState(() {});
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PDFScreen(
-                                                    path: _pathh,
-                                                    title: c.title,
+                                              var _pathh = await c.downloadPdf(
+                                                  number: n);
+                                              pr.hide();
+                                              _pathh = _pathh?.path;
+                                              if (mounted && _pathh != null) {
+                                                setState(() {});
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PDFScreen(
+                                                      path: _pathh,
+                                                      title: c.title,
+                                                    ),
                                                   ),
-                                                ),
-                                              );
+                                                );
+                                              }
                                             }
                                           },
                                     child: SizedBox(
@@ -580,9 +593,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                 ),
                                 child: CustomExpansionTile(
                                   onExpansionChanged: (isExpanded) async {
-                                    await c.seen();
-
                                     _expand = isExpanded;
+
                                     setState(() {
                                       _expand = !_expand;
 
@@ -604,27 +616,44 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                     onTap: c.attachments.isEmpty
                                         ? null
                                         : () async {
-                                            if (c.isNew)
-                                              c.loadContent(
-                                                  () => setState(() {}));
+                                            int n;
 
-                                            await pr.show();
+                                            if (c.attachments.length == 1)
+                                              n = 1;
+                                            else {
+                                              if (Platform.isAndroid)
+                                                n = await _settingModalBottomSheet(
+                                                    context, c);
+                                              else if (Platform.isIOS)
+                                                n = await _cupertinoAction(
+                                                    context, c);
+                                              else
+                                                n = await _settingModalBottomSheet(
+                                                    context, c);
+                                            }
+                                            if (n != null) {
+                                              if (c.isNew)
+                                                c.loadContent(
+                                                    () => setState(() {}));
+                                              await pr.show();
 
-                                            var _pathh = await c.downloadPdf();
-                                            pr.hide();
-                                            _pathh = _pathh?.path;
-                                            if (mounted && _pathh != null) {
-                                              setState(() {});
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PDFScreen(
-                                                    path: _pathh,
-                                                    title: c.title,
+                                              var _pathh = await c.downloadPdf(
+                                                  number: n);
+                                              pr.hide();
+                                              _pathh = _pathh?.path;
+                                              if (mounted && _pathh != null) {
+                                                setState(() {});
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PDFScreen(
+                                                      path: _pathh,
+                                                      title: c.title,
+                                                    ),
                                                   ),
-                                                ),
-                                              );
+                                                );
+                                              }
                                             }
                                           },
                                     child: SizedBox(
@@ -786,6 +815,31 @@ class _CustomDialogState extends State<CustomDialog> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Leggi tutte',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontFamily: 'CoreSans',
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.clear_all),
+                      onPressed: () async {
+                        if (!main.session.bacheca.data.every((c) =>
+                            (c.isNew == main.session.bacheca.data[0].isNew) &&
+                            main.session.bacheca.data[0].isNew == false)) {
+                          await main.session.bacheca.seenAll();
+                          HapticFeedback.mediumImpact();
+                          Navigator.of(context).pop(false);
+                        }
+                      },
+                    ),
+                  ],
+                ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Row(
@@ -806,7 +860,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           activeColor: Theme.of(context).accentColor,
                           value: showValid,
                           onChanged: (_valid) {
-                            prefs.setBool('showValid', _valid);
+                            main.prefs.setBool('showValid', _valid);
                             setState(() {
                               showValid = _valid;
                             });
@@ -834,7 +888,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           activeColor: Theme.of(context).accentColor,
                           value: showNew,
                           onChanged: (_new) {
-                            prefs.setBool('showNew', _new);
+                            main.prefs.setBool('showNew', _new);
                             setState(() {
                               showNew = _new;
                             });
@@ -954,6 +1008,118 @@ class _CustomDialogState extends State<CustomDialog> {
       ),
     );
   }
+}
+
+Future _cupertinoAction(BuildContext context, Comunicazione c) {
+  return showCupertinoModalPopup(
+      context: context,
+      builder: (context) {
+        return CupertinoActionSheet(
+          title: Text(
+            'Seleziona la circolare',
+            style: TextStyle(
+              fontFamily: 'CoreSans',
+              fontSize: 13,
+              letterSpacing: 1.2,
+            ),
+          ),
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Annulla'),
+          ),
+          actions: <Widget>[
+            CupertinoActionSheetAction(
+              onPressed: () => Navigator.of(context).pop(1),
+              child: Text(
+                c.attachments[0]["fileName"],
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'CoreSans',
+                  fontSize: 13,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            CupertinoActionSheetAction(
+              onPressed: () => Navigator.of(context).pop(2),
+              child: Text(
+                c.attachments[1]["fileName"],
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'CoreSans',
+                  fontSize: 13,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ],
+        );
+      });
+}
+
+Future _settingModalBottomSheet(context, Comunicazione c) {
+  return showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          child: Wrap(
+            children: <Widget>[
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.05,
+                      margin: EdgeInsets.fromLTRB(20, 10, 20, 5),
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop(1);
+                          },
+                          child: Text(
+                            c.attachments[0]["fileName"],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'CoreSans',
+                              fontSize: 13,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.05,
+                  margin: EdgeInsets.fromLTRB(20, 10, 20, 25),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop(2);
+                      },
+                      child: Text(
+                        c.attachments[1]["fileName"],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'CoreSans',
+                          fontSize: 13,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      });
 }
 
 class PDFScreen extends StatelessWidget {
