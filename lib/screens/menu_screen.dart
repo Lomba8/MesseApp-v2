@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
@@ -13,6 +15,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'agenda_screen.dart';
@@ -261,6 +265,17 @@ class HomeScreenWidgets extends StatefulWidget {
 }
 
 class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
+  bool _first = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(Duration(seconds: 3), (Timer t) {
+      _first = !_first;
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -278,6 +293,7 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: (_noteWidget(context))
                   .followedBy(_assenzeWidget(setState(() {}), context))
+                  .followedBy(_eventiWidget(setState(() {}), context, _first))
                   .toList(),
             ),
           ),
@@ -430,6 +446,133 @@ _assenzeWidget(void _fn, BuildContext context) {
     );
   });
   return assenze.reversed.toList();
+}
+
+_eventiWidget(void _fn, BuildContext context, bool _first) {
+  List<Widget> eventi = List();
+
+  main.session.agenda.data.where((a) => a.isNew == true).forEach((evento) {
+    eventi.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: SizedBox(
+          height: 80.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
+              Expanded(
+                child: Material(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFF33333D)
+                      : Color(0xFFD2D1D7),
+                  borderRadius: BorderRadius.circular(10.0),
+                  elevation: 10.0, //TODO: elelvation or not?
+                  child: ListTile(
+                    onTap: () {
+                      _push(1);
+                      _fn;
+                    },
+                    dense: true,
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                            margin: EdgeInsets.only(
+                              right: 10,
+                              bottom: 10,
+                            ),
+                            width: 35.0,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: main.session.subjects.data[evento.autore] is List
+                                  ? Globals.subjects[main.session.subjects
+                                              .data[evento.autore][0]]['colore']
+                                          ?.withOpacity(0.7) ??
+                                      (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white10
+                                          : Colors.black12)
+                                  : Globals.subjects[main.session.subjects.data[evento.autore]]
+                                              ['colore']
+                                          ?.withOpacity(0.7) ??
+                                      (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white10
+                                          : Colors.black12),
+                              shape: BoxShape.circle,
+                            ),
+                            child: AnimatedCrossFade(
+                              firstChild: Icon(
+                                main.session.subjects.data[evento.autore]
+                                        is List
+                                    ? Globals.subjects[main.session.subjects
+                                            .data[evento.autore][0]]['icona'] ??
+                                        MdiIcons.sleep
+                                    : Globals.subjects[main.session.subjects
+                                            .data[evento.autore]]['icona'] ??
+                                        MdiIcons.sleep,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              secondChild: Icon(
+                                main.session.subjects.data[evento.autore]
+                                        is List
+                                    ? Globals.subjects[main.session.subjects
+                                            .data[evento.autore][1]]['icona'] ??
+                                        MdiIcons.sleep
+                                    : Globals.subjects[main.session.subjects
+                                            .data[evento.autore]]['icona'] ??
+                                        MdiIcons.sleep,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              crossFadeState: _first
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
+                              duration: Duration(milliseconds: 500),
+                            )
+
+                            //  Icon(
+                            //   main.session.subjects.data[evento.autore] is List
+                            //       ?
+                            //       Globals.subjects[main.session.subjects
+                            //               .data[evento.autore][0]]['icona'] ??
+                            //           MdiIcons.sleep
+                            //       : Globals.subjects[main.session.subjects
+                            //               .data[evento.autore]]['icona'] ??
+                            //           MdiIcons.sleep,
+                            //   color: Colors.black,
+                            //   size: 20,
+                            // ),
+                            ),
+                        AutoSizeText(
+                          DateFormat.yMd('it').format(evento.inizio),
+                          maxLines: 1,
+                          maxFontSize: 13,
+                          minFontSize: 8,
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.white70,
+                            fontFamily: 'CoreSans',
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  });
+  return eventi.reversed.toList();
 }
 
 _votiWidget(void _fn, BuildContext context) {

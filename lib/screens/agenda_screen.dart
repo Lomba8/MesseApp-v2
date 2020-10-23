@@ -109,9 +109,9 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
               title: 'AGENDA',
               body: Calendar(_currentDate, (day, events) async {
                 dayEvents.forEach((evt) async => await evt.seen());
+                dayEvents = events;
+                dayEvents.forEach((evt) async => await evt.seen());
                 setState(() {
-                  dayEvents = events;
-                  dayEvents.forEach((evt) async => await evt.seen());
                   //dayLessons = session.lessons.data['date'][day];
                   _currentDate = day;
                   lunghezzaDash = 0;

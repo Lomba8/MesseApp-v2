@@ -9,7 +9,7 @@ import 'package:sqflite/sqlite_api.dart';
 
 Map orari = {};
 
-// TODO: senza load il salvataggio su db è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
+// FIXME: senza load il salvataggio su db è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
 Future downloadOrari() async {
   try {
     http.Response res = await http.get('https://app.messe.dev/orari');

@@ -50,7 +50,12 @@ class AgendaRegistroData extends RegistroData {
             'autore': m['authorName'],
             'info': m['notes'],
             'usrId': account.usrId,
-            'new': DateTime.now().isBefore(DateTime.parse(date)) ? 1 : 0
+            'new': (m['isFullDay'] &&
+                    DateTime(DateTime.now().year, DateTime.now().month,
+                            DateTime.now().day)
+                        .isAtSameMomentAs(DateTime.parse(date)))
+                ? 0
+                : DateTime.now().isBefore(DateTime.parse(date)) ? 1 : 0
           },
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
@@ -98,18 +103,24 @@ class AgendaRegistroData extends RegistroData {
 class Evento implements EventInterface {
   final RegistroApi account;
   int _evtId;
-  DateTime inizio, fine; // se nulli, allora l'evento è giornaliero
+  DateTime inizio, fine, date; // se nulli, allora l'evento è giornaliero
   bool giornaliero, isNew;
   String autore, info;
 
   Evento.parse(this.account, Map raw) {
     _evtId = raw['id'];
+    date = DateTime.parse(raw['date']);
     inizio = DateTime.parse(raw['inizio']);
     fine = DateTime.parse(raw['fine']);
     giornaliero = raw['giornaliero'] == 1;
     autore = raw['autore'];
     info = raw['info'];
-    isNew = raw['new'] == 1 ? true : false;
+    isNew = (giornaliero &&
+            DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day)
+                .isAtSameMomentAs(date))
+        ? 0
+        : raw['new'] == 1 ? true : false;
   }
 
   @override
