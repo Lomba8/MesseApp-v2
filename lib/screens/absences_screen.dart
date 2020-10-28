@@ -208,7 +208,7 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                         ),
                         height: _heightAnimation.value * 60,
                         child: Center(
-                          //TODO finish implementing orari classi diverse
+                          //FIXME finish implementing orari classi diverse
 
                           child: Text(
                             'Puoi fare ancora:\n' +

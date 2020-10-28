@@ -9,6 +9,8 @@ import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 
+int ora;
+
 class AbsencesRegistroData extends RegistroData {
   AbsencesRegistroData({@required RegistroApi account})
       : super(
@@ -50,6 +52,16 @@ class AbsencesRegistroData extends RegistroData {
         //   account: account,
         // );
         // data[DateTime.parse(absence['evtDate'])] = assenza;
+
+        if (absence['evtCode'] == "ABA0")
+          ora = null;
+        else if (absence['evtCode'] == "ABR0")
+          ora = absence['evtValue'] != null ? absence['evtValue'] + 1 : null;
+        else if (absence['evtCode'] == "ABU0")
+          ora = absence['evtHPos'];
+        else
+          ora = null;
+        print(ora);
         batch.insert(
             'absences',
             {
@@ -60,7 +72,7 @@ class AbsencesRegistroData extends RegistroData {
                   .toLocal()
                   .toIso8601String(),
               'new': 1,
-              'hour': absence['evtHPos'],
+              'hour': ora,
               'justification': absence['justifReasonDesc'],
               'justified': absence['isJustified'] ? 1 : 0,
             },

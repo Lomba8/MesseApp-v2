@@ -108,16 +108,16 @@ class _AreaStudentiState extends State<AreaStudenti> {
           SliverGrid.count(
             crossAxisCount: 2,
             children: <Widget>[
-              Section(
-                sezione: 'Autogestione', // mappa Globals.icone[sezione]
-                colore: 'verde', // mappa Globals.sezioni[colore]
-                page: MapScreen(),
-              ),
-              Section(
-                sezione: 'Alternanza',
-                colore: 'blu',
-                page: null,
-              ),
+              // Section(
+              //   sezione: 'Autogestione', // mappa Globals.icone[sezione]
+              //   colore: 'verde', // mappa Globals.sezioni[colore]
+              //   page: MapScreen(),
+              // ),
+              // Section(
+              //   sezione: 'Alternanza',
+              //   colore: 'blu',
+              //   page: null,
+              // ),
               Section(
                 sezione: 'Bacheca',
                 colore: 'arancione',
