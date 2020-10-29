@@ -294,7 +294,6 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: (_noteWidget(context))
                   .followedBy(_assenzeWidget(setState(() {}), context))
-                  .followedBy(_eventiWidget(setState(() {}), context, _first))
                   .toList(),
             ),
           ),
@@ -304,7 +303,9 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
           child: Container(
             width: MediaQuery.of(context).size.width / 2,
             child: Column(
-              children: _votiWidget(setState(() {}), context),
+              children: _votiWidget(setState(() {}), context)
+                  .followedBy(_eventiWidget(setState(() {}), context, _first))
+                  .toList(),
             ),
           ),
         ),
@@ -345,9 +346,9 @@ _noteWidget(BuildContext context) {
                         Text(
                           Nota.getTipo(nota.tipologia),
                           style: TextStyle(
-                             color:Colors.white,
-                             fontSize: 15,
-                              ),
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
                         ), // Icon(
 
                         Container(
@@ -520,10 +521,12 @@ _assenzeWidget(void _fn, BuildContext context) {
 _eventiWidget(void _fn, BuildContext context, bool _first) {
   List<Widget> eventi = List();
 
-  main.session.agenda.data.where((a) => a.isNew == true).forEach((evento) {
+  main.session.agenda.data
+      .where((a) => a.isNew == true && a.autore != "Didattica a distanza")
+      .forEach((evento) {
     eventi.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: SizedBox(
           height: 80.0,
           child: Column(
@@ -547,6 +550,7 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                     dense: true,
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Container(
                           margin: EdgeInsets.only(
@@ -556,65 +560,124 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                           width: 35.0,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: main.session.subjects.data[evento.autore] is List
-                                ? Globals.subjects[main.session.subjects
-                                            .data[evento.autore][0]]['colore']
-                                        ?.withOpacity(0.7) ??
-                                    (Theme.of(context).brightness ==
-                                            Brightness.dark
+                            color: main.session.subjects.data[evento.autore] == null ||
+                                    main.session.subjects.data[evento.autore]
+                                        is String ||
+                                    main.session.subjects.data[evento.autore]?.length ==
+                                        1
+                                ? ((evento.autore == "Didattica a distanza" ||
+                                        evento.account == null)
+                                    ? (Theme.of(context).brightness == Brightness.dark
                                         ? Colors.white10
                                         : Colors.black12)
-                                : Globals.subjects[main.session.subjects.data[evento.autore]]
-                                            ['colore']
-                                        ?.withOpacity(0.7) ??
-                                    (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white10
-                                        : Colors.black12),
+                                    : Globals.subjects[main.session.subjects.data[evento.autore]] != null
+                                        ? Globals.subjects[main.session.subjects.data[evento.autore]]['colore']
+                                            .withOpacity(0.7)
+                                        : Globals.subjects[main.session.subjects.data[evento.autore][0]]['colore']
+                                            .withOpacity(0.7))
+                                : main.session.subjects.data[evento.autore] is List
+                                    ? Globals.subjects[main.session.subjects.data[evento.autore][0]]['colore'].withOpacity(0.7)
+                                    : (Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
                             shape: BoxShape.circle,
                           ),
-                          child: AnimatedCrossFade(
-                            firstChild: Icon(
-                              main.session.subjects.data[evento.autore] is List
-                                  ? Globals.subjects[main.session.subjects
-                                          .data[evento.autore][0]]['icona'] ??
-                                      MdiIcons.sleep
-                                  : Globals.subjects[main.session.subjects
-                                          .data[evento.autore]]['icona'] ??
-                                      MdiIcons.sleep,
-                              color: Colors.black,
-                              size: 20,
-                            ),
-                            secondChild: Icon(
-                              main.session.subjects.data[evento.autore] is List
-                                  ? Globals.subjects[main.session.subjects
-                                          .data[evento.autore][1]]['icona'] ??
-                                      MdiIcons.sleep
-                                  : Globals.subjects[main.session.subjects
-                                          .data[evento.autore]]['icona'] ??
-                                      MdiIcons.sleep,
-                              color: Colors.black,
-                              size: 20,
-                            ),
-                            crossFadeState: _first
-                                ? CrossFadeState.showFirst
-                                : CrossFadeState.showSecond,
-                            duration: Duration(milliseconds: 500),
-                          ),
+                          child: main.session.subjects.data[evento.autore]
+                                      is String ||
+                                  main.session.subjects.data[evento.autore]
+                                          .length ==
+                                      1 ||
+                                  main.session.subjects.data[evento.autore] ==
+                                      null
+                              ? Icon(
+                                  main.session.subjects.data[evento.autore] == null ||
+                                          main.session.subjects
+                                              .data[evento.autore] is String ||
+                                          main.session.subjects.data[evento.autore]?.length ==
+                                              1
+                                      ? Globals.subjects[main.session.subjects.data[evento.autore]] != null
+                                          ? Globals.subjects[main
+                                              .session
+                                              .subjects
+                                              .data[evento.autore]]['icona']
+                                          : Globals.subjects[main
+                                              .session
+                                              .subjects
+                                              .data[evento.autore][0]]['icona']
+                                      : MdiIcons.help,
+                                  color: Colors.black,
+                                  size: 20,
+                                )
+                              : AnimatedCrossFade(
+                                  firstChild: Icon(
+                                    (Globals.subjects[main.session.subjects
+                                                .data[evento.autore][0]]
+                                            ['icona']) ??
+                                        MdiIcons.help,
+                                    color: Colors.black,
+                                    size: 20,
+                                  ),
+                                  secondChild: Icon(
+                                    (Globals.subjects[main.session.subjects
+                                                .data[evento.autore][1]]
+                                            ['icona']) ??
+                                        MdiIcons.help,
+                                    color: Colors.black,
+                                    size: 20,
+                                  ),
+                                  crossFadeState: _first
+                                      ? CrossFadeState.showFirst
+                                      : CrossFadeState.showSecond,
+                                  duration: Duration(milliseconds: 500),
+                                ),
                         ),
-                        AutoSizeText(
-                          DateFormat.yMd('it').format(evento.inizio),
-                          maxLines: 1,
-                          maxFontSize: 13,
-                          minFontSize: 8,
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            color: Colors.white70,
-                            fontFamily: 'CoreSans',
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
+
+                        Container(
+                          margin: EdgeInsets.only(bottom: 7),
+                          child: Stack(
+                              alignment: Alignment(-0.9, 0.0),
+                              overflow: Overflow.visible,
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 40,
+                                  color: Colors.green[200],
+                                ),
+                                // Container(
+                                //   margin: EdgeInsets.only(left: 8.0),
+                                //   width: 34.0,
+                                //   height: 38.0,
+                                //   decoration:
+                                //       BoxDecoration(color: Colors.white10),
+                                //   child: SizedBox(),
+                                // ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: (evento.date.day < 10) ? 15.5 : 11.5,
+                                    top: 12.0,
+                                  ),
+                                  child: Text(
+                                    evento.date.day.toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ]),
                         ),
+
+                        // AutoSizeText(
+                        //   DateFormat.yMd('it').format(evento.inizio),
+                        //   maxLines: 1,
+                        //   maxFontSize: 13,
+                        //   minFontSize: 8,
+                        //   style: TextStyle(
+                        //     fontSize: 15.0,
+                        //     color: Colors.white70,
+                        //     fontFamily: 'CoreSans',
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        //   textAlign: TextAlign.center,
+                        // ),
                       ],
                     ),
                   ),
