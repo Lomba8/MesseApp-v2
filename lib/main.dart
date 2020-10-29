@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
@@ -171,6 +172,7 @@ class MaterialAppWithTheme extends StatefulWidget {
   final Agenda agenda = Agenda();
   final BachecaScreen bachecaScreen = BachecaScreen();
   final NoteScreen noteScreen = NoteScreen();
+  final AbsencesScreen absencesScreen = AbsencesScreen();
 
   @override
   State<StatefulWidget> createState() =>
@@ -206,7 +208,8 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
         DidatticaScreen.id: (context) => widget.didatticaScreen,
         NoteScreen.id: (context) => widget.noteScreen,
         Agenda.id: (context) => widget.agenda,
-        BachecaScreen.id: (context) => widget.bachecaScreen
+        BachecaScreen.id: (context) => widget.bachecaScreen,
+        AbsencesScreen.id: (context) => widget.absencesScreen,
       },
       //home: MapScreen(),
     );

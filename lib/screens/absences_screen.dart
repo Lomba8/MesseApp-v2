@@ -451,16 +451,32 @@ class _AbsenceCardState extends State<AbsenceCard> {
               color: Globals.coloriAssenze[widget.assenza.type],
               borderRadius: BorderRadius.circular(10.0)),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: widget.assenza.justification == null
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Padding(
-                padding: widget.assenza.justification.isNotEmpty
-                    ? EdgeInsets.fromLTRB(30, 8, 0, 8)
-                    : EdgeInsets.fromLTRB(70, 8, 0, 8),
-                child: Icon(Globals.iconeAssenze[widget.assenza.justification],
-                    size: 25.0, color: Colors.black),
-              ),
-              widget.assenza.justification.isNotEmpty
+              widget.assenza.justification == null
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 0,
+                        vertical: 10.0,
+                      ),
+                      child: Icon(
+                        MdiIcons.help,
+                        size: 25.0,
+                        color: Colors.black,
+                      ),
+                    )
+                  : Padding(
+                      padding: widget.assenza.justification?.isNotEmpty ?? false
+                          ? EdgeInsets.fromLTRB(30, 8, 0, 8)
+                          : EdgeInsets.fromLTRB(70, 8, 0, 8),
+                      child: Icon(
+                          Globals.iconeAssenze[widget.assenza.justification],
+                          size: 25.0,
+                          color: Colors.black),
+                    ),
+              widget.assenza.justification?.isNotEmpty ?? false
                   ? Expanded(
                       child: Column(
                         children: <Widget>[

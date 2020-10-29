@@ -121,6 +121,10 @@ class Globals {
       'colore': Colors.lightGreenAccent,
       'icona': MdiIcons.currencyGbp, // or googleTranslate ?
     },
+    'INGLESE POTENZIATO': {
+      'colore': Colors.lightGreenAccent,
+      'icona': MdiIcons.currencyGbp, // or googleTranslate ?
+    },
     'INFORMATICA': {
       'colore': Colors.green,
       'icona': Icons.desktop_mac, //  or codeBraces, languageCpp
@@ -141,7 +145,7 @@ class Globals {
     'PROGETTI / POTENZIAMENTO': {
       'colore': Colors.grey,
       'icona': MdiIcons
-          .gavel, // FIXME cosa mettere?   weightLifter, bag-personal-outline, foodOff?
+          .sleep, // FIXME cosa mettere?   weightLifter, bag-personal-outline, foodOff?
     },
     "RELIGIONE-ATTIVITA' ALTERNATIVE": {
       'colore': Colors.deepPurple,
@@ -164,7 +168,44 @@ class Globals {
       'colore': Colors.deepOrangeAccent,
       'icona': MdiIcons.pillar, // or account_balance
     },
+    'EDUCAZIONE CIVICA': {
+      'colore': Colors.pink,
+      'icona': MdiIcons.gavel, // or account_balance
+    },
   };
+
+  static getMaterieSHort(String nome) {
+    switch (nome) {
+      case "EDUCAZIONE CIVICA":
+        return 'E. CIVICA';
+      case "DISEGNO - ST. DELL'ARTE":
+        return 'ARTE';
+      case "LINGUA E LETTERATURA ITALIANA":
+        return 'ITA';
+      case "LINGUA E LETTERATURA LATINA":
+        return 'LAT';
+      case "PROGETTI / POTENZIAMENTO":
+        return 'POTENZIAMENTO';
+      case "SCIENZE MOTORIE E SPORTIVE":
+        return 'MOTORIA';
+      case "SCIENZE NATURALI":
+        return 'SCIENZE';
+      case "INGLESE POTENZIATO":
+        return 'INGL P.';
+      case "INGLESE":
+        return 'INGL';
+      case "INFORMATICA":
+        return 'INFO';
+      case "FILOSOFIA":
+        return 'FILO';
+      case "MATEMATICA":
+        return 'MATE';
+      case "STORIA":
+        return 'STO';
+      default:
+        return nome;
+    }
+  }
 
   static Map<String, Icon> iconeAreaStudenti = {
     // TODO: scegliere icone

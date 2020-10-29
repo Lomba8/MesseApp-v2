@@ -120,13 +120,18 @@ class _AreaStudentiState extends State<AreaStudenti> {
               // ),
               Section(
                 sezione: 'Bacheca',
-                colore: 'arancione',
+                colore: 'blu',
                 page: BachecaScreen(),
               ),
               Section(
                 sezione: 'Didattica',
                 colore: 'rosa',
                 page: DidatticaScreen(),
+              ),
+              Section(
+                sezione: 'Note',
+                colore: 'arancione',
+                page: AbsencesScreen(),
               ),
               Section(
                 sezione: 'Giustificazioni',

@@ -152,7 +152,7 @@ class _NoteListViewState extends State<NoteListView> {
   @override
   void initState() {
     widget.controller.addListener(() async {
-      if (widget.controller.hasListeners) {
+      if (widget.controller.hasClients) {
         int n = widget.controller.offset.toInt() ~/ 300;
         int ntte = main.session.note.data
             .where((nota) => nota.tipologia == "NTTE")
@@ -372,7 +372,7 @@ class _NotaCardState extends State<NotaCard> {
                           overflow: TextOverflow.ellipsis,
                           minFontSize: 12.0,
                           maxFontSize: 13.0,
-                          maxLines: 6,
+                          maxLines: 10,
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark

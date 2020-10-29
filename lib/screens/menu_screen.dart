@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path/path.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'agenda_screen.dart';
@@ -320,7 +321,7 @@ _noteWidget(BuildContext context) {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: SizedBox(
-          height: 80 + 20.0,
+          height: 100 + 20.0,
           child: Column(
             children: <Widget>[
               SizedBox(
@@ -339,23 +340,47 @@ _noteWidget(BuildContext context) {
                     },
                     title: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Icon(
-                          Globals.iconeNote[nota.tipologia],
-                          color: Globals.coloriNote[nota.tipologia],
-                          size: 30,
-                        ),
-                        AutoSizeText(
-                          nota?.date != null
-                              ? Nota.getDateWithSlashes(nota?.date)
-                              : Nota.getDateWithSlashesShort(nota?.inizio) +
-                                  ' - ' +
-                                  Nota.getDateWithSlashesShort(nota?.fine),
-                          maxLines: 1,
-                          minFontSize: 11,
-                          maxFontSize: 15,
+                        Text(
+                          Nota.getTipo(nota.tipologia),
                           style: TextStyle(
-                            color: Colors.white70,
+                             color:Colors.white,
+                             fontSize: 15,
+                              ),
+                        ), // Icon(
+
+                        Container(
+                          padding: EdgeInsets.all(7),
+                          width: 40.0,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Globals.coloriNote[nota.tipologia],
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Globals.subjects[main.session.subjects
+                                    .data[nota.autore][0]]['icona'] ??
+                                MdiIcons.sleep,
+                            color: Colors.black,
+                            size: 17,
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: AutoSizeText(
+                            nota?.date != null
+                                ? Nota.getDateWithSlashes(nota?.date)
+                                : Nota.getDateWithSlashesShort(nota?.inizio) +
+                                    ' - ' +
+                                    Nota.getDateWithSlashesShort(nota?.fine),
+                            maxLines: 1,
+                            minFontSize: 11,
+                            maxFontSize: 13,
+                            style: TextStyle(
+                              color: Colors.white70,
+                            ),
                           ),
                         ),
                       ],
@@ -379,67 +404,111 @@ _assenzeWidget(void _fn, BuildContext context) {
       .where((a) => a.justified == false)
       .forEach((assenza) {
     assenze.add(
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: SizedBox(
-          height: 80.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: 10.0,
-              ),
-              Expanded(
-                child: Material(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Color(0xFF33333D)
-                      : Color(0xFFD2D1D7),
-                  borderRadius: BorderRadius.circular(10.0),
-                  elevation: 10.0, //TODO: elelvation or not?
-                  child: ListTile(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(AbsencesScreen.id);
-                    },
-                    dense: true,
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(
-                            right: 10,
-                            bottom: 10,
+      GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, AbsencesScreen.id);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: SizedBox(
+            height: 65.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  height: 10.0,
+                ),
+                Expanded(
+                  child: Material(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Color(0xFF33333D)
+                        : Color(0xFFD2D1D7),
+                    borderRadius: BorderRadius.circular(10.0),
+                    elevation: 10.0, //TODO: elelvation or not?
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AbsencesScreen.id);
+                      },
+                      dense: true,
+                      title: Row(
+                        mainAxisAlignment:
+                            Assenza.getTipo(assenza.type).split(' ').length == 1
+                                ? MainAxisAlignment.spaceEvenly
+                                : MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(
+                              right: 10,
+                              bottom: 7,
+                            ),
+                            padding: EdgeInsets.only(
+                              left: 1,
+                              top: 4,
+                            ),
+                            width: 30.0,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Globals.coloriAssenze[assenza.type],
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              Assenza.getTipo(assenza.type)
+                                  .split(' ')
+                                  .map((e) => e[0].toString())
+                                  .join('')
+                                  .trim(),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: Assenza.getTipo(assenza.type)
+                                            .split(' ')
+                                            .length ==
+                                        1
+                                    ? 17.0
+                                    : 15.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'CoreSansRounded',
+                              ),
+                            ),
                           ),
-                          width: 35.0,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Globals.coloriAssenze[assenza.type],
-                            shape: BoxShape.circle,
+                          AutoSizeText(
+                            assenza.hour == null
+                                ? ''
+                                : assenza.hour.toString() + 'ᵃ',
+                            maxLines: 1,
+                            maxFontSize: 13,
+                            minFontSize: 8,
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              color: Colors.white,
+                              fontFamily: 'CoreSans',
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          child: Icon(
-                            Globals.iconeAssenze[assenza.justification],
-                            color: Colors.black,
-                            size: 20,
+                          AutoSizeText(
+                            Assenza.getTipo(assenza.type).split(' ').length >
+                                        1 ||
+                                    assenza.type == 'ABA0'
+                                ? Assenza.getDateWithSlashes(assenza.date)
+                                : Assenza.getDateWithSlashesShort(assenza.date),
+                            maxLines: 1,
+                            maxFontSize: 13,
+                            minFontSize: 8,
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              color: Colors.white70,
+                              fontFamily: 'CoreSans',
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        AutoSizeText(
-                          Assenza.getDateWithSlashes(assenza.date),
-                          maxLines: 1,
-                          maxFontSize: 13,
-                          minFontSize: 8,
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            color: Colors.white70,
-                            fontFamily: 'CoreSans',
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -480,74 +549,59 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         Container(
-                            margin: EdgeInsets.only(
-                              right: 10,
-                              bottom: 10,
-                            ),
-                            width: 35.0,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: main.session.subjects.data[evento.autore] is List
+                          margin: EdgeInsets.only(
+                            right: 10,
+                            bottom: 10,
+                          ),
+                          width: 35.0,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: main.session.subjects.data[evento.autore] is List
+                                ? Globals.subjects[main.session.subjects
+                                            .data[evento.autore][0]]['colore']
+                                        ?.withOpacity(0.7) ??
+                                    (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white10
+                                        : Colors.black12)
+                                : Globals.subjects[main.session.subjects.data[evento.autore]]
+                                            ['colore']
+                                        ?.withOpacity(0.7) ??
+                                    (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white10
+                                        : Colors.black12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: AnimatedCrossFade(
+                            firstChild: Icon(
+                              main.session.subjects.data[evento.autore] is List
                                   ? Globals.subjects[main.session.subjects
-                                              .data[evento.autore][0]]['colore']
-                                          ?.withOpacity(0.7) ??
-                                      (Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white10
-                                          : Colors.black12)
-                                  : Globals.subjects[main.session.subjects.data[evento.autore]]
-                                              ['colore']
-                                          ?.withOpacity(0.7) ??
-                                      (Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white10
-                                          : Colors.black12),
-                              shape: BoxShape.circle,
+                                          .data[evento.autore][0]]['icona'] ??
+                                      MdiIcons.sleep
+                                  : Globals.subjects[main.session.subjects
+                                          .data[evento.autore]]['icona'] ??
+                                      MdiIcons.sleep,
+                              color: Colors.black,
+                              size: 20,
                             ),
-                            child: AnimatedCrossFade(
-                              firstChild: Icon(
-                                main.session.subjects.data[evento.autore]
-                                        is List
-                                    ? Globals.subjects[main.session.subjects
-                                            .data[evento.autore][0]]['icona'] ??
-                                        MdiIcons.sleep
-                                    : Globals.subjects[main.session.subjects
-                                            .data[evento.autore]]['icona'] ??
-                                        MdiIcons.sleep,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                              secondChild: Icon(
-                                main.session.subjects.data[evento.autore]
-                                        is List
-                                    ? Globals.subjects[main.session.subjects
-                                            .data[evento.autore][1]]['icona'] ??
-                                        MdiIcons.sleep
-                                    : Globals.subjects[main.session.subjects
-                                            .data[evento.autore]]['icona'] ??
-                                        MdiIcons.sleep,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                              crossFadeState: _first
-                                  ? CrossFadeState.showFirst
-                                  : CrossFadeState.showSecond,
-                              duration: Duration(milliseconds: 500),
-                            )
-
-                            //  Icon(
-                            //   main.session.subjects.data[evento.autore] is List
-                            //       ?
-                            //       Globals.subjects[main.session.subjects
-                            //               .data[evento.autore][0]]['icona'] ??
-                            //           MdiIcons.sleep
-                            //       : Globals.subjects[main.session.subjects
-                            //               .data[evento.autore]]['icona'] ??
-                            //           MdiIcons.sleep,
-                            //   color: Colors.black,
-                            //   size: 20,
-                            // ),
+                            secondChild: Icon(
+                              main.session.subjects.data[evento.autore] is List
+                                  ? Globals.subjects[main.session.subjects
+                                          .data[evento.autore][1]]['icona'] ??
+                                      MdiIcons.sleep
+                                  : Globals.subjects[main.session.subjects
+                                          .data[evento.autore]]['icona'] ??
+                                      MdiIcons.sleep,
+                              color: Colors.black,
+                              size: 20,
                             ),
+                            crossFadeState: _first
+                                ? CrossFadeState.showFirst
+                                : CrossFadeState.showSecond,
+                            duration: Duration(milliseconds: 500),
+                          ),
+                        ),
                         AutoSizeText(
                           DateFormat.yMd('it').format(evento.inizio),
                           maxLines: 1,
@@ -581,71 +635,82 @@ _votiWidget(void _fn, BuildContext context) {
   main.session.voti.data.where((voto) => voto.isNew == true).forEach((voto) {
     voti.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: SizedBox(
-          height: 50 + 10.0,
+          height: 70 + 10.0,
           child: Column(
             children: <Widget>[
               SizedBox(
                 height: 10.0,
               ),
-              Material(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Color(0xFF33333D)
-                    : Color(0xFFD2D1D7),
-                borderRadius: BorderRadius.circular(10.0),
-                elevation: 10.0, //TODO: elelvation or not?
-                child: ListTile(
-                  onTap: () {
-                    _push(3);
-                    _fn;
-                  },
-                  dense: true,
-                  leading: Container(
-                    margin: EdgeInsets.only(left: 10),
-                    width: 30.0,
-                    alignment: Alignment.center,
-                    decoration: new BoxDecoration(
-                      color: Voto.getColor(
-                          voto.voto), //TODO: colore dinamico a seconda del voto
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: AutoSizeText(
-                        voto.votoStr,
-                        maxLines: 1,
-                        maxFontSize: 15,
-                        style: TextStyle(
-                          fontFamily: 'CoresansRounded',
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20,
+              Expanded(
+                child: Material(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFF33333D)
+                      : Color(0xFFD2D1D7),
+                  borderRadius: BorderRadius.circular(10.0),
+                  elevation: 10.0, //TODO: elelvation or not?
+                  child: Center(
+                    child: ListTile(
+                      onTap: () {
+                        _push(3);
+                        _fn;
+                      },
+                      dense: true,
+                      leading: Container(
+                        margin: EdgeInsets.only(left: 10),
+                        width: 35.0,
+                        alignment: Alignment.center,
+                        decoration: new BoxDecoration(
+                          color: Voto.getColor(voto
+                              .voto), //TODO: colore dinamico a seconda del voto
+                          shape: BoxShape.circle,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 4.0,
+                            right: 4.0,
+                            top: 2,
+                          ),
+                          child: AutoSizeText(
+                            voto.votoStr,
+                            maxLines: 1,
+                            maxFontSize: 15,
+                            style: TextStyle(
+                              fontFamily: 'CoresansRounded',
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  title: AutoSizeText.rich(
-                    TextSpan(
-                      text: voto.sbj + '\n',
-                      style: TextStyle(fontSize: 13, color: Colors.white70),
-                      children: <TextSpan>[
+                      title: AutoSizeText.rich(
                         TextSpan(
-                          text: voto.dateWithSlashes,
-                          style: TextStyle(fontSize: 10),
+                          text: Globals.getMaterieSHort(voto.sbj) + '\n',
+                          style: TextStyle(fontSize: 15, color: Colors.white),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: '\n' + voto.dateWithSlashesShort,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                        maxLines: 3,
+                        maxFontSize: 15,
+                        minFontSize: 8,
+                        style: TextStyle(
+                          fontFamily: 'CoresansRounded',
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 10,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    maxLines: 3,
-                    maxFontSize: 15,
-                    minFontSize: 8,
-                    style: TextStyle(
-                      fontFamily: 'CoresansRounded',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 10,
-                    ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
               ),

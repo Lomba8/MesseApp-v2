@@ -140,7 +140,7 @@ class Nota {
   }
 
   // String get type => getTipo(tipologia);
-  static String getTipo(String tipologia) {
+  static String getTipi(String tipologia) {
     switch (tipologia) {
       case 'NTTE':
         return 'Annotazioni';
@@ -150,6 +150,21 @@ class Nota {
         return 'Richiami';
       case 'NTST':
         return 'Sanzioni Disciplinare';
+      default:
+        return 'Note';
+    }
+  }
+
+  static String getTipo(String tipologia) {
+    switch (tipologia) {
+      case 'NTTE':
+        return 'Annotazione';
+      case 'NTCL':
+        return 'Nota Disciplinare';
+      case 'NTWN':
+        return 'Richiamo';
+      case 'NTST':
+        return 'Sanzione Disciplinare';
       default:
         return 'Nota';
     }
