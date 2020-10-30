@@ -43,10 +43,10 @@ class RegistroApi {
   void init() {
     voti = VotiRegistroData(account: this);
     agenda = AgendaRegistroData(account: this);
-    subjects = SubjectsRegistroData(account: this);
+    subjects = SubjectsRegistroData(account: this); //TODO db migration
     bacheca = BachecaRegistroData(account: this);
     note = NoteRegistroData(account: this);
-    lessons = LessonsRegistroData(account: this);
+    lessons = LessonsRegistroData(account: this); //TODO db migration
     absences = AbsencesRegistroData(account: this);
     didactics = DidatticaRegistroData(account: this);
   }
@@ -163,7 +163,11 @@ class RegistroApi {
       if (compleanno.isBefore(DateTime.now()))
         compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));*/
       usrId = json["usrId"];
-      accounts.add(this);
+
+      if (!accounts
+          .map((account) => account.usrId == this.usrId ? 1 : 0)
+          .toList()
+          .contains(1)) accounts.add(this);
       await register();
       return '';
     } catch (e, s) {

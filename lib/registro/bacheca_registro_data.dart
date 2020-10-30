@@ -160,8 +160,8 @@ class Comunicazione extends Comparable<Comunicazione> {
       Map json = jsonDecode(r.body);
       this.content = json['item']['text'];
       int inserted = await database.rawUpdate(
-          'UPDATE bacheca SET content = ? WHERE id = ?',
-          [this.content, this.id]);
+          'UPDATE bacheca SET content = ? WHERE id = ? AND usrId = ?',
+          [this.content, this.id, main.session.usrId]);
       await seen();
       this.isNew = false;
       callback();

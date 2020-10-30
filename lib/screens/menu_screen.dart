@@ -9,21 +9,23 @@ import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/note_screen.dart';
+import 'package:Messedaglia/screens/orari_screen.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
+import 'package:Messedaglia/widgets/calendar_month_icons.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:path/path.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
 import 'home_screen1.dart';
-import 'orari_screen.dart';
 
 class Menu extends StatefulWidget {
   static String id = "menu_screen";
@@ -260,6 +262,8 @@ void _push(int position) {
   active = position;
 }
 
+Timer timer;
+
 class HomeScreenWidgets extends StatefulWidget {
   @override
   _HomeScreenWidgetsState createState() => _HomeScreenWidgetsState();
@@ -271,10 +275,16 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Duration(seconds: 3), (Timer t) {
+    timer = Timer.periodic(Duration(seconds: 3), (Timer t) {
       _first = !_first;
-      setState(() {});
+      if (mounted) setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -293,7 +303,7 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: (_noteWidget(context))
-                  .followedBy(_assenzeWidget(setState(() {}), context))
+                  .followedBy(_assenzeWidget(context))
                   .toList(),
             ),
           ),
@@ -303,8 +313,8 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
           child: Container(
             width: MediaQuery.of(context).size.width / 2,
             child: Column(
-              children: _votiWidget(setState(() {}), context)
-                  .followedBy(_eventiWidget(setState(() {}), context, _first))
+              children: _votiWidget(context)
+                  .followedBy(_eventiWidget(context, _first))
                   .toList(),
             ),
           ),
@@ -334,7 +344,7 @@ _noteWidget(BuildContext context) {
                       ? Color(0xFF33333D)
                       : Color(0xFFD2D1D7),
                   borderRadius: BorderRadius.circular(10.0),
-                  elevation: 10.0, //TODO: elelvation or not?
+                  elevation: 10.0,
                   child: ListTile(
                     onTap: () {
                       Navigator.of(context).pushNamed(NoteScreen.id);
@@ -395,10 +405,10 @@ _noteWidget(BuildContext context) {
       ),
     );
   });
-  return note.reversed.toList();
+  return note;
 }
 
-_assenzeWidget(void _fn, BuildContext context) {
+_assenzeWidget(BuildContext context) {
   List<Widget> assenze = List();
 
   main.session.absences.data.values
@@ -425,7 +435,7 @@ _assenzeWidget(void _fn, BuildContext context) {
                         ? Color(0xFF33333D)
                         : Color(0xFFD2D1D7),
                     borderRadius: BorderRadius.circular(10.0),
-                    elevation: 10.0, //TODO: elelvation or not?
+                    elevation: 10.0,
                     child: ListTile(
                       onTap: () {
                         Navigator.of(context).pushNamed(AbsencesScreen.id);
@@ -515,10 +525,10 @@ _assenzeWidget(void _fn, BuildContext context) {
       ),
     );
   });
-  return assenze.reversed.toList();
+  return assenze;
 }
 
-_eventiWidget(void _fn, BuildContext context, bool _first) {
+_eventiWidget(BuildContext context, bool _first) {
   List<Widget> eventi = List();
 
   main.session.agenda.data
@@ -526,9 +536,9 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
       .forEach((evento) {
     eventi.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: SizedBox(
-          height: 80.0,
+          height: 100.0,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -541,11 +551,15 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                       ? Color(0xFF33333D)
                       : Color(0xFFD2D1D7),
                   borderRadius: BorderRadius.circular(10.0),
-                  elevation: 10.0, //TODO: elelvation or not?
+                  elevation: 10.0,
                   child: ListTile(
                     onTap: () {
+                      giornoSelezionato = evento.date;
+                      main.session.agenda.data.forEach((e) async =>
+                          e.date.isAtSameMomentAs(evento.date)
+                              ? await e.seen()
+                              : null);
                       _push(1);
-                      _fn;
                     },
                     dense: true,
                     title: Row(
@@ -556,8 +570,9 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                           margin: EdgeInsets.only(
                             right: 10,
                             bottom: 10,
+                            top: 3,
                           ),
-                          width: 35.0,
+                          width: 40.0,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: main.session.subjects.data[evento.autore] == null ||
@@ -604,7 +619,7 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                                               .data[evento.autore][0]]['icona']
                                       : MdiIcons.help,
                                   color: Colors.black,
-                                  size: 20,
+                                  size: 25,
                                 )
                               : AnimatedCrossFade(
                                   firstChild: Icon(
@@ -613,7 +628,7 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                                             ['icona']) ??
                                         MdiIcons.help,
                                     color: Colors.black,
-                                    size: 20,
+                                    size: 25,
                                   ),
                                   secondChild: Icon(
                                     (Globals.subjects[main.session.subjects
@@ -621,7 +636,7 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                                             ['icona']) ??
                                         MdiIcons.help,
                                     color: Colors.black,
-                                    size: 20,
+                                    size: 25,
                                   ),
                                   crossFadeState: _first
                                       ? CrossFadeState.showFirst
@@ -629,7 +644,6 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                                   duration: Duration(milliseconds: 500),
                                 ),
                         ),
-
                         Container(
                           margin: EdgeInsets.only(bottom: 7),
                           child: Stack(
@@ -637,47 +651,53 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
                               overflow: Overflow.visible,
                               children: [
                                 Icon(
-                                  Icons.calendar_today,
-                                  size: 40,
+                                  CalendarMonth.calendar_blank,
+                                  size: 55,
                                   color: Colors.green[200],
                                 ),
-                                // Container(
-                                //   margin: EdgeInsets.only(left: 8.0),
-                                //   width: 34.0,
-                                //   height: 38.0,
-                                //   decoration:
-                                //       BoxDecoration(color: Colors.white10),
-                                //   child: SizedBox(),
-                                // ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 10.0, top: 3),
+                                  width: 34.0,
+                                  height: 38.0,
+                                  decoration:
+                                      BoxDecoration(color: Colors.white10),
+                                  child: Offstage(),
+                                ),
+                                Positioned(
+                                  left: 16,
+                                  top: 12,
+                                  child: Text(
+                                    DateFormat.MMMM('it')
+                                        .format(evento.date)
+                                        .split('')
+                                        .toList()
+                                        .sublist(0, 3)
+                                        .join('')
+                                        .toString()
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 11.5,
+                                      color: Colors.black,
+                                      fontFamily: 'CoreSansRounded',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                                 Padding(
                                   padding: EdgeInsets.only(
-                                    left: (evento.date.day < 10) ? 15.5 : 11.5,
-                                    top: 12.0,
+                                    left: (evento.date.day < 10) ? 23 : 18,
+                                    top: 18.0,
                                   ),
                                   child: Text(
                                     evento.date.day.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 13,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ),
                               ]),
                         ),
-
-                        // AutoSizeText(
-                        //   DateFormat.yMd('it').format(evento.inizio),
-                        //   maxLines: 1,
-                        //   maxFontSize: 13,
-                        //   minFontSize: 8,
-                        //   style: TextStyle(
-                        //     fontSize: 15.0,
-                        //     color: Colors.white70,
-                        //     fontFamily: 'CoreSans',
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        //   textAlign: TextAlign.center,
-                        // ),
                       ],
                     ),
                   ),
@@ -689,16 +709,16 @@ _eventiWidget(void _fn, BuildContext context, bool _first) {
       ),
     );
   });
-  return eventi.reversed.toList();
+  return eventi;
 }
 
-_votiWidget(void _fn, BuildContext context) {
+_votiWidget(BuildContext context) {
   List<Widget> voti = List();
 
   main.session.voti.data.where((voto) => voto.isNew == true).forEach((voto) {
     voti.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        padding: const EdgeInsets.symmetric(horizontal: 25.0),
         child: SizedBox(
           height: 70 + 10.0,
           child: Column(
@@ -712,12 +732,11 @@ _votiWidget(void _fn, BuildContext context) {
                       ? Color(0xFF33333D)
                       : Color(0xFFD2D1D7),
                   borderRadius: BorderRadius.circular(10.0),
-                  elevation: 10.0, //TODO: elelvation or not?
+                  elevation: 10.0,
                   child: Center(
                     child: ListTile(
                       onTap: () {
                         _push(3);
-                        _fn;
                       },
                       dense: true,
                       leading: Container(
@@ -725,8 +744,7 @@ _votiWidget(void _fn, BuildContext context) {
                         width: 35.0,
                         alignment: Alignment.center,
                         decoration: new BoxDecoration(
-                          color: Voto.getColor(voto
-                              .voto), //TODO: colore dinamico a seconda del voto
+                          color: Voto.getColor(voto.voto),
                           shape: BoxShape.circle,
                         ),
                         child: Padding(
@@ -783,7 +801,7 @@ _votiWidget(void _fn, BuildContext context) {
       ),
     );
   });
-  return voti.reversed.toList();
+  return voti;
 }
 
 class BackgroundPainter extends CustomPainter {

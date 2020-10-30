@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:Messedaglia/iPhoneXXS11Pro2.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -15,7 +14,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:platform_alert_dialog/platform_alert_dialog.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 
 class Home extends StatefulWidget {
   static final String id = 'home_screen';

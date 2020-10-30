@@ -17,6 +17,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
@@ -46,8 +47,6 @@ void main() {
     await init();
     session = accounts?.isNotEmpty ?? false ? accounts.first : null;
     await session?.load();
-
-    await downloadOrari();
 
     // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
     // _signIn.signIn();
@@ -106,9 +105,8 @@ void main() {
     SystemChrome.setEnabledSystemUIOverlays(
       [Platform.isIOS ? SystemUiOverlay.top : SystemUiOverlay.bottom],
     );
-    runApp(RestartWidget(
-      child: MaterialAppWithTheme(),
-    ));
+
+    runApp(Phoenix(child: MaterialAppWithTheme()));
   });
 }
 
@@ -157,7 +155,7 @@ void setTheme(ThemeMode theme) async {
     default:
       prefs.setBool('DarkMode', null);
   }
-  print('\n' + theme.toString());
+  // print('\n' + theme.toString());
 }
 
 ThemeMode get theme => _theme;
@@ -204,7 +202,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
       routes: {
         Menu.id: (context) => widget.menu,
         LoginScreen.id: (context) => widget.loginScreen,
-        Voti.id: (context) => Material(child: widget.voti),
+        Voti.id: (context) => widget.voti,
         DidatticaScreen.id: (context) => widget.didatticaScreen,
         NoteScreen.id: (context) => widget.noteScreen,
         Agenda.id: (context) => widget.agenda,
@@ -238,15 +236,11 @@ SharedPreferences prefs;
 
 ConnectivityResult connection;
 String appName, appVersion, platform, osVersion, route;
-bool maintenance = false;
+bool maintenance = false, add = false;
 dynamic connection_main;
 BuildContext Context;
-//q bisgna rifare la ruchiesta quando lutente apre la app e/o refersha la page
 
-//TODO: flare_spalsh_screen quando lutente e gia loggato
 //https://encrypted-vtbn0.gstatic.com/video?q=tbn:ANd9GcSn0bRM5qNQI4KGQXS0sndsunb3K7glw5dKxphjADZM-xL1Qb1s
 //https://pub.dev › packages › flare_splash_screen
-
-//TODO: flare_loading_package
 
 //FIXME: se mi interessa aggiungere lo sblocco con impronta digitale usare questa gif di flare https://rive.app/a/Parth181195/files/flare/material-fingerprint/preview

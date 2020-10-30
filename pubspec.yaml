@@ -22,6 +22,7 @@ dependencies:
   flushbar:
     git:
       url: https://github.com/valterh4ck3r/flushbar.git
+  account_selector: ^1.0.1
   android_intent: ^0.3.5+1
   app_settings: ^3.0.1
   auto_size_text: ^2.1.0
@@ -42,6 +43,7 @@ dependencies:
   flutter_holo_date_picker: ^0.1.3+2
   flutter_local_notifications: ^1.2.0+4
   flutter_neumorphic: 1.0.8
+  flutter_phoenix: ^0.1.0
   flutter_svg: ^0.17.4
   http: ^0.12.0+4
   image_downloader: ^0.19.1
@@ -67,6 +69,7 @@ dependencies:
   sliding_sheet: ^0.3.5
   smooth_page_indicator: ^0.1.5
   sqflite: ^1.3.0
+  timer_builder: ^1.3.0
   url_launcher: ^5.4.2
   video_player: ^0.10.8+1
 
@@ -123,6 +126,10 @@ flutter:
     - family: MenuGrid
       fonts:
         - asset: fonts/MenuGrid.ttf
+
+    - family: CalendarMonth
+      fonts:
+        - asset: fonts/CalendarMonth.ttf
     # - family: Ewert
     #   fonts:
     #     - asset: fonts/Ewert-Regular.ttf

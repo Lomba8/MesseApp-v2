@@ -99,17 +99,26 @@ class _BachecaScreenState extends State<BachecaScreen> {
         'http://bd466fb4.ngrok.io/ocr?pattern=${_textController.text.toString()}';
     _highlight = _textController.text;
 
-    http.Response res = await http.get(uri);
-    if (res.statusCode == 200) {
-      if (res.body == null || res.body.isEmpty) return false;
+    try {
+      http.Response res = await http.get(uri);
+      if (res.statusCode == 200) {
+        if (res.body == null || res.body.isEmpty) return false;
 
-      jsonDecode(res.body).forEach((k, v) {
-        // print(
-        //     '$k=> volte: ${v['volte']}, frase: ${v['frase'].map((f) => f.trim())}');
-        files.add(k);
-        frasi[k] = v['frase'].map((f) => f.trim()).toList();
-      });
-    } else {
+        jsonDecode(res.body).forEach((k, v) {
+          // print(
+          //     '$k=> volte: ${v['volte']}, frase: ${v['frase'].map((f) => f.trim())}');
+          files.add(k);
+          frasi[k] = v['frase'].map((f) => f.trim()).toList();
+        });
+      } else {
+        _textController.clear();
+        pr.hide();
+        return false;
+      }
+    } catch (e, stack) {
+      print(e);
+      print(stack);
+      pr.hide();
       return false;
     }
     pr.hide();
@@ -294,16 +303,16 @@ class _BachecaScreenState extends State<BachecaScreen> {
                               ),
                               GestureDetector(
                                 onTap: () async {
-                                  main.prefs.setBool('showNew', false);
-                                  main.prefs.setBool('showValid', false);
+                                  // main.prefs.setBool('showNew', false);
+                                  // main.prefs.setBool('showValid', false);
                                   if (_displayErrorText == true)
                                     _displayErrorText = false;
                                   HapticFeedback.heavyImpact();
                                   setState(() {
                                     _textController.clear();
                                     _start = _end = null;
-                                    showNew = false;
-                                    showValid = false;
+                                    // showNew = false;
+                                    // showValid = false;
                                     files = [];
                                     frasi = {};
                                     _highlight = '';

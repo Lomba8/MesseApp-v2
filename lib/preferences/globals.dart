@@ -211,19 +211,22 @@ class Globals {
     // TODO: scegliere icone
     'Alternanza':
         Icon(Icons.headset_mic), // headset_mic, work, home_work, euro, weekend
-    'Giustificazioni': Icon(MdiIcons.calendarAlert, size: 30), //transitTransfer
+    'Giustificazioni': Icon(MdiIcons.calendarAlert, size: 35), //transitTransfer
     'Autogestione': Icon(Icons.map),
 
-    'Bacheca': Icon(Icons
-        .markunread_mailbox), // drafts, description, markunread_mailbox, inbox, attach_file, local_post_office, insert_drive_file
-    'Note': Icon(Icons.sentiment_dissatisfied), //feedback,
+    'Bacheca': Icon(Icons.markunread_mailbox,
+        size:
+            28), // drafts, description, markunread_mailbox, inbox, attach_file, local_post_office, insert_drive_file
+    'Note': Icon(Icons.sentiment_dissatisfied, size: 35), //feedback,
 
     'Tutoraggi': Icon(Icons.person_add,
         size:
             30), // people, accessibility, how_to_reg, emoji_people, group_add, group, people_outline
 
-    'Didattica': Icon(MdiIcons
-        .fileMultiple), //  fileMultiple, folderAccount, folderMultiple, folderSearch, fileDocumentEdit, folderEdit,
+    'Didattica': Icon(MdiIcons.fileMultiple,
+        size:
+            28), //  fileMultiple, folderAccount, folderMultiple, folderSearch, fileDocumentEdit, folderEdit,
+    'Lezioni': Icon(MdiIcons.clipboardEdit, size: 30),
   };
   static Map<String, IconData> iconeNote = {
     'NTWN': MdiIcons.alert,

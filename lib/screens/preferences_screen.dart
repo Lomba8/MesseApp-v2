@@ -1,14 +1,18 @@
 import 'dart:math';
-
-import 'package:Messedaglia/main.dart';
+import 'package:Messedaglia/main.dart' as main;
+import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/utils/db_manager.dart' as dbManager;
+import 'package:Messedaglia/screens/menu_screen.dart' as menu;
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
+import 'package:account_selector/account.dart';
+import 'package:Messedaglia/widgets/account_selector.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Messedaglia/main.dart';
 
 import 'package:cupertino_tabbar/cupertino_tabbar.dart' as CupertinoTabBar;
 import 'package:flutter/gestures.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Preferences extends StatefulWidget {
@@ -17,9 +21,37 @@ class Preferences extends StatefulWidget {
 }
 
 class _PreferencesState extends State<Preferences> {
-  bool _darkTheme = theme == ThemeMode.dark;
-  int cupertinoTabBarIValue = theme == ThemeMode.dark ? 0 : 1;
+  bool _darkTheme = main.theme == ThemeMode.dark;
+  int cupertinoTabBarIValue = main.theme == ThemeMode.dark ? 0 : 1;
   int cupertinoTabBarIValueGetter() => cupertinoTabBarIValue;
+  List<Account> accountList = List<Account>();
+  List<int> accountIds = List<int>();
+
+  @override
+  void initState() {
+    dbManager.accounts.forEach((account) {
+      accountList.add(
+        Account(
+          title: account.nome,
+          accountImageWidget: CircleAvatar(
+            backgroundColor: Colors.grey,
+            child: Center(
+              child: Text(
+                account.nome
+                    .split(' ')
+                    .map((e) => e[0].toString())
+                    .join('')
+                    .trim(),
+              ),
+            ),
+          ),
+        ),
+      );
+      accountIds.add(account.usrId);
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) => Material(
       color: Theme.of(context).backgroundColor,
@@ -36,7 +68,7 @@ class _PreferencesState extends State<Preferences> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => LicensePage(
-                              applicationName: appName,
+                              applicationName: main.appName,
                             )),
                   ),
               body: _Header()),
@@ -48,34 +80,135 @@ class _PreferencesState extends State<Preferences> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                CupertinoTabBar.CupertinoTabBar(
-                  cupertinoTabBarIValue == 0
-                      ? const Color(0xFF537ec5) // azzurro
-                      : const Color(0xFFffd69f), //arancione
-
-                  cupertinoTabBarIValue == 0
-                      ? const Color(0xFF293a80) // blu
-                      : const Color(0xFFeb999a), // rosso
-                  [
-                    Icon(
-                      MdiIcons.weatherNight,
-                      size: cupertinoTabBarIValue == 0 ? 20.0 * 1.5 : 20.0,
+                Center(
+                    child: CupertinoButton(
+                  color: Theme.of(context).accentColor,
+                  child: Text(
+                    'Accounts',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'CoreSans',
+                      fontSize: 20,
+                      letterSpacing: 1.2,
                     ),
-                    Icon(
-                      MdiIcons.whiteBalanceSunny,
-                      size: cupertinoTabBarIValue == 1 ? 20.0 * 1.5 : 20.0,
-                    )
-                  ],
-                  cupertinoTabBarIValueGetter,
-                  (int index) {
-                    setState(() {
-                      cupertinoTabBarIValue = index;
-                      setTheme(cupertinoTabBarIValue == 0
-                          ? ThemeMode.dark
-                          : ThemeMode.light);
-                    });
+                  ),
+                  onPressed: () {
+                    showAccountSelectorSheet(
+                      context: context,
+                      accountList: accountList,
+                      accountIds: accountIds,
+                      isSheetDismissible: true,
+                      initiallySelectedIndex:
+                          accountIds.indexOf(main.session.usrId),
+                      hideSheetOnItemTap: true,
+                      addAccountTitle: "Add User",
+                      showAddAccountOption: true,
+                      backgroundColor: Colors.grey[800],
+                      arrowColor: Colors.white,
+                      unselectedRadioColor: Colors.white,
+                      selectedRadioColor: Theme.of(context).primaryColor,
+                      unselectedTextColor: Colors.white,
+                      selectedTextColor: Theme.of(context).primaryColor,
+                      tapCallback: (id) {
+                        //use the index of item selected to do your work over here
+                        print('switching to $id');
+                        if (id == main.session.usrId)
+                          return;
+                        else {
+                          menu.timer?.cancel();
+                          menu.timer = null;
+                          main.session =
+                              dbManager.accounts[accountIds.indexOf(id)];
+                          Phoenix.rebirth(
+                              context); //FIXME non riesce a disposare il menu.timer
+                        }
+                      },
+                      addAccountTapCallback: () {
+                        // operation to perform when add account is clicked
+                        print('adding');
+                        main.add = true;
+                        dispose();
+                        Phoenix.rebirth(context);
+                      },
+                      removeAccountTapCallback: (int id) async {
+                        // operation to perform when add account is deleted
+                        print('deleting $id');
+                        bool reload = id == main.session.usrId;
+                        await dbManager.database.rawDelete(
+                            'DELETE FROM auth WHERE usrId = ?', [id]);
+                        await dbManager.init();
+                        main.session = dbManager.accounts?.isNotEmpty ?? false
+                            ? dbManager.accounts.first
+                            : null;
+                        await main.session?.load();
+                        if (reload) {
+                          dispose();
+                          Phoenix.rebirth(context);
+                        } else {
+                          dbManager.accounts =
+                              (await dbManager.database.query('auth'))
+                                  .map((raw) => RegistroApi.parse(raw))
+                                  .toList();
+
+                          accountIds.clear();
+                          accountList.clear();
+                          dbManager.accounts.forEach((account) {
+                            accountList.add(
+                              Account(
+                                title: account.nome,
+                                accountImageWidget: CircleAvatar(
+                                  backgroundColor: Colors.grey,
+                                  child: Center(
+                                    child: Text(
+                                      account.nome
+                                          .split(' ')
+                                          .map((e) => e[0].toString())
+                                          .join('')
+                                          .trim(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                            accountIds.add(account.usrId);
+                          });
+
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    );
                   },
-                ),
+                )),
+
+                // CupertinoTabBar.CupertinoTabBar(
+                //   cupertinoTabBarIValue == 0
+                //       ? const Color(0xFF537ec5) // azzurro
+                //       : const Color(0xFFffd69f), //arancione
+
+                //   cupertinoTabBarIValue == 0
+                //       ? const Color(0xFF293a80) // blu
+                //       : const Color(0xFFeb999a), // rosso
+                //   [
+                //     Icon(
+                //       MdiIcons.weatherNight,
+                //       size: cupertinoTabBarIValue == 0 ? 20.0 * 1.5 : 20.0,
+                //     ),
+                //     Icon(
+                //       MdiIcons.whiteBalanceSunny,
+                //       size: cupertinoTabBarIValue == 1 ? 20.0 * 1.5 : 20.0,
+                //     )
+                //   ],
+                //   cupertinoTabBarIValueGetter,
+                //   (int index) {
+                //     setState(() {
+                //       cupertinoTabBarIValue = index;
+                //       setTheme(cupertinoTabBarIValue == 0
+                //           ? ThemeMode.dark
+                //           : ThemeMode.light);
+                //     });
+                //   },
+                // ),
               ],
             ),
           ),
@@ -92,7 +225,7 @@ class _Header extends ResizableWidget {
     ..onTap = () => AndroidIntent(
             action: 'action_view',
             data:
-                'mailto:messeapp@messedaglia.edu.it?subject=FEEDBACK MESSEAPP&body=$appName ($appVersion) running on $platform $osVersion')
+                'mailto:messeapp@messedaglia.edu.it?subject=FEEDBACK MESSEAPP&body=${main.appName} (${main.appVersion} running on ${main.platform} ${main.osVersion}')
         .launch();
   final TapGestureRecognizer _bugsTap = TapGestureRecognizer()
     ..onTap = () => AndroidIntent(
@@ -137,11 +270,11 @@ class _Header extends ResizableWidget {
               child: Center(
                 child: RichText(
                   text: TextSpan(
-                      text: '$appName  ',
+                      text: '${main.appName}  ',
                       style: Theme.of(context).textTheme.bodyText2,
                       children: [
                         TextSpan(
-                            text: '($appVersion)',
+                            text: '(${main.appVersion})',
                             style: Theme.of(context).textTheme.bodyText1)
                       ]),
                 ),

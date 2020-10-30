@@ -252,8 +252,8 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                           ),
                         ),
                       ),
-                    ),
-                  if (main.session.absences.data.values.every((v) => (v
+                    )
+                  else if (main.session.absences.data.values.every((v) => (v
                               .justified ==
                           main.session.absences.data.values.first.justified)) &&
                       main.session.absences.data.values.first.justified ==
@@ -270,27 +270,32 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                           ),
                         ),
                       ),
+                    )
+                  else
+                    Column(
+                      children: <Widget>[
+                        AbsencesListView(
+                          type: 'ABA0',
+                          size: size,
+                          ancoraDaGiustificare: daGiustificare,
+                        ),
+                        AbsencesListView(
+                          type: 'ABR0',
+                          size: size,
+                          ancoraDaGiustificare: daGiustificare,
+                        ),
+                        AbsencesListView(
+                          type: 'ABU0',
+                          size: size,
+                          ancoraDaGiustificare: daGiustificare,
+                        ),
+                        AbsencesListView(
+                          type: 'ABR1',
+                          size: size,
+                          ancoraDaGiustificare: daGiustificare,
+                        ),
+                      ],
                     ),
-                  AbsencesListView(
-                    type: 'ABA0',
-                    size: size,
-                    ancoraDaGiustificare: daGiustificare,
-                  ),
-                  AbsencesListView(
-                    type: 'ABR0',
-                    size: size,
-                    ancoraDaGiustificare: daGiustificare,
-                  ),
-                  AbsencesListView(
-                    type: 'ABU0',
-                    size: size,
-                    ancoraDaGiustificare: daGiustificare,
-                  ),
-                  AbsencesListView(
-                    type: 'ABR1',
-                    size: size,
-                    ancoraDaGiustificare: daGiustificare,
-                  ),
                 ],
               ),
             )
@@ -357,8 +362,13 @@ class _AbsencesListViewState extends State<AbsencesListView> {
             SizedBox(
               height: widget.size.height / 5,
               child: Center(
-                child: Text(
-                  'Nessun evento',
+                child: AutoSizeText(
+                  'Non ci sono ' +
+                      Assenza.getTipo(widget.type) +
+                      ' da giustificare',
+                  maxFontSize: 20,
+                  minFontSize: 15,
+                  maxLines: 1,
                   style: TextStyle(
                     fontFamily: 'CoreSans',
                     color: Colors.white,

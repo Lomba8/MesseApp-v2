@@ -5,8 +5,10 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
+import 'package:Messedaglia/screens/lessons_screen.dart';
 import 'package:Messedaglia/screens/map_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/screens/note_screen.dart';
 import 'package:Messedaglia/screens/tutoraggi_screen.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flushbar/flushbar.dart';
@@ -131,12 +133,17 @@ class _AreaStudentiState extends State<AreaStudenti> {
               Section(
                 sezione: 'Note',
                 colore: 'arancione',
-                page: AbsencesScreen(),
+                page: NoteScreen(),
               ),
               Section(
                 sezione: 'Giustificazioni',
                 colore: 'rosso',
                 page: AbsencesScreen(),
+              ),
+              Section(
+                sezione: 'Lezioni',
+                colore: 'verde',
+                page: LessonsScreen(),
               ),
               Section(
                 sezione: 'Tutoraggi',

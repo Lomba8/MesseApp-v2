@@ -17,6 +17,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../registro/agenda_registro_data.dart';
 
+DateTime giornoSelezionato;
+
 class Agenda extends StatefulWidget {
   static final String id = 'agenda_screen';
 
@@ -37,13 +39,15 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   double lunghezzaDash = 0;
 
   void initState() {
-    _currentDate = DateTime.utc(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    _currentDate = giornoSelezionato ??
+        DateTime.utc(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day);
     dayEvents = session.agenda.getEvents(_currentDate);
     session.agenda.getData().then((r) {
       if (!r.reload || !mounted) return;
-      _currentDate = DateTime.utc(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      _currentDate = giornoSelezionato ??
+          DateTime.utc(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day);
       dayEvents = session.agenda.getEvents(_currentDate);
       setState(() {});
     });
@@ -53,6 +57,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    // giornoSelezionato = null;
     super.dispose();
   }
 
@@ -140,7 +145,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                               ),
                               Padding(
                                 padding: EdgeInsets.only(
-                                  left: (_currentDate.day < 10) ? 18.5 : 12.5,
+                                  left: (_currentDate.day < 10) ? 18.5 : 13.5,
                                   top: 12.0,
                                 ),
                                 child: Text(

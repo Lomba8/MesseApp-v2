@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/screens/agenda_screen.dart';
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -51,26 +53,37 @@ class _LoginScreenState extends State<LoginScreen>
         'videos/loading.mp4') //FIXME: usare animazioni AE con libreria
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {});
+        if (mounted) setState(() {});
       });
     _controller.addListener(() {
       if ((_controller.value.position?.inMicroseconds ?? 0) /
               (_controller.value.duration?.inMicroseconds ?? 1) >=
           1) {
-        _splash_controller.pushReplacementNamed(context, Menu.id);
-        // Navigator.of(this.context).pushReplacementNamed(Menu.id);
+        // _splash_controller.pushReplacementNamed(context, Menu.id);
+        Navigator.of(this.context).pushReplacementNamed(Menu.id);
       }
     });
     _controller.setVolume(0.0);
 
-    if (main.connection_main != ConnectivityResult.none &&
-        main.session != null) {
-      main.session.login().then((ok) {
-        if (ok == '') {
-          downloadAll();
-        } else
-          setState(() => splash = false);
-      });
+    if (main.add) {
+      splash = false;
+      main.add = false;
+    } else if (main.session != null) {
+      print('maim!=null');
+      if (main.connection_main != ConnectivityResult.none) {
+        print('connectivity Online');
+        main.session.login().then((ok) async {
+          print('login');
+          if (ok == '') {
+            await downloadOrari();
+
+            downloadAll();
+          } else {
+            print('splash = false');
+            if (mounted) setState(() => splash = false);
+          }
+        });
+      }
     } else
       splash = false;
     // downloadAll();
@@ -100,9 +113,10 @@ class _LoginScreenState extends State<LoginScreen>
 
   void _submit(BuildContext context) async {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    setState(() {
-      _loading = true;
-    });
+    if (mounted)
+      setState(() {
+        _loading = true;
+      });
 
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
@@ -111,9 +125,11 @@ class _LoginScreenState extends State<LoginScreen>
       if (req == '') {
         _btnController.success();
         main.session = account;
-        setState(() {
-          splash = true;
-        });
+        if (mounted)
+          setState(() {
+            splash = true;
+          });
+        await downloadOrari();
         downloadAll();
       } else {
         _formKey.currentState.reset();
@@ -164,9 +180,10 @@ class _LoginScreenState extends State<LoginScreen>
           ).show(context);
       }
     }
-    setState(() {
-      _loading = false;
-    });
+    if (mounted)
+      setState(() {
+        _loading = false;
+      });
   }
 
   @override

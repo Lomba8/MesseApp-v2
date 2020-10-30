@@ -37,7 +37,8 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   void initState() {
-    _controller1 = ScrollController();
+    _controller1 =
+        ScrollController(); //FIXME toglierli del tutto e metterer .reversed.toList() e fare seenAll()
     _controller2 = ScrollController();
     _controller3 = ScrollController();
     _controller4 = ScrollController();
@@ -118,7 +119,10 @@ class _NoteScreenState extends State<NoteScreen> {
                   : SliverChildListDelegate(
                       [
                         Center(
-                          child: Text('Non ci sono note!'),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 50.0),
+                            child: Text('Non ci sono note!'),
+                          ),
                         )
                       ],
                     ),

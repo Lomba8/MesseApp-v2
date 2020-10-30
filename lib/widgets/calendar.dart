@@ -15,24 +15,32 @@ class Calendar extends ResizableWidget {
   PageController _controller;
   int _page = 0;
 
-  Calendar([this._currentDay, this._onDayChanged, String key]) {
-    if (key != null) {
-      _page = _instances[key]?._page ?? 0;
-      _controller = PageController(initialPage: _page + _pagesCount ~/ 2);
-      _instances[key] = this;
-    } else {
-      _page = 0;
-      _controller = PageController(initialPage: _pagesCount ~/ 2);
-    }
-    _currentDay ??= getDayFromDT(DateTime.now());
-  }
-
-  DateTime _currentDay = DateTime.now();
+  DateTime _currentDay; //= DateTime.now();
   static final Curve _curve = Curves.easeIn;
 
   set currentDay(DateTime currentDay) {
     _onDayChanged(
-        _currentDay = currentDay, session.agenda.getEvents(currentDay));
+      _currentDay = currentDay,
+      session.agenda.getEvents(currentDay),
+    );
+  }
+
+  Calendar([this._currentDay, this._onDayChanged, String key]) {
+    if (key != null) {
+      _page = _instances[key]?._page ?? 0;
+      _controller = PageController(
+          initialPage: _currentDay.month > DateTime.now().month
+              ? _pagesCount ~/ 2 + 1 /* + _page*/
+              : _pagesCount ~/ 2 /* + _page*/);
+      _instances[key] = this;
+    } else {
+      _page = 0;
+      _controller = PageController(
+          initialPage: _currentDay.month > DateTime.now().month
+              ? _pagesCount ~/ 2 + 1
+              : _pagesCount ~/ 2);
+    }
+    _currentDay ??= getDayFromDT(_currentDay ?? DateTime.now());
   }
 
   @override
