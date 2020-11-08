@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/registro.dart';
@@ -7,6 +8,7 @@ import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
+import 'package:Messedaglia/screens/home_screen1.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/note_screen.dart';
@@ -41,11 +43,22 @@ import 'package:connectivity/connectivity.dart';
 RegistroApi session;
 List vacanze;
 
+List avatarList = List();
+Uint8List avatar;
+int accountId;
+
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
     WidgetsFlutterBinding.ensureInitialized();
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    prefs = await SharedPreferences.getInstance();
+    accountId = prefs.getInt('accountId');
     await init();
-    session = accounts?.isNotEmpty ?? false ? accounts.first : null;
+    session = accounts?.isNotEmpty ?? false
+        ? accounts.firstWhere((account) => (accountId != null
+            ? account.usrId == accountId
+            : account.usrId is int))
+        : null;
     await session?.load();
 
     // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
@@ -61,8 +74,18 @@ void main() {
       },
     );
 
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('avatar') != null) {
+      avatarList = jsonDecode(prefs.getString('avatar'));
+      avatar = jsonDecode(prefs.getString('avatar'))
+              .where((e) => e['id'] == session.usrId.toString())
+              .isNotEmpty
+          ? base64Decode(jsonDecode(prefs.getString('avatar'))
+              .where((e) => e['id'] == session.usrId.toString())
+              .first['base64'])
+          : null;
+    } else {
+      avatar = null;
+    }
 
     final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
     appName = pkgInfo.appName;
@@ -103,7 +126,7 @@ void main() {
     }
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIOverlays(
-      [Platform.isIOS ? SystemUiOverlay.top : SystemUiOverlay.bottom],
+      [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
 
     runApp(Phoenix(child: MaterialAppWithTheme()));
@@ -190,7 +213,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
 
   @override
   Widget build(BuildContext context) {
-    Context = context;
+    mainContext = context;
     return MaterialApp(
       theme: Globals.lightTheme,
       navigatorKey: navigatorKey,
@@ -238,8 +261,7 @@ ConnectivityResult connection;
 String appName, appVersion, platform, osVersion, route;
 bool maintenance = false, add = false;
 dynamic connection_main;
-BuildContext Context;
-
+BuildContext mainContext;
 //https://encrypted-vtbn0.gstatic.com/video?q=tbn:ANd9GcSn0bRM5qNQI4KGQXS0sndsunb3K7glw5dKxphjADZM-xL1Qb1s
 //https://pub.dev › packages › flare_splash_screen
 

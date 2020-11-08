@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:Messedaglia/iPhoneXXS11Pro2.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;
@@ -23,10 +25,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Uint8List avatar = (main.prefs.getString('avatar') != '' &&
-          main.prefs.getString('avatar') != null)
-      ? base64Decode(main.prefs.getString('avatar'))
-      : null;
   File image;
 
   bool trimestre = DateTime.now().month > 8 ? true : false;
@@ -89,20 +87,68 @@ class _HomeState extends State<Home> {
                         borderRadius: BorderRadius.circular(5.0),
                         child: GestureDetector(
                           onTap: () async {
-                            image = await ImagePicker.pickImage(
-                                source: ImageSource
-                                    .gallery); // aggiungere il permeso in Info.plist per l'uso della fotocamera se serve
-                            image != null
-                                ? main.prefs.setString('avatar',
-                                    base64Encode(image.readAsBytesSync()))
-                                : null;
-                            image != null
-                                ? avatar = image.readAsBytesSync()
-                                : null;
-                            setState(() {});
+                            final permissionValidator = EasyPermissionValidator(
+                              context: context,
+                              appName: 'Messe App',
+                            );
+
+                            var result = await permissionValidator.photos();
+
+                            if (result) {
+                              image = await ImagePicker.pickImage(
+                                  source: ImageSource
+                                      .gallery); // aggiungere il permeso in Info.plist per l'uso della fotocamera se serve
+
+                              if (image != null) {
+                                main.avatarList.add({
+                                  'id': main.session.usrId.toString(),
+                                  'base64':
+                                      base64Encode(image.readAsBytesSync())
+                                });
+                                main.prefs.setString(
+                                    'avatar', jsonEncode(main.avatarList));
+                                main.avatar = image.readAsBytesSync();
+                                setState(() {});
+                              }
+                            } else {
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return PlatformAlertDialog(
+                                    title:
+                                        Text('Impossibile scaricare la foto.'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text(
+                                              "Per scaricare l'orario bisogna autorizzare la applicazione."),
+                                          Text(
+                                              "Clicca su 'Autorizza' per selezionare l'avatar."),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      PlatformDialogAction(
+                                        child: Text('Cancella'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      PlatformDialogAction(
+                                        child: Text('Autorizza'),
+                                        actionType: ActionType.Preferred,
+                                        onPressed: () {
+                                          AppSettings.openLocationSettings();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
                           },
                           onLongPress: () async {
-                            if (main.prefs.getString('avatar').length > 10)
+                            if (main.prefs.getString('avatar') != null)
                               showDialog<void>(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -127,8 +173,14 @@ class _HomeState extends State<Home> {
                                         child: Text('Reset'),
                                         actionType: ActionType.Preferred,
                                         onPressed: () {
-                                          main.prefs.setString('avatar', '');
-                                          setState(() => avatar = null);
+                                          main.avatarList.retainWhere(
+                                              (element) =>
+                                                  element['id'] ==
+                                                  main.session.usrId
+                                                      .toString());
+                                          main.prefs.setString('avatar',
+                                              jsonEncode(main.avatarList));
+                                          setState(() => main.avatar = null);
                                           Navigator.pop(context);
                                         },
                                       ),
@@ -141,9 +193,9 @@ class _HomeState extends State<Home> {
                             color: Theme.of(context).accentColor,
                             height: 50,
                             width: 50,
-                            child: avatar != null
+                            child: main.avatar != null
                                 ? FittedBox(
-                                    child: Image.memory(avatar),
+                                    child: Image.memory(main.avatar),
                                     fit: BoxFit.cover,
                                   )
                                 : Icon(MdiIcons.account),
@@ -161,15 +213,16 @@ class _HomeState extends State<Home> {
                     preferredSize:
                         Size.fromHeight(MediaQuery.of(context).size.width / 7),
                   ),
-                  flexibleSpace: Container(
-                    width: MediaQuery.of(context).size.width,
-                    constraints: BoxConstraints.expand(),
-                    child: AppBarNico(),
+                  flexibleSpace:
+                      // Container(
+                      //   width: MediaQuery.of(context).size.width,
+                      //   constraints: BoxConstraints.expand(),
+                      //   child: AppBarNico(),
+                      // ),
+                      CustomPaint(
+                    painter: BackgroundPainter(Theme.of(context)),
+                    size: Size.infinite,
                   ),
-                  // CustomPaint(
-                  //   painter: BackgroundPainter(Theme.of(context)),
-                  //   size: Size.infinite,
-                  // ),
                 ),
                 SliverList(
                   delegate: SliverChildListDelegate(

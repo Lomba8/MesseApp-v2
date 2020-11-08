@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -110,6 +111,36 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
+          
+          SliverAppBar(
+            brightness: Theme.of(context).brightness,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            title: Column(
+              children: <Widget>[
+                Text(
+                  "AGENDA",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            bottom: PreferredSize(
+                child: Container(),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+            pinned: true,
+            centerTitle: true,
+            flexibleSpace: CustomPaint(
+              painter: BackgroundPainter(Theme.of(context)),
+              size: Size.infinite,
+            ),
+          ),
           ExpansionSliver(ExpansionSliverDelegate(context,
               title: 'AGENDA',
               body: Calendar(_currentDate, (day, events) async {

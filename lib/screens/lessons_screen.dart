@@ -1,7 +1,7 @@
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
@@ -158,7 +158,7 @@ class _LessonsDetailsState extends State<LessonsDetails> {
             ),
             backgroundColor: Colors.transparent,
             flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
+              painter: BackgroundPainter(Theme.of(context), back: true),
               size: Size.infinite,
             ),
             bottom: PreferredSize(

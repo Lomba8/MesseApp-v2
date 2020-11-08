@@ -1,7 +1,7 @@
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/note_registro_data.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

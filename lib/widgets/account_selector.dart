@@ -8,7 +8,7 @@ showAccountSelectorSheet({
   @required BuildContext context,
   @required List<Account> accountList,
   int initiallySelectedIndex = -1,
-  Function(int id) tapCallback,
+  Future<void> Function(int id) tapCallback,
   Future<void> Function(int id) removeAccountTapCallback,
   bool hideSheetOnItemTap = false,
   Color selectedRadioColor = Colors.green,

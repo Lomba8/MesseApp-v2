@@ -1,7 +1,6 @@
-import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/preferences_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';

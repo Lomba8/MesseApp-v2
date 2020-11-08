@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class SingleAccountSelectionWidget extends StatefulWidget {
   final int initiallySelectedIndex;
-  final Function(int index) tapCallback;
+  Future<void> Function(int id) tapCallback;
   final List<AccountWithSelectionBoolean> accountwithselectionList;
   final bool hideSheetOnItemTap;
   final Color selectedRadioColor,

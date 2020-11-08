@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart' as dbManager;
 import 'package:Messedaglia/screens/menu_screen.dart' as menu;
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:account_selector/account.dart';
 import 'package:Messedaglia/widgets/account_selector.dart';
@@ -56,6 +58,35 @@ class _PreferencesState extends State<Preferences> {
   Widget build(BuildContext context) => Material(
       color: Theme.of(context).backgroundColor,
       child: CustomScrollView(slivers: <Widget>[
+        SliverAppBar(
+          brightness: Theme.of(context).brightness,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          title: Column(
+            children: <Widget>[
+              Text(
+                "IMPOSTAZIONI",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          bottom: PreferredSize(
+              child: Container(),
+              preferredSize:
+                  Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+          pinned: true,
+          centerTitle: true,
+          flexibleSpace: CustomPaint(
+            painter: BackgroundPainter(Theme.of(context), back: true),
+            size: Size.infinite,
+          ),
+        ),
         ExpansionSliver(
           ExpansionSliverDelegate(context,
               title: 'IMPOSTAZIONI',
@@ -110,7 +141,7 @@ class _PreferencesState extends State<Preferences> {
                       selectedRadioColor: Theme.of(context).primaryColor,
                       unselectedTextColor: Colors.white,
                       selectedTextColor: Theme.of(context).primaryColor,
-                      tapCallback: (id) {
+                      tapCallback: (id) async {
                         //use the index of item selected to do your work over here
                         print('switching to $id');
                         if (id == main.session.usrId)
@@ -120,16 +151,35 @@ class _PreferencesState extends State<Preferences> {
                           menu.timer = null;
                           main.session =
                               dbManager.accounts[accountIds.indexOf(id)];
+                          await main.session
+                              .load(); //FIXME session.load() is asynchronous and it renders menu_screen.dart bvefore the data is retrieved and managed
+                          if (main.prefs.getString('avatar') != null) {
+                            main.avatarList =
+                                jsonDecode(main.prefs.getString('avatar'));
+                            main.avatar = jsonDecode(
+                                        main.prefs.getString('avatar'))
+                                    .where((e) => e['id'] == id.toString())
+                                    .isNotEmpty
+                                ? base64Decode(
+                                    jsonDecode(main.prefs.getString('avatar'))
+                                        .where((e) =>
+                                            e['id'] ==
+                                            main.session.usrId.toString())
+                                        .first['base64'])
+                                : null;
+                          } else {
+                            main.avatar = null;
+                          }
                           Phoenix.rebirth(
-                              context); //FIXME non riesce a disposare il menu.timer
+                              context); //FIXME non riesce a disporre il menu.timer
                         }
                       },
                       addAccountTapCallback: () {
                         // operation to perform when add account is clicked
                         print('adding');
                         main.add = true;
-                        dispose();
-                        Phoenix.rebirth(context);
+                        Phoenix.rebirth(
+                            context); //FIXEM manc il sesison.load() (?)
                       },
                       removeAccountTapCallback: (int id) async {
                         // operation to perform when add account is deleted
@@ -144,6 +194,14 @@ class _PreferencesState extends State<Preferences> {
                         await main.session?.load();
                         if (reload) {
                           dispose();
+                          if (main.prefs.getString('avatar') != null) {
+                            main.avatarList.removeWhere(
+                                (element) => element['id'] == id.toString());
+                            main.prefs.setString(
+                                'avatar', jsonEncode(main.avatarList));
+                          } else {
+                            main.avatar = null;
+                          }
                           Phoenix.rebirth(context);
                         } else {
                           dbManager.accounts =

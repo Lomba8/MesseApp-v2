@@ -130,8 +130,8 @@ class VotiRegistroData extends RegistroData {
     List<double> sums = List.filled(10, 0.0);
     List<int> counts = List.filled(10, 0);
     data.where((Voto v) => !v.isBlue).forEach((Voto v) {
-      counts[(v._data.month + 3) % 12]++;
-      sums[(v._data.month + 3) % 12] += v.voto;
+      counts[(v.date.month + 3) % 12]++;
+      sums[(v.date.month + 3) % 12] += v.voto;
     });
     return Map.fromIterables(Iterable.generate(10, (i) => i),
         Iterable.generate(10, (i) => sums[i] / counts[i]));
@@ -156,7 +156,7 @@ class VotiRegistroData extends RegistroData {
 
 class Voto extends Comparable<Voto> {
   int _id;
-  DateTime _data;
+  DateTime date;
   double voto;
   bool isNew;
   String votoStr, info, period, sbj;
@@ -170,11 +170,11 @@ class Voto extends Comparable<Voto> {
       this.isNew = true}) {
     _id = id;
     this.voto = voto?.toDouble();
-    _data = DateTime.parse(data);
+    date = DateTime.parse(data);
   }
   Voto.parse(Map raw) {
     _id = raw['id'];
-    _data = DateTime.parse(raw['date']);
+    date = DateTime.parse(raw['date']);
     voto = raw['voto'];
     votoStr = raw['votoStr'];
     info = raw['info'];
@@ -192,19 +192,19 @@ class Voto extends Comparable<Voto> {
 
   bool get isBlue => voto == null || voto < 0 || voto.isNaN;
 
-  String get data => DateFormat.yMMMMd('it').format(_data);
+  String get data => DateFormat.yMMMMd('it').format(date);
 
-  String get dateWithSlashes => DateFormat.yMd('it').format(_data);
+  String get dateWithSlashes => DateFormat.yMd('it').format(date);
   String get dateWithSlashesShort =>
-      DateFormat.d('it').format(_data) +
+      DateFormat.d('it').format(date) +
       '/' +
-      DateFormat.M('it').format(_data) +
+      DateFormat.M('it').format(date) +
       '/' +
-      DateFormat.y('it').format(_data).split('').sublist(2).join().toString();
+      DateFormat.y('it').format(date).split('').sublist(2).join().toString();
 
   Map<String, dynamic> toJson() => {
         'evtId': _id,
-        'data': _data.toIso8601String(),
+        'data': date.toIso8601String(),
         'voto': voto,
         'votoStr': votoStr,
         'info': info
@@ -218,5 +218,5 @@ class Voto extends Comparable<Voto> {
       data: json['data']);
 
   @override
-  int compareTo(Voto other) => _data.compareTo(other._data);
+  int compareTo(Voto other) => date.compareTo(other.date);
 }

@@ -163,6 +163,8 @@ class RegistroApi {
       if (compleanno.isBefore(DateTime.now()))
         compleanno.add(Duration(days: compleanno.year % 4 == 0 ? 366 : 365));*/
       usrId = json["usrId"];
+      accountId = this.usrId;
+      prefs.setInt('accountId', accountId);
 
       if (!accounts
           .map((account) => account.usrId == this.usrId ? 1 : 0)
@@ -211,6 +213,8 @@ class RegistroApi {
   Future<void> load() async {
     // se sei offline ricaarica da locale
     print('load');
+    accountId = this.usrId;
+    prefs.setInt('accountId', accountId);
     await voti.load();
     await agenda.load();
     await bacheca.load();
@@ -265,7 +269,7 @@ abstract class RegistroData {
         whereArgs: [name, account.usrId]));
     if (section.isNotEmpty) {
       etag = section.first['etag'];
-      lastUpdate = DateTime.tryParse(section.first['lastUpdate']);
+      lastUpdate = DateTime.tryParse(section.first['lastUpdate'] ?? '');
     }
     data = (await database
             .query(name, where: 'usrId = ?', whereArgs: [account.usrId]))

@@ -1,27 +1,13 @@
-import 'dart:convert';
-
 import 'package:Messedaglia/preferences/globals.dart';
-import 'package:Messedaglia/registro/registro.dart';
-import 'package:Messedaglia/screens/absences_screen.dart';
-import 'package:Messedaglia/screens/bacheca_screen.dart';
-import 'package:Messedaglia/screens/didattica_screen.dart';
-import 'package:Messedaglia/screens/lessons_screen.dart';
-import 'package:Messedaglia/screens/map_screen.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
-import 'package:Messedaglia/screens/note_screen.dart';
-import 'package:Messedaglia/screens/tutoraggi_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:http/http.dart' as http;
+import 'package:Messedaglia/screens/screens.dart';
 import 'package:Messedaglia/main.dart' as main;
 
 import 'package:flutter/cupertino.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../registro/registro.dart';
 
 class AreaStudenti extends StatefulWidget {
   static final String id = 'area_studenti_screen';

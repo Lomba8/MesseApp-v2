@@ -1,4 +1,4 @@
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -53,57 +53,65 @@ class VotiDetailsState extends State<VotiDetails> {
                 }),
             pinned: true,
             flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
+              painter: BackgroundPainter(Theme.of(context), back: true),
               size: Size.infinite,
             ),
           ),
           SliverList(
               delegate: SliverChildListDelegate(
             [
-              AspectRatio(
-                aspectRatio: 1.7,
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: LineChart(_votiData()),
+              Padding(
+                padding: EdgeInsets.only(right: 30),
+                child: AspectRatio(
+                  aspectRatio: 1.7,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: LineChart(_votiData()),
+                  ),
                 ),
               ),
-            ]..addAll((widget.voti ?? [])
-                .reversed
-                .map<Widget>((mark) => CustomExpansionTile(
-                      title: Text(
-                        mark.data,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          mark.info.isEmpty ? 'Nessuna descrizione' : mark.info,
-                          style: Theme.of(context).textTheme.bodyText1,
+            ]..addAll(
+                (widget.voti ?? []).reversed.map<Widget>((mark) => Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: CustomExpansionTile(
+                        title: Text(
+                          mark.data,
                           textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      leading: Stack(
-                        children: <Widget>[
-                          CircleAvatar(
-                            backgroundColor: mark.color,
-                            child: Center(
-                              child: Text(
-                                mark.votoStr,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            mark.info.isEmpty
+                                ? 'Nessuna descrizione'
+                                : mark.info,
+                            style: Theme.of(context).textTheme.bodyText1,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        leading: Stack(
+                          children: <Widget>[
+                            CircleAvatar(
+                              backgroundColor: mark.color,
+                              child: Center(
+                                child: Text(
+                                  mark.votoStr,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
-                          ),
-                          if (mark.isNew)
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: Colors.yellow),
-                            )
-                        ],
+                            if (mark.isNew)
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.yellow),
+                              )
+                          ],
+                        ),
                       ),
                     ))),
           ))
@@ -111,34 +119,47 @@ class VotiDetailsState extends State<VotiDetails> {
       ));
 
   LineChartData _votiData() => LineChartData(
-      betweenBarsData: [
-        BetweenBarsData(
-          fromIndex: 0,
-          toIndex: 0,
-          gradientTo: Offset(0.0, 0.0),
-          colors: [Colors.green, Colors.red],
-        )
-      ],
-      lineTouchData: LineTouchData(),
-      minY: 0,
-      maxY: 10,
-      gridData: FlGridData(
-        show: true,
-        drawVerticalLine: true,
-        getDrawingVerticalLine: (value) => FlLine(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
-                : Colors.black12,
-            strokeWidth: 1),
-        drawHorizontalLine: true,
-        getDrawingHorizontalLine: (value) => FlLine(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
-                : Colors.black12,
-            strokeWidth: 1),
-      ),
-      titlesData: FlTitlesData(
-          bottomTitles: SideTitles(showTitles: false),
+        betweenBarsData: [
+          BetweenBarsData(
+            fromIndex: 0,
+            toIndex: 0,
+            gradientTo: Offset(0.0, 0.0),
+            colors: [Colors.green, Colors.red],
+          )
+        ],
+        lineTouchData: LineTouchData(),
+        minY: 2,
+        // maxY: 10,
+        gridData: FlGridData(
+          show: false,
+          drawVerticalLine: false,
+          getDrawingVerticalLine: (value) => FlLine(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white10
+                  : Colors.black12,
+              strokeWidth: 1),
+          drawHorizontalLine: true,
+          getDrawingHorizontalLine: (value) => FlLine(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white10
+                  : Colors.black12,
+              strokeWidth: 1),
+        ),
+        titlesData: FlTitlesData(
+          bottomTitles: SideTitles(
+            getTitles: (double index) {
+              return dates[index.toInt()];
+            },
+            margin: 20,
+            showTitles: true,
+            textStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.black87,
+              fontSize: 15,
+            ),
+            rotateAngle: 45, //TODO dynamic
+          ),
           leftTitles: SideTitles(
             reservedSize: 25,
             textStyle: TextStyle(
@@ -150,44 +171,65 @@ class VotiDetailsState extends State<VotiDetails> {
             ),
             margin: 15,
             showTitles: true,
-            getTitles: (value) => value.toInt().toString(),
-          )),
-      borderData: FlBorderData(
+            getTitles: (value) =>
+                (value.toInt() % 2) == 0 ? value.toInt().toString() : '',
+          ),
+        ),
+        borderData: FlBorderData(
           show: true,
           border: Border(
-              left: BorderSide(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white70
-                      : Colors.black87,
-                  width: 2),
-              bottom: BorderSide(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white70
-                      : Colors.black87,
-                  width: 2))),
-      lineBarsData: [
-        LineChartBarData(
-          gradientFrom: Offset(0.5, 0),
-          gradientTo: Offset(0.5, 1),
-          colorStops: [0, 1],
-          spots: widget.voti
-              .where((voto) => voto.voto != null && !voto.voto.isNaN)
-              .toList()
-              .asMap()
-              .map((index, voto) =>
-                  MapEntry(index, FlSpot(index.toDouble(), voto.voto)))
-              .values
-              .toList(),
-          isCurved: true,
-          dotData: FlDotData(
-            dotColor: Colors.green[800],
-            dotSize: 5,
-          ), // TODO: non posso decidere il colore per ogni dot?!?!?
-          colors: [Colors.green, Colors.deepOrange[900]],
-        )
-      ]);
+            left: BorderSide(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.black87,
+              width: 2,
+            ),
+            bottom: BorderSide(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.black87,
+              width: 2,
+            ),
+          ),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            isStrokeCapRound: true,
+            gradientFrom: Offset(0.5, 0),
+            gradientTo: Offset(0.5, 1),
+            colorStops: [0, 1],
+            spots: widget.voti
+                .where((voto) => voto.voto != null && !voto.voto.isNaN)
+                .toList()
+                .asMap()
+                .map(
+                  (index, voto) {
+                    dates.add(voto.dateWithSlashesShort);
+                    return MapEntry(
+                      index,
+                      FlSpot(
+                        index.toDouble(),
+                        voto.voto,
+                      ),
+                    );
+                  },
+                )
+                .values
+                .toList(),
+            isCurved: true,
+            dotData: FlDotData(
+              dotColor: Colors.green[800],
+              dotSize: 5,
+            ), // TODO: non posso decidere il colore per ogni dot?!?!?  //FIXME:non c'è corrispondenza colore (verde/rosso) con voto (<6>)
+            colors: [Colors.green, Colors.deepOrange[900]],
+            barWidth: 10,
+          ),
+        ],
+      );
 
   /*LineChartData _averageData() {
     return null;
   }*/
 }
+
+List<String> dates = List();

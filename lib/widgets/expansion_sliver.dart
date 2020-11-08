@@ -1,6 +1,5 @@
 import 'dart:math';
-
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -36,57 +35,63 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     _context = context;
-    return CustomPaint(
-      painter: BackgroundPainter(Theme.of(context)),
-      child: Column(children: [
+    return Column(children: [
+      //FIXME ho commentato tutto
+      // Container(
+      //   margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      //   height: kToolbarHeight,
+      //   child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      //     if (leading != null || action != null)
+      //       IconButton(
+      //           icon: Icon(
+      //             leading ?? Icons.adb,
+      //             color: leading == null
+      //                 ? Colors.transparent
+      //                 : Theme.of(context).brightness == Brightness.dark
+      //                     ? Colors.white54
+      //                     : Colors.black54,
+      //           ),
+      //           onPressed: leadingCallback),
+      //     // Expanded(
+      //     //   child: CustomPaint(
+      //     //     painter: BackgroundPainter(Theme.of(context)),
+      //     //     child: Text(
+      //     //       title + '\n',
+      //     //       textAlign: TextAlign.center,
+      //     //       style: TextStyle(
+      //     //           color: Theme.of(context).brightness == Brightness.light
+      //     //               ? Colors.black
+      //     //               : Colors.white,
+      //     //           fontSize: 30,
+      //     //           fontWeight: FontWeight.bold),
+      //     //     ),
+      //     //   ),
+      //     // ),
+      //     if (leading != null || action != null)
+      //       IconButton(
+      //           icon: Icon(
+      //             action ?? Icons.adb,
+      //             color: action == null
+      //                 ? Colors.transparent
+      //                 : Theme.of(context).brightness == Brightness.dark
+      //                     ? Colors.white54
+      //                     : Colors.black54,
+      //           ),
+      //           onPressed: actionCallback)
+      //   ]),
+      // ),
+      if (body != null)
         Container(
-          margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          height: kToolbarHeight,
-          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            if (leading != null || action != null)
-              IconButton(
-                  icon: Icon(
-                    leading ?? Icons.adb,
-                    color: leading == null
-                        ? Colors.transparent
-                        : Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white54
-                            : Colors.black54,
-                  ),
-                  onPressed: leadingCallback),
-            Expanded(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black
-                        : Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            if (leading != null || action != null)
-              IconButton(
-                  icon: Icon(
-                    action ?? Icons.adb,
-                    color: action == null
-                        ? Colors.transparent
-                        : Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white54
-                            : Colors.black54,
-                  ),
-                  onPressed: actionCallback)
-          ]),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: body.build(
+            context,
+            max(1 - shrinkOffset / (maxExtent - minExtent), 0),
+          ),
         ),
-        if (body != null)
-          body.build(
-              context, max(1 - shrinkOffset / (maxExtent - minExtent), 0)),
-        SizedBox(
-          height: MediaQuery.of(context).size.width / 8,
-        )
-      ]),
-    );
+      // SizedBox(
+      //   height: MediaQuery.of(context).size.width / 8,
+      // )
+    ]);
   }
 
   @override
@@ -94,14 +99,16 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
       MediaQuery.of(_context).padding.top +
       kToolbarHeight +
       MediaQuery.of(_context).size.width / 8 +
-      (body?.maxExtent(_context) ?? 0);
+      (body?.maxExtent(_context) ?? 0) -
+      130; //FIXME
 
   @override
   double get minExtent =>
       MediaQuery.of(_context).padding.top +
       kToolbarHeight +
       MediaQuery.of(_context).size.width / 8 +
-      (body?.minExtent(_context) ?? 0);
+      (body?.minExtent(_context) ?? 0) +
+      60; //FIXME
 
   @override
   bool shouldRebuild(ExpansionSliverDelegate oldDelegate) =>

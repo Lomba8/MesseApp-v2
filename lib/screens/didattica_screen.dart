@@ -1,7 +1,7 @@
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/didattica_registro_data.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:flutter/material.dart';
 
 class DidatticaScreen extends StatefulWidget {

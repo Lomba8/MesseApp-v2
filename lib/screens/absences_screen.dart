@@ -2,7 +2,7 @@ import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -235,12 +235,14 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                       ),
                     ],
                   ),
-                  if (main.session.absences.data.values.every((v) => (v
-                              .justified ==
-                          main.session.absences.data.values.first.justified)) &&
-                      main.session.absences.data.values.first.justified ==
-                          true &&
-                      daGiustificare)
+                  if (main.session.absences.data.isEmpty ||
+                      main.session.absences.data.values.every((v) =>
+                              (v.justified ==
+                                  main.session.absences.data.values.first
+                                      .justified)) &&
+                          main.session.absences.data.values.first.justified ==
+                              true &&
+                          daGiustificare)
                     SizedBox(
                       height: size.height / 5.5,
                       child: Center(

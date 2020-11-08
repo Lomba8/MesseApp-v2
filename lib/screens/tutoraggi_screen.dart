@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:Messedaglia/preferences/globals.dart';
-import 'package:Messedaglia/registro/registro.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;

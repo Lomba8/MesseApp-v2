@@ -1,6 +1,6 @@
 import 'package:Messedaglia/main.dart';
-import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/orari_section/absences_section.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_permission_validator/easy_permission_validator.dart';

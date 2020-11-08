@@ -1,14 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/preferences/globals.dart';
-import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:circular_splash_transition/circular_splash_transition.dart';
@@ -40,7 +40,8 @@ class _LoginScreenState extends State<LoginScreen>
       new RoundedLoadingButtonController();
 
   CircularSplashController _splash_controller = CircularSplashController(
-    color: Theme.of(main.Context).primaryColor, //optional, default is White.
+    color:
+        Theme.of(main.mainContext).primaryColor, //optional, default is White.
     duration: Duration(milliseconds: 300), //optional.
   );
 
@@ -125,6 +126,19 @@ class _LoginScreenState extends State<LoginScreen>
       if (req == '') {
         _btnController.success();
         main.session = account;
+        await main.session.load();
+        if (main.prefs.getString('avatar') != null) {
+          main.avatarList = jsonDecode(main.prefs.getString('avatar'));
+          main.avatar = jsonDecode(main.prefs.getString('avatar'))
+                  .where((e) => e['id'] == main.session.usrId.toString())
+                  .isNotEmpty
+              ? base64Decode(jsonDecode(main.prefs.getString('avatar'))
+                  .where((e) => e['id'] == main.session.usrId.toString())
+                  .first['base64'])
+              : null;
+        } else {
+          main.avatar = null;
+        }
         if (mounted)
           setState(() {
             splash = true;
@@ -320,26 +334,49 @@ class _LoginScreenState extends State<LoginScreen>
                             height: media.size.height / 15,
                           ),
                           RoundedLoadingButton(
-                              controller: _btnController,
-                              animateOnTap: true,
-                              onPressed: () => _submit(context),
-                              color: Theme.of(context).primaryColor,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 80.0, vertical: 10.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  width: 90.0,
-                                  child: Text(
-                                    'Login',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.bodyText2,
-                                  ),
+                            controller: _btnController,
+                            animateOnTap: true,
+                            onPressed: () => _submit(context),
+                            color: Theme.of(context).primaryColor,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 80.0, vertical: 10.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
                                 ),
-                              ))
+                                width: 90.0,
+                                child: Text(
+                                  'Login',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          RoundedLoadingButton(
+                            animateOnTap: false,
+                            onPressed: () => Phoenix.rebirth(context),
+                            color: Colors.red[400],
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 80.0, vertical: 10.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                width: 90.0,
+                                child: Text(
+                                  'Annulla',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     )

@@ -5,7 +5,7 @@ import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/screens/voti_details_screen.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
-import 'package:Messedaglia/utils/db_manager.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -80,10 +80,39 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
           showChildOpacityTransition: false,
           child: CustomScrollView(scrollDirection: Axis.vertical, slivers: <
               Widget>[
+            SliverAppBar(
+              brightness: Theme.of(context).brightness,
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              title: Column(
+                children: <Widget>[
+                  Text(
+                    "VOTI",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              bottom: PreferredSize(
+                  child: Container(),
+                  preferredSize:
+                      Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+              pinned: true,
+              centerTitle: true,
+              flexibleSpace: CustomPaint(
+                painter: BackgroundPainter(Theme.of(context)),
+                size: Size.infinite,
+              ),
+            ),
             ExpansionSliver(
               ExpansionSliverDelegate(
                 context,
-                title: session.voti.periods[0],
+                title: 'VOTI', //session.voti.periods[0],
                 body: _Header(
                     (period) => setState(() {
                           _value = !_value;
