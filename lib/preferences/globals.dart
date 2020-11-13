@@ -177,7 +177,7 @@ class Globals {
   static getMaterieSHort(String nome) {
     switch (nome) {
       case "EDUCAZIONE CIVICA":
-        return 'E. CIVICA';
+        return 'EDU. CIV.';
       case "DISEGNO - ST. DELL'ARTE":
         return 'ARTE';
       case "LINGUA E LETTERATURA ITALIANA":
@@ -191,7 +191,7 @@ class Globals {
       case "SCIENZE NATURALI":
         return 'SCIENZE';
       case "INGLESE POTENZIATO":
-        return 'INGL P.';
+        return 'INGL POT.';
       case "INGLESE":
         return 'INGL';
       case "INFORMATICA":
