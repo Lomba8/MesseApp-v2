@@ -1,10 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:Messedaglia/main.dart' as main;
+
+import 'bacheca_registro_data.dart';
 
 class DidatticaRegistroData extends RegistroData {
   DidatticaRegistroData({@required RegistroApi account})
@@ -26,33 +32,33 @@ class DidatticaRegistroData extends RegistroData {
             name: teacher['teacherName'],
             account: account,
             children: Map.fromEntries(teacher['folders']
-                .map<MapEntry<String, CustomPath>>((folder) =>
-                    MapEntry<String, CustomPath>(
-                        folder['folderName'],
-                        CustomDirectory(
-                            name: folder['folderName'],
-                            account: account,
-                            children: Map.fromEntries(folder['contents']
-                                .map<MapEntry<String, CustomPath>>(
-                                    (content) => MapEntry<String, CustomPath>(
-                                        content['contentName'],
-                                        CustomFile(
-                                          name: content['contentName'],
-                                          type: content['objectType'],
-                                          lastUpdate: DateTime.parse(
-                                              content['shareDT']
-                                                  .replaceAll(':', '')),
-                                          id: content['contentId'],
-                                          oldLastUpdate: data is CustomDirectory
-                                              ? data?.getFile(<String>[
-                                                  teacher['teacherName'],
-                                                  folder['folderName'],
-                                                  content['contentName']
-                                                ])?.lastUpdate
-                                              : null,
-                                          account: account,
-                                        )..download(onlyHeader: true)))
-                                .toList()))))
+                .map<MapEntry<String, CustomPath>>((folder) => MapEntry<String,
+                        CustomPath>(
+                    folder['folderName'],
+                    CustomDirectory(
+                        name: folder['folderName'],
+                        account: account,
+                        children: Map.fromEntries(folder['contents']
+                            .map<MapEntry<String, CustomPath>>(
+                                (content) => MapEntry<String, CustomPath>(
+                                    content['contentName'],
+                                    CustomFile(
+                                      name: content['contentName'],
+                                      type: content['objectType'],
+                                      lastUpdate: DateTime.parse(
+                                          content['shareDT']
+                                              .replaceAll(':', '')),
+                                      id: content['contentId'],
+                                      oldLastUpdate: data is CustomDirectory
+                                          ? data?.getFile(<String>[
+                                              teacher['teacherName'],
+                                              folder['folderName'],
+                                              content['contentName']
+                                            ])?.lastUpdate
+                                          : null,
+                                      account: account,
+                                    )..download(onlyHeader: true).then((_) {})))
+                            .toList()))))
                 .toList()),
           ));
     });
@@ -73,6 +79,8 @@ class DidatticaRegistroData extends RegistroData {
     data = CustomDirectory.parse(
         json: json['data'], name: 'dir:/', account: account);
   }
+
+  int get newDidattica => data;
 
   @override
   Future<void> create() {
@@ -185,23 +193,37 @@ class CustomFile extends CustomPath {
         lastUpdate = json['lastUpdate'],
         super(name.substring('file:'.length), account: account);
 
-  void download({bool onlyHeader = false}) async {
+  Future<dynamic> download({bool onlyHeader = false}) async {
     if (onlyHeader && type != 'file') return;
+
+    Directory dir = await getApplicationDocumentsDirectory();
+    var didacticsDir =
+        await Directory('${dir.path}/didactics/${main.session.usrId}').create();
+    // print(didacticsDir);
+
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',
       'Content-Type': 'application/json',
       'User-Agent': 'CVVS/std/1.7.9 Android/6.0',
       'Z-Auth-Token': account.token,
     };
+
     Function funct = onlyHeader ? http.head : http.get;
     http.Response res;
-    try {
-      res = await funct(
-          'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/didactics/item/$id',
-          headers: headers);
-    } catch (e) {
-      throw (e);
+
+    if (funct == http.head ||
+        funct == http.get &&
+            !File('/${didacticsDir.path}/${encodePath(name: fileName)}')
+                .existsSync()) {
+      try {
+        res = await funct(
+            'https://web.spaggiari.eu/rest/v1/students/${account.usrId}/didactics/item/$id',
+            headers: headers);
+      } catch (e) {
+        throw (e);
+      }
     }
+
     if (onlyHeader) {
       fileName = res.headers['content-disposition'];
       fileName = fileName
@@ -212,7 +234,14 @@ class CustomFile extends CustomPath {
         type = res.headers['content-type'].split('/')[1];
       }
       return;
+    } else {
+      if (type == 'link') {
+        launch(jsonDecode(res.body)['item']['link']);
+      } else {
+        File file = File('/${didacticsDir.path}/${encodePath(name: fileName)}');
+        if (!file.existsSync()) await file.writeAsBytes(res.bodyBytes);
+        return file.path;
+      }
     }
-    if (type == 'link') launch(jsonDecode(res.body)['item']['link']);
   }
 }

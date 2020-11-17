@@ -11,9 +11,9 @@ Function votiWidget = (BuildContext context) {
   main.session.voti.data.where((voto) => voto.isNew == true).forEach((voto) {
     voti.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: SizedBox(
-          height: 70 + 10.0,
+          height: 70 + 10.0 + 10.0,
           child: Column(
             children: <Widget>[
               SizedBox(
@@ -33,7 +33,7 @@ Function votiWidget = (BuildContext context) {
                       },
                       dense: true,
                       leading: Container(
-                        margin: EdgeInsets.only(left: 10),
+                        margin: EdgeInsets.only(left: 7),
                         width: 35.0,
                         alignment: Alignment.center,
                         decoration: new BoxDecoration(

@@ -2,12 +2,13 @@ import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/menu_screen.dart' as menu;
 import 'package:Messedaglia/widgets/calendar_month_icons.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/screens/screens.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-Function eventiWidget = (BuildContext context, bool _first) {
+Function eventiWidget = (BuildContext context) {
   List<Widget> eventi = List();
 
   main.session.agenda.data
@@ -54,74 +55,76 @@ Function eventiWidget = (BuildContext context, bool _first) {
                           width: 40.0,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: main.session.subjects.data[evento.autore] == null ||
-                                    main.session.subjects.data[evento.autore]
-                                        is String ||
-                                    main.session.subjects.data[evento.autore]?.length ==
-                                        1
-                                ? ((evento.autore == "Didattica a distanza" ||
-                                        evento.account == null)
-                                    ? (Theme.of(context).brightness == Brightness.dark
+                            color: main.session.subjects.data[evento.autore] ==
+                                    null
+                                ? ((evento.account == null)
+                                    ? (Theme.of(context).brightness ==
+                                            Brightness.dark
                                         ? Colors.white10
                                         : Colors.black12)
-                                    : Globals.subjects[main.session.subjects.data[evento.autore]] != null
-                                        ? Globals.subjects[main.session.subjects.data[evento.autore]]['colore']
-                                            .withOpacity(0.7)
-                                        : Globals.subjects[main.session.subjects.data[evento.autore][0]]['colore']
-                                            .withOpacity(0.7))
-                                : main.session.subjects.data[evento.autore] is List
-                                    ? Globals.subjects[main.session.subjects.data[evento.autore][0]]['colore'].withOpacity(0.7)
-                                    : (Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
-                            shape: BoxShape.circle,
+                                    : null)
+                                : main.session.subjects.data[evento.autore]
+                                            .length ==
+                                        1
+                                    ? Globals.subjects[main.session.subjects
+                                            .data[evento.autore][0]]['colore']
+                                        .withOpacity(0.7)
+                                    : null,
+                            gradient: main.session.subjects.data[evento.autore] !=
+                                        null &&
+                                    main.session.subjects.data[evento.autore]
+                                            .length ==
+                                        1
+                                ? null
+                                : main.session.subjects.data[evento.autore] ==
+                                        null
+                                    ? null
+                                    : LinearGradient(
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                        colors: main.session.subjects
+                                            .data[evento.autore].reversed
+                                            .map<Color>((sbj) =>
+                                                (Globals.subjects[sbj]['colore']
+                                                    as Color))
+                                            .toList()),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          child: main.session.subjects.data[evento.autore]
-                                      is String ||
-                                  main.session.subjects.data[evento.autore]
-                                          .length ==
-                                      1 ||
-                                  main.session.subjects.data[evento.autore] ==
-                                      null
-                              ? Icon(
-                                  main.session.subjects.data[evento.autore] == null ||
-                                          main.session.subjects
-                                              .data[evento.autore] is String ||
-                                          main.session.subjects.data[evento.autore]?.length ==
-                                              1
-                                      ? Globals.subjects[main.session.subjects.data[evento.autore]] != null
-                                          ? Globals.subjects[main
-                                              .session
-                                              .subjects
-                                              .data[evento.autore]]['icona']
-                                          : Globals.subjects[main
-                                              .session
-                                              .subjects
-                                              .data[evento.autore][0]]['icona']
-                                      : MdiIcons.help,
-                                  color: Colors.black,
-                                  size: 25,
-                                )
-                              : AnimatedCrossFade(
-                                  firstChild: Icon(
-                                    (Globals.subjects[main.session.subjects
-                                                .data[evento.autore][0]]
-                                            ['icona']) ??
-                                        MdiIcons.help,
-                                    color: Colors.black,
-                                    size: 25,
-                                  ),
-                                  secondChild: Icon(
-                                    (Globals.subjects[main.session.subjects
-                                                .data[evento.autore][1]]
-                                            ['icona']) ??
-                                        MdiIcons.help,
-                                    color: Colors.black,
-                                    size: 25,
-                                  ),
-                                  crossFadeState: _first
-                                      ? CrossFadeState.showFirst
-                                      : CrossFadeState.showSecond,
-                                  duration: Duration(milliseconds: 500),
-                                ),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: main.session.subjects
+                                      .data[evento.autore] is List
+                                  ? main.session.subjects.data[evento.autore]
+                                      .map<Widget>((sbj) => Padding(
+                                            padding: EdgeInsets.all(8),
+                                            child: Icon(
+                                                Globals.subjects[sbj]
+                                                        ['icona'] ??
+                                                    MdiIcons.sleep,
+                                                size: 22.0,
+                                                color: Colors.black),
+                                          ))
+                                      .toList()
+                                  : [
+                                      Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Icon(
+                                          (Globals.subjects[main
+                                                      .session
+                                                      .subjects
+                                                      .data[evento.autore]] ??
+                                                  {})['icona'] ??
+                                              MdiIcons.sleep,
+                                          size: 25.0,
+                                          color: main.session.subjects
+                                                      .data[evento.autore] !=
+                                                  null
+                                              ? Colors.black
+                                              : Colors.white,
+                                        ),
+                                      )
+                                    ]),
                         ),
                         Container(
                           margin: EdgeInsets.only(bottom: 7),
@@ -145,7 +148,7 @@ Function eventiWidget = (BuildContext context, bool _first) {
                                 Positioned(
                                   left: 16,
                                   top: 12,
-                                  child: Text(
+                                  child: AutoSizeText(
                                     DateFormat.MMMM('it')
                                         .format(evento.date)
                                         .split('')
@@ -155,11 +158,14 @@ Function eventiWidget = (BuildContext context, bool _first) {
                                         .toString()
                                         .toUpperCase(),
                                     style: TextStyle(
-                                      fontSize: 11.5,
                                       color: Colors.black,
                                       fontFamily: 'CoreSansRounded',
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    maxLines: 1,
+                                    stepGranularity: 0.5,
+                                    maxFontSize: 11.5,
+                                    minFontSize: 9.5,
                                   ),
                                 ),
                                 Padding(
@@ -167,12 +173,15 @@ Function eventiWidget = (BuildContext context, bool _first) {
                                     left: (evento.date.day < 10) ? 23 : 18,
                                     top: 18.0,
                                   ),
-                                  child: Text(
+                                  child: AutoSizeText(
                                     evento.date.day.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
                                     ),
+                                    maxLines: 1,
+                                    maxFontSize: 14,
+                                    minFontSize: 9,
                                   ),
                                 ),
                               ]),

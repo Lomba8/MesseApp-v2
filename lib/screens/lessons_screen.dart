@@ -11,9 +11,9 @@ import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:marquee/marquee.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:Messedaglia/main.dart' as main;
 
 class LessonsScreen extends StatefulWidget {
-  //TODO implementare il liquidpulltorefresh con HapticFeedback.mediumImpact(); alla fine
   @override
   _LessonsScreenState createState() => _LessonsScreenState();
 }
@@ -24,7 +24,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
   Future<void> _refresh() async {
-    session.agenda.getData().then((r) {
+    main.session.lessons.getData().then((r) {
       if (r.ok) _setStateIfAlive();
     });
     HapticFeedback.mediumImpact();
@@ -68,7 +68,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Column(
-                    children: session.lessons.data['sbj'].keys
+                    children: main.materie
                         .map<Widget>(
                           (sbj) => SizedBox(
                             width: MediaQuery.of(context).size.width,
@@ -168,7 +168,8 @@ class _LessonsDetailsState extends State<LessonsDetails> {
           ),
           SliverList(
             delegate: SliverChildListDelegate(
-              session.lessons.data['sbj'][widget._sbj].reversed
+              main.session.lessons.data
+                  .where((lezione) => lezione.sbj == widget._sbj)
                   .map<Widget>(
                     (Lezione l) => CustomExpansionTile(
                       child: Padding(
@@ -193,8 +194,8 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                       ),
                       title: Text(DateFormat.MMMMEEEEd('it').format(l.date)),
                       subtitle: Text(
-                        (session.subjects.data[l.author] == l.sbj ||
-                                    (session.subjects.data[l.author]
+                        (main.session.subjects.data[l.author] == l.sbj ||
+                                    (main.session.subjects.data[l.author]
                                             ?.contains(l.sbj) ??
                                         false)
                                 ? ''

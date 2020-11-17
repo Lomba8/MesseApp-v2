@@ -31,8 +31,8 @@ final List items = [
   Menuitem(
       x: 0.0,
       name: 'Home.flr' /*per home*/,
-      color: Colors.black, //Color.fromRGBO(235, 235, 240, 1),
-      lightColor: Color.fromRGBO(20, 20, 15, 1)), // rgb(235,235,240)
+      color: Colors.white70, //Color.fromRGBO(235, 235, 240, 1),
+      lightColor: Colors.black), // rgb(235,235,240)
   Menuitem(
       x: 0.5,
       name: 'Voti.flr' /*per voti*/,

@@ -111,7 +111,6 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
-          
           SliverAppBar(
             brightness: Theme.of(context).brightness,
             elevation: 0,
@@ -378,28 +377,33 @@ class EventCard extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-                color: session.subjects.data[evento.autore] == null ||
-                        session.subjects.data[evento.autore] is String ||
-                        session.subjects.data[evento.autore]?.length == 1
-                    ? ((evento.autore == "Didattica a distanza" || evento.account == null)
-                        ? (Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white10
-                            : Colors.black12)
-                        : Globals.subjects[session.subjects.data[evento.autore]] != null
-                            ? Globals.subjects[session.subjects.data[evento.autore]]['colore']
-                                .withOpacity(0.7)
-                            : Globals.subjects[session.subjects.data[evento.autore][0]]
-                                    ['colore']
-                                .withOpacity(0.7))
-                    : null,
-                gradient: session.subjects.data[evento.autore] is String
-                    ? null
-                    : session.subjects.data[evento.autore] == null
-                        ? null
-                        : (session.subjects.data[evento.autore].length > 1)
-                            ? LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: session.subjects.data[evento.autore].reversed.map<Color>((sbj) => (Globals.subjects[sbj]['colore'] as Color)).toList())
-                            : null,
-                borderRadius: BorderRadius.circular(10.0)),
+              color: session.subjects.data[evento.autore] == null
+                  ? ((evento.autore == "Didattica a distanza" ||
+                          evento.account == null)
+                      ? (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white10
+                          : Colors.black12)
+                      : null)
+                  : session.subjects.data[evento.autore].length == 1
+                      ? Globals
+                          .subjects[session.subjects.data[evento.autore][0]]
+                              ['colore']
+                          .withOpacity(0.7)
+                      : null,
+              gradient: session.subjects.data[evento.autore] != null &&
+                      session.subjects.data[evento.autore].length == 1
+                  ? null
+                  : session.subjects.data[evento.autore] == null
+                      ? null
+                      : LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: session.subjects.data[evento.autore].reversed
+                              .map<Color>((sbj) =>
+                                  (Globals.subjects[sbj]['colore'] as Color))
+                              .toList()),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
             child: Row(
               children: <Widget>[
                 Column(

@@ -46,6 +46,7 @@ List vacanze;
 List avatarList = List();
 Uint8List avatar;
 int accountId;
+List materie = List();
 
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
@@ -58,6 +59,9 @@ void main() {
         ? accounts.firstWhere((account) => (accountId != null
             ? account.usrId == accountId
             : account.usrId is int))
+        : null;
+    materie = prefs.getString('materie') != null
+        ? jsonDecode(prefs.getString('materie'))
         : null;
     await session?.load();
 
@@ -74,7 +78,7 @@ void main() {
       },
     );
 
-    if (prefs.getString('avatar') != null) {
+    if (prefs.getString('avatar') != null && session != null) {
       avatarList = jsonDecode(prefs.getString('avatar'));
       avatar = jsonDecode(prefs.getString('avatar'))
               .where((e) => e['id'] == session.usrId.toString())

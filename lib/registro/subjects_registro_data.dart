@@ -27,25 +27,22 @@ class SubjectsRegistroData extends RegistroData {
         }
       }
 
-      // for (dynamic profe in data) {
-      //   if (profe["teachers"].length > 1) {
-      //     if (profe["teachers"].contains("EDUCAZIONE CIVICA"))
-      //       profe["teachers"].toList().removeWhere(
-      //           (element) => element.toString() == "EDUCAZIONE CIVICA");
-      //   }
-      // }
-
       Map.from(data).forEach((key, value) {
         if (value is List) {
           value.removeWhere(
               (e) => e.compareTo("EDUCAZIONE CIVICA") == 0 ? true : false);
+        } else if (value is String) {
+          data[key] = List.generate(1, (index) => value);
         }
       });
+      await account.update(); // nel caso fosse stata cambiata la classe
+
+      return Result(true, true);
     } catch (e, stack) {
       print(e);
       print(stack);
+      return Result(false, false);
     }
-    return Result(false, false);
   }
 
   @override

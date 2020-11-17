@@ -147,8 +147,6 @@ class _PreferencesState extends State<Preferences> {
                         if (id == main.session.usrId)
                           return;
                         else {
-                          menu.timer?.cancel();
-                          menu.timer = null;
                           main.session =
                               dbManager.accounts[accountIds.indexOf(id)];
                           await main.session

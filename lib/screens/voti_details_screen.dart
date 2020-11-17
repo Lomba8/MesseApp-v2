@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -23,188 +25,138 @@ class VotiDetails extends StatefulWidget {
 
 class VotiDetailsState extends State<VotiDetails> {
   @override
-  Widget build(BuildContext context) => Material(
-      color: Theme.of(context).backgroundColor,
-      child: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            brightness: Theme.of(context).brightness,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            title: AutoSizeText(
-              widget.sbjDesc,
-              maxLines: 1,
-              style: Theme.of(context).textTheme.bodyText2,
+  void initState() {
+    super.initState();
+    _dates = List();
+    _gradientColors = List();
+  }
+
+  @override
+  void dispose() {
+    _dates.clear();
+    _gradientColors.clear();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _gradientColors.clear();
+    _dates.clear();
+
+    return Material(
+        color: Theme.of(context).backgroundColor,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              brightness: Theme.of(context).brightness,
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              title: AutoSizeText(
+                widget.sbjDesc,
+                maxLines: 1,
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+              bottom: PreferredSize(
+                  child: Container(),
+                  preferredSize:
+                      Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+              centerTitle: true,
+              leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white60
+                        : Colors.black54,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              pinned: true,
+              flexibleSpace: CustomPaint(
+                painter: BackgroundPainter(Theme.of(context), back: true),
+                size: Size.infinite,
+              ),
             ),
-            bottom: PreferredSize(
-                child: Container(),
-                preferredSize:
-                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-            centerTitle: true,
-            leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white60
-                      : Colors.black54,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-            pinned: true,
-            flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context), back: true),
-              size: Size.infinite,
-            ),
-          ),
-          SliverList(
-              delegate: SliverChildListDelegate(
-            [
-              Padding(
-                padding: EdgeInsets.only(right: 30),
-                child: AspectRatio(
-                  aspectRatio: 1.7,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: LineChart(_votiData()),
+            SliverList(
+                delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: EdgeInsets.only(right: 30),
+                  child: AspectRatio(
+                    aspectRatio: 1.7,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: LineChart(_votiData(context)),
+                    ),
                   ),
                 ),
-              ),
-            ]..addAll(
-                (widget.voti ?? []).reversed.map<Widget>((mark) => Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: CustomExpansionTile(
-                        title: Text(
-                          mark.data,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            mark.info.isEmpty
-                                ? 'Nessuna descrizione'
-                                : mark.info,
-                            style: Theme.of(context).textTheme.bodyText1,
+              ]..addAll(
+                  (widget.voti ?? []).reversed.map<Widget>((mark) => Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: CustomExpansionTile(
+                          title: Text(
+                            mark.data,
                             textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        leading: Stack(
-                          children: <Widget>[
-                            CircleAvatar(
-                              backgroundColor: mark.color,
-                              child: Center(
-                                child: Text(
-                                  mark.votoStr,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              mark.info.isEmpty
+                                  ? 'Nessuna descrizione'
+                                  : mark.info,
+                              style: Theme.of(context).textTheme.bodyText1,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          leading: Stack(
+                            children: <Widget>[
+                              CircleAvatar(
+                                backgroundColor: mark.color,
+                                child: Center(
+                                  child: Text(
+                                    mark.votoStr,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               ),
-                            ),
-                            if (mark.isNew)
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.yellow),
-                              )
-                          ],
+                              if (mark.isNew)
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.yellow),
+                                )
+                            ],
+                          ),
                         ),
-                      ),
-                    ))),
-          ))
-        ],
-      ));
+                      ))),
+            ))
+          ],
+        ));
+  }
 
-  LineChartData _votiData() => LineChartData(
-        betweenBarsData: [
-          BetweenBarsData(
-            fromIndex: 0,
-            toIndex: 0,
-            gradientTo: Offset(0.0, 0.0),
-            colors: [Colors.green, Colors.red],
-          )
-        ],
-        lineTouchData: LineTouchData(),
-        minY: 2,
-        // maxY: 10,
-        gridData: FlGridData(
-          show: false,
-          drawVerticalLine: false,
-          getDrawingVerticalLine: (value) => FlLine(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white10
-                  : Colors.black12,
-              strokeWidth: 1),
-          drawHorizontalLine: true,
-          getDrawingHorizontalLine: (value) => FlLine(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white10
-                  : Colors.black12,
-              strokeWidth: 1),
-        ),
-        titlesData: FlTitlesData(
-          bottomTitles: SideTitles(
-            getTitles: (double index) {
-              return dates[index.toInt()];
-            },
-            margin: 20,
-            showTitles: true,
-            textStyle: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white70
-                  : Colors.black87,
-              fontSize: 15,
-            ),
-            rotateAngle: 45, //TODO dynamic
-          ),
-          leftTitles: SideTitles(
-            reservedSize: 25,
-            textStyle: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-            margin: 15,
-            showTitles: true,
-            getTitles: (value) =>
-                (value.toInt() % 2) == 0 ? value.toInt().toString() : '',
-          ),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: Border(
-            left: BorderSide(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white70
-                  : Colors.black87,
-              width: 2,
-            ),
-            bottom: BorderSide(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white70
-                  : Colors.black87,
-              width: 2,
-            ),
-          ),
-        ),
+  LineChartData _votiData(BuildContext context) => LineChartData(
         lineBarsData: [
           LineChartBarData(
-            isStrokeCapRound: true,
-            gradientFrom: Offset(0.5, 0),
-            gradientTo: Offset(0.5, 1),
-            colorStops: [0, 1],
+            show: true,
             spots: widget.voti
                 .where((voto) => voto.voto != null && !voto.voto.isNaN)
                 .toList()
                 .asMap()
                 .map(
                   (index, voto) {
-                    dates.add(voto.dateWithSlashesShort);
+                    _dates.add(voto.dateWithSlashesShort
+                        .substring(0, voto.dateWithSlashesShort.length - 3));
+                    if (index == 0)
+                      _gradientColors.add(voto.color);
+                    else
+                      for (int i = 0; i < 3; i++) {
+                        _gradientColors.add(voto.color);
+                      }
                     return MapEntry(
                       index,
                       FlSpot(
@@ -216,15 +168,121 @@ class VotiDetailsState extends State<VotiDetails> {
                 )
                 .values
                 .toList(),
-            isCurved: true,
-            dotData: FlDotData(
-              dotColor: Colors.green[800],
-              dotSize: 5,
-            ), // TODO: non posso decidere il colore per ogni dot?!?!?  //FIXME:non c'è corrispondenza colore (verde/rosso) con voto (<6>)
-            colors: [Colors.green, Colors.deepOrange[900]],
+            colors: _gradientColors,
+            isStrokeCapRound: true,
             barWidth: 10,
+            isCurved: true,
+            curveSmoothness: 0.40,
+            preventCurveOvershootingThreshold: 10.0,
+            dotData: FlDotData(
+              dotColor: widget.voti
+                          .where(
+                              (voto) => voto.voto != null && !voto.voto.isNaN)
+                          .length ==
+                      1
+                  ? widget.voti
+                      .where((voto) => voto.voto != null && !voto.voto.isNaN)
+                      .first
+                      .color
+                  : Colors.white.withOpacity(0.4),
+              dotSize: 5,
+            ),
+            preventCurveOverShooting: true,
           ),
         ],
+        // betweenBarsData: BetweenBarsData,
+        titlesData: FlTitlesData(
+          show: true,
+          leftTitles: SideTitles(
+            reservedSize: 30,
+            textStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+            showTitles: true,
+            margin: 15,
+            getTitles: (value) => value.toInt().toString() + '    ',
+            interval: 2.0,
+          ),
+          bottomTitles: SideTitles(
+            getTitles: (double index) {
+              return _dates[index.toInt()];
+            },
+            reservedSize: 10,
+            margin: 15,
+            showTitles: true,
+            textStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+              fontSize: _dates.length < 5 ? 12 : 12,
+              fontWeight: FontWeight.w600,
+            ),
+            rotateAngle: widget.voti.length > 8 ? 45 : 0,
+          ),
+        ),
+        //  axisTitleData: FlAxisTitleData,
+        extraLinesData: ExtraLinesData(
+          extraLinesOnTop: true,
+          horizontalLines: List.generate(
+            12,
+            (index) => HorizontalLine(
+              y: index.toDouble(),
+              color: index % 2 == 0 ? Colors.white70 : Colors.transparent,
+              dashArray: [2, 39],
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+        lineTouchData: LineTouchData(
+          enabled: true,
+          touchTooltipData: LineTouchTooltipData(
+            tooltipBgColor: Theme.of(context).scaffoldBackgroundColor,
+            tooltipBottomMargin: 12,
+            tooltipPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            getTooltipItems: (touchedSpots) => touchedSpots
+                .map(
+                  (spot) => LineTooltipItem(
+                    spot.y.toString(),
+                    TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        // rangeAnnotations: RangeAnnotations(),
+        //showingTooltipIndicators: ,
+        gridData: FlGridData(
+          show: false,
+        ),
+        borderData: FlBorderData(
+          show: false, //TODO: meglio senza o con?
+          border: Border(
+            left: BorderSide(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.9)
+                  : Colors.black87,
+              width: 2,
+            ),
+            bottom: BorderSide(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.9)
+                  : Colors.black87,
+              width: 2,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        clipToBorder: false,
+        minY: 0,
+        maxY: 10,
       );
 
   /*LineChartData _averageData() {
@@ -232,4 +290,5 @@ class VotiDetailsState extends State<VotiDetails> {
   }*/
 }
 
-List<String> dates = List();
+List<String> _dates;
+List<Color> _gradientColors;

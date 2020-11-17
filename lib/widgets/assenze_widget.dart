@@ -53,13 +53,13 @@ Function assenzeWidget = (BuildContext context) {
                               left: 1,
                               top: 4,
                             ),
-                            width: 30.0,
+                            width: 33.0,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Globals.coloriAssenze[assenza.type],
                               shape: BoxShape.circle,
                             ),
-                            child: Text(
+                            child: AutoSizeText(
                               Assenza.getTipo(assenza.type)
                                   .split(' ')
                                   .map((e) => e[0].toString())
@@ -67,15 +67,22 @@ Function assenzeWidget = (BuildContext context) {
                                   .trim(),
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: Assenza.getTipo(assenza.type)
-                                            .split(' ')
-                                            .length ==
-                                        1
-                                    ? 17.0
-                                    : 15.0,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'CoreSansRounded',
                               ),
+                              maxLines: 1,
+                              maxFontSize: Assenza.getTipo(assenza.type)
+                                          .split(' ')
+                                          .length ==
+                                      1
+                                  ? 22.0
+                                  : 20.0,
+                              minFontSize: Assenza.getTipo(assenza.type)
+                                          .split(' ')
+                                          .length ==
+                                      1
+                                  ? 17.0
+                                  : 15.0,
                             ),
                           ),
                           AutoSizeText(

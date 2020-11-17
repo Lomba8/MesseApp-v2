@@ -357,26 +357,31 @@ class _LoginScreenState extends State<LoginScreen>
                           SizedBox(
                             height: 20,
                           ),
-                          RoundedLoadingButton(
-                            animateOnTap: false,
-                            onPressed: () => Phoenix.rebirth(context),
-                            color: Colors.red[400],
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 80.0, vertical: 10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                                width: 90.0,
-                                child: Text(
-                                  'Annulla',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                              ),
-                            ),
-                          ),
+                          main.add
+                              ? RoundedLoadingButton(
+                                  animateOnTap: false,
+                                  onPressed: () => Phoenix.rebirth(context),
+                                  color: Colors.red[400],
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 80.0, vertical: 10.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0),
+                                      ),
+                                      width: 90.0,
+                                      child: Text(
+                                        'Annulla',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Offstage(),
                         ],
                       ),
                     )

@@ -79,20 +79,16 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         footerBuilder: (context, state) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 15.0),
-            child: Material(
-              color: Colors.black12.withOpacity(0.1),
-              //FIXME non mi piace che is veda l'animated container perche occupa troppo spazio nello schermo però senza non si capisce in quale schermata si è
-              child: NavBarSotto(
-                (pos) async {
-                  if (pos == 2) {
-                    sheetController.snapToExtent(state.maxExtent,
-                        duration: Duration(milliseconds: 200));
-                  } else
-                    await sheetController.snapToExtent(state.minExtent,
-                        duration: Duration(milliseconds: 200));
-                  setState(() => active = pos);
-                },
-              ),
+            child: NavBarSotto(
+              (pos) async {
+                if (pos == 2) {
+                  sheetController.snapToExtent(state.maxExtent,
+                      duration: Duration(milliseconds: 200));
+                } else
+                  await sheetController.snapToExtent(state.minExtent,
+                      duration: Duration(milliseconds: 200));
+                setState(() => active = pos);
+              },
             ),
           );
         },
@@ -107,6 +103,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         ),
         builder: (context, state) {
           _state = state;
+          // main.session.didactics.newDidattica;
           //FIXME: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
@@ -247,9 +244,9 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                     endIndent: 25,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: HomeScreenWidgets(),
-                  )
+                    height: 15,
+                  ),
+                  HomeScreenWidgets(),
                 ],
               ),
             ),
@@ -260,61 +257,30 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   }
 }
 
-Timer timer;
-
 class HomeScreenWidgets extends StatefulWidget {
   @override
   _HomeScreenWidgetsState createState() => _HomeScreenWidgetsState();
 }
 
 class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
-  bool _first = false;
-
-  @override
-  void initState() {
-    super.initState();
-    timer = Timer.periodic(Duration(seconds: 3), (Timer t) {
-      _first = !_first;
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Flexible(
-          flex: 1,
-          child: Container(
-            alignment: Alignment.topCenter,
-            width: MediaQuery.of(context).size.width / 2,
-            // color: Colors.red,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: (noteWidget(context))
-                  .followedBy(assenzeWidget(context))
-                  .toList(),
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: (noteWidget(context))
+                .followedBy(assenzeWidget(context))
+                .toList(),
           ),
         ),
         Flexible(
-          flex: 1,
-          child: Container(
-            width: MediaQuery.of(context).size.width / 2,
-            child: Column(
-              children: votiWidget(context)
-                  .followedBy(eventiWidget(context, _first))
-                  .toList(),
-            ),
+          child: Column(
+            children:
+                votiWidget(context).followedBy(eventiWidget(context)).toList(),
           ),
         ),
       ],

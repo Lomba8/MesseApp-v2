@@ -1,100 +1,138 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/registro/registro.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:Messedaglia/main.dart' as main;
+
+/** [lessonType]: */
+// Lezione
+// Attività di laboratorio
+// Alternanza scuola-lavoro
+// Interrogazione
+// Verifica scritta
+// Sorveglianza
+// Compito in classe
+// Supplenza
+// Cittadinanza e Costituzione
+// Compresenza
+// Spiegazione
+// PCTO - Attività in aula
+// Interrogazione e spiegazione
+
+/** [evtCode] LSF0: lezione */
+/** [evtCode] LSC0: compresenza */
+/** per le supplenze c'è una "materia" apposta ([subjectDesc] SUPPLENZA) */
 
 class LessonsRegistroData extends RegistroData {
   LessonsRegistroData({@required RegistroApi account})
       : super(
             url:
                 'https://web.spaggiari.eu/rest/v1/students/%uid/lessons/${AgendaRegistroData.getSchoolYear(DateTime.now())}',
-            account: account, name: 'lessons');
+            account: account,
+            name: 'lessons');
 
   @override
   Future<Result> parseData(json) async {
+    Batch batch = database.batch();
+    List<int> ids = [];
+    Set _materie = Set();
+
     json = json['lessons'];
-    data['sbj'] = <String, List<Lezione>>{};
-    data['date'] = <DateTime, List<Lezione>>{};
 
-    /** [evtCode] LSF0: lezione */
-    /** [evtCode] LSC0: compresenza */
-    /** per le supplenze c'è una "materia" apposta ([subjectDesc] SUPPLENZA) */
+    try {
+      for (Map lesson in json) {
+        account.cls = lesson['classDesc']
+            .substring(0, lesson['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
 
-    /** [lessonType]: */
-    // Lezione
-    // Attività di laboratorio
-    // Alternanza scuola-lavoro
-    // Interrogazione
-    // Verifica scritta
-    // Sorveglianza
-    // Compito in classe
-    // Supplenza
-    // Cittadinanza e Costituzione
-    // Compresenza
-    // Spiegazione
-    // PCTO - Attività in aula
-    // Interrogazione e spiegazione
+        _materie.add(lesson['subjectDesc']);
 
-    for (Map lesson in json) {
-      account.cls = lesson['classDesc']
-          .substring(0, lesson['classDesc'].indexOf(RegExp(r'[^A-Za-z0-9]')));
-      Lezione lezione = Lezione(
-          date: DateTime.parse(lesson['evtDate']),
-          hour: lesson['evtHPos'] - 1,
-          duration: Duration(hours: lesson['evtDuration']),
-          author: lesson['authorName'],
-          sbj: lesson['subjectDesc'],
-          lessonType: lesson['lessonType'],
-          info: lesson['lessonArg'].isEmpty ? null : lesson['lessonArg']);
-      if (data['date'][lezione.date] != null &&
-          data['date'][lezione.date].last.isCompatible(lezione))
-        data['date'][lezione.date].last.join(lezione);
-      else {
-        (data['sbj'][lezione.sbj] ??= <Lezione>[]).add(lezione);
-        (data['date'][lezione.date] ??= <Lezione>[]).add(lezione);
+        ids.add(lesson['evtId']);
+
+        batch.insert('lessons', {
+          'id': lesson['evtId'],
+          'usrId': account.usrId,
+          'date': DateTime.parse(lesson['evtDate']).toIso8601String(),
+          'hour': lesson['evtHPos'] - 1,
+          'duration': lesson['evtDuration'],
+          'author': lesson['authorName'],
+          'sbj': lesson['subjectDesc'],
+          'type': lesson['lessonType'],
+          'info': lesson['lessonArg'].isEmpty ? null : lesson['lessonArg']
+        });
       }
+
+      batch.delete('lessons',
+          where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
+          whereArgs: [account.usrId]);
+
+      batch.query('lessons', where: 'usrId = ?', whereArgs: [account.usrId]);
+
+      data = (await batch.commit())
+          .last
+          .map<Lezione>((v) => Lezione.parse(v))
+          .toList()
+            ..sort();
+
+      if (_materie.isNotEmpty) {
+        List _materieArray = _materie.map((t) => t).toList();
+        main.materie = _materieArray;
+        main.prefs.setString('materie', jsonEncode(_materieArray));
+      }
+      await account.update(); // nel caso fosse stata cambiata la classe
+      return Result(true, true);
+    } catch (e, s) {
+      print(e);
+      print(s);
+      return Result(false, false);
     }
-    account.update();
-    return Result(true, true);
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> tr = super.toJson();
-    tr['data'] = [];
-    data['date'].forEach(
-        (date, list) => list.forEach((lesson) => tr['data'].add(lesson)));
-    return tr;
+  Future<void> create() async {
+    await database.execute(
+        'CREATE TABLE IF NOT EXISTS lessons(id INTEGER PRIMARY KEY, usrId INTEGER, date DATE, hour INTEGER, duration INTEGER, author TEXT, sbj TEXT, type TEXT, info TEXT)');
   }
 
   @override
-  void fromJson(Map<String, dynamic> json) {
-    super.fromJson(json);
-    List lezioni = json['data'];
-    data['sbj'] = <String, List<Lezione>>{};
-    data['date'] = <DateTime, List<Lezione>>{};
-    lezioni.forEach((lezione) {
-      Lezione l = Lezione.fromJson(lezione);
-      (data['sbj'][l.sbj] ??= <Lezione>[]).add(l);
-      (data['date'][l.date] ??= <Lezione>[]).add(l);
-    });
-  }
-
-  @override
-  Future<void> create() {
-    // TODO: implement create
+  Future<void> load() async {
+    await super.load();
+    data = data.map<Lezione>((v) => Lezione.parse(v)).toList()..sort();
   }
 }
 
-class Lezione {
-  final DateTime date;
+class Lezione extends Comparable<Lezione> {
+  int id;
+  DateTime date;
   int hour;
   Duration duration;
-  final String author;
-  final String sbj;
-  final String lessonType;
-  final String info;
+  String author;
+  String sbj;
+  String lessonType;
+  String info;
+
+  Lezione(
+      {@required this.date,
+      @required this.hour,
+      @required this.duration,
+      @required this.author,
+      @required this.sbj,
+      @required this.lessonType,
+      @required this.info});
+
+  Lezione.parse(Map raw) {
+    this.id = raw['id'];
+    this.date = DateTime.parse(raw['date']).toLocal();
+    this.hour = raw['hour'];
+    this.duration = Duration(hours: raw['duration']);
+    this.author = raw['author'];
+    this.sbj = raw['sbj'];
+    this.lessonType = raw['type'];
+    this.info = raw['info'];
+  }
 
   bool isCompatible(Lezione l2) =>
       date == l2.date &&
@@ -109,31 +147,11 @@ class Lezione {
     duration = Duration(hours: duration.inHours + l2.duration.inHours);
   }
 
-  Lezione(
-      {@required this.date,
-      @required this.hour,
-      @required this.duration,
-      @required this.author,
-      @required this.sbj,
-      @required this.lessonType,
-      @required this.info});
-
-  Map<String, dynamic> toJson() => {
-        'date': date.toIso8601String(),
-        'hour': hour,
-        'duration': duration.inHours,
-        'author': author,
-        'sbj': sbj,
-        'lessonType': lessonType,
-        'info': info
-      };
-
-  static Lezione fromJson(Map json) => Lezione(
-      date: DateTime.parse(json['date']),
-      hour: json['hour'],
-      duration: Duration(hours: json['duration']),
-      author: json['author'],
-      sbj: json['sbj'],
-      lessonType: json['lessonType'],
-      info: json['info']);
+  @override
+  int compareTo(Lezione other) {
+    if (date.isAtSameMomentAs(other.date)) {
+      return -hour.compareTo(other.hour);
+    }
+    return -date.compareTo(other.date);
+  }
 }

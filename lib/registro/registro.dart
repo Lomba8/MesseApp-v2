@@ -46,9 +46,9 @@ class RegistroApi {
     subjects = SubjectsRegistroData(account: this); //TODO db migration
     bacheca = BachecaRegistroData(account: this);
     note = NoteRegistroData(account: this);
-    lessons = LessonsRegistroData(account: this); //TODO db migration
+    lessons = LessonsRegistroData(account: this);
     absences = AbsencesRegistroData(account: this);
-    didactics = DidatticaRegistroData(account: this);
+    didactics = DidatticaRegistroData(account: this); //TODO: db migartion
   }
 
   Map get asMap => <String, dynamic>{
@@ -203,10 +203,7 @@ class RegistroApi {
   }
 
   void save() async {
-    saveData(subjects, 'subjects'); //FIXME toglierlo?
-    saveData(bacheca, 'bacheca'); // togliere quando si implemmenta il register
-    saveData(lessons, 'lessons'); // fatto
-    saveData(absences, 'absences');
+    saveData(subjects, 'subjects'); //TODO sharedprefs migration
     saveData(didactics, 'didactics');
   }
 
@@ -220,11 +217,10 @@ class RegistroApi {
     await bacheca.load();
     await absences.load();
     await note.load();
+    await lessons.load();
     dynamic data = await loadData('subjects');
     if (data != null) subjects.fromJson(data);
-    data = await loadData('lessons');
-    if (data != null) lessons.fromJson(data);
-    data = await loadData('didacticd');
+    data = await loadData('didactics');
     if (data != null) didactics.fromJson(data);
   }
 }
@@ -295,7 +291,7 @@ abstract class RegistroData {
     try {
       r = await http.get(url, headers: headers);
     } catch (e) {
-      //print(e);
+      print(e);
       return null;
     }
 

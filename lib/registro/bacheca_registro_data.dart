@@ -112,7 +112,6 @@ class BachecaRegistroData extends RegistroData {
 }
 
 class Comunicazione extends Comparable<Comunicazione> {
-  RegistroApi account;
   String evt;
   int id;
   DateTime start_date, end_date;
@@ -121,18 +120,18 @@ class Comunicazione extends Comparable<Comunicazione> {
   String content;
   List<dynamic> attachments; //[{},{}]
 
-  Comunicazione(
-      {this.evt,
-      this.id,
-      this.start_date,
-      this.end_date,
-      this.valid,
-      this.title,
-      this.attachments,
-      this.content,
-      this.isNew,
-      this.deleted,
-      @required this.account});
+  Comunicazione({
+    this.evt,
+    this.id,
+    this.start_date,
+    this.end_date,
+    this.valid,
+    this.title,
+    this.attachments,
+    this.content,
+    this.isNew,
+    this.deleted,
+  });
 
   Comunicazione.parse(Map raw) {
     attachments = jsonDecode(raw['attachments']);
@@ -174,7 +173,7 @@ class Comunicazione extends Comparable<Comunicazione> {
   Future<File> downloadPdf({int number = 1}) async {
     http.Response r;
     var dir = await getTemporaryDirectory();
-    File file = File('${dir.path}/${encodePath(title)}.pdf');
+    File file = File('${dir.path}/${encodePath(name: title)}.pdf');
     var bytes;
     List<Map> exists = await database
         .rawQuery('SELECT pdf$number FROM bacheca WHERE id=${this.id}');
@@ -217,13 +216,13 @@ class Comunicazione extends Comparable<Comunicazione> {
   @override
   int compareTo(Comunicazione other) {
     if (start_date.isAtSameMomentAs(other.start_date)) {
-      return title.compareTo(other.title); // FIXME on funziona
+      return title.compareTo(other.title);
     }
     return -start_date.compareTo(other.start_date);
   }
 }
 
-String encodePath(String name) {
+String encodePath({String name = ''}) {
   name = name.replaceAll('"', '');
   name = name.replaceAll('”', '');
   name = name.replaceAll('“', '');

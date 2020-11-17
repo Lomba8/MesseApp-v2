@@ -429,7 +429,7 @@ class _HomeState extends State<Home> {
           getTitles: (value) {
             switch (value.toInt()) {
               case 0:
-                return '';
+                return '0';
               case 1:
                 return '';
               case 2:

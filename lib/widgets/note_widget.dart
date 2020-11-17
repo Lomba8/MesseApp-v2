@@ -35,21 +35,27 @@ Function noteWidget = (BuildContext context) {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text(
+                        AutoSizeText(
                           Nota.getTipo(nota.tipologia),
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                           ),
+                          maxLines: 1,
+                          minFontSize: 10,
+                          maxFontSize: 15,
                         ), // Icon(
 
                         Container(
-                          padding: EdgeInsets.all(7),
-                          width: 40.0,
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 27), // TODO dynamic
+                          padding: EdgeInsets.symmetric(vertical: 7),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Globals.coloriNote[nota.tipologia],
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
                             Globals.subjects[main.session.subjects
