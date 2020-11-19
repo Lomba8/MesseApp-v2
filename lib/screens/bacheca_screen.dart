@@ -25,7 +25,7 @@ import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:Messedaglia/main.dart' as main;
 
-bool showValid = main.prefs.getBool('showValid') ?? false;
+bool showValid = main.prefs.getBool('showValid') ?? true;
 bool showNew = main.prefs.getBool('showNew') ?? false;
 
 DateTime _start = null, _end = null;
@@ -139,6 +139,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
     _firstInputFocusNode = new FocusNode();
     //_uploadFiles();
     print('upload() files spostare');
+    main.prefs.setBool('showValid', showValid);
   }
 
   @override

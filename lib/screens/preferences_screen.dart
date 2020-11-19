@@ -59,35 +59,6 @@ class _PreferencesState extends State<Preferences> {
   Widget build(BuildContext context) => Material(
       color: Theme.of(context).backgroundColor,
       child: CustomScrollView(slivers: <Widget>[
-        // SliverAppBar(
-        //   brightness: Theme.of(context).brightness,
-        //   elevation: 0,
-        //   backgroundColor: Colors.transparent,
-        //   title: Column(
-        //     children: <Widget>[
-        //       Text(
-        //         "IMPOSTAZIONI",
-        //         textAlign: TextAlign.center,
-        //         style: TextStyle(
-        //             color: Theme.of(context).brightness == Brightness.light
-        //                 ? Colors.black
-        //                 : Colors.white,
-        //             fontSize: 30,
-        //             fontWeight: FontWeight.bold),
-        //       ),
-        //     ],
-        //   ),
-        //   bottom: PreferredSize(
-        //       child: Container(),
-        //       preferredSize:
-        //           Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-        //   pinned: true,
-        //   centerTitle: true,
-        //   flexibleSpace: CustomPaint(
-        //     painter: BackgroundPainter(Theme.of(context), back: true),
-        //     size: Size.infinite,
-        //   ),
-        // ),
         ExpansionSliver(
           ExpansionSliverDelegate(
             context,
@@ -107,6 +78,7 @@ class _PreferencesState extends State<Preferences> {
             ),
             body: _Header(),
             expansion: true,
+            back: true,
           ),
         ),
         SliverFillRemaining(

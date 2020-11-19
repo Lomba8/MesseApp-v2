@@ -45,7 +45,7 @@ class BachecaRegistroData extends RegistroData {
               'valid': c['cntValidInRange'] ? 1 : 0,
               'title': c['cntTitle'],
               'attachments': jsonEncode(c['attachments']),
-              'new': 1,
+              'new': c['cntValidInRange'] ? 1 : 0,
               'deleted': (c['cntStatus'] == 'deleted') ? 1 : 0,
             },
             conflictAlgorithm: ConflictAlgorithm.ignore);
