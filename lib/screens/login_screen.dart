@@ -9,6 +9,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:circular_splash_transition/circular_splash_transition.dart';
@@ -203,9 +204,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     MediaQueryData media = MediaQuery.of(context);
-    String _image = (Theme.of(context).brightness == Brightness.dark)
-        ? 'images/logomesse_scuro.png'
-        : 'images/logomesse_chiaro.png';
+    String _image = 'images/logomesse.svg';
 
     String _loader = (Theme.of(context).brightness == Brightness.dark)
         ? 'images/loading_dark.gif'
@@ -246,18 +245,22 @@ class _LoginScreenState extends State<LoginScreen>
                     Container(
                       width: 100.0,
                       height: 100.0,
-                      decoration: BoxDecoration(
-                        color: !_loading
-                            ? Theme.of(context).primaryColor
-                            : Colors.transparent,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: !_loading
-                              ? ExactAssetImage(_image)
-                              : AssetImage(
-                                  _loader), // link loader https://icons8.com/preloaders/
-                        ),
-                      ),
+                      child: !_loading
+                          ? SvgPicture.asset(_image,
+                              color: !_loading
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.transparent)
+                          : Offstage(),
+                      decoration: _loading
+                          ? BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: AssetImage(
+                                    _loader), // link loader https://icons8.com/preloaders/
+                              ),
+                            )
+                          : BoxDecoration(),
                     ),
                     SizedBox(
                       height: media.size.height / 40,
@@ -282,20 +285,27 @@ class _LoginScreenState extends State<LoginScreen>
                             padding: EdgeInsets.symmetric(
                                 horizontal: 30.0, vertical: 10.0),
                             child: TextFormField(
-                              decoration:
-                                  InputDecoration(labelText: 'Nome utente'),
+                              autofillHints: ['email'],
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                  labelText: 'Codice Utente o Email'),
                               focusNode: _firstInputFocusNode,
                               textInputAction: TextInputAction.next,
                               autocorrect: false,
                               validator: (input) {
-                                if (input.length < 9) {
+                                if (input.trim().length < 9 &&
+                                    !input.contains('@')) {
+                                  setState(() {
+                                    _btnController.reset();
+                                  });
                                   return "L'username deve essere lungo 9 caratteri";
-                                  _btnController.reset();
-                                } //FIXME ci si puo loggare anche con la email
-                                else if (input[0].toUpperCase() != 'G' &&
-                                    input[0].toUpperCase() != 'S') {
-                                  _btnController.reset();
-
+                                } else if (input.trim()[0].toUpperCase() !=
+                                        'G' &&
+                                    input.trim()[0].toUpperCase() != 'S' &&
+                                    !input.contains('@')) {
+                                  setState(() {
+                                    _btnController.reset();
+                                  });
                                   return 'Sono accettati solo gli account studente (S) e genitore (G)';
                                 } else
                                   return null;
@@ -309,13 +319,14 @@ class _LoginScreenState extends State<LoginScreen>
                             padding: EdgeInsets.symmetric(
                                 horizontal: 30.0, vertical: 10.0),
                             child: TextFormField(
+                              autofillHints: ['password'],
                               focusNode: _secondInputFocusNode,
                               decoration:
                                   InputDecoration(labelText: 'Password'),
                               textInputAction: TextInputAction.send,
                               autocorrect: false,
                               validator: (input) {
-                                if (input.length == 0) {
+                                if (input.trim().length == 0) {
                                   _btnController.reset();
 
                                   return 'Inserire una password valida';

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Messedaglia/preferences/globals.dart';
+import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;
@@ -125,145 +126,145 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
 
     return Container(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 12.0, right: 12.0, top: 30.0, bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white60
-                              : Colors.black54,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                  ],
+        body: CustomScrollView(slivers: [
+          SliverAppBar(
+            brightness: Theme.of(context).brightness,
+            leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white60
+                      : Colors.black54,
                 ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            title: Text(
+              'Tutor',
+              style: TextStyle(
+                fontSize: 35,
+                color: Colors.white,
+                fontFamily: 'CoreSansRounded',
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            elevation: 0,
+            pinned: true,
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: CustomPaint(
+              painter: BackgroundPainter(Theme.of(context), back: true),
+              size: Size.infinite,
+            ),
+            actions: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 35.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "Tutor",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 46.0,
-                        fontFamily: "CoreSansRounded",
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    Column(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            MdiIcons.informationVariant,
-                            size: 50.0,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              info ? info = false : info = true;
-                            });
-                          },
-                        ),
-                        SizedBox(height: 30.0),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              PositionedTapDetector(
-                onTap: (position) async {
-                  if (position.relative.dx >= 22 &&
-                      position.relative.dx <= 336 &&
-                      position.relative.dy >= 24 &&
-                      position.relative.dy <= 442) {
-                    if (position.relative.dy <= 162) {
-                      _sendMail(
-                          'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][0]['mail']}?subject=Tutoraggio&body=$_defaultBody');
-                    } else if (position.relative.dy >= 303) {
-                      if (tutor[controller.page.round()]
-                                  [keys[controller.page.round()]]
-                              .length >
-                          2)
-                        _sendMail(
-                            'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][2]['mail']}?subject=Tutoraggio&body=$_defaultBody');
-                    } else {
-                      if (tutor[controller.page.round()]
-                                  [keys[controller.page.round()]]
-                              .length >
-                          1)
-                        _sendMail(
-                            'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][1]['mail']}?subject=Tutoraggio&body=$_defaultBody');
-                    }
-                  }
-                },
-                child: Stack(
-                  children: <Widget>[
-                    CardScrollWidget(currentPage, info, tutor),
-                    Positioned.fill(
-                      child: PageView.builder(
-                        itemCount: tutor.length,
-                        controller: controller,
-                        reverse: true,
-                        itemBuilder: (context, index) {
-                          return Container();
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 35.0, vertical: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      child: RichText(
-                        textAlign: TextAlign.left,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Cosa sono i tutor ?",
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 30.0,
-                                fontFamily: "CoreSansRounded",
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '\n\n' +
-                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce viverra scelerisque arcu. Aliquam erat volutpat. Donec eleifend enim in est faucibus viverra. Fusce vel ex sapien. Nam pretium eros ligula, ac hendrerit odio fermentum vitae. Nam sit amet ex sed ex malesuada lacinia vitae ac libero. Phasellus feugiat metus in est faucibus tempor. Phasellus nec ipsum faucibus, luctus lorem vitae, convallis augue. Nulla eleifend libero sem, a congue nibh molestie eget. Vivamus sed turpis eget dui tincidunt rhoncus. Morbi scelerisque purus non enim auctor egestas.',
-                              style: TextStyle(
-                                height: 1.3,
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 15.0,
-                                fontFamily: "CoreSansRounded",
-                                letterSpacing: 1.0,
-                              ),
-                            )
-                          ],
-                        ), // agiungere sotto rispost6e a cosa sono e perché uno dovrebbe provarli/qualki sono in= vantaggi rispetto ad un help/ripetizioni
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.only(right: 10),
+                child: IconButton(
+                  icon: Icon(
+                    MdiIcons.informationVariant,
+                    size: 40.0,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      info ? info = false : info = true;
+                    });
+                  },
                 ),
               ),
             ],
+            bottom: PreferredSize(
+                child: Container(),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
           ),
-        ),
+          SliverToBoxAdapter(
+            child: Column(
+              children: <Widget>[
+                PositionedTapDetector(
+                  onTap: (position) async {
+                    if (position.relative.dx >= 22 &&
+                        position.relative.dx <= 336 &&
+                        position.relative.dy >= 24 &&
+                        position.relative.dy <= 442) {
+                      if (position.relative.dy <= 162) {
+                        _sendMail(
+                            'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][0]['mail']}?subject=Tutoraggio&body=$_defaultBody');
+                      } else if (position.relative.dy >= 303) {
+                        if (tutor[controller.page.round()]
+                                    [keys[controller.page.round()]]
+                                .length >
+                            2)
+                          _sendMail(
+                              'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][2]['mail']}?subject=Tutoraggio&body=$_defaultBody');
+                      } else {
+                        if (tutor[controller.page.round()]
+                                    [keys[controller.page.round()]]
+                                .length >
+                            1)
+                          _sendMail(
+                              'mailto:${tutor[controller.page.round()][keys[controller.page.round()]][1]['mail']}?subject=Tutoraggio&body=$_defaultBody');
+                      }
+                    }
+                  },
+                  child: Stack(
+                    children: <Widget>[
+                      CardScrollWidget(currentPage, info, tutor),
+                      Positioned.fill(
+                        child: PageView.builder(
+                          itemCount: tutor.length,
+                          controller: controller,
+                          reverse: true,
+                          itemBuilder: (context, index) {
+                            return Container();
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 35.0, vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Flexible(
+                        child: RichText(
+                          textAlign: TextAlign.left,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Cosa sono i tutor ?",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 30.0,
+                                  fontFamily: "CoreSansRounded",
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '\n\n' +
+                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce viverra scelerisque arcu. Aliquam erat volutpat. Donec eleifend enim in est faucibus viverra. Fusce vel ex sapien. Nam pretium eros ligula, ac hendrerit odio fermentum vitae. Nam sit amet ex sed ex malesuada lacinia vitae ac libero. Phasellus feugiat metus in est faucibus tempor. Phasellus nec ipsum faucibus, luctus lorem vitae, convallis augue. Nulla eleifend libero sem, a congue nibh molestie eget. Vivamus sed turpis eget dui tincidunt rhoncus. Morbi scelerisque purus non enim auctor egestas.',
+                                style: TextStyle(
+                                  height: 1.3,
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 15.0,
+                                  fontFamily: "CoreSansRounded",
+                                  letterSpacing: 1.0,
+                                ),
+                              )
+                            ],
+                          ), // agiungere sotto rispost6e a cosa sono e perché uno dovrebbe provarli/qualki sono in= vantaggi rispetto ad un help/ripetizioni
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ]),
       ),
     );
   }

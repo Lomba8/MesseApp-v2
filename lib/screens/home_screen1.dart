@@ -31,256 +31,210 @@ class _HomeState extends State<Home> {
 
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
-    //TODO
+    await main.session.downloadAll((v) {});
+    main.session.asMap.values.toList()[0].adsas();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: LiquidPullToRefresh(
-            onRefresh: _refresh,
-            showChildOpacityTransition: false,
-            child: CustomScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              slivers: <Widget>[
-                SliverAppBar(
-                  brightness: Theme.of(context).brightness,
-                  centerTitle: true,
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  title: AutoSizeText(
-                    'Ciao ${main.session.nome.split(' ').first}',
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold),
+    return Scaffold(
+      body: LiquidPullToRefresh(
+        onRefresh: _refresh,
+        showChildOpacityTransition: false,
+        child: CustomScrollView(
+          // physics: NeverScrollableScrollPhysics(),
+          slivers: <Widget>[
+            SliverAppBar(
+              brightness: Theme.of(context).brightness,
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              title: AutoSizeText(
+                'Ciao ${main.session.nome.split(' ').first}',
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold),
+              ),
+              leading: Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Preferences()),
                   ),
-                  leading: Padding(
-                    padding: EdgeInsets.only(left: 20.0),
+                  child: Icon(
+                    MenuGrid.menu_grid,
+                    color: Theme.of(context).brightness != Brightness.light
+                        ? Color(0xFFBDBDBD)
+                        : Colors.grey[800],
+                    size: 50,
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5.0),
                     child: GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Preferences()),
-                      ),
-                      child: Icon(
-                        MenuGrid.menu_grid,
-                        color: Theme.of(context).brightness != Brightness.light
-                            ? Color(0xFFBDBDBD)
-                            : Colors.grey[800],
-                        size: 50,
+                      onTap: () async {
+                        final permissionValidator = EasyPermissionValidator(
+                          context: context,
+                          appName: 'Messe App',
+                        );
+
+                        var result = await permissionValidator.photos();
+
+                        if (result) {
+                          image = await ImagePicker.pickImage(
+                              source: ImageSource
+                                  .gallery); // aggiungere il permeso in Info.plist per l'uso della fotocamera se serve
+
+                          if (image != null) {
+                            main.avatarList.add({
+                              'id': main.session.usrId.toString(),
+                              'base64': base64Encode(image.readAsBytesSync())
+                            });
+                            main.prefs.setString(
+                                'avatar', jsonEncode(main.avatarList));
+                            main.avatar = image.readAsBytesSync();
+                            setState(() {});
+                          }
+                        } else {
+                          showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return PlatformAlertDialog(
+                                title: Text('Impossibile scaricare la foto.'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text(
+                                          "Per scaricare l'orario bisogna autorizzare la applicazione."),
+                                      Text(
+                                          "Clicca su 'Autorizza' per selezionare l'avatar."),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  PlatformDialogAction(
+                                    child: Text('Cancella'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  PlatformDialogAction(
+                                    child: Text('Autorizza'),
+                                    actionType: ActionType.Preferred,
+                                    onPressed: () {
+                                      AppSettings.openLocationSettings();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      },
+                      onLongPress: () async {
+                        if (main.prefs.getString('avatar') != null)
+                          showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return PlatformAlertDialog(
+                                title: Text('Resetta avatar.'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text(
+                                          "\nClicca su 'Reset' per resettare l'avatar."),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  PlatformDialogAction(
+                                    child: Text('Annulla'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  PlatformDialogAction(
+                                    child: Text('Reset'),
+                                    actionType: ActionType.Preferred,
+                                    onPressed: () {
+                                      main.avatarList.retainWhere((element) =>
+                                          element['id'] ==
+                                          main.session.usrId.toString());
+                                      main.prefs.setString('avatar',
+                                          jsonEncode(main.avatarList));
+                                      setState(() => main.avatar = null);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                      },
+                      child: Container(
+                        color: Theme.of(context).accentColor,
+                        height: 50,
+                        width: 50,
+                        child: main.avatar != null
+                            ? FittedBox(
+                                child: Image.memory(main.avatar),
+                                fit: BoxFit.cover,
+                              )
+                            : Icon(MdiIcons.account),
                       ),
                     ),
                   ),
-                  actions: <Widget>[
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            final permissionValidator = EasyPermissionValidator(
-                              context: context,
-                              appName: 'Messe App',
-                            );
-
-                            var result = await permissionValidator.photos();
-
-                            if (result) {
-                              image = await ImagePicker.pickImage(
-                                  source: ImageSource
-                                      .gallery); // aggiungere il permeso in Info.plist per l'uso della fotocamera se serve
-
-                              if (image != null) {
-                                main.avatarList.add({
-                                  'id': main.session.usrId.toString(),
-                                  'base64':
-                                      base64Encode(image.readAsBytesSync())
-                                });
-                                main.prefs.setString(
-                                    'avatar', jsonEncode(main.avatarList));
-                                main.avatar = image.readAsBytesSync();
-                                setState(() {});
-                              }
-                            } else {
-                              showDialog<void>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return PlatformAlertDialog(
-                                    title:
-                                        Text('Impossibile scaricare la foto.'),
-                                    content: SingleChildScrollView(
-                                      child: ListBody(
-                                        children: <Widget>[
-                                          Text(
-                                              "Per scaricare l'orario bisogna autorizzare la applicazione."),
-                                          Text(
-                                              "Clicca su 'Autorizza' per selezionare l'avatar."),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: <Widget>[
-                                      PlatformDialogAction(
-                                        child: Text('Cancella'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      PlatformDialogAction(
-                                        child: Text('Autorizza'),
-                                        actionType: ActionType.Preferred,
-                                        onPressed: () {
-                                          AppSettings.openLocationSettings();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          },
-                          onLongPress: () async {
-                            if (main.prefs.getString('avatar') != null)
-                              showDialog<void>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return PlatformAlertDialog(
-                                    title: Text('Resetta avatar.'),
-                                    content: SingleChildScrollView(
-                                      child: ListBody(
-                                        children: <Widget>[
-                                          Text(
-                                              "\nClicca su 'Reset' per resettare l'avatar."),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: <Widget>[
-                                      PlatformDialogAction(
-                                        child: Text('Annulla'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      PlatformDialogAction(
-                                        child: Text('Reset'),
-                                        actionType: ActionType.Preferred,
-                                        onPressed: () {
-                                          main.avatarList.retainWhere(
-                                              (element) =>
-                                                  element['id'] ==
-                                                  main.session.usrId
-                                                      .toString());
-                                          main.prefs.setString('avatar',
-                                              jsonEncode(main.avatarList));
-                                          setState(() => main.avatar = null);
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                          },
-                          child: Container(
-                            color: Theme.of(context).accentColor,
-                            height: 50,
-                            width: 50,
-                            child: main.avatar != null
-                                ? FittedBox(
-                                    child: Image.memory(main.avatar),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(MdiIcons.account),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                  bottom: PreferredSize(
-                    child: Container(
-                      height: MediaQuery.of(context).size.width / 8,
-                      alignment: Alignment.center,
-                      child: Offstage(),
-                    ),
-                    preferredSize:
-                        Size.fromHeight(MediaQuery.of(context).size.width / 7),
-                  ),
-                  flexibleSpace:
-                      // Container(
-                      //   width: MediaQuery.of(context).size.width,
-                      //   constraints: BoxConstraints.expand(),
-                      //   child: AppBarNico(),
-                      // ),
-                      CustomPaint(
-                    painter: BackgroundPainter(Theme.of(context)),
-                    size: Size.infinite,
-                  ),
-                ),
-                SliverList(
-                  delegate: SliverChildListDelegate(
-                    <Widget>[
-                      Container(
-                        //TODO: scegliere un widget alternativo da displayare se non cis ono voti
-                        margin:
-                            EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
-                        height: MediaQuery.of(context).size.height / 4,
-                        width: double.infinity,
-                        child: BarChart(
-                          mainBarData(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                )
               ],
+              bottom: PreferredSize(
+                child: Container(
+                  height: MediaQuery.of(context).size.width / 8,
+                  alignment: Alignment.center,
+                  child: Offstage(),
+                ),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 7),
+              ),
+              flexibleSpace:
+                  // Container(
+                  //   width: MediaQuery.of(context).size.width,
+                  //   constraints: BoxConstraints.expand(),
+                  //   child: AppBarNico(),
+                  // ),
+                  CustomPaint(
+                painter: BackgroundPainter(Theme.of(context)),
+                size: Size.infinite,
+              ),
             ),
-          ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                <Widget>[
+                  Container(
+                    //TODO: scegliere un widget alternativo da displayare se non cis ono voti
+                    margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
+                    height: MediaQuery.of(context).size.height / 4,
+                    width: double.infinity,
+                    child: BarChart(
+                      mainBarData(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        // Container(
-        //   // margin:
-        //   //     EdgeInsets.only(top: MediaQuery.of(context).size.height / 2),
-        //   child: SlidingSheet(
-        //     elevation: 10,
-        //     cornerRadius: 40,
-        //     snapSpec: const SnapSpec(
-        //       // Enable snapping. This is true by default.
-        //       snap: true,
-        //       // Set custom snapping points.
-        //       snappings: [0.4, 0.7, 1.0],
-        //       // Define to what the snappings relate to. In this case,
-        //       // the total available space that the sheet can expand to.
-        //       positioning: SnapPositioning.relativeToAvailableSpace,
-        //     ),
-        //     // The body widget will be displayed under the SlidingSheet
-        //     // and a parallax effect can be applied to it.
-        //     body: Center(
-        //       child: Text('This widget is below the SlidingSheet'),
-        //     ),
-        //     builder: (context, state) {
-        //       // This is the content of the sheet that will get
-        //       // scrolled, if the content is bigger than the available
-        //       // height of the sheet.
-        //       return Container(
-        //         height: MediaQuery.of(context).size.height / 2,
-        //         child: Center(
-        //           child: Text(
-        //             'This is the content of the sheet',
-        //             style: TextStyle(color: Colors.black),
-        //           ),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ),
-      ],
+      ),
     );
   }
 

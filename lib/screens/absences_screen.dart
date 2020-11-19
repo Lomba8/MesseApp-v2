@@ -86,7 +86,7 @@ class _AbsencesScreenState extends State<AbsencesScreen>
               centerTitle: true,
               backgroundColor: Colors.transparent,
               flexibleSpace: CustomPaint(
-                painter: BackgroundPainter(Theme.of(context)),
+                painter: BackgroundPainter(Theme.of(context), back: true),
                 size: Size.infinite,
               ),
               bottom: PreferredSize(

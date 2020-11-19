@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:cupertino_tabbar/cupertino_tabbar.dart' as CupertinoTabBar;
 import 'package:flutter/gestures.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Preferences extends StatefulWidget {
@@ -58,51 +59,55 @@ class _PreferencesState extends State<Preferences> {
   Widget build(BuildContext context) => Material(
       color: Theme.of(context).backgroundColor,
       child: CustomScrollView(slivers: <Widget>[
-        SliverAppBar(
-          brightness: Theme.of(context).brightness,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Column(
-            children: <Widget>[
-              Text(
-                "IMPOSTAZIONI",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black
-                        : Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          bottom: PreferredSize(
-              child: Container(),
-              preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-          pinned: true,
-          centerTitle: true,
-          flexibleSpace: CustomPaint(
-            painter: BackgroundPainter(Theme.of(context), back: true),
-            size: Size.infinite,
-          ),
-        ),
+        // SliverAppBar(
+        //   brightness: Theme.of(context).brightness,
+        //   elevation: 0,
+        //   backgroundColor: Colors.transparent,
+        //   title: Column(
+        //     children: <Widget>[
+        //       Text(
+        //         "IMPOSTAZIONI",
+        //         textAlign: TextAlign.center,
+        //         style: TextStyle(
+        //             color: Theme.of(context).brightness == Brightness.light
+        //                 ? Colors.black
+        //                 : Colors.white,
+        //             fontSize: 30,
+        //             fontWeight: FontWeight.bold),
+        //       ),
+        //     ],
+        //   ),
+        //   bottom: PreferredSize(
+        //       child: Container(),
+        //       preferredSize:
+        //           Size.fromHeight(MediaQuery.of(context).size.width / 8)),
+        //   pinned: true,
+        //   centerTitle: true,
+        //   flexibleSpace: CustomPaint(
+        //     painter: BackgroundPainter(Theme.of(context), back: true),
+        //     size: Size.infinite,
+        //   ),
+        // ),
         ExpansionSliver(
-          ExpansionSliverDelegate(context,
-              title: 'IMPOSTAZIONI',
-              leading: Icons.arrow_back_ios,
-              leadingCallback: () {
-                Navigator.pop(context);
-              },
-              action: MdiIcons.license,
-              actionCallback: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LicensePage(
-                              applicationName: main.appName,
-                            )),
-                  ),
-              body: _Header()),
+          ExpansionSliverDelegate(
+            context,
+            title: 'IMPOSTAZIONI',
+            leading: Icons.arrow_back_ios,
+            leadingCallback: () {
+              Navigator.pop(context);
+            },
+            action: MdiIcons.license,
+            actionCallback: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LicensePage(
+                  applicationName: main.appName,
+                ),
+              ),
+            ),
+            body: _Header(),
+            expansion: true,
+          ),
         ),
         SliverFillRemaining(
           child: Padding(
@@ -300,19 +305,23 @@ class _Header extends ResizableWidget {
               width: interpolate(kToolbarHeight + 40,
                   MediaQuery.of(context).size.width, heightFactor),
               child: Container(
+                margin: EdgeInsets.only(top: 10),
                 padding: EdgeInsets.all(interpolate(0.0, 20.0, heightFactor)),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     color: interpolate(
-                        Theme.of(context).primaryColor.withOpacity(0),
-                        Theme.of(context).primaryColor,
-                        heightFactor),
+                      Theme.of(context).primaryColor.withOpacity(0),
+                      Theme.of(context).primaryColor,
+                      heightFactor,
+                    ),
                     shape: BoxShape.circle),
                 child: Image.asset(
-                  'images/logomesse_scuro.png',
-                  color: interpolate(Theme.of(context).primaryColor,
-                      Theme.of(context).backgroundColor, heightFactor),
-                  colorBlendMode: BlendMode.xor,
+                  'images/logomesse.png',
+                  color: interpolate(
+                    Colors.white,
+                    Colors.black,
+                    heightFactor,
+                  ),
                 ),
               ),
             ),

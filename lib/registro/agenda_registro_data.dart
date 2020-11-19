@@ -55,7 +55,9 @@ class AgendaRegistroData extends RegistroData {
                             DateTime.now().day)
                         .isAtSameMomentAs(DateTime.parse(date)))
                 ? 0
-                : DateTime.now().isBefore(DateTime.parse(date)) ? 1 : 0
+                : DateTime.now().isBefore(DateTime.parse(date))
+                    ? 1
+                    : 0
           },
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
@@ -80,6 +82,8 @@ class AgendaRegistroData extends RegistroData {
       return Result(false, false);
     }
   }
+
+  int get newEventi => data.where((Evento v) => v.isNew).length;
 
   @override
   Future<void> load() async {
@@ -120,7 +124,9 @@ class Evento implements EventInterface {
                     DateTime.now().day)
                 .isAtSameMomentAs(date))
         ? 0
-        : raw['new'] == 1 ? true : false;
+        : raw['new'] == 1
+            ? true
+            : false;
   }
 
   @override
@@ -136,7 +142,9 @@ class Evento implements EventInterface {
   @override
   Widget getDot([double opacity]) => Container(
         margin: EdgeInsets.symmetric(horizontal: 1.0),
-        color: (isNew ?? true ? Colors.red : Colors.lightBlueAccent)
+        color: (((isNew ?? true) && autore != "Didattica a distanza")
+                ? Colors.red
+                : Colors.lightBlueAccent)
             .withOpacity(opacity),
         height: 5.0,
         width: 5.0,

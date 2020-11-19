@@ -67,10 +67,9 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
   }
 
   // TODO: ripristinare lastUpdate
-  /*String _passedTime() {
+  String _passedTime() {
     if (session.agenda.lastUpdate == null) return 'mai aggiornato';
-    Duration difference =
-        DateTime.now().difference(session.agenda.lastUpdate);
+    Duration difference = DateTime.now().difference(session.agenda.lastUpdate);
     if (difference.inMinutes < 1) {
       Future.delayed(Duration(seconds: 15), _setStateIfAlive);
       return 'adesso';
@@ -86,7 +85,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
       return '$hours or${hours == 1 ? 'a' : 'e'} fa';
     }
     return 'più di un giorno fa';
-  }*/
+  }
 
   Future<void> _refresh() async {
     session.agenda.getData().then((r) {
@@ -111,49 +110,30 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
-          SliverAppBar(
-            brightness: Theme.of(context).brightness,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            title: Column(
-              children: <Widget>[
-                Text(
-                  "AGENDA",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            bottom: PreferredSize(
-                child: Container(),
-                preferredSize:
-                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-            pinned: true,
-            centerTitle: true,
-            flexibleSpace: CustomPaint(
-              painter: BackgroundPainter(Theme.of(context)),
-              size: Size.infinite,
+          ExpansionSliver(
+            ExpansionSliverDelegate(
+              context,
+              title: 'AGENDA',
+              body: Calendar(
+                _currentDate,
+                (day, events) async {
+                  dayEvents.forEach((evt) async => await evt.seen());
+                  dayEvents = events;
+                  dayEvents.forEach((evt) async => await evt.seen());
+                  setState(() {
+                    //dayLessons = session.lessons.data['date'][day];
+                    _currentDate = day;
+                    lunghezzaDash = 0;
+                    _value = !_value;
+                  });
+                },
+                'agenda',
+                _passedTime,
+              ),
+              value: _value,
+              expansion: true,
             ),
           ),
-          ExpansionSliver(ExpansionSliverDelegate(context,
-              title: 'AGENDA',
-              body: Calendar(_currentDate, (day, events) async {
-                dayEvents.forEach((evt) async => await evt.seen());
-                dayEvents = events;
-                dayEvents.forEach((evt) async => await evt.seen());
-                setState(() {
-                  //dayLessons = session.lessons.data['date'][day];
-                  _currentDate = day;
-                  lunghezzaDash = 0;
-                  _value = !_value;
-                });
-              }, 'agenda'),
-              value: _value)),
           SliverList(
             delegate: SliverChildListDelegate(
               [
@@ -163,7 +143,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                       .where((evt) => evt.giornaliero)
                       .map((evento) => Stack(
                             alignment: Alignment(-0.9, 0.0),
-                            overflow: Overflow.visible,
+                            clipBehavior: Clip.none,
                             children: [
                               Container(
                                 margin: EdgeInsets.only(left: 8.0),
@@ -352,7 +332,9 @@ class EventCard extends StatelessWidget {
                   : 0.0),
           height: !evento.giornaliero
               ? 70 * evento.fine.difference(evento.inizio).inMinutes / 30
-              : MediaQuery.of(context).size.height / 5.5,
+              : evento.autore == "Didattica a distanza"
+                  ? MediaQuery.of(context).size.height / 9
+                  : MediaQuery.of(context).size.height / 5.5,
           padding: EdgeInsets.only(left: 20, right: 10, bottom: 4, top: 4),
           child: Container(
               decoration: BoxDecoration(
@@ -407,15 +389,19 @@ class EventCard extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: evento.autore == "Didattica a distanza"
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: session.subjects.data[evento.autore] is List
                         ? session.subjects.data[evento.autore]
                             .map<Widget>((sbj) => Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Icon(
-                                      Globals.subjects[sbj]['icona'] ??
-                                          MdiIcons.sleep,
+                                      evento.autore == "Didattica a distanza"
+                                          ? Icons.home
+                                          : Globals.subjects[sbj]['icona'] ??
+                                              MdiIcons.sleep,
                                       size: 25.0,
                                       color: Colors.black),
                                 ))

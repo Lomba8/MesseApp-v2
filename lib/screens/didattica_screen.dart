@@ -87,7 +87,7 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                 centerTitle: true,
                 backgroundColor: Colors.transparent,
                 flexibleSpace: CustomPaint(
-                  painter: BackgroundPainter(Theme.of(context)),
+                  painter: BackgroundPainter(Theme.of(context), back: true),
                   size: Size.infinite,
                 ),
                 actions: <Widget>[
@@ -152,7 +152,6 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                                     if (path is CustomDirectory) {
                                       setState(() {
                                         directory = path;
-                                        // directory.changed = false;
                                       });
                                     } else {
                                       path.changed = false;

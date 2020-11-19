@@ -23,6 +23,15 @@ class RegistroApi {
   String nome, cognome, scuola, token, cls;
   DateTime tokenExpiration, birth;
 
+  VotiRegistroData voti;
+  AgendaRegistroData agenda;
+  SubjectsRegistroData subjects;
+  BachecaRegistroData bacheca;
+  NoteRegistroData note;
+  LessonsRegistroData lessons;
+  AbsencesRegistroData absences;
+  DidatticaRegistroData didactics;
+
   RegistroApi({@required this.uname, @required this.pword}) {
     init();
   }
@@ -86,15 +95,6 @@ class RegistroApi {
       },
       where: 'usrId = ?',
       whereArgs: [usrId]);
-
-  VotiRegistroData voti;
-  AgendaRegistroData agenda;
-  SubjectsRegistroData subjects;
-  BachecaRegistroData bacheca;
-  NoteRegistroData note;
-  LessonsRegistroData lessons;
-  AbsencesRegistroData absences;
-  DidatticaRegistroData didactics;
 
   static String _capitalize(String s) {
     List<String> parole = [];

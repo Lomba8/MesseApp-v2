@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -8,13 +9,13 @@ import 'package:Messedaglia/screens/absences_screen.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/screens/bacheca_screen.dart';
 import 'package:Messedaglia/screens/didattica_screen.dart';
-import 'package:Messedaglia/screens/home_screen1.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/note_screen.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
-import 'package:Messedaglia/utils/orariUtils.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -133,7 +134,23 @@ void main() {
       [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
 
-    runApp(Phoenix(child: MaterialAppWithTheme()));
+    await Firebase.initializeApp();
+
+    FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    // Crashlytics.instance.enableInDevMode = true;
+
+    // Pass all uncaught errors to Crashlytics.
+    // FlutterError.onError = (flutterError) =>
+    //     FirebaseCrashlytics.instance.recordFlutterError(flutterError);
+
+    // FlutterError.onError = (flutterError) =>
+    //     FirebaseCrashlytics.instance.log(flutterError.toString());
+
+    runZonedGuarded(() async {
+      runApp(Phoenix(child: MaterialAppWithTheme()));
+    }, (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    });
   });
 }
 

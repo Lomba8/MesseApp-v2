@@ -4,6 +4,7 @@ import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/screens/screens.dart';
 import 'package:Messedaglia/widgets/note_widget.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -103,7 +104,6 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         ),
         builder: (context, state) {
           _state = state;
-          // main.session.didactics.newDidattica;
           //FIXME: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
@@ -133,8 +133,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                 ), // 1 & 3 NO dire 4 ma ce anche il 2
                               ),
                             ),
-                            main.session.voti.newVotiTot >
-                                    0 // FIXME non ce data quando switcho gli account
+                            main.session.voti.newVotiTot > 0
                                 ? Icon(
                                     Icons.brightness_1,
                                     color: Colors.yellow,
@@ -156,13 +155,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                 ),
                               ),
                             ),
-                            main.session.agenda.data
-                                        .where((e) =>
-                                            e.isNew == true &&
-                                            e.inizio.isAfter(DateTime.now()) ==
-                                                true)
-                                        .length >
-                                    0
+                            main.session.agenda.newEventi > 0
                                 ? Icon(
                                     Icons.brightness_1,
                                     color: Colors.yellow,
@@ -172,7 +165,6 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                           ],
                         ),
                         Stack(
-                          //TODO implement newFiles
                           alignment: Alignment.topRight,
                           children: <Widget>[
                             GestureDetector(
@@ -183,11 +175,14 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                 color: Colors.white,
                               ),
                             ),
-                            Icon(
-                              Icons.brightness_1,
-                              color: Colors.yellow,
-                              size: 12,
-                            ),
+                            main.session.didactics.data.children.values.any(
+                                    (customDir) => customDir.changed == true)
+                                ? Icon(
+                                    Icons.brightness_1,
+                                    color: Colors.yellow,
+                                    size: 12,
+                                  )
+                                : Offstage(),
                           ],
                         ),
                         Stack(
@@ -272,15 +267,18 @@ class _HomeScreenWidgetsState extends State<HomeScreenWidgets> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: (noteWidget(context))
-                .followedBy(assenzeWidget(context))
-                .toList(),
+            children: [
+              NoteWidget(),
+              AssenzeWidget(),
+            ],
           ),
         ),
         Flexible(
           child: Column(
-            children:
-                votiWidget(context).followedBy(eventiWidget(context)).toList(),
+            children: [
+              VotiWIdget(),
+              EventiWidget(),
+            ],
           ),
         ),
       ],

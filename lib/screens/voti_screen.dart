@@ -80,39 +80,10 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
           showChildOpacityTransition: false,
           child: CustomScrollView(scrollDirection: Axis.vertical, slivers: <
               Widget>[
-            SliverAppBar(
-              brightness: Theme.of(context).brightness,
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              title: Column(
-                children: <Widget>[
-                  Text(
-                    "VOTI",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              bottom: PreferredSize(
-                  child: Container(),
-                  preferredSize:
-                      Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-              pinned: true,
-              centerTitle: true,
-              flexibleSpace: CustomPaint(
-                painter: BackgroundPainter(Theme.of(context)),
-                size: Size.infinite,
-              ),
-            ),
             ExpansionSliver(
               ExpansionSliverDelegate(
                 context,
-                title: 'VOTI', //session.voti.periods[0],
+                title: session.voti.periods[0],
                 body: _Header(
                     (period) => setState(() {
                           _value = !_value;
@@ -120,6 +91,7 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                         }),
                     _passedTime),
                 value: _value,
+                expansion: true,
               ),
             ),
             SliverList(
@@ -290,7 +262,7 @@ class _Header extends ResizableWidget {
     return Container(
         height: (maxExtent(context) - minExtent(context)) * heightFactor +
             minExtent(context),
-        child: Stack(overflow: Overflow.clip, children: <Widget>[
+        child: Stack(clipBehavior: Clip.antiAlias, children: <Widget>[
           Positioned(
               top: 20 * heightFactor,
               left: 20,
@@ -298,12 +270,15 @@ class _Header extends ResizableWidget {
                   (MediaQuery.of(context).size.width - 40) / 2, heightFactor),
               height: interpolate(kToolbarHeight,
                   (MediaQuery.of(context).size.width - 40) / 2, heightFactor),
-              child: MarkView(
-                key: _key,
-                voto: average,
-                angle: interpolate(10.0, average, heightFactor),
-                background: interpolate(
-                    Voto.getColor(average), Colors.transparent, heightFactor),
+              child: Container(
+                margin: EdgeInsets.all(5),
+                child: MarkView(
+                  key: _key,
+                  voto: average,
+                  angle: interpolate(10.0, average, heightFactor),
+                  background: interpolate(
+                      Voto.getColor(average), Colors.transparent, heightFactor),
+                ),
               )),
           Positioned(
             top: 20 * heightFactor,
@@ -326,7 +301,9 @@ class _Header extends ResizableWidget {
                 ),
                 shape: Border(
                     bottom: BorderSide(
-                        color: Voto.getColor(session.voti.averagePeriodo(2)),
+                        color: Voto.getColor(session.voti.averagePeriodo(session
+                            .voti.periods
+                            .indexOf(session.voti.periods[1]))),
                         width: 5)),
               ),
             ),
@@ -346,7 +323,9 @@ class _Header extends ResizableWidget {
                 },
                 shape: Border(
                     bottom: BorderSide(
-                        color: Voto.getColor(session.voti.averagePeriodo(2)),
+                        color: Voto.getColor(session.voti.averagePeriodo(session
+                            .voti.periods
+                            .indexOf(session.voti.periods[2]))),
                         width: 5)),
                 child: Text(
                   session.voti.periods[2],
@@ -363,12 +342,12 @@ class _Header extends ResizableWidget {
             right: 0,
             height: kToolbarHeight,
             child: ListTile(
-              title: Text(
-                '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'}\n${passedTime()}',
+              title: AutoSizeText(
+                '${newVotiCount > 0 ? newVotiCount : 'nessun'} nuov${newVotiCount > 1 ? 'i' : 'o'} vot${newVotiCount > 1 ? 'i' : 'o'} - ${passedTime()}',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    //fontFamily: 'CoreSans',
-                    ),
+                minFontSize: 10,
+                maxFontSize: 15,
+                maxLines: 1,
               ),
               leading: newVotiCount > 0
                   ? Icon(

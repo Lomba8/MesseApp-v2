@@ -184,7 +184,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                   centerTitle: true,
                   backgroundColor: Colors.transparent,
                   flexibleSpace: CustomPaint(
-                    painter: BackgroundPainter(Theme.of(context)),
+                    painter: BackgroundPainter(Theme.of(context), back: true),
                     size: Size.infinite,
                   ),
                   bottom: PreferredSize(
@@ -381,7 +381,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
                         ),
                       ),
                       Stack(
-                        overflow: Overflow.visible,
+                        clipBehavior: Clip.none,
                         children: <Widget>[
                           Container(
                             margin: EdgeInsets.only(top: 15.0),

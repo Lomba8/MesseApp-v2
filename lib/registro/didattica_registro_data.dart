@@ -197,9 +197,9 @@ class CustomFile extends CustomPath {
     if (onlyHeader && type != 'file') return;
 
     Directory dir = await getApplicationDocumentsDirectory();
-    var didacticsDir =
-        await Directory('${dir.path}/didactics/${main.session.usrId}').create();
-    // print(didacticsDir);
+    Directory didacticsDir = await Directory('${dir.path}/didactics').create();
+    didacticsDir =
+        await Directory('${didacticsDir.path}/${main.session.usrId}').create();
 
     Map<String, String> headers = {
       'Z-Dev-Apikey': 'Tg1NWEwNGIgIC0K',

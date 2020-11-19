@@ -4,8 +4,10 @@ import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/agenda_registro_data.dart';
 import 'package:Messedaglia/screens/agenda_screen.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:Messedaglia/main.dart' as main;
 
 Map<String, Calendar> _instances = {};
 const int _pagesCount = 2000;
@@ -17,6 +19,7 @@ class Calendar extends ResizableWidget {
 
   DateTime _currentDay; //= DateTime.now();
   static final Curve _curve = Curves.easeIn;
+  final String Function() passedTime;
 
   set currentDay(DateTime currentDay) {
     _onDayChanged(
@@ -25,7 +28,8 @@ class Calendar extends ResizableWidget {
     );
   }
 
-  Calendar([this._currentDay, this._onDayChanged, String key]) {
+  Calendar(
+      [this._currentDay, this._onDayChanged, String key, this.passedTime]) {
     if (key != null) {
       _page = _instances[key]?._page ?? 0;
       _controller = PageController(
@@ -109,6 +113,21 @@ class Calendar extends ResizableWidget {
               children: _children(context, i - _pagesCount ~/ 2, heightFactor)
                   .toList(),
             ),
+          ),
+        ),
+        Container(
+          height: kToolbarHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              AutoSizeText(
+                '${main.session.agenda.newEventi > 0 ? main.session.agenda.newEventi : 'nessun'} nuov${main.session.agenda.newEventi > 1 ? 'i' : 'o'} event${main.session.agenda.newEventi > 1 ? 'i' : 'o'} - ${passedTime()}               ',
+                textAlign: TextAlign.center,
+                minFontSize: 10,
+                maxFontSize: 13,
+                maxLines: 1,
+              ),
+            ],
           ),
         ),
       ],
@@ -232,9 +251,9 @@ class Calendar extends ResizableWidget {
 
   @override
   double maxExtent(BuildContext context) =>
-      48 + 16 + 15 + MediaQuery.of(context).size.width * 6 / 7 + 10;
+      48 + 16 + 15 + MediaQuery.of(context).size.width * 6 / 7 + 10 + 46;
 
   @override
   double minExtent(BuildContext context) =>
-      48 + 16 + 15 + MediaQuery.of(context).size.width / 7 + 10;
+      48 + 16 + 15 + MediaQuery.of(context).size.width / 7 + 10 + 46;
 }

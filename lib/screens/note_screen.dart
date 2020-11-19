@@ -83,7 +83,7 @@ class _NoteScreenState extends State<NoteScreen> {
               centerTitle: true,
               backgroundColor: Colors.transparent,
               flexibleSpace: CustomPaint(
-                painter: BackgroundPainter(Theme.of(context)),
+                painter: BackgroundPainter(Theme.of(context), back: true),
                 size: Size.infinite,
               ),
               bottom: PreferredSize(
@@ -157,7 +157,7 @@ class _NoteListViewState extends State<NoteListView> {
   void initState() {
     widget.controller.addListener(() async {
       if (widget.controller.hasClients) {
-        int n = widget.controller.offset.toInt() ~/ 300;
+        int n = widget.controller.offset.toInt() ~/ 140;
         int ntte = main.session.note.data
             .where((nota) => nota.tipologia == "NTTE")
             .length;
@@ -169,20 +169,16 @@ class _NoteListViewState extends State<NoteListView> {
             .length;
 
         if (widget.type == "NTTE") {
-          print('cancellata nota ntte:' + (n).toString());
           await main.session.note.data[n].seen();
           setState(() {});
           if (main.session.note.data[n].isNew) {}
         } else if (widget.type == "NTCL") {
-          print('cancellata nota ntcl:' + (ntte + n).toString());
           await main.session.note.data[ntte + n].seen();
           setState(() {});
         } else if (widget.type == "NTWN") {
-          print('cancellata nota ntwn:' + (ntte + ntcl + n).toString());
           await main.session.note.data[ntte + ntcl + n].seen();
           setState(() {});
         } else if (widget.type == "NTST") {
-          print('cancellata nota nntst:' + (ntte + ntcl + ntwn + n).toString());
           await main.session.note.data[ntte + ntcl + ntwn + n].seen();
           setState(() {});
         }

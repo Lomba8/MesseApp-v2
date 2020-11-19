@@ -6,7 +6,8 @@ class BackgroundPainter extends CustomPainter {
   final Paint p = Paint();
   final Path path = Path();
   final bool back;
-  BackgroundPainter(this._theme, {this.back = false});
+  final bool expansion;
+  BackgroundPainter(this._theme, {this.back = false, this.expansion = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -63,7 +64,24 @@ class BackgroundPainter extends CustomPainter {
     path.close();
 */
 
-    // cruva in alto a sinistra e in alto a destra
+    // // cruva in alto a sinistra e in alto a destra
+    // path.reset();
+    // path.moveTo(0, -100);
+    // if (back) {
+    //   path.lineTo(0, size.height * 0.75);
+    //   path.lineTo(size.width * 0.89, size.height * 0.75);
+    // } else {
+    //   path.lineTo(0, size.height * 0.45);
+    //   path.quadraticBezierTo(
+    //       0, size.height * 0.75, size.width * 0.11, size.height * 0.75);
+
+    //   path.lineTo(size.width * 0.89, size.height * 0.75);
+    // }
+    // path.quadraticBezierTo(
+    //     size.width, size.height * 0.75, size.width, size.height * 0.45);
+    // path.lineTo(size.width, -100);
+    // path.close();
+
     path.reset();
     path.moveTo(0, -100);
     if (back) {
@@ -72,12 +90,23 @@ class BackgroundPainter extends CustomPainter {
     } else {
       path.lineTo(0, size.height * 0.45);
       path.quadraticBezierTo(
-          0, size.height * 0.75, size.width * 0.11, size.height * 0.75);
+        0,
+        expansion ? size.height * 0.99 : size.height * 0.75,
+        size.width * 0.11,
+        expansion ? size.height * 0.99 : size.height * 0.75,
+      );
 
-      path.lineTo(size.width * 0.89, size.height * 0.75);
+      path.lineTo(
+        size.width * 0.89,
+        expansion ? size.height * 0.99 : size.height * 0.75,
+      );
     }
     path.quadraticBezierTo(
-        size.width, size.height * 0.75, size.width, size.height * 0.45);
+      size.width,
+      expansion ? size.height * 0.99 : size.height * 0.75,
+      size.width,
+      size.height * 0.45,
+    );
     path.lineTo(size.width, -100);
     path.close();
 

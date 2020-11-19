@@ -55,7 +55,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 centerTitle: true,
                 pinned: true,
                 flexibleSpace: CustomPaint(
-                  painter: BackgroundPainter(Theme.of(context)),
+                  painter: BackgroundPainter(Theme.of(context), back: true),
                   size: Size.infinite,
                 ),
                 bottom: PreferredSize(
