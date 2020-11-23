@@ -37,5 +37,3 @@ lib/generated_plugin_registrant.dart
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 # analytics file
-ios/Runner/GoogleService-Info.plist
-ios/Runner.xcarchive/SwiftSupport/iphoneos/libswiftCore.dylib

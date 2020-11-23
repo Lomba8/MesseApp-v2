@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>340362340247-oeqn39c1lvvjg7auu0i0ta2c9bcv0sf6.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.340362340247-oeqn39c1lvvjg7auu0i0ta2c9bcv0sf6</string>
+	<key>API_KEY</key>
+	<string>AIzaSyByvnvh23RkzHSL9iLegiFahp4ei5mq_IQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>340362340247</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.messeapp</string>
+	<key>PROJECT_ID</key>
+	<string>messeapp-db</string>
+	<key>STORAGE_BUCKET</key>
+	<string>messeapp-db.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:340362340247:ios:c472e289086e467f7e06d2</string>
+	<key>DATABASE_URL</key>
+	<string>https://messeapp-db.firebaseio.com</string>
+</dict>
+</plist>
