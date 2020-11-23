@@ -38,3 +38,4 @@ lib/generated_plugin_registrant.dart
 
 # analytics file
 ios/Runner/GoogleService-Info.plist
+ios/Runner.xcarchive/SwiftSupport/iphoneos/libswiftCore.dylib
