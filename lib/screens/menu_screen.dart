@@ -4,7 +4,6 @@ import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/screens/screens.dart';
 import 'package:Messedaglia/widgets/note_widget.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';

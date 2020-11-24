@@ -211,8 +211,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.1"
-  firebase_core:
+  firebase:
     dependency: "direct main"
+    description:
+      name: firebase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.3.2"
+  firebase_core:
+    dependency: transitive
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
@@ -388,7 +395,7 @@ packages:
       name: image_downloader
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.19.2"
+    version: "0.20.1"
   image_picker:
     dependency: "direct main"
     description:

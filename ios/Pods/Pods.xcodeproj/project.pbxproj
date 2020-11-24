@@ -75,7 +75,7 @@
 		1011E7A4DD82F4B157458CA6CD98408D /* GDTCORTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = 0D857D84A0812E4FAB392C655C6820B2 /* GDTCORTransport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		10BDFF465B716C621D83EA832ECAF6D1 /* FlutterLocalNotificationsPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = BE3EF404ECC7963634E56344C048BC10 /* FlutterLocalNotificationsPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1181ACD6E26A89B61001FE3C23BA1319 /* ShareExtendPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = DD41F7310C035E84A1138708C8B79B67 /* ShareExtendPlugin.m */; };
-		11EC103D355A45FBF604A509EA7803B0 /* image_downloader-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D41091AD10E1D523587451A99C70ED2A /* image_downloader-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		11EC103D355A45FBF604A509EA7803B0 /* image_downloader-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8908D9D5C18C41484662D948F4E85713 /* image_downloader-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		12A0EB59FD3C5238D3D1F869624211CC /* FLTPathProviderPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = AC5532BB57A8C58CA74E264E7C9C9882 /* FLTPathProviderPlugin.m */; };
 		12D9FF8DF51F1A2491FEF6B555DBB65D /* GDTCOREvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 1998750A6129D9BFBAD50997EB46D7FB /* GDTCOREvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1351845946F5CB461231440AEDF13E90 /* FIRAEvent+Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = 633ED81BC3C334F7990A38F476AF7D3C /* FIRAEvent+Internal.m */; };
@@ -117,7 +117,6 @@
 		2186CD560B815A6A5D054493F7C00C90 /* FIRCLSAsyncOperation_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4EC7D742593A094D9A602B42CA96E2 /* FIRCLSAsyncOperation_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		21DF686220E386EBEF9E20B690A25977 /* GULHeartbeatDateStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = F87D6AC4C2546FF685BB6B21E80B5ADB /* GULHeartbeatDateStorage.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		227E11FCD3C7AE7CED1BAAEC0A88B8CA /* GDTCORLifecycle.h in Headers */ = {isa = PBXBuildFile; fileRef = 44F0A8025320809D73C77B1FEF1BDA7F /* GDTCORLifecycle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2284EC38D3040F785370D1D945104170 /* ImageDownloaderPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 926E16F9F35A223A29F7362CDA76B614 /* ImageDownloaderPlugin.m */; };
 		22AD1397656EB8E8BA04BD7B455A2373 /* FIRCLSDwarfUnwindRegisters.h in Headers */ = {isa = PBXBuildFile; fileRef = F40BD0F2D1AD6ACBF9241637AFF77567 /* FIRCLSDwarfUnwindRegisters.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2315BF3290F1E201B918C8A33C0029DC /* GULKeychainStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 335C9EAB3ED97BF311E6FA94417921E9 /* GULKeychainStorage.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		23FF5465E43B6443419126FEBC0A9772 /* Pods-Runner-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B3C932BD54DBB963102A89E0F9E3948 /* Pods-Runner-dummy.m */; };
@@ -143,8 +142,8 @@
 		2BD43F2F2A6D36BB0933AFF5EC2D9433 /* FIRAnalyticsConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 861297EB2B8DDDF07B9E342334F586BB /* FIRAnalyticsConfiguration.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2CA986EC366CCBD396E54CEAEC7930DF /* FIRCLSInstallIdentifierModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 77EC4CD2E1ACB8B4395F853FE2B69400 /* FIRCLSInstallIdentifierModel.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2CFFF4CB4779D9A1A86B0F108A33EBBF /* FIRInstallationsAPIService.m in Sources */ = {isa = PBXBuildFile; fileRef = D4D1A87C4D61FD3544EEF8468EDB820F /* FIRInstallationsAPIService.m */; };
-		2D09007522A15C98D77CD8CB88CD9AB4 /* SwiftImageDownloaderPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509CDA88548E6CB95CCB39FFEE0DC16C /* SwiftImageDownloaderPlugin.swift */; };
 		2D124779D498F2809F0681F1321CAFD1 /* FIRCLSCompactUnwind.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E11D3CF0D823A5C634EBC56DC771DF /* FIRCLSCompactUnwind.c */; };
+		2D9BD6026F1A0C4F883481254097A2C2 /* MetaDataUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FECD69C2EA2CEE9AC0A6CA89CB52B7E /* MetaDataUtils.swift */; };
 		2F039F31201FF69AF77A81E5F47DF288 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B18A5926ECB0194B1A02BA4A2E5A52A8 /* Foundation.framework */; };
 		2F200AE08D20856C9CE5E7945CD69BA2 /* FIRAppInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = FE002129C9BCB7B03FA7E6A188BFA8C3 /* FIRAppInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2F6A71E6752A0A0F8660003829294DEF /* FIRStackFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 418CDA82C6693C13490A184CA63FCEB9 /* FIRStackFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -223,7 +222,7 @@
 		4D2E943B57CEC868D07EB0AE80E93495 /* FIRCLSCompoundOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A57D294C74C587B0ADEFEB05A335A204 /* FIRCLSCompoundOperation.m */; };
 		4D70037F3736E2225F86EC857E1BE28A /* crashlytics.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = 635DF416F98F8C5C114981DA6B3A27B6 /* crashlytics.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4DB9D96FA852455142C1D6898CF2E197 /* FIRCLSInternalReport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B4F77B90D1A985011712646CA3596B9 /* FIRCLSInternalReport.m */; };
-		4E7E5445247E57C077230F749AB44575 /* image_downloader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 568E3ABD73365148C581B1C893C8467A /* image_downloader-dummy.m */; };
+		4E7E5445247E57C077230F749AB44575 /* image_downloader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1558F0DDF3FEA7B27497A4C14BABA536 /* image_downloader-dummy.m */; };
 		4E813099B521EBFB3495AA0CDD7E74E4 /* FIRAppInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 40A569979A57BCBD014A3C66A062C6C8 /* FIRAppInternal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		4EB851448AD0BD2CD765CC10C655A7BA /* FirebaseInstallations-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A1913C3E3F42C9E15EB45283D794EE4C /* FirebaseInstallations-dummy.m */; };
 		4EF02430F082355837F4D9ADDE8056E4 /* SpeechPermissionStrategy.m in Sources */ = {isa = PBXBuildFile; fileRef = D8D8FD692A6B6225E734639AE2011866 /* SpeechPermissionStrategy.m */; };
@@ -272,6 +271,7 @@
 		60657DAEDA70AEFF7CC0A4402CA4EC52 /* FIRCLSPackageReportOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = EA03730599B7BA313EFA95148783F10E /* FIRCLSPackageReportOperation.m */; };
 		60AF19128C7695F3A5A0B624E78B3759 /* FIRCLSdSYM.m in Sources */ = {isa = PBXBuildFile; fileRef = 6109D9479425524BE1CFB7216F96232E /* FIRCLSdSYM.m */; };
 		610BAF71AFF23B9ADEE0F895597B9D58 /* FIRAEvent+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 117AD0F163C74B8782F2173A93975E1F /* FIRAEvent+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		61324A2AC5BE7320757C5618FCD72AF4 /* ImageDownloaderPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D0E88598702630A2D5162639272225D /* ImageDownloaderPlugin.m */; };
 		6134D6D9FDD6BB3BE13520C2D28BD9E8 /* FIRCLSUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D1230E972C0AA67EBF8F33FD5F1B066 /* FIRCLSUtility.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		61A5D69657D24660AF3F7F8540F53510 /* GULSecureCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = C298D4A3E716B64A5E72C5BFAA45AE19 /* GULSecureCoding.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		61CA90719635F53B99485EBC27B55721 /* FBLPromise+Then.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B21349915D2CD3E2BBEB1F817E50AA3 /* FBLPromise+Then.m */; };
@@ -410,7 +410,6 @@
 		9433C7B9B809432E3939A67727C0F60C /* GULAppEnvironmentUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 41A8103FFF500EF69E04C017F04AEF90 /* GULAppEnvironmentUtil.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		94D92297A7E3A218C62D393DD0D6CC4F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B18A5926ECB0194B1A02BA4A2E5A52A8 /* Foundation.framework */; };
 		94E91CA26BF2099162694CD05D9AC023 /* FIRBundleUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A41364FA69CF86291965700CAAB1FED /* FIRBundleUtil.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		95017160B7C877989A121E431237E6FB /* ImageDownloaderPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 055EE5DD021A1F18BBC6BA8A165CC892 /* ImageDownloaderPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9550EE713C81A845B81DA4E83F211167 /* FIRCLSProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = F2B366CCA2D1C2588C025D984A7559FB /* FIRCLSProcess.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9578945893B8B83F39E2D4684C670B83 /* firebase_crashlytics-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F28244E818BB123413556691035E9701 /* firebase_crashlytics-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9584C97CACB013082FCDE75527FEE731 /* NotificationPermissionStrategy.h in Headers */ = {isa = PBXBuildFile; fileRef = 2CFF1E79B86E477FA39A75A926630958 /* NotificationPermissionStrategy.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -432,7 +431,6 @@
 		986E280FB9B142CEE9FDA9A92ABB3CD6 /* GDTCORTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E980893C85C17E047F69950A73F17A2 /* GDTCORTransformer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9874E7F15E701E5815EF025F6C7BCD54 /* FBLPromise+Validate.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B1AD3C4C18775236E0213C6C2C0248 /* FBLPromise+Validate.m */; };
 		9893296AF50E3B3707C284E341804199 /* GDTCORTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFE73EF2BA1A0A5A2128B9F4A338F49 /* GDTCORTransport.m */; };
-		98F943FF801AB220D380DB010542E3D2 /* MetaDataUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0DA37A5B5E693F365A63640EED1D4F /* MetaDataUtils.swift */; };
 		9A1465D44CB17F5D21F4C08AF599D2F2 /* FBLPromises.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = D09FB28646CC3EAB59B84F45C1A388C2 /* FBLPromises.h */; };
 		9A1A6AA22A31F5F2FB1BA0A1C4016A89 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B18A5926ECB0194B1A02BA4A2E5A52A8 /* Foundation.framework */; };
 		9AC5B878D67F34A99C3C53BF84966CD5 /* pb_common.c in Sources */ = {isa = PBXBuildFile; fileRef = B744D63DF76085EEC94603B6B677DDD2 /* pb_common.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -fno-objc-arc -fno-objc-arc"; }; };
@@ -663,6 +661,7 @@
 		F8CD998959F135ED2108E3DE8D1E9AB7 /* nanopb-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D62CE0CAACDE6A7D9D77A5E9AB3FC9B7 /* nanopb-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F911B983376BBB23D78634FBF14E2049 /* FirebaseInstallations-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 67AB699FABC6F55AE993555AB9529A76 /* FirebaseInstallations-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F925D4F469C9166F68B8DB41EF6634D6 /* FIRCLSApplicationIdentifierModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E1C4695B79688FEB031F8E156FCDE9 /* FIRCLSApplicationIdentifierModel.m */; };
+		F938F88B5E6F9EBA43BCCD2257226734 /* SwiftImageDownloaderPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66943325D712AB9D7B868F88FECAEDF /* SwiftImageDownloaderPlugin.swift */; };
 		F9A5A843CAE1971B8158D62C7526A899 /* FIRCLSProcessReportOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = EC753DEE50004ED8A2E7312A8E417CAA /* FIRCLSProcessReportOperation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F9EC5B9BE2BD3B470ED85511E85418F6 /* FIRInstallationsIIDStore.h in Headers */ = {isa = PBXBuildFile; fileRef = DDCC8D8ACFD9DAABEFC36B5685919B63 /* FIRInstallationsIIDStore.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FA93B4564C786CA457CC30210A6C3A3F /* app_settings-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E1F1B9122CB1800C662B4C46169FBC4 /* app_settings-dummy.m */; };
@@ -675,6 +674,7 @@
 		FE4EACE38F7F693398A7B2A33CFFCDEF /* FBLPromise+Any.m in Sources */ = {isa = PBXBuildFile; fileRef = 02355F6E060434589A6070E251464E2A /* FBLPromise+Any.m */; };
 		FEA0E13DB048CD4A8B4EC9CCA8BF3A5D /* FIRCLSDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 965B6E53B41E401BDB1101B62BD7C276 /* FIRCLSDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FED0C16F908A142F20F92E279941CEF7 /* FMDB-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B5BC97C903C7A6D5F09F65D70CFDEE /* FMDB-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FEE5603E620B58585D69A570EE16684F /* ImageDownloaderPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 2DEB5D2C20618374DA333E9241DC901D /* ImageDownloaderPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FEF98062089A56EACA3BB4E3DA84E0CF /* FIRErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BCC740D64D0F9E37E38CBAAB481EC4 /* FIRErrors.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FF2CC7EFC072BDD43FE9DB7D4A6E8184 /* FIRAnalyticsConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 565200B249591FEBD40A0A9460BA9D26 /* FIRAnalyticsConfiguration.m */; };
 		FFBA5BD29123DE5DCDED4EAAFF829430 /* FIRInstallationsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E42821136D9FF20CC6881EF729A26DB /* FIRInstallationsItem.m */; };
@@ -1237,7 +1237,6 @@
 		044ECDD29BFAAAFEF5AA15351327A4DC /* image_picker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = image_picker.debug.xcconfig; sourceTree = "<group>"; };
 		04A02ACCC74EBEAF5146A80D9E58692F /* FIRCLSUserLogging.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCLSUserLogging.m; path = Crashlytics/Crashlytics/Components/FIRCLSUserLogging.m; sourceTree = "<group>"; };
 		04C7C9C46A7D3D48E4F04221F25CBD94 /* shared_preferences.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = shared_preferences.release.xcconfig; sourceTree = "<group>"; };
-		055EE5DD021A1F18BBC6BA8A165CC892 /* ImageDownloaderPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ImageDownloaderPlugin.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/ios/Classes/ImageDownloaderPlugin.h"; sourceTree = "<group>"; };
 		064F2FA8BC9253E9316E923379F03415 /* device_info.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = device_info.modulemap; sourceTree = "<group>"; };
 		06741FB65AE330A71A5F3E03829AFB45 /* FirebaseCrashlytics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCrashlytics.debug.xcconfig; sourceTree = "<group>"; };
 		06E1DFEA680916650AF46DB11F408C22 /* FIRCLSOnboardingOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCLSOnboardingOperation.m; path = Crashlytics/Crashlytics/Settings/Operations/FIRCLSOnboardingOperation.m; sourceTree = "<group>"; };
@@ -1265,6 +1264,7 @@
 		0D8E3CDB872AAB87ACADE33AAE258F69 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/connectivity-0.4.9+5/LICENSE"; sourceTree = "<group>"; };
 		0E0743AF28B08911BE66983CD6D50FDA /* firebase_crashlytics.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = firebase_crashlytics.framework; path = firebase_crashlytics.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F3AA7D9F32B827316A92CC28F5AD474 /* FIRCLSException.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = FIRCLSException.mm; path = Crashlytics/Crashlytics/Handlers/FIRCLSException.mm; sourceTree = "<group>"; };
+		0F636DAE700233AD5E2C2A8DDD5B918D /* image_downloader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = image_downloader.debug.xcconfig; sourceTree = "<group>"; };
 		0F6E6824524594B486F5E928F6A1EA98 /* FBLPromise+Delay.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FBLPromise+Delay.m"; path = "Sources/FBLPromises/FBLPromise+Delay.m"; sourceTree = "<group>"; };
 		0FC083AAA9BFC9715BC778968488E1A8 /* app_settings.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = app_settings.debug.xcconfig; sourceTree = "<group>"; };
 		10155FD96F886827F51D2E439248EA37 /* FBLPromise+Catch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBLPromise+Catch.h"; path = "Sources/FBLPromises/include/FBLPromise+Catch.h"; sourceTree = "<group>"; };
@@ -1286,6 +1286,7 @@
 		14B7D4AA72BED164610D40C88C31EB1A /* SqfliteOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SqfliteOperation.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-1.3.2+1/ios/Classes/SqfliteOperation.m"; sourceTree = "<group>"; };
 		14DD7114E0473CE005642A0B33BE54D8 /* FIRCLSAllocate.c */ = {isa = PBXFileReference; includeInIndex = 1; name = FIRCLSAllocate.c; path = Crashlytics/Crashlytics/Helpers/FIRCLSAllocate.c; sourceTree = "<group>"; };
 		14E72C1A392A3AD233DA8096BF2449B7 /* ext_storage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ext_storage.debug.xcconfig; sourceTree = "<group>"; };
+		1558F0DDF3FEA7B27497A4C14BABA536 /* image_downloader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "image_downloader-dummy.m"; sourceTree = "<group>"; };
 		166FCECFE8ACF0F9FE91D3A1FAF26AD2 /* FirebaseInstallations.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseInstallations.release.xcconfig; sourceTree = "<group>"; };
 		1758D51E3DE25B1244CE1BEBC2CA8708 /* sqflite-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "sqflite-umbrella.h"; sourceTree = "<group>"; };
 		1777315DD2735CF7DD80C8A2AA7CFBF8 /* pb_encode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_encode.c; sourceTree = "<group>"; };
@@ -1296,7 +1297,6 @@
 		1998750A6129D9BFBAD50997EB46D7FB /* GDTCOREvent.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCOREvent.h; path = GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCOREvent.h; sourceTree = "<group>"; };
 		1A41364FA69CF86291965700CAAB1FED /* FIRBundleUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRBundleUtil.h; path = FirebaseCore/Sources/FIRBundleUtil.h; sourceTree = "<group>"; };
 		1A86BCB5A1E7A5D2AA117E8DB67BB1B7 /* FIRCLSUnwind_x86.c */ = {isa = PBXFileReference; includeInIndex = 1; name = FIRCLSUnwind_x86.c; path = Crashlytics/Crashlytics/Unwind/FIRCLSUnwind_x86.c; sourceTree = "<group>"; };
-		1A8A32D116A176FF3D4448F9266DE315 /* image_downloader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = image_downloader.podspec; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/ios/image_downloader.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		1B39CDFD16FD24EF02AB13C54A0E0484 /* FIRInstallationsSingleOperationPromiseCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsSingleOperationPromiseCache.h; path = FirebaseInstallations/Source/Library/InstallationsIDController/FIRInstallationsSingleOperationPromiseCache.h; sourceTree = "<group>"; };
 		1BCBC7416BB6771E329A6EA7EA001E0B /* sqflite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "sqflite-dummy.m"; sourceTree = "<group>"; };
 		1BDE7BEEB6E73AEC5BF868ECAA1DFB65 /* url_launcher.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = url_launcher.debug.xcconfig; sourceTree = "<group>"; };
@@ -1325,7 +1325,6 @@
 		24702E5C2B1A36F939439AB4F29033D3 /* FIRLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRLogger.h; path = FirebaseCore/Sources/Private/FIRLogger.h; sourceTree = "<group>"; };
 		25087C0B3FC2C51BB638EB17AF03F52A /* FirebaseCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FirebaseCore.h; path = FirebaseCore/Sources/Public/FirebaseCore/FirebaseCore.h; sourceTree = "<group>"; };
 		2520D030461200F0E27E4447CC49EB6F /* FIRCLSCompactUnwind_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSCompactUnwind_Private.h; path = Crashlytics/Crashlytics/Unwind/Compact/FIRCLSCompactUnwind_Private.h; sourceTree = "<group>"; };
-		25639E28A18060BD2FD5F6B3C0A65CFB /* image_downloader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = image_downloader.debug.xcconfig; sourceTree = "<group>"; };
 		257E2771872EB118F6EA10BBA4DF1D26 /* FirebaseInstallations.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseInstallations.debug.xcconfig; sourceTree = "<group>"; };
 		25E326E8AF6611E809AA2E652F04164C /* FirebaseCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCore.release.xcconfig; sourceTree = "<group>"; };
 		260C7669FA4DD3F7075DA0B016934BEA /* FLTImagePickerImageUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FLTImagePickerImageUtil.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_picker-0.6.7+14/ios/Classes/FLTImagePickerImageUtil.h"; sourceTree = "<group>"; };
@@ -1359,6 +1358,7 @@
 		2D58AE9E885CE7C0746DEC048981CC20 /* GULLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULLogger.h; path = GoogleUtilities/Logger/Private/GULLogger.h; sourceTree = "<group>"; };
 		2D8B801A0F253A118DB6154F117BA394 /* FIRLoggerLevel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRLoggerLevel.h; path = FirebaseCore/Sources/Public/FirebaseCore/FIRLoggerLevel.h; sourceTree = "<group>"; };
 		2DBE38B25A401C27614A17218F8ADFF0 /* app_settings.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = app_settings.modulemap; sourceTree = "<group>"; };
+		2DEB5D2C20618374DA333E9241DC901D /* ImageDownloaderPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ImageDownloaderPlugin.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/ios/Classes/ImageDownloaderPlugin.h"; sourceTree = "<group>"; };
 		2E2586B48D7996888EED39E0C2DDBC96 /* video_player.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = video_player.debug.xcconfig; sourceTree = "<group>"; };
 		2E4DD2DC66EF0DC812ECCF708407BAB5 /* open_file.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = open_file.podspec; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/open_file-3.0.3/ios/open_file.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		2E980893C85C17E047F69950A73F17A2 /* GDTCORTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORTransformer.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORTransformer.h; sourceTree = "<group>"; };
@@ -1437,6 +1437,7 @@
 		45BD1AB7B61A93D32C5285CF2EC4B811 /* FIRDiagnosticsData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRDiagnosticsData.h; path = FirebaseCore/Sources/FIRDiagnosticsData.h; sourceTree = "<group>"; };
 		45F286C66310DD114A36D761DA5A3A55 /* firebase_core-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "firebase_core-dummy.m"; sourceTree = "<group>"; };
 		46A607A5DC0827D85EF47B3528CC9CAD /* LocationPermissionStrategy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LocationPermissionStrategy.m; path = "../../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1/ios/Classes/strategies/LocationPermissionStrategy.m"; sourceTree = "<group>"; };
+		46C4A3378186AB989E0F18142750320D /* image_downloader-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "image_downloader-Info.plist"; sourceTree = "<group>"; };
 		475EEFC584B816594455F3C2C83F5007 /* Codec.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = Codec.m; path = "../../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1/ios/Classes/util/Codec.m"; sourceTree = "<group>"; };
 		47DFB18A0BDD540156253775B5FD8D31 /* pdf_viewer_plugin-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "pdf_viewer_plugin-dummy.m"; sourceTree = "<group>"; };
 		4889059ED6BD47718C5C01DA6FB5F3BE /* sqflite.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = sqflite.modulemap; sourceTree = "<group>"; };
@@ -1444,7 +1445,6 @@
 		49B95359652F9665A70DD58BFA172ADA /* GULKeychainStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULKeychainStorage.h; path = GoogleUtilities/Environment/Private/GULKeychainStorage.h; sourceTree = "<group>"; };
 		49FE4A0690C92DC5EADD4AE009F5F5EF /* FIRInstallationsStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstallationsStore.m; path = FirebaseInstallations/Source/Library/InstallationsStore/FIRInstallationsStore.m; sourceTree = "<group>"; };
 		4A365D114DDFEB903016F6C8F9054BC2 /* open_file-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "open_file-dummy.m"; sourceTree = "<group>"; };
-		4A36F3951C66958D6AD98CDA5199921E /* image_downloader-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "image_downloader-Info.plist"; sourceTree = "<group>"; };
 		4AD7E537BEDD54F35329F362EF08EE4D /* FIRCLSMachO.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCLSMachO.m; path = Crashlytics/Shared/FIRCLSMachO/FIRCLSMachO.m; sourceTree = "<group>"; };
 		4B79128ACEC73C9B01EC23DEBB864A51 /* NotificationDetails.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NotificationDetails.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-1.5.0+1/ios/Classes/NotificationDetails.h"; sourceTree = "<group>"; };
 		4BCC045D1EECCC028DBB577F499ABFFB /* FIRCLSDataCollectionArbiter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCLSDataCollectionArbiter.m; path = Crashlytics/Crashlytics/DataCollection/FIRCLSDataCollectionArbiter.m; sourceTree = "<group>"; };
@@ -1460,7 +1460,6 @@
 		506AFE39528ADAAE7F3D47B976719E67 /* share_extend.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = share_extend.debug.xcconfig; sourceTree = "<group>"; };
 		5075243FFB2EB0FC80998A5A47EBD889 /* image_picker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "image_picker-prefix.pch"; sourceTree = "<group>"; };
 		509494DBEF5C881208D99C89172F3AC9 /* FIRAnalyticsInteropListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRAnalyticsInteropListener.h; path = Interop/Analytics/Public/FIRAnalyticsInteropListener.h; sourceTree = "<group>"; };
-		509CDA88548E6CB95CCB39FFEE0DC16C /* SwiftImageDownloaderPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftImageDownloaderPlugin.swift; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/ios/Classes/SwiftImageDownloaderPlugin.swift"; sourceTree = "<group>"; };
 		51825CD8F0558EFA53D9510F0E5BFA16 /* Pods-Runner-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Runner-Info.plist"; sourceTree = "<group>"; };
 		51E0430601EA64617BA302DA62F15717 /* FIRLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRLibrary.h; path = FirebaseCore/Sources/Private/FIRLibrary.h; sourceTree = "<group>"; };
 		5250F08A420A92B3E487FB28FF164AD9 /* FIRCLSSymbolResolver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSSymbolResolver.h; path = Crashlytics/Crashlytics/Models/FIRCLSSymbolResolver.h; sourceTree = "<group>"; };
@@ -1480,7 +1479,6 @@
 		56580E5F8AB22D5DE449F467C06B47DF /* FBLPromises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FBLPromises.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5665229D676C971B47053ABA437F019B /* shared_preferences-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "shared_preferences-umbrella.h"; sourceTree = "<group>"; };
 		56874248E9C97AED9D6FF716C631E05B /* GULSecureCoding.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULSecureCoding.h; path = GoogleUtilities/Environment/Private/GULSecureCoding.h; sourceTree = "<group>"; };
-		568E3ABD73365148C581B1C893C8467A /* image_downloader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "image_downloader-dummy.m"; sourceTree = "<group>"; };
 		56B7F3BB22E9212E098202DB9DAEF32A /* OpenFilePlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OpenFilePlugin.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/open_file-3.0.3/ios/Classes/OpenFilePlugin.m"; sourceTree = "<group>"; };
 		5720BE7DF5DEBE742B5E73B7E8D26B75 /* FIRInstallationsErrorUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsErrorUtil.h; path = FirebaseInstallations/Source/Library/Errors/FIRInstallationsErrorUtil.h; sourceTree = "<group>"; };
 		576158E31FDC772DF61CBCD09D194AE8 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.1.9/LICENSE"; sourceTree = "<group>"; };
@@ -1498,7 +1496,6 @@
 		5A5B5BD147108DAD7221944A368C942E /* FIRCLSFeatures.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSFeatures.h; path = Crashlytics/Crashlytics/Helpers/FIRCLSFeatures.h; sourceTree = "<group>"; };
 		5A8E853DF6E8141AEC1B0CACDE155271 /* FIRCLSCrashedMarkerFile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSCrashedMarkerFile.h; path = Crashlytics/Crashlytics/Components/FIRCLSCrashedMarkerFile.h; sourceTree = "<group>"; };
 		5AC90FA5055D728B2FDDE00E2996AFDA /* GDTCORStorageEventSelector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORStorageEventSelector.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORStorageEventSelector.m; sourceTree = "<group>"; };
-		5ADD1E9D4E26C867317A811E6F245D73 /* image_downloader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "image_downloader-prefix.pch"; sourceTree = "<group>"; };
 		5C17EB544C861A47606CFBF90D865BE1 /* FIRCLSMachO.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSMachO.h; path = Crashlytics/Shared/FIRCLSMachO/FIRCLSMachO.h; sourceTree = "<group>"; };
 		5CCBE6FBF4096A364437FF510B1172F9 /* nanopb-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "nanopb-Info.plist"; sourceTree = "<group>"; };
 		5CD774A3E191D0DCD936BC379098BE47 /* FBLPromise+Retry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBLPromise+Retry.h"; path = "Sources/FBLPromises/include/FBLPromise+Retry.h"; sourceTree = "<group>"; };
@@ -1605,7 +1602,9 @@
 		7C573668042230054CE01574EA080545 /* FIRInstallations.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallations.h; path = FirebaseInstallations/Source/Library/Public/FirebaseInstallations/FIRInstallations.h; sourceTree = "<group>"; };
 		7CAEB35DD4D588DBF6F4A98DB921443A /* FirebaseInstallations.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = FirebaseInstallations.modulemap; sourceTree = "<group>"; };
 		7CCD9E5E7364BB7094EEDC9B8FAF378D /* FIRCLSDwarfUnwind.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSDwarfUnwind.h; path = Crashlytics/Crashlytics/Unwind/Dwarf/FIRCLSDwarfUnwind.h; sourceTree = "<group>"; };
+		7D0E88598702630A2D5162639272225D /* ImageDownloaderPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ImageDownloaderPlugin.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/ios/Classes/ImageDownloaderPlugin.m"; sourceTree = "<group>"; };
 		7D12B61CB7EC8D73B829223CE40957BA /* FIRCLSConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSConstants.h; path = Crashlytics/Shared/FIRCLSConstants.h; sourceTree = "<group>"; };
+		7DC37ECB826441BC146375B875209572 /* image_downloader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = image_downloader.podspec; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/ios/image_downloader.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		7DE7E96399AA04133489A53C4949246E /* FIRCoreDiagnosticsConnector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsConnector.h; path = FirebaseCore/Sources/Private/FIRCoreDiagnosticsConnector.h; sourceTree = "<group>"; };
 		7DF18259511E5AC359D8F19839B9FD7F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/open_file-3.0.3/LICENSE"; sourceTree = "<group>"; };
 		7E24D2D0101A749175377BCA4822881A /* FBLPromise+Reduce.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FBLPromise+Reduce.m"; path = "Sources/FBLPromises/FBLPromise+Reduce.m"; sourceTree = "<group>"; };
@@ -1619,6 +1618,7 @@
 		80E20D23ECB66D68EE2ACC4D81EDD346 /* FIRErrorCode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRErrorCode.h; path = FirebaseCore/Sources/Private/FIRErrorCode.h; sourceTree = "<group>"; };
 		81160563DD5245FA0C2B2D63D692E260 /* FIRCLSCrashedMarkerFile.c */ = {isa = PBXFileReference; includeInIndex = 1; name = FIRCLSCrashedMarkerFile.c; path = Crashlytics/Crashlytics/Components/FIRCLSCrashedMarkerFile.c; sourceTree = "<group>"; };
 		8181697799573CE5DC6500C26C86F5B1 /* GoogleDataTransportInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GoogleDataTransportInternal.h; path = GoogleDataTransport/GDTCORLibrary/Internal/GoogleDataTransportInternal.h; sourceTree = "<group>"; };
+		82570494F04FBD5E25EE04B89EFCE969 /* image_downloader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "image_downloader-prefix.pch"; sourceTree = "<group>"; };
 		82837554364B56BC9A9DCA1C73044F88 /* GDTCORAssert.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORAssert.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORAssert.m; sourceTree = "<group>"; };
 		8289F1BE72E23964D1DFEE2A0C3A87CC /* FBLPromise+Recover.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FBLPromise+Recover.m"; path = "Sources/FBLPromises/FBLPromise+Recover.m"; sourceTree = "<group>"; };
 		82E59F73EFCFED5A91D21FE6046A6F0A /* image_picker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = image_picker.framework; path = image_picker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1634,6 +1634,7 @@
 		865A47D545317B0720528F828FC231D3 /* FIRCLSByteUtility.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSByteUtility.h; path = Crashlytics/Shared/FIRCLSByteUtility.h; sourceTree = "<group>"; };
 		86C95AE37596B38E990BD098F4D40E89 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/firebase_crashlytics-0.2.3/LICENSE"; sourceTree = "<group>"; };
 		86CC8BD5CC5340EDE7A98D078B97685B /* firebasecore.nanopb.c */ = {isa = PBXFileReference; includeInIndex = 1; name = firebasecore.nanopb.c; path = Firebase/CoreDiagnostics/FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.c; sourceTree = "<group>"; };
+		8749E69DF443A21DF673D2B91F9A1C56 /* image_downloader.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = image_downloader.modulemap; sourceTree = "<group>"; };
 		87622FEC1BAA1D7BB513F54D92030792 /* FIRConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRConfiguration.h; path = FirebaseCore/Sources/Public/FirebaseCore/FIRConfiguration.h; sourceTree = "<group>"; };
 		87A61C30C28468544A4D96C65EAD6452 /* Reachability-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Reachability-umbrella.h"; sourceTree = "<group>"; };
 		88010E72D55912E0A1147A6B836E5F03 /* pb_decode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_decode.c; sourceTree = "<group>"; };
@@ -1645,6 +1646,7 @@
 		88D902FDF7CCC07BC821F7F203CB62A0 /* path_provider-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "path_provider-umbrella.h"; sourceTree = "<group>"; };
 		88E7B2C39BDABE9476FB53A5CAD3101B /* FIRInstallationsItem+RegisterInstallationAPI.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FIRInstallationsItem+RegisterInstallationAPI.m"; path = "FirebaseInstallations/Source/Library/InstallationsAPI/FIRInstallationsItem+RegisterInstallationAPI.m"; sourceTree = "<group>"; };
 		88F6F767DED2A7C34F8DFF5CBEE6EF6C /* connectivity.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = connectivity.debug.xcconfig; sourceTree = "<group>"; };
+		8908D9D5C18C41484662D948F4E85713 /* image_downloader-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "image_downloader-umbrella.h"; sourceTree = "<group>"; };
 		896CFB893C3A2636294867B3F8C97619 /* PermissionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PermissionManager.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1/ios/Classes/PermissionManager.h"; sourceTree = "<group>"; };
 		89794E25ABC33DEC84CA8C846A8A260D /* path_provider.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = path_provider.modulemap; sourceTree = "<group>"; };
 		898A05CF41A9D5B1CEFA32CBA02C6CCA /* GoogleDataTransport-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GoogleDataTransport-umbrella.h"; sourceTree = "<group>"; };
@@ -1665,14 +1667,15 @@
 		8E7A95CDDBE33A896731D089C0B3881D /* dwarf.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = dwarf.h; path = Crashlytics/third_party/libunwind/dwarf.h; sourceTree = "<group>"; };
 		8EBFF02E43D9387A4723CB587C4FFD55 /* GULKeychainUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GULKeychainUtils.m; path = GoogleUtilities/Environment/SecureStorage/GULKeychainUtils.m; sourceTree = "<group>"; };
 		8F06BBB87A7600480BFA30266ED94E94 /* ExtStoragePlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ExtStoragePlugin.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/ext_storage-1.0.3/ios/Classes/ExtStoragePlugin.m"; sourceTree = "<group>"; };
+		8F3FFACBE3DAE549F6732EFC16D08E88 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/LICENSE"; sourceTree = "<group>"; };
 		8F8A1C7E96CFA7D2E315C475FC92BC06 /* FIRCLSRecordBase.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCLSRecordBase.m; path = Crashlytics/Crashlytics/Models/Record/FIRCLSRecordBase.m; sourceTree = "<group>"; };
 		8F98D5825AF98A87CB3CDA49E2644BC5 /* PdfViewerPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PdfViewerPlugin.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/pdf_viewer_plugin-1.0.0+2/ios/Classes/PdfViewerPlugin.m"; sourceTree = "<group>"; };
+		8FECD69C2EA2CEE9AC0A6CA89CB52B7E /* MetaDataUtils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetaDataUtils.swift; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/ios/Classes/MetaDataUtils.swift"; sourceTree = "<group>"; };
 		9044A6DA4BF695781C01E0DCAC784DC9 /* shared_preferences-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "shared_preferences-prefix.pch"; sourceTree = "<group>"; };
 		9164C30DE1750A27A7B31FBCDBDF95B1 /* StoragePermissionStrategy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = StoragePermissionStrategy.m; path = "../../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1/ios/Classes/strategies/StoragePermissionStrategy.m"; sourceTree = "<group>"; };
 		91A7022BBF0F0718BEF65478A06344A3 /* GULHeartbeatDateStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULHeartbeatDateStorage.h; path = GoogleUtilities/Environment/Private/GULHeartbeatDateStorage.h; sourceTree = "<group>"; };
 		91CD684B8B768FE0D0FA9882619380BF /* GDTCORRegistrar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORRegistrar.h; path = GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORRegistrar.h; sourceTree = "<group>"; };
 		921CBB3FA37B20C6998A26CA0DC2CD2C /* FIRInstallationsAPIService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsAPIService.h; path = FirebaseInstallations/Source/Library/InstallationsAPI/FIRInstallationsAPIService.h; sourceTree = "<group>"; };
-		926E16F9F35A223A29F7362CDA76B614 /* ImageDownloaderPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ImageDownloaderPlugin.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/ios/Classes/ImageDownloaderPlugin.m"; sourceTree = "<group>"; };
 		92B95CA0557CC5820653A3E345F78E17 /* open_file-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "open_file-prefix.pch"; sourceTree = "<group>"; };
 		92DD14AEE615581FF365B17B82F73250 /* FIROptionsInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIROptionsInternal.h; path = FirebaseCore/Sources/Private/FIROptionsInternal.h; sourceTree = "<group>"; };
 		93BAB7408421F0D0D1FD29DD37FCE5D7 /* FIRInstallationsIIDTokenStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstallationsIIDTokenStore.m; path = FirebaseInstallations/Source/Library/IIDMigration/FIRInstallationsIIDTokenStore.m; sourceTree = "<group>"; };
@@ -1708,7 +1711,6 @@
 		9CB2B4832C6F3DC278EBE61C947DF565 /* FIRInstallationsAuthTokenResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstallationsAuthTokenResult.m; path = FirebaseInstallations/Source/Library/FIRInstallationsAuthTokenResult.m; sourceTree = "<group>"; };
 		9CD5B22A6DF394FA7E10EF665F0AEDBD /* FIRExceptionModel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRExceptionModel.m; path = Crashlytics/Crashlytics/FIRExceptionModel.m; sourceTree = "<group>"; };
 		9CEC510BEE220F97E540CB683DA1EE20 /* FIRCLSDownloadAndSaveSettingsOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSDownloadAndSaveSettingsOperation.h; path = Crashlytics/Crashlytics/Settings/Operations/FIRCLSDownloadAndSaveSettingsOperation.h; sourceTree = "<group>"; };
-		9D0DA37A5B5E693F365A63640EED1D4F /* MetaDataUtils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetaDataUtils.swift; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/ios/Classes/MetaDataUtils.swift"; sourceTree = "<group>"; };
 		9D0DADC3585762495F8FB52821B5BD1A /* FIRInstallationsHTTPError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsHTTPError.h; path = FirebaseInstallations/Source/Library/Errors/FIRInstallationsHTTPError.h; sourceTree = "<group>"; };
 		9D276736CABD23F003F722AE6FB6D0BD /* GDTCORConsoleLogger.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORConsoleLogger.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORConsoleLogger.m; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -1722,7 +1724,6 @@
 		9F18C35708FE9567ED0A61D4339DA219 /* PromisesObjC-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "PromisesObjC-Info.plist"; sourceTree = "<group>"; };
 		9F3348EA30C619DFAB452579C3A24981 /* FIRInstallationsItem+RegisterInstallationAPI.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FIRInstallationsItem+RegisterInstallationAPI.h"; path = "FirebaseInstallations/Source/Library/InstallationsAPI/FIRInstallationsItem+RegisterInstallationAPI.h"; sourceTree = "<group>"; };
 		9F79F8269DC34AC56BB3D1D9652C0D86 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
-		9FCDBE7E4138B4CADB0E579D9A2A085E /* image_downloader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = image_downloader.release.xcconfig; sourceTree = "<group>"; };
 		A01F93121F2D724C3023244DD30299F8 /* FMDB.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = FMDB.modulemap; sourceTree = "<group>"; };
 		A0B009086E2E52BAF351EE9C21EF590A /* FLTFirebaseCrashlyticsPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FLTFirebaseCrashlyticsPlugin.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/firebase_crashlytics-0.2.3/ios/Classes/FLTFirebaseCrashlyticsPlugin.h"; sourceTree = "<group>"; };
 		A0D84896DFD811A472096EA488B2CEA3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/device_info-0.4.2+10/LICENSE"; sourceTree = "<group>"; };
@@ -1753,6 +1754,7 @@
 		A613B3BA47FD7383299C25B7B6B73A5F /* FIRInstallationsAuthTokenResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsAuthTokenResult.h; path = FirebaseInstallations/Source/Library/Public/FirebaseInstallations/FIRInstallationsAuthTokenResult.h; sourceTree = "<group>"; };
 		A63A75B1C4CD5468D659F04A95E959C8 /* FBLPromise+Timeout.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBLPromise+Timeout.h"; path = "Sources/FBLPromises/include/FBLPromise+Timeout.h"; sourceTree = "<group>"; };
 		A6661B84A4F44559DF69307193EEEAEF /* FIRCLSUUID.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSUUID.h; path = Crashlytics/Shared/FIRCLSUUID.h; sourceTree = "<group>"; };
+		A66943325D712AB9D7B868F88FECAEDF /* SwiftImageDownloaderPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftImageDownloaderPlugin.swift; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/ios/Classes/SwiftImageDownloaderPlugin.swift"; sourceTree = "<group>"; };
 		A6B514E9F30F1A1A64B2ACC738027AA0 /* flutter_local_notifications-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "flutter_local_notifications-umbrella.h"; sourceTree = "<group>"; };
 		A6FF3FC764E12B133FF0F686318A7609 /* FMDB-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FMDB-dummy.m"; sourceTree = "<group>"; };
 		A73B9F9A9FE598B52B31D2F11AF3B38A /* firebase_core-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "firebase_core-umbrella.h"; sourceTree = "<group>"; };
@@ -1762,6 +1764,7 @@
 		A818BC5F1A6D4DCD6EE9E3DA25F3192E /* path_provider.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = path_provider.release.xcconfig; sourceTree = "<group>"; };
 		A900426DED1EC95760B4FAEB208BEBF9 /* device_info.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = device_info.framework; path = device_info.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A92AF457004A9C8F0249D1D2E81BFE6C /* FIRLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRLibrary.h; path = FirebaseCore/Sources/Private/FIRLibrary.h; sourceTree = "<group>"; };
+		AA20BFAB1E6C56E4A3B629C99F7F8184 /* image_downloader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = image_downloader.release.xcconfig; sourceTree = "<group>"; };
 		AA486C0CFAB071A594AC8AB7C76F04F1 /* FirebaseCrashlytics-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FirebaseCrashlytics-umbrella.h"; sourceTree = "<group>"; };
 		AB29BA624A975573A9C284F8A3D19ECE /* connectivity.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = connectivity.framework; path = connectivity.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB3EE69FD1C6E5EA7DAE91275952B78C /* GDTCCTNanopbHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTNanopbHelpers.h; path = GoogleDataTransport/GDTCCTLibrary/Private/GDTCCTNanopbHelpers.h; sourceTree = "<group>"; };
@@ -1774,7 +1777,6 @@
 		AD3FF2195EEA68B58D4FF622804D3733 /* FIRCLSMachOSlice.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSMachOSlice.h; path = Crashlytics/Shared/FIRCLSMachO/FIRCLSMachOSlice.h; sourceTree = "<group>"; };
 		AD8FB5A3419C518F7489C900BAF38C00 /* FIRInstallationsIIDTokenStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsIIDTokenStore.h; path = FirebaseInstallations/Source/Library/IIDMigration/FIRInstallationsIIDTokenStore.h; sourceTree = "<group>"; };
 		ADB95940C805585DB6A68607F19C8453 /* GoogleUtilities-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GoogleUtilities-umbrella.h"; sourceTree = "<group>"; };
-		AE07679C82E96C873B2F179271D88C33 /* image_downloader.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = image_downloader.modulemap; sourceTree = "<group>"; };
 		AE4F0547FD92F315CBFB19A16961B970 /* FIRCLSBinaryImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSBinaryImage.h; path = Crashlytics/Crashlytics/Components/FIRCLSBinaryImage.h; sourceTree = "<group>"; };
 		AF0A3733835D638EC3CC463925E2D465 /* FIRCLSThreadState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSThreadState.h; path = Crashlytics/Crashlytics/Helpers/FIRCLSThreadState.h; sourceTree = "<group>"; };
 		AF183AB328CC2BA21AA61401F824CF3D /* app_settings-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "app_settings-prefix.pch"; sourceTree = "<group>"; };
@@ -1871,7 +1873,6 @@
 		C5ABB28A3D8639A91ADA49406EC415E0 /* FLTVideoPlayerPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FLTVideoPlayerPlugin.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/video_player-0.10.12+5/ios/Classes/FLTVideoPlayerPlugin.m"; sourceTree = "<group>"; };
 		C5F39164D6AA1316150612D5A735A903 /* FIRInstallationsStoredAuthToken.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsStoredAuthToken.h; path = FirebaseInstallations/Source/Library/InstallationsStore/FIRInstallationsStoredAuthToken.h; sourceTree = "<group>"; };
 		C60A2A1C2D7BBD0667F7415A6A46B2BB /* FLTImagePickerPhotoAssetUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FLTImagePickerPhotoAssetUtil.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_picker-0.6.7+14/ios/Classes/FLTImagePickerPhotoAssetUtil.h"; sourceTree = "<group>"; };
-		C6941D5E6234056C2BC9B7C47C508677 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/LICENSE"; sourceTree = "<group>"; };
 		C6EA98402A94995D022D330B64B5203D /* Pods-Runner-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Runner-acknowledgements.markdown"; sourceTree = "<group>"; };
 		C76C8865F9DD06D058DAD4E9A7622021 /* NotificationDetails.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NotificationDetails.m; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-1.5.0+1/ios/Classes/NotificationDetails.m"; sourceTree = "<group>"; };
 		C836818A1C546009E9B7C78BB7843255 /* GULKeychainUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULKeychainUtils.h; path = GoogleUtilities/Environment/Private/GULKeychainUtils.h; sourceTree = "<group>"; };
@@ -1917,7 +1918,6 @@
 		D33CCC4F41168054B4ABB8582B58ECE3 /* FIRConfigurationInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRConfigurationInternal.h; path = FirebaseCore/Sources/FIRConfigurationInternal.h; sourceTree = "<group>"; };
 		D376604EA633F1FC240B72D124FE7CEA /* GULLoggerLevel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULLoggerLevel.h; path = GoogleUtilities/Logger/Public/GULLoggerLevel.h; sourceTree = "<group>"; };
 		D40AD4A3DF8EB3200FA485CA799A4D34 /* FIRCLSdSYM.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCLSdSYM.h; path = Crashlytics/Shared/FIRCLSMachO/FIRCLSdSYM.h; sourceTree = "<group>"; };
-		D41091AD10E1D523587451A99C70ED2A /* image_downloader-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "image_downloader-umbrella.h"; sourceTree = "<group>"; };
 		D42A4FDB19C03C63AE10BF510EBC8582 /* PermissionHandlerEnums.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PermissionHandlerEnums.h; path = "../../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1/ios/Classes/PermissionHandlerEnums.h"; sourceTree = "<group>"; };
 		D4D1A87C4D61FD3544EEF8468EDB820F /* FIRInstallationsAPIService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstallationsAPIService.m; path = FirebaseInstallations/Source/Library/InstallationsAPI/FIRInstallationsAPIService.m; sourceTree = "<group>"; };
 		D4EC5A16D644905B4EE39525D495A6E6 /* nanopb.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = nanopb.modulemap; sourceTree = "<group>"; };
@@ -2395,6 +2395,15 @@
 			path = device_info;
 			sourceTree = "<group>";
 		};
+		04B667134EAD31CBA2B33EAA25B5B4D3 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				30B95D08E2269A8933FC578593CC49F7 /* Classes */,
+			);
+			name = ios;
+			path = ios;
+			sourceTree = "<group>";
+		};
 		04FA2BE0623D6A6D2C1B6A147F5F786A /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -2751,6 +2760,17 @@
 			path = ios;
 			sourceTree = "<group>";
 		};
+		0C657DDD6D9D75AC65CC165A35F8DBA4 /* image_downloader */ = {
+			isa = PBXGroup;
+			children = (
+				E59E99372626436A07C9876666055B8A /* .. */,
+				B7D0EF5882AE2814800EC3C457FE90B2 /* Pod */,
+				8D5D8B831E11059A6C57F6EBE2845B51 /* Support Files */,
+			);
+			name = image_downloader;
+			path = ../.symlinks/plugins/image_downloader/ios;
+			sourceTree = "<group>";
+		};
 		0CC3B893FCA82544E964DEF788E7A994 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -2817,15 +2837,6 @@
 			isa = PBXGroup;
 			children = (
 				49B6F1A64C460CFBE4B9F7385E9D6BE0 /* .. */,
-			);
-			name = ..;
-			path = ..;
-			sourceTree = "<group>";
-		};
-		11DF5686E6119D5F1377AFB9A02358BF /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				ACEBAC7B3C902B854C2EA0105401B6D6 /* .. */,
 			);
 			name = ..;
 			path = ..;
@@ -3062,15 +3073,6 @@
 			path = ../.symlinks/plugins/package_info/ios;
 			sourceTree = "<group>";
 		};
-		1E984D24EFC2B34E60460F64A36630C6 /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				11DF5686E6119D5F1377AFB9A02358BF /* .. */,
-			);
-			name = ..;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		1F1046A731514182CC1F1AFD18E70816 /* GoogleUtilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -3099,15 +3101,6 @@
 			);
 			name = ..;
 			path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/device_info-0.4.2+10/ios";
-			sourceTree = "<group>";
-		};
-		206ADCD9A7394A6B755A57B77EE9BA6C /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				5A219A152316C36FFD4DB315D0E4BDA1 /* .. */,
-			);
-			name = ..;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		206FE52CB06FF9CB10892F510F0A725C /* .. */ = {
@@ -3139,7 +3132,7 @@
 				06AE81F57758A8554646242EE5D52577 /* firebase_crashlytics */,
 				8BA9F60011986192ADFCBD6454455F06 /* Flutter */,
 				9E53E1E5566186EF70B091BF21B6DC6E /* flutter_local_notifications */,
-				2DE6A386AF87FDBFA90051852F798A17 /* image_downloader */,
+				0C657DDD6D9D75AC65CC165A35F8DBA4 /* image_downloader */,
 				B8C0B5911D9359C7F61DFE3A21CCFDAB /* image_picker */,
 				376DC69BCA2E295C8D7C5CFCA606F7E4 /* open_file */,
 				1DDB0CDB57381DA22F130CA36C21FA96 /* package_info */,
@@ -3184,15 +3177,6 @@
 			path = ../.symlinks/plugins/shared_preferences/ios;
 			sourceTree = "<group>";
 		};
-		26D1443509EDD4AC8567BE92B2E440FA /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				669CBA12C4D0FA14616DFF1528E38FFE /* .. */,
-			);
-			name = ..;
-			path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.19.2/ios";
-			sourceTree = "<group>";
-		};
 		26E418EF882DDA33E30EC1B1EA6C2B45 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -3228,6 +3212,15 @@
 			);
 			name = Classes;
 			path = Classes;
+			sourceTree = "<group>";
+		};
+		2720124506E29A6D75FFAE28E24EAA49 /* dev */ = {
+			isa = PBXGroup;
+			children = (
+				AB0A8D280F0F26ADBEA1167F922C2992 /* Messedaglia */,
+			);
+			name = dev;
+			path = dev;
 			sourceTree = "<group>";
 		};
 		27AC9752F8830BD24A2A3CF78985914A /* .. */ = {
@@ -3363,17 +3356,6 @@
 			path = plugins;
 			sourceTree = "<group>";
 		};
-		2DE6A386AF87FDBFA90051852F798A17 /* image_downloader */ = {
-			isa = PBXGroup;
-			children = (
-				26D1443509EDD4AC8567BE92B2E440FA /* .. */,
-				4CE42079157369976048941A29C89BC0 /* Pod */,
-				DEA514C3DC6262A344898A006C12B5F0 /* Support Files */,
-			);
-			name = image_downloader;
-			path = ../.symlinks/plugins/image_downloader/ios;
-			sourceTree = "<group>";
-		};
 		2FE7BD5898A18005D59F0B87DCC6266D /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -3390,6 +3372,18 @@
 			);
 			name = flutter_local_notifications;
 			path = flutter_local_notifications;
+			sourceTree = "<group>";
+		};
+		30B95D08E2269A8933FC578593CC49F7 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				2DEB5D2C20618374DA333E9241DC901D /* ImageDownloaderPlugin.h */,
+				7D0E88598702630A2D5162639272225D /* ImageDownloaderPlugin.m */,
+				8FECD69C2EA2CEE9AC0A6CA89CB52B7E /* MetaDataUtils.swift */,
+				A66943325D712AB9D7B868F88FECAEDF /* SwiftImageDownloaderPlugin.swift */,
+			);
+			name = Classes;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 		312FA459EB047D33061C3385E331E4C4 /* pdf_viewer_plugin */ = {
@@ -3472,6 +3466,15 @@
 			);
 			name = ..;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		37AA66DF0E1E1D956814FD5FA26545AE /* image_downloader */ = {
+			isa = PBXGroup;
+			children = (
+				04B667134EAD31CBA2B33EAA25B5B4D3 /* ios */,
+			);
+			name = image_downloader;
+			path = image_downloader;
 			sourceTree = "<group>";
 		};
 		3A03784E706F77B10444F6602003A126 /* Classes */ = {
@@ -3569,15 +3572,6 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
-		3EF70F6C70FCF0E781F9530EC47DB088 /* plugins */ = {
-			isa = PBXGroup;
-			children = (
-				461D9C5F5978E82E849C10011B5C1E2D /* image_downloader */,
-			);
-			name = plugins;
-			path = plugins;
-			sourceTree = "<group>";
-		};
 		3F06F97E8829492F6C619FA0589293DB /* .. */ = {
 			isa = PBXGroup;
 			children = (
@@ -3647,15 +3641,6 @@
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		461D9C5F5978E82E849C10011B5C1E2D /* image_downloader */ = {
-			isa = PBXGroup;
-			children = (
-				887FF9947EC4D5F8415BEFC46EC71669 /* ios */,
-			);
-			name = image_downloader;
-			path = image_downloader;
-			sourceTree = "<group>";
-		};
 		466A8BFA0AEE28EEE9209AC5939379E1 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -3708,15 +3693,6 @@
 			);
 			name = Messedaglia;
 			path = Messedaglia;
-			sourceTree = "<group>";
-		};
-		4CE42079157369976048941A29C89BC0 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				1A8A32D116A176FF3D4448F9266DE315 /* image_downloader.podspec */,
-				C6941D5E6234056C2BC9B7C47C508677 /* LICENSE */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		4D747164E0C6FC2E14683AA056233A22 /* .. */ = {
@@ -3859,15 +3835,6 @@
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		5A219A152316C36FFD4DB315D0E4BDA1 /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				C69D462C6877D5B885E96D070E6B827C /* dev */,
-			);
-			name = ..;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		5A6380E1AF6FDBC8734D0F37518BFE1C /* .. */ = {
 			isa = PBXGroup;
 			children = (
@@ -4000,6 +3967,15 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
+		5FD6AA2D29F786172DA012D410CA16E2 /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				2720124506E29A6D75FFAE28E24EAA49 /* dev */,
+			);
+			name = ..;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		5FD8D0A8CE012FA927289B7CD3B689ED /* .symlinks */ = {
 			isa = PBXGroup;
 			children = (
@@ -4117,15 +4093,6 @@
 				39F0BEB948FAE43820C88B25A3F216C2 /* SystemConfiguration.framework */,
 			);
 			name = iOS;
-			sourceTree = "<group>";
-		};
-		669CBA12C4D0FA14616DFF1528E38FFE /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				1E984D24EFC2B34E60460F64A36630C6 /* .. */,
-			);
-			name = ..;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		6817D2C0C5345FAD22F455F8EA79F77F /* .. */ = {
@@ -4587,18 +4554,6 @@
 			path = ios;
 			sourceTree = "<group>";
 		};
-		8438D075C0A917D932A833A9934B92F5 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				055EE5DD021A1F18BBC6BA8A165CC892 /* ImageDownloaderPlugin.h */,
-				926E16F9F35A223A29F7362CDA76B614 /* ImageDownloaderPlugin.m */,
-				9D0DA37A5B5E693F365A63640EED1D4F /* MetaDataUtils.swift */,
-				509CDA88548E6CB95CCB39FFEE0DC16C /* SwiftImageDownloaderPlugin.swift */,
-			);
-			name = Classes;
-			path = Classes;
-			sourceTree = "<group>";
-		};
 		84D6DF9DEDB33A38DF8A768F75CEB724 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
@@ -4651,15 +4606,6 @@
 			);
 			name = ..;
 			path = ..;
-			sourceTree = "<group>";
-		};
-		887FF9947EC4D5F8415BEFC46EC71669 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				8438D075C0A917D932A833A9934B92F5 /* Classes */,
-			);
-			name = ios;
-			path = ios;
 			sourceTree = "<group>";
 		};
 		8951FFB3962392D362D04926A2C91BE6 /* .. */ = {
@@ -4735,13 +4681,19 @@
 			path = .symlinks;
 			sourceTree = "<group>";
 		};
-		8D8E2A8380F9E8BF302EBC324F13CDE0 /* Messedaglia */ = {
+		8D5D8B831E11059A6C57F6EBE2845B51 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				E0F7F1238EB302E753CD6A85DED630B6 /* ios */,
+				8749E69DF443A21DF673D2B91F9A1C56 /* image_downloader.modulemap */,
+				1558F0DDF3FEA7B27497A4C14BABA536 /* image_downloader-dummy.m */,
+				46C4A3378186AB989E0F18142750320D /* image_downloader-Info.plist */,
+				82570494F04FBD5E25EE04B89EFCE969 /* image_downloader-prefix.pch */,
+				8908D9D5C18C41484662D948F4E85713 /* image_downloader-umbrella.h */,
+				0F636DAE700233AD5E2C2A8DDD5B918D /* image_downloader.debug.xcconfig */,
+				AA20BFAB1E6C56E4A3B629C99F7F8184 /* image_downloader.release.xcconfig */,
 			);
-			name = Messedaglia;
-			path = Messedaglia;
+			name = "Support Files";
+			path = "../../../../Pods/Target Support Files/image_downloader";
 			sourceTree = "<group>";
 		};
 		8FD4F3F99F24549276F18556F51598CD /* Support Files */ = {
@@ -4803,15 +4755,6 @@
 			);
 			name = "Support Files";
 			path = "../Target Support Files/Firebase";
-			sourceTree = "<group>";
-		};
-		95140C4FDE3AD64712EC157B7F31FEC1 /* .symlinks */ = {
-			isa = PBXGroup;
-			children = (
-				3EF70F6C70FCF0E781F9530EC47DB088 /* plugins */,
-			);
-			name = .symlinks;
-			path = .symlinks;
 			sourceTree = "<group>";
 		};
 		953156F9DBC0B6ECB9D58003CCC5FDF1 /* path_provider */ = {
@@ -5151,6 +5094,15 @@
 			path = open_file;
 			sourceTree = "<group>";
 		};
+		A684BD737FA3F85D63EB0B0D21DCEAC4 /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				37AA66DF0E1E1D956814FD5FA26545AE /* image_downloader */,
+			);
+			name = plugins;
+			path = plugins;
+			sourceTree = "<group>";
+		};
 		A703CFB38CBEDC7C450B6F7D32037FC3 /* .symlinks */ = {
 			isa = PBXGroup;
 			children = (
@@ -5204,6 +5156,15 @@
 			path = "../../../../Pods/Target Support Files/share_extend";
 			sourceTree = "<group>";
 		};
+		AB0A8D280F0F26ADBEA1167F922C2992 /* Messedaglia */ = {
+			isa = PBXGroup;
+			children = (
+				DB186D936D4CCED733DBC9F30B3F2C59 /* ios */,
+			);
+			name = Messedaglia;
+			path = Messedaglia;
+			sourceTree = "<group>";
+		};
 		AB1ACB6F42D7D3E58A43D250390507B0 /* .symlinks */ = {
 			isa = PBXGroup;
 			children = (
@@ -5211,15 +5172,6 @@
 			);
 			name = .symlinks;
 			path = .symlinks;
-			sourceTree = "<group>";
-		};
-		ACEBAC7B3C902B854C2EA0105401B6D6 /* .. */ = {
-			isa = PBXGroup;
-			children = (
-				206ADCD9A7394A6B755A57B77EE9BA6C /* .. */,
-			);
-			name = ..;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		ACFAE4F0A5CA3D3561FC1B81C118D268 /* dev */ = {
@@ -5401,6 +5353,15 @@
 			);
 			name = ..;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		B7D0EF5882AE2814800EC3C457FE90B2 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				7DC37ECB826441BC146375B875209572 /* image_downloader.podspec */,
+				8F3FFACBE3DAE549F6732EFC16D08E88 /* LICENSE */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		B7DD80BB478C9B080111C5C2364B9065 /* .. */ = {
@@ -5643,15 +5604,6 @@
 			path = ios;
 			sourceTree = "<group>";
 		};
-		C69D462C6877D5B885E96D070E6B827C /* dev */ = {
-			isa = PBXGroup;
-			children = (
-				8D8E2A8380F9E8BF302EBC324F13CDE0 /* Messedaglia */,
-			);
-			name = dev;
-			path = dev;
-			sourceTree = "<group>";
-		};
 		C6C5B8CEB5FF6D6F853038DBEF26CC23 /* Messedaglia */ = {
 			isa = PBXGroup;
 			children = (
@@ -5764,6 +5716,15 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		D42358312BF925CCBF2431F9D6B4CD67 /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				E0566B56896D49AA8F478CF78C1EB01F /* .. */,
+			);
+			name = ..;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		D53C50C048C3950A2750B96179DCDB0B /* plugins */ = {
 			isa = PBXGroup;
 			children = (
@@ -5780,6 +5741,15 @@
 			);
 			name = video_player;
 			path = video_player;
+			sourceTree = "<group>";
+		};
+		D5E49AF53AAD8CBD4C289AD688F69149 /* .symlinks */ = {
+			isa = PBXGroup;
+			children = (
+				A684BD737FA3F85D63EB0B0D21DCEAC4 /* plugins */,
+			);
+			name = .symlinks;
+			path = .symlinks;
 			sourceTree = "<group>";
 		};
 		D636161F9BE244690F16DD0D15B6640D /* Support Files */ = {
@@ -5868,6 +5838,15 @@
 			path = strategies;
 			sourceTree = "<group>";
 		};
+		D86D3761D0C4CA9BA59FB439D9B59127 /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				E2F24E7BC5BEFB18716E8F48AE99CCEB /* .. */,
+			);
+			name = ..;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		D870CF3FE12A1AB172620D5EBA41D29A /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -5917,6 +5896,15 @@
 				2E4DD2DC66EF0DC812ECCF708407BAB5 /* open_file.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		D9724B0240A162218008EE4670E3AA06 /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				D86D3761D0C4CA9BA59FB439D9B59127 /* .. */,
+			);
+			name = ..;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		D9AAC0A4166C1BFCE3D92D87F5DC6B9E /* .. */ = {
@@ -5973,6 +5961,15 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
+		DB186D936D4CCED733DBC9F30B3F2C59 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				D5E49AF53AAD8CBD4C289AD688F69149 /* .symlinks */,
+			);
+			name = ios;
+			path = ios;
+			sourceTree = "<group>";
+		};
 		DBE19FA8382D31CC5595C11953314226 /* .. */ = {
 			isa = PBXGroup;
 			children = (
@@ -5991,21 +5988,6 @@
 			);
 			name = sqflite;
 			path = ../.symlinks/plugins/sqflite/ios;
-			sourceTree = "<group>";
-		};
-		DEA514C3DC6262A344898A006C12B5F0 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				AE07679C82E96C873B2F179271D88C33 /* image_downloader.modulemap */,
-				568E3ABD73365148C581B1C893C8467A /* image_downloader-dummy.m */,
-				4A36F3951C66958D6AD98CDA5199921E /* image_downloader-Info.plist */,
-				5ADD1E9D4E26C867317A811E6F245D73 /* image_downloader-prefix.pch */,
-				D41091AD10E1D523587451A99C70ED2A /* image_downloader-umbrella.h */,
-				25639E28A18060BD2FD5F6B3C0A65CFB /* image_downloader.debug.xcconfig */,
-				9FCDBE7E4138B4CADB0E579D9A2A085E /* image_downloader.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../../Pods/Target Support Files/image_downloader";
 			sourceTree = "<group>";
 		};
 		DF37526F928964FFAA3C1744EFA7C79B /* Pod */ = {
@@ -6060,6 +6042,15 @@
 			path = plugins;
 			sourceTree = "<group>";
 		};
+		E0566B56896D49AA8F478CF78C1EB01F /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				D9724B0240A162218008EE4670E3AA06 /* .. */,
+			);
+			name = ..;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		E08F960AF5E1330EC7CF080A6B9D5516 /* .. */ = {
 			isa = PBXGroup;
 			children = (
@@ -6078,15 +6069,6 @@
 			path = dev;
 			sourceTree = "<group>";
 		};
-		E0F7F1238EB302E753CD6A85DED630B6 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				95140C4FDE3AD64712EC157B7F31FEC1 /* .symlinks */,
-			);
-			name = ios;
-			path = ios;
-			sourceTree = "<group>";
-		};
 		E1E142C0B69CC13C02A9EA6B922C8B44 /* .. */ = {
 			isa = PBXGroup;
 			children = (
@@ -6100,6 +6082,15 @@
 			isa = PBXGroup;
 			children = (
 				C701DBAA33C5DD408BBE3A2E6D57F902 /* .. */,
+			);
+			name = ..;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		E2F24E7BC5BEFB18716E8F48AE99CCEB /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				5FD6AA2D29F786172DA012D410CA16E2 /* .. */,
 			);
 			name = ..;
 			path = ..;
@@ -6157,6 +6148,15 @@
 			);
 			name = "Support Files";
 			path = "../../../../Pods/Target Support Files/image_picker";
+			sourceTree = "<group>";
+		};
+		E59E99372626436A07C9876666055B8A /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				D42358312BF925CCBF2431F9D6B4CD67 /* .. */,
+			);
+			name = ..;
+			path = "../../../../../../../flutter/.pub-cache/hosted/pub.dartlang.org/image_downloader-0.20.1/ios";
 			sourceTree = "<group>";
 		};
 		E5CEB54B4A19F6F3F02EA4002AEF41EF /* .. */ = {
@@ -6601,7 +6601,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				11EC103D355A45FBF604A509EA7803B0 /* image_downloader-umbrella.h in Headers */,
-				95017160B7C877989A121E431237E6FB /* ImageDownloaderPlugin.h in Headers */,
+				FEE5603E620B58585D69A570EE16684F /* ImageDownloaderPlugin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8006,9 +8006,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E7E5445247E57C077230F749AB44575 /* image_downloader-dummy.m in Sources */,
-				2284EC38D3040F785370D1D945104170 /* ImageDownloaderPlugin.m in Sources */,
-				98F943FF801AB220D380DB010542E3D2 /* MetaDataUtils.swift in Sources */,
-				2D09007522A15C98D77CD8CB88CD9AB4 /* SwiftImageDownloaderPlugin.swift in Sources */,
+				61324A2AC5BE7320757C5618FCD72AF4 /* ImageDownloaderPlugin.m in Sources */,
+				2D9BD6026F1A0C4F883481254097A2C2 /* MetaDataUtils.swift in Sources */,
+				F938F88B5E6F9EBA43BCCD2257226734 /* SwiftImageDownloaderPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8964,7 +8964,7 @@
 		};
 		0A297A4D97671363866643FE0B59C457 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9FCDBE7E4138B4CADB0E579D9A2A085E /* image_downloader.release.xcconfig */;
+			baseConfigurationReference = AA20BFAB1E6C56E4A3B629C99F7F8184 /* image_downloader.release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -9818,7 +9818,7 @@
 		};
 		39456956EF3679286AE25272916B35A9 /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9FCDBE7E4138B4CADB0E579D9A2A085E /* image_downloader.release.xcconfig */;
+			baseConfigurationReference = AA20BFAB1E6C56E4A3B629C99F7F8184 /* image_downloader.release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -9988,7 +9988,7 @@
 		};
 		4429BDF75B3882057815BA6FE07386C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 25639E28A18060BD2FD5F6B3C0A65CFB /* image_downloader.debug.xcconfig */;
+			baseConfigurationReference = 0F636DAE700233AD5E2C2A8DDD5B918D /* image_downloader.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
