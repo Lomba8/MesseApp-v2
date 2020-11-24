@@ -122,7 +122,7 @@ void main() {
           }
         }
       } on PlatformException {
-        print('Error: Failed to get platform version.');
+        print('Error: Failed to get platform version. ');
       }*/
     } else {
       prefs.getBool('DarkMode')
