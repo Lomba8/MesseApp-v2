@@ -1,5 +1,4 @@
 import 'package:Messedaglia/registro/registro.dart';
-import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

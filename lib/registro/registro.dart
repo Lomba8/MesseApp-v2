@@ -124,8 +124,10 @@ class RegistroApi {
         res = await http.post(loginUrl,
             headers: headers,
             body: jsonEncode({'ident': null, 'pass': pword, 'uid': uname}));
-      } catch (e) {
+      } catch (e, s) {
+        print("Error during login request: ${res.toString()}");
         print(e);
+        print(s);
         return res.reasonPhrase;
       }
 
@@ -223,6 +225,11 @@ class RegistroApi {
     data = await loadData('didactics');
     if (data != null) didactics.fromJson(data);
   }
+
+  @override
+  String toString() {
+    return this.uname + ' ' + this.pword;
+  }
 }
 
 abstract class RegistroData {
@@ -299,7 +306,7 @@ abstract class RegistroData {
       _loading = false;
       if (r.statusCode == HttpStatus.notModified) {
         lastUpdate = DateTime.now();
-        update(name);
+        await update(name);
       }
       return Result(r.statusCode == HttpStatus.notModified, false);
     }

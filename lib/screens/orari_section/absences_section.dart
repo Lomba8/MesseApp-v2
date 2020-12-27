@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
 
@@ -78,9 +77,9 @@ int countRemainingHours({String sbj, String cls}) {
 
 int countTotalHours() {
   int count = 0;
-  for (Interval interval in holidaysData) 
+  for (Interval interval in holidaysData)
     for (DateTime day in interval.days)
       count += getSbjs(day.weekday - 1).length;
-  print ('${count~/4}/$count');
+  print('${count ~/ 4}/$count');
   return count;
 }

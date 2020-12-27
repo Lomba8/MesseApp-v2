@@ -320,9 +320,6 @@ class Globals {
     '.heif': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
     '.ico': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
     '.webp': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
-    '.jpg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
-    '.jpeg': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
-    '.png': {'icona': MdiIcons.fileImage, 'colore': Color(0xAE4BF01D)},
   };
 
   static Color rosso = Color.fromRGBO(79, 20, 17, 1);

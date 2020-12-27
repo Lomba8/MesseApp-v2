@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
@@ -32,7 +30,6 @@ class _HomeState extends State<Home> {
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
     await main.session.downloadAll((v) {});
-    main.session.asMap.values.toList()[0].adsas();
   }
 
   @override
@@ -92,9 +89,9 @@ class _HomeState extends State<Home> {
                         var result = await permissionValidator.photos();
 
                         if (result) {
-                          image = await ImagePicker.pickImage(
-                              source: ImageSource
-                                  .gallery); // aggiungere il permeso in Info.plist per l'uso della fotocamera se serve
+                          PickedFile selectedFile = await ImagePicker()
+                              .getImage(source: ImageSource.gallery);
+                          image = File(selectedFile.path);
 
                           if (image != null) {
                             main.avatarList.add({

@@ -3,19 +3,14 @@ import 'dart:math';
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart' as dbManager;
-import 'package:Messedaglia/screens/menu_screen.dart' as menu;
-import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:account_selector/account.dart';
 import 'package:Messedaglia/widgets/account_selector.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:cupertino_tabbar/cupertino_tabbar.dart' as CupertinoTabBar;
 import 'package:flutter/gestures.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Preferences extends StatefulWidget {
@@ -24,7 +19,7 @@ class Preferences extends StatefulWidget {
 }
 
 class _PreferencesState extends State<Preferences> {
-  bool _darkTheme = main.theme == ThemeMode.dark;
+  bool _darkTheme = main.theme == ThemeMode.dark; //TODO: dynamic theme o senza?
   int cupertinoTabBarIValue = main.theme == ThemeMode.dark ? 0 : 1;
   int cupertinoTabBarIValueGetter() => cupertinoTabBarIValue;
   List<Account> accountList = List<Account>();

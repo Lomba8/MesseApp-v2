@@ -121,7 +121,7 @@ class Calendar extends ResizableWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               AutoSizeText(
-                '${main.session.agenda.newEventi > 0 ? main.session.agenda.newEventi : 'nessun'} nuov${main.session.agenda.newEventi > 1 ? 'i' : 'o'} event${main.session.agenda.newEventi > 1 ? 'i' : 'o'} - ${passedTime()}               ',
+                '${main.session.agenda.newEventi > 0 ? main.session.agenda.newEventi : 'nessun'} nuov${main.session.agenda.newEventi > 1 ? 'i' : 'o'} event${main.session.agenda.newEventi > 1 ? 'i' : 'o'} - ${passedTime()}               ', //FIXME: conta gli eventi precedenti credo
                 textAlign: TextAlign.center,
                 minFontSize: 10,
                 maxFontSize: 13,

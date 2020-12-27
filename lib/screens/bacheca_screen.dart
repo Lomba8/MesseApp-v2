@@ -28,7 +28,7 @@ import 'package:Messedaglia/main.dart' as main;
 bool showValid = main.prefs.getBool('showValid') ?? true;
 bool showNew = main.prefs.getBool('showNew') ?? false;
 
-DateTime _start = null, _end = null;
+DateTime _start, _end;
 
 class BachecaScreen extends StatefulWidget {
   static final String id = 'bacheca_screen';
@@ -136,6 +136,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   @override
   void initState() {
+    super.initState();
     _firstInputFocusNode = new FocusNode();
     //_uploadFiles();
     print('upload() files spostare');

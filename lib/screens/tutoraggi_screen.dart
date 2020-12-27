@@ -392,7 +392,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                             Key bottomChildKey) {
                                           // Stacks size themselves according to the non-positioned child.
                                           return Stack(
-                                            overflow: Overflow.visible,
+                                            clipBehavior: Clip.none,
                                             children: <Widget>[
                                               // This is the positioned child (because left, top, right are non-null).
                                               // bottomChild is the one _from which_ we are animating.
@@ -482,7 +482,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                               Key bottomChildKey) {
                                             // Stacks size themselves according to the non-positioned child.
                                             return Stack(
-                                              overflow: Overflow.visible,
+                                              clipBehavior: Clip.none,
                                               children: <Widget>[
                                                 // This is the positioned child (because left, top, right are non-null).
                                                 // bottomChild is the one _from which_ we are animating.
@@ -573,7 +573,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
                                                   Key bottomChildKey) {
                                                 // Stacks size themselves according to the non-positioned child.
                                                 return Stack(
-                                                  overflow: Overflow.visible,
+                                                  clipBehavior: Clip.none,
                                                   children: <Widget>[
                                                     // This is the positioned child (because left, top, right are non-null).
                                                     // bottomChild is the one _from which_ we are animating.

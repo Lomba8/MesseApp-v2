@@ -143,7 +143,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ])),
         ),
-        Stack(overflow: Overflow.clip, children: [
+        Stack(clipBehavior: Clip.none, children: [
           GestureDetector(
             onTapUp: (details) {
               final Offset start = Offset(14, 703);

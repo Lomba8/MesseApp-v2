@@ -69,3 +69,11 @@ final Map<String, Color> colors = {
   'INFO': Color(0xFFE9D5C0),
   'INGL POT': Color(0xFFF2F2F2),
 };
+
+int dailyHours(DateTime day) {
+  int _ore = 0;
+  for (int i = day.weekday; i < 36; i += 6) {
+    if (orari[selectedClass]['orari'][i] != "") _ore++;
+  }
+  return _ore;
+}

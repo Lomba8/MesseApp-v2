@@ -150,6 +150,7 @@ void main() {
       runApp(Phoenix(child: MaterialAppWithTheme()));
     }, (error, stackTrace) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      FirebaseCrashlytics.instance.log(session.toString());
     });
   });
 }

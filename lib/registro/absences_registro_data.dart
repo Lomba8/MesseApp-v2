@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:Messedaglia/registro/registro.dart';
-import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -75,6 +74,7 @@ class AbsencesRegistroData extends RegistroData {
               'hour': ora,
               'justification': absence['justifReasonDesc'],
               'justified': absence['isJustified'] ? 1 : 0,
+              'hoursAbsence': jsonEncode(absence['hoursAbsence']),
             },
             conflictAlgorithm: ConflictAlgorithm.ignore);
       }
@@ -122,7 +122,7 @@ class AbsencesRegistroData extends RegistroData {
   @override
   Future<void> create() async {
     await database.execute(
-        'CREATE TABLE IF NOT EXISTS absences(id INTEGER PRIMARY KEY, usrId INTEGER, type TEXT, hour INTEGER, justified BIT, justification TEXT, new BIT, date DATE)');
+        'CREATE TABLE IF NOT EXISTS absences(id INTEGER PRIMARY KEY, usrId INTEGER, type TEXT, hour INTEGER, justified BIT, justification TEXT, new BIT, date DATE, hoursAbsence TEXT)');
   }
 
   @override
@@ -144,18 +144,24 @@ class AbsencesRegistroData extends RegistroData {
       data.length > 0 ? data.values.where((v) => v.isNew == true).length : 0;
 
   double giorniRestanti() {
-    double ore = 0;
+    // https://www.studenti.it/come-calcolare-numero-massimo-assenze-scuola.html Per il liceo scientifico, il totale annuale è di 891 ore al biennio e di 990 al triennio minimo 75%
+    int oreMassimeBalzabili =
+        int.parse(account.cls?.split('')?.first ?? '1') > 2 ? 990 : 891;
+
+    double oreSaltate = 0;
     List<Assenza> _assenze = data.values.toList();
     _assenze.forEach((assenza) {
-      if (assenza.type == 'ABA0') {
-        ore += 5; //FIXME lunghezza dei giorni
+      if (assenza.type == 'ABA0' && assenza.hoursAbsence.isEmpty) {
+        oreSaltate += dailyHours(assenza.date);
+      } else if (assenza.type == 'ABA0' && assenza.hoursAbsence.isNotEmpty) {
+        oreSaltate += assenza.hoursAbsence.length;
       } else if (assenza.type == 'ABR0') {
-        ore += assenza.hour;
+        oreSaltate += assenza.hour;
       } else if (assenza.type == 'ABU0') {
-        ore += (5 - assenza.hour); //FIXME lunghezza dei giorni
+        oreSaltate += (dailyHours(assenza.date) - assenza.hour);
       }
     });
-    return ore;
+    return oreMassimeBalzabili - oreSaltate;
   }
 }
 
@@ -169,6 +175,7 @@ class Assenza {
   String justification;
   DateTime date;
   bool isNew;
+  List<dynamic> hoursAbsence; //[{},{}]
 
   Assenza({
     @required this.account,
@@ -180,6 +187,7 @@ class Assenza {
     @required this.justification,
     @required this.type,
     @required this.isNew,
+    @required this.hoursAbsence,
   });
 
   Assenza.parse(Map raw) {
@@ -192,10 +200,12 @@ class Assenza {
     this.justified = raw['justified'] == 1 ? true : false;
     this.type = raw['type'];
     this.value = raw['value'];
+    this.hoursAbsence = jsonDecode(raw['hoursAbsence']);
   }
 
   Future<void> seen() async {
     this.isNew = false;
+    // ignore: unused_local_variable
     int res = await database.rawUpdate(
         'UPDATE note SET new = 0 WHERE id = ? AND usrId = ?',
         [this.id, session.usrId]);

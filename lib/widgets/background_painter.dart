@@ -11,7 +11,7 @@ class BackgroundPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    double k = size.width / 100;
+    // double k = size.width / 100;
 
     // path.reset();
     // path.lineTo(0, size.height - 16);

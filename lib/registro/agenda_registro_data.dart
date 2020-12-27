@@ -1,10 +1,7 @@
 import 'dart:collection';
-
-import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
-import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:intl/intl.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -53,7 +50,8 @@ class AgendaRegistroData extends RegistroData {
             'new': (m['isFullDay'] &&
                     DateTime(DateTime.now().year, DateTime.now().month,
                             DateTime.now().day)
-                        .isAtSameMomentAs(DateTime.parse(date)))
+                        .isAtSameMomentAs(DateTime.parse(
+                            date))) //FIXME: da aggiungre anche con il load se non si entra da tanto e si ha un evento precedente mai messo come new=false
                 ? 0
                 : DateTime.now().isBefore(DateTime.parse(date))
                     ? 1
@@ -134,6 +132,7 @@ class Evento implements EventInterface {
 
   Future seen() async {
     this.isNew = false;
+    // ignore: unused_local_variable
     int res = await database.rawUpdate(
         'UPDATE agenda SET new = 0 WHERE id = ? AND usrId = ?',
         [this._evtId, account.usrId]);

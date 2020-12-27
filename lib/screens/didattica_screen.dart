@@ -19,9 +19,6 @@ class _DidatticaScreenData extends State<DidatticaScreen>
     with SingleTickerProviderStateMixin {
   CustomDirectory directory = main.session.didactics.data;
 
-  AnimationController _animationController;
-  Animation<double> _animation1, _animation2;
-
   bool _loading = false;
 
   void _setStateIfAlive() {
@@ -35,26 +32,6 @@ class _DidatticaScreenData extends State<DidatticaScreen>
     HapticFeedback.mediumImpact();
 
     return null;
-  }
-
-  @override
-  void initState() {
-    _animationController = AnimationController(
-        vsync: this, duration: Duration(seconds: 1), value: 0.0);
-    _animation2 = CurvedAnimation(
-        curve: Curves.bounceIn,
-        parent: _animationController,
-        reverseCurve: Curves.decelerate);
-    _animation1 = _animation2.drive(Tween(begin: 0.0, end: -100.0));
-    _animation2 = _animation2.drive(Tween(begin: 1, end: 0.5));
-    _animationController.repeat(reverse: true);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   @override

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/screens/screens.dart';
 import 'package:Messedaglia/widgets/note_widget.dart';

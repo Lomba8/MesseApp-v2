@@ -1,10 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/lessons_registro_data.dart';
-import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -66,7 +64,6 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
     if (mounted) setState(() {});
   }
 
-  // TODO: ripristinare lastUpdate
   String _passedTime() {
     if (session.agenda.lastUpdate == null) return 'mai aggiornato';
     Duration difference = DateTime.now().difference(session.agenda.lastUpdate);
@@ -235,7 +232,7 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                       child: Container(
                         height: 70.0 * orariList.length,
                         child: Stack(
-                          overflow: Overflow.clip,
+                          clipBehavior: Clip.none,
                           // FIXME: sovrapposizione di eventi
                           children: dayEvents
                               .where((event) =>

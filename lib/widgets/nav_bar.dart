@@ -62,7 +62,7 @@ class _NavBarState extends State<NavBar> {
           width: w,
           color: Theme.of(context).backgroundColor,
           child: Stack(
-            overflow: Overflow.clip,
+            clipBehavior: Clip.none,
             children: <Widget>[
               AnimatedContainer(
                 duration: Duration(milliseconds: 200),

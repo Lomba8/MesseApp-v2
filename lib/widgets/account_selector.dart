@@ -39,6 +39,7 @@ showAccountSelectorSheet({
       return SingleAccountSelectionWidget(
         accountwithselectionList: accountwithselectionList,
         initiallySelectedIndex: initiallySelectedIndex,
+        // ignore: missing_return
         tapCallback: tapCallback ?? (val) {},
         hideSheetOnItemTap: hideSheetOnItemTap,
         selectedRadioColor: selectedRadioColor,

@@ -52,22 +52,29 @@ class LessonsRegistroData extends RegistroData {
 
         ids.add(lesson['evtId']);
 
-        batch.insert('lessons', {
-          'id': lesson['evtId'],
-          'usrId': account.usrId,
-          'date': DateTime.parse(lesson['evtDate']).toIso8601String(),
-          'hour': lesson['evtHPos'] - 1,
-          'duration': lesson['evtDuration'],
-          'author': lesson['authorName'],
-          'sbj': lesson['subjectDesc'],
-          'type': lesson['lessonType'],
-          'info': lesson['lessonArg'].isEmpty ? null : lesson['lessonArg']
-        });
+        batch.insert(
+          'lessons',
+          {
+            'id': lesson['evtId'],
+            'usrId': account.usrId,
+            'date': DateTime.parse(lesson['evtDate']).toIso8601String(),
+            'hour': lesson['evtHPos'] - 1,
+            'duration': lesson['evtDuration'],
+            'author': lesson['authorName'],
+            'sbj': lesson['subjectDesc'],
+            'type': lesson['lessonType'],
+            'info': lesson['lessonArg'].isEmpty ? null : lesson['lessonArg']
+          },
+          conflictAlgorithm: ConflictAlgorithm
+              .replace, // con .ignore ci sono bagoli ad aggiungere le lezioni non prsenti nel db
+        );
       }
 
-      batch.delete('lessons',
-          where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
-          whereArgs: [account.usrId]);
+      batch.delete(
+        'lessons',
+        where: 'usrId = ? AND id NOT IN (${ids.join(', ')})',
+        whereArgs: [account.usrId],
+      );
 
       batch.query('lessons', where: 'usrId = ?', whereArgs: [account.usrId]);
 

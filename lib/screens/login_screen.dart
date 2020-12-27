@@ -51,8 +51,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.initState();
     main.route = 'login_screen';
 
-    _controller = VideoPlayerController.asset(
-        'videos/loading.mp4') //FIXME: usare animazioni AE con libreria
+    _controller = VideoPlayerController.asset('videos/loading.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         if (mounted) setState(() {});
@@ -69,9 +68,8 @@ class _LoginScreenState extends State<LoginScreen>
 
     if (main.add) {
       splash = false;
-      main.add = false;
     } else if (main.session != null) {
-      print('maim!=null');
+      print('main.session!=null');
       if (main.connection_main != ConnectivityResult.none) {
         print('connectivity Online');
         main.session.login().then((ok) async {
@@ -100,6 +98,7 @@ class _LoginScreenState extends State<LoginScreen>
     _controller.dispose();
     main.route = '';
     _splash_controller.dispose();
+    if (main.add == true) main.add = false;
     super.dispose();
   }
 
@@ -151,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen>
         _btnController.reset();
 
         if (Platform.isAndroid)
-          Scaffold.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(seconds: 3),
             content: Text(req +
                 '\n' +

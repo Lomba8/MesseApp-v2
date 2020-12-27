@@ -68,8 +68,10 @@ class AssenzeWidget extends StatelessWidget {
                                       width: (33 / 207) * constraints.maxWidth,
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
-                                        color:
-                                            Globals.coloriAssenze[assenza.type],
+                                        color: assenza.hoursAbsence.isNotEmpty
+                                            ? Colors.blue
+                                            : Globals
+                                                .coloriAssenze[assenza.type],
                                         shape: BoxShape.circle,
                                       ),
                                       child: AutoSizeText(

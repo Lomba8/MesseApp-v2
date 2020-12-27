@@ -213,16 +213,16 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                           child: Text(
                             'Puoi fare ancora:\n' +
                                 ' • ' +
-                                (main.session.absences.giorniRestanti() ~/ 5)
+                                (main.session.absences.giorniRestanti() ~/ 24)
                                     .toString() +
                                 ' giorni di assenza\n' +
                                 ' • ' +
                                 main.session.absences
                                     .giorniRestanti()
-                                    .remainder(5)
+                                    .remainder(24)
                                     .toInt()
                                     .toString() +
-                                ' ore di assenza',
+                                ' or${main.session.absences.giorniRestanti().remainder(24) > 1 ? "e" : "a"} di assenza',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
@@ -460,8 +460,11 @@ class _AbsenceCardState extends State<AbsenceCard> {
         Container(
           margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
           decoration: BoxDecoration(
-              color: Globals.coloriAssenze[widget.assenza.type],
-              borderRadius: BorderRadius.circular(10.0)),
+            color: widget.assenza.hoursAbsence.isNotEmpty
+                ? Colors.blue
+                : Globals.coloriAssenze[widget.assenza.type],
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           child: Row(
             mainAxisAlignment: widget.assenza.justification == null
                 ? MainAxisAlignment.center
@@ -520,13 +523,21 @@ class _AbsenceCardState extends State<AbsenceCard> {
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
-              mainAxisAlignment: widget.assenza.hour != null
+              mainAxisAlignment: widget.assenza.hour != null ||
+                      widget.assenza.hoursAbsence.isNotEmpty
                   ? MainAxisAlignment.spaceAround
                   : MainAxisAlignment.center,
               children: <Widget>[
-                widget.assenza.hour != null
+                widget.assenza.hour != null ||
+                        widget.assenza.hoursAbsence.isNotEmpty
                     ? AutoSizeText(
-                        widget.assenza.hour.toString() + 'ᵃ' + ' ora',
+                        widget.assenza.hour != null
+                            ? widget.assenza.hour.toString() + 'ᵃ' + ' ora'
+                            : widget.assenza.hoursAbsence
+                                .map((skippedLesson) =>
+                                    skippedLesson['hPos'].toString() + 'ᵃ ')
+                                .join()
+                                .toString(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         minFontSize: 10.0,

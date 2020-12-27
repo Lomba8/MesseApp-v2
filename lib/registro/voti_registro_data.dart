@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:flutter/material.dart';
