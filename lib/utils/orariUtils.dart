@@ -47,8 +47,10 @@ Future downloadVacanze() async {
   try {
     http.Response res = await http.get('https://app.messe.dev/holidays');
     if (res.statusCode == 200) {
-      prefs.setString('holidays', res.body);
       holidays = jsonDecode(res.body);
+      holidays = holidays.map((e) => DateTime.parse(e)).toList();
+      prefs.setString('holidays',
+          jsonEncode(holidays.map((e) => e.toIso8601String()).toList()));
     } else {
       print('Request failed with status: ${res.statusCode}.');
     }

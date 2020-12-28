@@ -87,13 +87,12 @@ int countTotalHours() {
 
 int timeLeft([String sbj]) {
   int giorni = 0;
-  DateTime day = DateTime.now();
-  DateTime lastDay = DateTime.parse(holidays.last).add(Duration(days: 1));
+  DateTime day = DateTime.parse(DateTime.now().toString().substring(0, 10));
+  DateTime lastDay = holidays.last.add(Duration(days: 1));
 
   if (session.cls == null) return null;
 
-  if (day.isBefore(DateTime.parse(holidays.first)) &&
-      day.isAfter(DateTime.parse(holidays.last))) return null;
+  if (day.isBefore(holidays.first) && day.isAfter(holidays.last)) return null;
 
   while (day.isBefore(lastDay)) {
     day = day.add(Duration(days: 1));
@@ -102,16 +101,18 @@ int timeLeft([String sbj]) {
       continue;
     else if (day.weekday == DateTime.saturday && !doesSaturday())
       continue;
+    else if (holidays.contains(day))
+      continue;
     else
       giorni++;
 
-    //TODO: add vacanze
+    //TODO: add ore delle materie restanti
 
     if (giorni > 300) {
       print('break');
       print(day.toIso8601String());
       break;
-    } //FIXME
+    }
   }
 
   return giorni;
