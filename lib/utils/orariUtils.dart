@@ -8,6 +8,7 @@ import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 Map orari = {};
+List holidays = List();
 
 // FIXME: senza load il salvataggio su db è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
 Future downloadOrari() async {
@@ -32,6 +33,22 @@ Future downloadOrari() async {
       });
 
       batch.commit();
+    } else {
+      print('Request failed with status: ${res.statusCode}.');
+    }
+  } catch (e, s) {
+    print(e);
+    print(s);
+  }
+}
+
+// FIXME: senza load il salvataggio su sharedprefs è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
+Future downloadVacanze() async {
+  try {
+    http.Response res = await http.get('https://app.messe.dev/holidays');
+    if (res.statusCode == 200) {
+      prefs.setString('holidays', res.body);
+      holidays = jsonDecode(res.body);
     } else {
       print('Request failed with status: ${res.statusCode}.');
     }
@@ -72,8 +89,15 @@ final Map<String, Color> colors = {
 
 int dailyHours(DateTime day) {
   int _ore = 0;
-  for (int i = day.weekday; i < 36; i += 6) {
+  for (int i = day.weekday; i < orari[selectedClass]['orari'].length; i += 6) {
     if (orari[selectedClass]['orari'][i] != "") _ore++;
   }
   return _ore;
+}
+
+bool doesSaturday() {
+  if (orari[selectedClass]['orari'][5] != "")
+    return true;
+  else
+    return false;
 }

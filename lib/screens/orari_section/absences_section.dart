@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
+import 'package:intl/intl.dart';
 
 class Interval {
   DateTime start, end;
@@ -82,4 +83,36 @@ int countTotalHours() {
       count += getSbjs(day.weekday - 1).length;
   print('${count ~/ 4}/$count');
   return count;
+}
+
+int timeLeft([String sbj]) {
+  int giorni = 0;
+  DateTime day = DateTime.now();
+  DateTime lastDay = DateTime.parse(holidays.last).add(Duration(days: 1));
+
+  if (session.cls == null) return null;
+
+  if (day.isBefore(DateTime.parse(holidays.first)) &&
+      day.isAfter(DateTime.parse(holidays.last))) return null;
+
+  while (day.isBefore(lastDay)) {
+    day = day.add(Duration(days: 1));
+
+    if (day.weekday == DateTime.sunday)
+      continue;
+    else if (day.weekday == DateTime.saturday && !doesSaturday())
+      continue;
+    else
+      giorni++;
+
+    //TODO: add vacanze
+
+    if (giorni > 300) {
+      print('break');
+      print(day.toIso8601String());
+      break;
+    } //FIXME
+  }
+
+  return giorni;
 }

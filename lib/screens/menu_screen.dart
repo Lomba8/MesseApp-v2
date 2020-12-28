@@ -1,4 +1,5 @@
 import 'package:Messedaglia/main.dart' as main;
+import 'package:Messedaglia/screens/orari_section/absences_section.dart';
 import 'package:Messedaglia/screens/screens.dart';
 import 'package:Messedaglia/widgets/note_widget.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
@@ -30,6 +31,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     sheetController = SheetController();
 
+    print(timeLeft());
     super.initState();
   }
 

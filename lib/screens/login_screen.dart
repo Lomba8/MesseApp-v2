@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen>
           print('login');
           if (ok == '') {
             await downloadOrari();
-
+            await downloadVacanze();
             downloadAll();
           } else {
             print('splash = false');
