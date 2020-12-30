@@ -98,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen>
     _controller.dispose();
     main.route = '';
     _splash_controller.dispose();
-    if (main.add == true) main.add = false;
     super.dispose();
   }
 
@@ -371,7 +370,10 @@ class _LoginScreenState extends State<LoginScreen>
                           main.add
                               ? RoundedLoadingButton(
                                   animateOnTap: false,
-                                  onPressed: () => Phoenix.rebirth(context),
+                                  onPressed: () {
+                                    if (main.add == true) main.add = false;
+                                    Phoenix.rebirth(context);
+                                  },
                                   color: Colors.red[400],
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
