@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen>
           print('login');
           if (ok == '') {
             await downloadOrari();
-            await downloadVacanze();
+            await downloadVacanze(); //TODO: move
             downloadAll();
           } else {
             print('splash = false');
@@ -144,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen>
             splash = true;
           });
         await downloadOrari();
+        await downloadVacanze(); //TODO: move
         downloadAll();
       } else {
         _formKey.currentState.reset();

@@ -1,5 +1,4 @@
 import 'package:Messedaglia/main.dart';
-import 'package:Messedaglia/screens/orari_section/absences_section.dart';
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -64,220 +63,234 @@ class _OrariState extends State<Orari> {
   }
 
   @override
-  Widget build(BuildContext context) => CustomScrollView(slivers: [
-        SliverAppBar(
-          pinned: true,
-          brightness: Theme.of(context).brightness,
-          elevation: 0,
-          centerTitle: true,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: IconButton(
-              icon: Icon(Icons.settings_backup_restore),
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white54
-                  : Colors.black54,
-              onPressed: () {
-                resetprefs();
-                setState(() {});
-              },
+  Widget build(BuildContext context) => CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            brightness: Theme.of(context).brightness,
+            elevation: 0,
+            centerTitle: true,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: IconButton(
+                icon: Icon(Icons.settings_backup_restore),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white54
+                    : Colors.black54,
+                onPressed: () {
+                  resetprefs();
+                  setState(() {});
+                },
+              ),
             ),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (_downloading)
-                Padding(
-                  padding: EdgeInsets.only(bottom: 4),
-                  child: SizedBox(
-                    height: 18.0,
-                    width: 18.0,
-                    child: CircularProgressIndicator(
-                      value: null,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (_downloading)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 4),
+                    child: SizedBox(
+                      height: 18.0,
+                      width: 18.0,
+                      child: CircularProgressIndicator(
+                        value: null,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
                     ),
                   ),
+                if (_downloading)
+                  SizedBox(
+                    width: 2.0,
+                  ),
+                Text(
+                  _downloading ? 'RARI' : 'ORARI',
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
                 ),
-              if (_downloading)
-                SizedBox(
-                  width: 2.0,
-                ),
-              Text(
-                _downloading ? 'RARI' : 'ORARI',
-                style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black
-                        : Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold),
+              ],
+            ),
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: IconButton(
+                    icon: Icon(
+                      Icons.file_download,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black54
+                          : Colors.white54,
+                    ),
+                    onPressed: selectedClass == null
+                        ? null
+                        : () async {
+                            final permissionValidator = EasyPermissionValidator(
+                              context: context,
+                              appName: 'Messe App',
+                            );
+
+                            var result = await permissionValidator.photos();
+
+                            if (result) {
+                              downloadOrario(selectedClass).then((_) {
+                                _showNotificationWithDefaultSound(
+                                    selectedClass);
+                              });
+
+                              setState(() {
+                                _downloading = true;
+                                _progress = 0;
+                              });
+                            } else {
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return PlatformAlertDialog(
+                                    title:
+                                        Text('Impossibile scaricare la foto.'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text(
+                                              "Per scaricare l'orario bisogna autorizzare la applicazione."),
+                                          Text(
+                                              "Clicca su 'Autorizza' per abilitare il salvataggio della foto."),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      PlatformDialogAction(
+                                        child: Text('Cancella'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      PlatformDialogAction(
+                                        child: Text('Autorizza'),
+                                        actionType: ActionType.Preferred,
+                                        onPressed: () {
+                                          AppSettings.openLocationSettings();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          }),
               ),
             ],
+            backgroundColor: Colors.transparent,
+            flexibleSpace: CustomPaint(
+              painter: BackgroundPainter(Theme.of(context)),
+              size: Size.infinite,
+            ),
+            bottom: PreferredSize(
+                child: Container(),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.width / 8)),
           ),
-          actions: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: IconButton(
-                  icon: Icon(
-                    Icons.file_download,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black54
-                        : Colors.white54,
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                GestureDetector(
+                  onTap: () => showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (context) => Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 8.0, right: 8.0, top: 15.0),
+                            child: _selectionChildren,
+                          ))),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: (selectedClass == '' || selectedClass == null)
+                            ? MediaQuery.of(context).size.height / 3
+                            : 10.0),
+                    child: Text(
+                        (selectedClass != '' && selectedClass != null)
+                            ? selectedClass
+                            : 'Tocca per scegliere la classe',
+                        textAlign: TextAlign.center),
+                    width: double.infinity,
                   ),
-                  onPressed: selectedClass == null
-                      ? null
-                      : () async {
-                          final permissionValidator = EasyPermissionValidator(
-                            context: context,
-                            appName: 'Messe App',
-                          );
-
-                          var result = await permissionValidator.photos();
-
-                          if (result) {
-                            downloadOrario(selectedClass).then((_) {
-                              _showNotificationWithDefaultSound(selectedClass);
-                            });
-
-                            setState(() {
-                              _downloading = true;
-                              _progress = 0;
-                            });
-                          } else {
-                            showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return PlatformAlertDialog(
-                                  title: Text('Impossibile scaricare la foto.'),
-                                  content: SingleChildScrollView(
-                                    child: ListBody(
-                                      children: <Widget>[
-                                        Text(
-                                            "Per scaricare l'orario bisogna autorizzare la applicazione."),
-                                        Text(
-                                            "Clicca su 'Autorizza' per abilitare il salvataggio della foto."),
-                                      ],
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    PlatformDialogAction(
-                                      child: Text('Cancella'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    PlatformDialogAction(
-                                      child: Text('Autorizza'),
-                                      actionType: ActionType.Preferred,
-                                      onPressed: () {
-                                        AppSettings.openLocationSettings();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        }),
-            ),
-          ],
-          backgroundColor: Colors.transparent,
-          flexibleSpace: CustomPaint(
-            painter: BackgroundPainter(Theme.of(context)),
-            size: Size.infinite,
-          ),
-          bottom: PreferredSize(
-              child: Container(),
-              preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.width / 8)),
-        ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            GestureDetector(
-              onTap: () => showDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  builder: (context) => Dialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.0, right: 8.0, top: 15.0),
-                        child: _selectionChildren,
-                      ))),
-              child: Container(
-                margin: EdgeInsets.only(
-                    top: (selectedClass == '' || selectedClass == null)
-                        ? MediaQuery.of(context).size.height / 3
-                        : 10.0),
-                child: Text(
-                    (selectedClass != '' && selectedClass != null)
-                        ? selectedClass
-                        : 'Tocca per scegliere la classe',
-                    textAlign: TextAlign.center),
-                width: double.infinity,
-              ),
-            ),
-            GridView.count(
-                padding: EdgeInsets.only(right: 22.0),
-                crossAxisCount: _hasSaturday ? 7 : 6,
-                childAspectRatio: 1.4,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: _children),
-            if (selectedClass != null &&
-                (DateTime date) {
-                  int weekday = date.weekday - (date.hour < 14 ? 1 : 0);
-                  if (weekday == 6 || (weekday == 5 && !_hasSaturday))
-                    return false;
-                  return true;
-                }(DateTime.now()))
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 18.0, top: 15.0, bottom: 15.0),
-                child: RichText(
-                    text: TextSpan(
-                        text: DateTime.now().hour >= 14 ? 'Domani ' : 'Oggi ',
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'CoreSans',
-                          letterSpacing: 2,
-                        ),
-                        children: <TextSpan>[
-                      TextSpan(
-                        text:
-                            '(${DateFormat(DateFormat.WEEKDAY, 'it').format(DateTime.now().add(Duration(days: DateTime.now().hour >= 14 ? 1 : 0)))})',
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 25.0,
-                          fontFamily: 'CoreSans',
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w300,
-                        ),
+                ),
+                GridView.count(
+                    padding: EdgeInsets.only(right: 22.0),
+                    crossAxisCount: _hasSaturday ? 7 : 6,
+                    childAspectRatio: 1.4,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: _children),
+                if (selectedClass != null &&
+                    (DateTime date) {
+                      int weekday = date.weekday - (date.hour < 14 ? 1 : 0);
+                      if (weekday == 6 || (weekday == 5 && !_hasSaturday))
+                        return false;
+                      return true;
+                    }(DateTime.now()))
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 18.0, top: 15.0, bottom: 15.0),
+                    child: RichText(
+                        text: TextSpan(
+                            text:
+                                DateTime.now().hour >= 14 ? 'Domani ' : 'Oggi ',
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'CoreSans',
+                              letterSpacing: 2,
+                            ),
+                            children: <TextSpan>[
+                          TextSpan(
+                            text:
+                                '(${DateFormat(DateFormat.WEEKDAY, 'it').format(DateTime.now().add(Duration(days: DateTime.now().hour >= 14 ? 1 : 0)))})',
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 25.0,
+                              fontFamily: 'CoreSans',
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          )
+                        ])),
+                  ),
+                if (selectedClass != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(children: <Widget>[
+                      Row(children: oggi),
+                      Row(
+                        children: ore,
                       )
-                    ])),
-              ),
-            if (selectedClass != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Column(children: <Widget>[
-                  Row(children: oggi),
-                  Row(
-                    children: ore,
-                  )
-                ]),
-              ),
-            if (selectedClass != null)
-              Text(
-                  '${countRemainingHours(sbj: _selectedSbj)} ${_selectedSbj == null ? 'giorni' : 'ore'} rimanenti')
-          ]),
-        ),
-      ]);
+                    ]),
+                  ),
+                if (selectedClass != null)
+                  Container(
+                    margin: EdgeInsets.only(left: 15),
+                    child: Text(
+                      '${timeLeft(sbj: _selectedSbj)} ${_selectedSbj == null ? 'giorni' : 'ore'} rimanenti',
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      );
 
   Future _showNotificationWithDefaultSound(String classe) async {
     var androidDetails = AndroidNotificationDetails('Orari', 'Orari Download',

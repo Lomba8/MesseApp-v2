@@ -12,6 +12,7 @@ List holidays = List();
 
 // FIXME: senza load il salvataggio su db è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
 Future downloadOrari() async {
+  getSelected(); //TODO: move
   try {
     http.Response res = await http.get('https://app.messe.dev/orari');
     if (res.statusCode == 200) {
@@ -102,4 +103,33 @@ bool doesSaturday() {
     return true;
   else
     return false;
+}
+
+int timeLeft({String sbj}) {
+  int giorni = 0;
+  int ore = 0;
+  DateTime day = DateTime.parse(DateTime.now().toString().substring(0, 10));
+  DateTime lastDay = holidays.last.add(Duration(days: 1));
+
+  if (session.cls == null) return null;
+
+  if (day.isBefore(holidays.first) && day.isAfter(holidays.last)) return null;
+
+  while (day.isBefore(lastDay)) {
+    day = day.add(Duration(days: 1));
+
+    if (day.weekday == DateTime.sunday)
+      continue;
+    else if (day.weekday == DateTime.saturday && !doesSaturday())
+      continue;
+    else if (holidays.contains(day))
+      continue;
+    else {
+      if (sbj != null)
+        for (String sbj2 in getSbjs(day.weekday)) if (sbj2 == sbj) ore++;
+      giorni++;
+    }
+  }
+
+  return sbj == null ? giorni : ore;
 }

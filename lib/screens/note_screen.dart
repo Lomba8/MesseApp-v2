@@ -157,30 +157,34 @@ class _NoteListViewState extends State<NoteListView> {
   void initState() {
     widget.controller.addListener(() async {
       if (widget.controller.hasClients) {
-        int n = widget.controller.offset.toInt() ~/ 140;
-        int ntte = main.session.note.data
-            .where((nota) => nota.tipologia == "NTTE")
-            .length;
-        int ntcl = main.session.note.data
-            .where((nota) => nota.tipologia == "NTCL")
-            .length;
-        int ntwn = main.session.note.data
-            .where((nota) => nota.tipologia == "NTWN")
-            .length;
+        try {
+          int n = widget.controller.offset.toInt() ~/ 140;
+          int ntte = main.session.note.data
+              .where((nota) => nota.tipologia == "NTTE")
+              .length;
+          int ntcl = main.session.note.data
+              .where((nota) => nota.tipologia == "NTCL")
+              .length;
+          int ntwn = main.session.note.data
+              .where((nota) => nota.tipologia == "NTWN")
+              .length;
 
-        if (widget.type == "NTTE") {
-          await main.session.note.data[n].seen();
-          setState(() {});
-          if (main.session.note.data[n].isNew) {}
-        } else if (widget.type == "NTCL") {
-          await main.session.note.data[ntte + n].seen();
-          setState(() {});
-        } else if (widget.type == "NTWN") {
-          await main.session.note.data[ntte + ntcl + n].seen();
-          setState(() {});
-        } else if (widget.type == "NTST") {
-          await main.session.note.data[ntte + ntcl + ntwn + n].seen();
-          setState(() {});
+          if (widget.type == "NTTE" && n < ntte) {
+            await main.session.note.data[n].seen();
+            setState(() {});
+          } else if (widget.type == "NTCL" && n < (ntte + n)) {
+            await main.session.note.data[ntte + n].seen();
+            setState(() {});
+          } else if (widget.type == "NTWN" && n < (ntte + ntcl + n)) {
+            await main.session.note.data[ntte + ntcl + n].seen();
+            setState(() {});
+          } else if (widget.type == "NTST" && n < (ntte + ntcl + ntwn + n)) {
+            await main.session.note.data[ntte + ntcl + ntwn + n].seen();
+            setState(() {});
+          }
+        } catch (e, s) {
+          print(e);
+          print(s);
         }
       }
     });

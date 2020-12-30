@@ -17,12 +17,10 @@ import 'package:http/http.dart';
 import 'package:flutter/services.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:marquee/marquee.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:open_file/open_file.dart';
 import 'package:Messedaglia/main.dart' as main;
 
 bool showValid = main.prefs.getBool('showValid') ?? true;
@@ -475,16 +473,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                                   setState(() {
                                                     _loading = false;
                                                   });
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PDFScreen(
-                                                        path: _pathh,
-                                                        title: c.title,
-                                                      ),
-                                                    ),
-                                                  );
+
+                                                  OpenFile.open(_pathh);
                                                 }
                                               }
                                             },
@@ -643,16 +633,8 @@ class _BachecaScreenState extends State<BachecaScreen> {
                                                   setState(() {
                                                     _loading = false;
                                                   });
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PDFScreen(
-                                                        path: _pathh,
-                                                        title: c.title,
-                                                      ),
-                                                    ),
-                                                  );
+
+                                                  OpenFile.open(_pathh);
                                                 }
                                               }
                                             },
@@ -1122,63 +1104,6 @@ Future _settingModalBottomSheet(context, Comunicazione c) {
           ),
         );
       });
-}
-
-class PDFScreen extends StatelessWidget {
-  final String path;
-  final String title;
-  PDFScreen({this.path, this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(120.0),
-        child: AppBar(
-          backgroundColor: Theme.of(context).accentColor,
-          flexibleSpace: Container(
-            margin: EdgeInsets.fromLTRB(60.0, 70.0, 60.0, 0.0),
-            child: Marquee(
-              text: ' ' + title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15.0,
-                wordSpacing: 1.2,
-              ),
-              scrollAxis: Axis.horizontal,
-              blankSpace: 70.0,
-              velocity: 80.0,
-              pauseAfterRound: Duration(seconds: 1),
-            ),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Padding(
-                padding: EdgeInsets.only(right: 20.0),
-                child: Platform.isAndroid
-                    ? Icon(Icons.share)
-                    : Icon(
-                        CupertinoIcons.share,
-                        size: 25.0,
-                      ),
-              ),
-              onPressed: () {
-                ShareExtend.share(path, title);
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: PdfViewer(
-            filePath: path,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class HighlightText extends StatelessWidget {
