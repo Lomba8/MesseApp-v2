@@ -32,7 +32,6 @@ dependencies:
   connectivity: ^0.4.8+1
   convert: ^2.1.1
   cupertino_icons: ^0.1.2
-  cupertino_tabbar: ^1.0.1
   device_info: ^0.4.1+4
   easy_permission_validator: ^2.0.0
   ext_storage: ^1.0.2

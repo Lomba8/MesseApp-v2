@@ -20,8 +20,7 @@ class Preferences extends StatefulWidget {
 
 class _PreferencesState extends State<Preferences> {
   bool _darkTheme = main.theme == ThemeMode.dark; //TODO: dynamic theme o senza?
-  int cupertinoTabBarIValue = main.theme == ThemeMode.dark ? 0 : 1;
-  int cupertinoTabBarIValueGetter() => cupertinoTabBarIValue;
+
   List<Account> accountList = List<Account>();
   List<int> accountIds = List<int>();
 
@@ -72,8 +71,9 @@ class _PreferencesState extends State<Preferences> {
               ),
             ),
             body: _Header(),
-            expansion: true,
+            expansion: false,
             back: true,
+            preferences: true,
           ),
         ),
         SliverFillRemaining(
@@ -83,8 +83,7 @@ class _PreferencesState extends State<Preferences> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Center(
-                    child: CupertinoButton(
+                CupertinoButton(
                   color: Theme.of(context).accentColor,
                   child: Text(
                     'Accounts',
@@ -207,36 +206,7 @@ class _PreferencesState extends State<Preferences> {
                       },
                     );
                   },
-                )),
-
-                // CupertinoTabBar.CupertinoTabBar(
-                //   cupertinoTabBarIValue == 0
-                //       ? const Color(0xFF537ec5) // azzurro
-                //       : const Color(0xFFffd69f), //arancione
-
-                //   cupertinoTabBarIValue == 0
-                //       ? const Color(0xFF293a80) // blu
-                //       : const Color(0xFFeb999a), // rosso
-                //   [
-                //     Icon(
-                //       MdiIcons.weatherNight,
-                //       size: cupertinoTabBarIValue == 0 ? 20.0 * 1.5 : 20.0,
-                //     ),
-                //     Icon(
-                //       MdiIcons.whiteBalanceSunny,
-                //       size: cupertinoTabBarIValue == 1 ? 20.0 * 1.5 : 20.0,
-                //     )
-                //   ],
-                //   cupertinoTabBarIValueGetter,
-                //   (int index) {
-                //     setState(() {
-                //       cupertinoTabBarIValue = index;
-                //       setTheme(cupertinoTabBarIValue == 0
-                //           ? ThemeMode.dark
-                //           : ThemeMode.light);
-                //     });
-                //   },
-                // ),
+                ),
               ],
             ),
           ),

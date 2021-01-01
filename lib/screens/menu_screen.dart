@@ -1,11 +1,14 @@
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/screens/screens.dart';
+import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/note_widget.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:Messedaglia/widgets/menu_screen_widgets.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
@@ -25,11 +28,48 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
 
   bool sheetExtended = false;
 
+  void _setStateIfAlive() {
+    if (mounted) setState(() {});
+  }
+
+  String _passedTime() {
+    List sections = [
+      main.session.voti,
+      main.session.agenda,
+      main.session.subjects,
+      main.session.bacheca,
+      main.session.note,
+      main.session.lessons,
+      main.session.absences,
+      main.session.didactics
+    ];
+
+    List lastUpdates = sections.map((element) => element.lastUpdate).toList();
+    if (lastUpdates.every((element) => element == null))
+      return 'mai aggiornato';
+    lastUpdates.sort();
+    Duration difference = DateTime.now().difference(lastUpdates.first);
+    if (difference.inMinutes < 1) {
+      Future.delayed(Duration(seconds: 15), _setStateIfAlive);
+      return 'adesso';
+    }
+    if (difference.inHours < 1) {
+      Future.delayed(Duration(minutes: 1), _setStateIfAlive);
+      int mins = difference.inMinutes;
+      return '$mins minut${mins == 1 ? 'o' : 'i'} fa';
+    }
+    if (difference.inDays < 1) {
+      Future.delayed(Duration(hours: 1), _setStateIfAlive);
+      int hours = difference.inHours;
+      return '$hours or${hours == 1 ? 'a' : 'e'} fa';
+    }
+    return 'più di un giorno fa';
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     sheetController = SheetController();
-
     super.initState();
   }
 
@@ -236,7 +276,18 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                     endIndent: 25,
                   ),
                   SizedBox(
-                    height: 15,
+                    height: 10,
+                  ),
+                  AutoSizeText(
+                    'Ultimo aggiornamento: ' + _passedTime(),
+                    textAlign: TextAlign.center,
+                    minFontSize: 8,
+                    maxFontSize: 14,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontFamily: 'CoreSans',
+                    ),
                   ),
                   HomeScreenWidgets(),
                 ],

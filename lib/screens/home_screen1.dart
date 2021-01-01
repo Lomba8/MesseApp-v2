@@ -24,8 +24,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   File image;
-
-  bool trimestre = DateTime.now().month > 8 ? true : false;
+  int displayed = DateTime.now().month > 8
+      ? 0
+      : 1; // 0=> trimestre 1=>pentamestre 2=>totale
 
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
@@ -34,6 +35,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    List voti = List();
+    main.session.voti.averageByMonth().forEach((key, value) => voti.add(value));
+    if (displayed != 2)
+      voti = voti.sublist(
+          displayed == 0 ? 0 : 4, displayed == 0 ? 3 : voti.length);
     return Scaffold(
       body: LiquidPullToRefresh(
         onRefresh: _refresh,
@@ -203,13 +209,7 @@ class _HomeState extends State<Home> {
                 preferredSize:
                     Size.fromHeight(MediaQuery.of(context).size.width / 7),
               ),
-              flexibleSpace:
-                  // Container(
-                  //   width: MediaQuery.of(context).size.width,
-                  //   constraints: BoxConstraints.expand(),
-                  //   child: AppBarNico(),
-                  // ),
-                  CustomPaint(
+              flexibleSpace: CustomPaint(
                 painter: BackgroundPainter(Theme.of(context)),
                 size: Size.infinite,
               ),
@@ -217,14 +217,73 @@ class _HomeState extends State<Home> {
             SliverList(
               delegate: SliverChildListDelegate(
                 <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () => setState(() => displayed = 0),
+                          child: Text(
+                            'Trimestre',
+                            style: TextStyle(
+                              color: displayed == 0
+                                  ? Colors.white
+                                  : Colors.white70,
+                              fontFamily: 'CoreSansRounded',
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayed == 0 ? 20 : 17,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => setState(() => displayed = 1),
+                          child: Text(
+                            'Pentamestre',
+                            style: TextStyle(
+                              color: displayed == 1
+                                  ? Colors.white
+                                  : Colors.white70,
+                              fontFamily: 'CoreSansRounded',
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayed == 1 ? 20 : 17,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => setState(() => displayed = 2),
+                          child: Text(
+                            'Totale',
+                            style: TextStyle(
+                              color: displayed == 2
+                                  ? Colors.white
+                                  : Colors.white70,
+                              fontFamily: 'CoreSansRounded',
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayed == 2 ? 20 : 17,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   Container(
-                    //TODO: scegliere un widget alternativo da displayare se non cis ono voti
+                    //TODO: scegliere un widget alternativo da displayare se non ci sono voti
                     margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
                     height: MediaQuery.of(context).size.height / 4,
                     width: double.infinity,
-                    child: BarChart(
-                      mainBarData(),
-                    ),
+                    child: voti.every((element) => element.isNaN)
+                        ? Center(
+                            child: Text(
+                            'no voti',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ))
+                        : BarChart(
+                            mainBarData(),
+                          ),
                   ),
                 ],
               ),
@@ -284,7 +343,7 @@ class _HomeState extends State<Home> {
 
     () {
       main.session.voti.averageByMonth().forEach((i, avg) {
-        if (!avg.isNaN && i >= (trimestre ? 0 : 4) && i < (trimestre ? 4 : 10))
+        if (!avg.isNaN)
           tr.add(
             BarChartGroupData(
               x: i,
@@ -301,7 +360,9 @@ class _HomeState extends State<Home> {
             ),
           ); //x:i.toDouble(), avg
       });
-      return tr;
+
+      if (displayed == 0) tr = tr.sublist(0, 4);
+      if (displayed == 1) tr = tr.sublist(4);
     }();
 
     return BarChartData(
@@ -342,29 +403,44 @@ class _HomeState extends State<Home> {
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           margin: 20,
           getTitles: (value) {
-            switch (value.toInt()) {
-              case 0:
-                return trimestre ? 'SET' : 'GEN';
-              case 1:
-                return trimestre ? 'OTT' : 'FEB';
-              case 2:
-                return trimestre ? 'NOV' : 'MAR';
-              case 3:
-                return trimestre ? 'DIC' : 'APR';
-              case 4:
-                return trimestre ? '' : 'MAG';
-              case 5:
-                return trimestre ? '' : 'GIU';
-              // case 6:
-              //   return trimestre ? '' : 'APR';
-              // case 7:
-              //   return trimestre ? 'NOV' : '';
-              // case 8:
-              //   return trimestre ? '' : 'MAG';
-              // case 9:
-              //   return trimestre ? '' : '';
-              // case 10:
-              //   return trimestre ? 'DIC' : 'GIU';
+            if (displayed == 2) {
+              switch (value.toInt()) {
+                case 0:
+                  return 'SET';
+                case 1:
+                  return 'OTT';
+                case 2:
+                  return 'NOV';
+                case 3:
+                  return 'DIC';
+                case 4:
+                  return 'GEN';
+                case 5:
+                  return 'FEB';
+                case 6:
+                  return 'MAR';
+                case 7:
+                  return 'APR';
+                case 8:
+                  return 'MAG';
+                case 9:
+                  return 'GIU';
+              }
+            } else {
+              switch (value.toInt()) {
+                case 0:
+                  return displayed == 0 ? 'SET' : 'GEN';
+                case 1:
+                  return displayed == 0 ? 'OTT' : 'FEB';
+                case 2:
+                  return displayed == 0 ? 'NOV' : 'MAR';
+                case 3:
+                  return displayed == 0 ? 'DIC' : 'APR';
+                case 4:
+                  return displayed == 0 ? '' : 'MAG';
+                case 5:
+                  return displayed == 0 ? '' : 'GIU';
+              }
             }
             return '';
           },

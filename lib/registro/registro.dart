@@ -210,7 +210,7 @@ class RegistroApi {
   }
 
   Future<void> load() async {
-    // se sei offline ricaarica da locale
+    // se sei offline ricarica da locale
     print('load');
     accountId = this.usrId;
     prefs.setInt('accountId', accountId);

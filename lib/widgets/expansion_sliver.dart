@@ -20,7 +20,7 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   final dynamic value;
   final IconData leading, action;
   final Function leadingCallback, actionCallback;
-  final bool back, expansion;
+  final bool back, expansion, preferences;
   BuildContext _context;
 
   ExpansionSliverDelegate(
@@ -34,6 +34,7 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
     this.actionCallback,
     this.expansion = false,
     this.back = false,
+    this.preferences = false,
   });
 
   @override
@@ -41,10 +42,9 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     _context = context;
     return Column(children: [
-      //FIXME ho commentato tutto
       Container(
         margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-        height: kToolbarHeight,
+        height: kToolbarHeight + (preferences ? 20 : 0),
         child: Stack(
             alignment: Alignment.center,
             fit: StackFit.expand,
@@ -65,32 +65,42 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
                 ),
               ),
               if (leading != null || action != null)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                      icon: Icon(
-                        leading ?? Icons.adb,
-                        color: leading == null
-                            ? Colors.transparent
-                            : Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white54
-                                : Colors.black54,
-                      ),
-                      onPressed: leadingCallback),
+                Container(
+                  margin: preferences
+                      ? EdgeInsets.only(left: 15, bottom: 20)
+                      : EdgeInsets.zero,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                        icon: Icon(
+                          leading ?? Icons.adb,
+                          color: leading == null
+                              ? Colors.transparent
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white54
+                                  : Colors.black54,
+                        ),
+                        onPressed: leadingCallback),
+                  ),
                 ),
               if (leading != null || action != null)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                      icon: Icon(
-                        action ?? Icons.adb,
-                        color: action == null
-                            ? Colors.transparent
-                            : Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white54
-                                : Colors.black54,
-                      ),
-                      onPressed: actionCallback),
+                Container(
+                  margin: preferences
+                      ? EdgeInsets.only(left: 15, bottom: 20)
+                      : EdgeInsets.zero,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                        icon: Icon(
+                          action ?? Icons.adb,
+                          color: action == null
+                              ? Colors.transparent
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white54
+                                  : Colors.black54,
+                        ),
+                        onPressed: actionCallback),
+                  ),
                 )
             ]),
       ),
@@ -109,12 +119,14 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent =>
       MediaQuery.of(_context).padding.top +
       kToolbarHeight +
+      (preferences ? 20 : 0) +
       (body?.maxExtent(_context) ?? 0);
 
   @override
   double get minExtent =>
       MediaQuery.of(_context).padding.top +
       kToolbarHeight +
+      (preferences ? 20 : 0) +
       (body?.minExtent(_context) ?? 0);
 
   @override
