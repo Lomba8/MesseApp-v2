@@ -3,7 +3,7 @@
 - [ ] create a [release](https://github.com/Lomba8/MesseApp-v2/releases/new) and a respective [badge](https://shields.io/category/version)
 <p align="center">
   <a href="https://github.com/Lomba8/Messe-App-v2">
-    <img src="https://github.com/Lomba8/messe-app-status/blob/master/messeapp.png?raw=true" alt="Logo" width="100" height="100" style="border-radius: 10%">
+    <img src="https://github.com/Lomba8/messe-app-status/blob/master/messeapp.png?raw=true" alt="Logo" width="100" height="100" style="border-radius: 20%">
   </a>
 
  <h1 align="center">Messe App</h1>
