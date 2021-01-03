@@ -50,8 +50,7 @@ class AgendaRegistroData extends RegistroData {
             'new': (m['isFullDay'] &&
                     DateTime(DateTime.now().year, DateTime.now().month,
                             DateTime.now().day)
-                        .isAtSameMomentAs(DateTime.parse(
-                            date))) //FIXME: da aggiungre anche con il load se non si entra da tanto e si ha un evento precedente mai messo come new=false
+                        .isAtSameMomentAs(DateTime.parse(date)))
                 ? 0
                 : DateTime.now().isBefore(DateTime.parse(date))
                     ? 1
@@ -81,13 +80,19 @@ class AgendaRegistroData extends RegistroData {
     }
   }
 
-  int get newEventi => data.where((Evento v) => v.isNew).length;
+  int get newEventi => data.length == 0
+      ? 0
+      : data
+          .where(
+              (Evento v) => v.isNew == true && v.date.isAfter(DateTime.now()))
+          .length;
 
   @override
   Future<void> load() async {
     await super.load();
     data = data.map<Evento>((v) {
       final Evento evt = Evento.parse(account, v);
+      if (evt.date.isBefore(DateTime.now())) evt.isNew = false;
       (dates[evt.getDate()] ??= <Evento>[]).add(evt);
       return evt;
     }).toList();

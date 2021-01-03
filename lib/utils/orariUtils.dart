@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Messedaglia/main.dart';
 import 'package:http/http.dart' as http;
@@ -10,55 +11,83 @@ import 'package:sqflite/sqlite_api.dart';
 Map orari = {};
 List holidays = List();
 
-// FIXME: senza load il salvataggio su db è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
-Future downloadOrari() async {
-  getSelected(); //TODO: move
-  try {
-    http.Response res = await http.get('https://app.messe.dev/orari');
-    if (res.statusCode == 200) {
-      var jsonResponse = jsonDecode(res.body);
-      Batch batch = database.batch();
-      jsonResponse.forEach((key, value) {
-        batch.insert('orari', Map.fromEntries(() sync* {
-          yield MapEntry('cls', key);
-          for (int ora = 0; ora < 6; ora++)
-            for (int day = 0; day < 6; day++)
-              yield MapEntry(
-                  '${days[day]}$ora', jsonResponse[key][key][day + ora * 6]);
-          yield MapEntry('url', jsonResponse[key]["url"]);
-        }()), conflictAlgorithm: ConflictAlgorithm.replace);
-        orari[key] = {
-          'orari': jsonResponse[key][key],
-          'url': jsonResponse[key]["url"]
-        };
-      });
+Future downloadOrari({bool load = false}) async {
+  getSelected();
+  var orariData;
+  Batch batch = database.batch();
+  if (load) {
+    batch.rawQuery('SELECT * FROM orari');
+    orariData = (await batch.commit())
+        .last
+        .map((cls) => cls.row)
+        .toList(); //FIXME tutti i metodi funzionano con l'ordine del json del server non quello del db cosa fare?
+    // print(orariData);
+  } else
+    try {
+      http.Response res = await http.get('https://app.messe.dev/orari',
+          headers: {'If-None-Match': main.prefs.getString('orariEtag')});
+      if (res.statusCode == HttpStatus.ok) {
+        await main.prefs.setString('orariEtag', res.headers['etag']);
+        var jsonResponse = jsonDecode(res.body);
+        jsonResponse.forEach((key, value) {
+          batch.insert('orari', Map.fromEntries(() sync* {
+            yield MapEntry('cls', key);
+            for (int ora = 0; ora < 6; ora++)
+              for (int day = 0; day < 6; day++)
+                yield MapEntry(
+                    '${days[day]}$ora', jsonResponse[key][key][day + ora * 6]);
+            yield MapEntry('url', jsonResponse[key]["url"]);
+          }()), conflictAlgorithm: ConflictAlgorithm.replace);
+          orari[key] = {
+            'orari': jsonResponse[key][key],
+            'url': jsonResponse[key]["url"]
+          };
+        });
 
-      batch.commit();
-    } else {
-      print('Request failed with status: ${res.statusCode}.');
+        await batch.commit();
+      } else if (res.statusCode == HttpStatus.notModified) {
+        batch.rawQuery('SELECT * FROM orari');
+        orariData = (await batch.commit())
+            .last
+            .map((cls) => cls.row)
+            .toList(); //FIXME tutti i metodi funzionano con l'ordine del json del server non quello del db cosa fare?
+        // print(orariData);
+      } else {
+        print('Request failed with status: ${res.statusCode}.');
+      }
+    } catch (e, s) {
+      print(e);
+      print(s);
     }
-  } catch (e, s) {
-    print(e);
-    print(s);
-  }
 }
 
-// FIXME: senza load il salvataggio su sharedprefs è inutile, usare etag o fare richiesta solo in particolari periodi dell'anno per risparmiare dati (18 kB * n)
-Future downloadVacanze() async {
-  try {
-    http.Response res = await http.get('https://app.messe.dev/holidays');
-    if (res.statusCode == 200) {
-      holidays = jsonDecode(res.body);
-      holidays = holidays.map((e) => DateTime.parse(e)).toList();
-      prefs.setString('holidays',
-          jsonEncode(holidays.map((e) => e.toIso8601String()).toList()));
-    } else {
-      print('Request failed with status: ${res.statusCode}.');
+Future downloadVacanze({bool load = false}) async {
+  if (load) {
+    holidays = jsonDecode(main.prefs.getString('holidays'))
+        .map((e) => DateTime.parse(e))
+        .toList();
+  } else
+    try {
+      http.Response res = await http.get('https://app.messe.dev/holidays',
+          headers: {'If-None-Match': main.prefs.getString('vacanzeEtag')});
+      if (res.statusCode == HttpStatus.ok) {
+        await main.prefs.setString('vacanzeEtag', res.headers['etag']);
+
+        holidays = jsonDecode(res.body);
+        holidays = holidays.map((e) => DateTime.parse(e)).toList();
+        prefs.setString('holidays',
+            jsonEncode(holidays.map((e) => e.toIso8601String()).toList()));
+      } else if (res.statusCode == HttpStatus.notModified) {
+        holidays = jsonDecode(main.prefs.getString('holidays'))
+            .map((e) => DateTime.parse(e))
+            .toList();
+      } else {
+        print('Request failed with status: ${res.statusCode}.');
+      }
+    } catch (e, s) {
+      print(e);
+      print(s);
     }
-  } catch (e, s) {
-    print(e);
-    print(s);
-  }
 }
 
 String selectedClass = session.cls;

@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/bacheca_registro_data.dart';
 import 'package:Messedaglia/widgets/CutomFloatingSearchBar.dart';
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/expansion_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
@@ -22,6 +20,7 @@ import 'package:http/http.dart' as http;
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:open_file/open_file.dart';
 import 'package:Messedaglia/main.dart' as main;
+import 'package:overlay_support/overlay_support.dart';
 
 bool showValid = main.prefs.getBool('showValid') ?? true;
 bool showNew = main.prefs.getBool('showNew') ?? false;
@@ -194,526 +193,564 @@ class _BachecaScreenState extends State<BachecaScreen> {
                 ),
                 SliverList(
                   delegate: SliverChildListDelegate(
-                    [
-                      Container(
-                        height: 100,
-                        margin: EdgeInsets.only(
-                          bottom: 10.0,
-                          left: 15.0,
-                          right: 15.0,
-                        ),
-                        child: CustomFloatingSearchBar(
-                          pinned: true,
-                          children: [Offstage()],
-                          trailing: SizedBox(
-                            width: 26 + 8 + 28.0,
-                            child: Row(
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () async {
-                                    if (_displayErrorText == true)
-                                      _displayErrorText = false;
-                                    showGeneralDialog(
-                                      // FIXME ho commentato linea 1802 del file /Users/gg/flutter/packages/flutter/lib/src/widgets/routes.dart perche se no non potevo mettere isDismissible:true
-                                      barrierDismissible: false,
-                                      transitionDuration:
-                                          const Duration(milliseconds: 200),
-                                      context: context,
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          CustomDialog(),
-                                    ).then((annulla) {
-                                      if (xorBool(
-                                              _start == null, _end == null) &&
-                                          !annulla) {
-                                        _end = _start = null;
+                    main.session.bacheca.data.length == 0
+                        ? [Center(child: Text('Non ci sono circolari ! '))]
+                        : [
+                            Container(
+                              height: 100,
+                              margin: EdgeInsets.only(
+                                bottom: 10.0,
+                                left: 15.0,
+                                right: 15.0,
+                              ),
+                              child: CustomFloatingSearchBar(
+                                pinned: true,
+                                children: [Offstage()],
+                                trailing: SizedBox(
+                                  width: 26 + 8 + 28.0,
+                                  child: Row(
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (_displayErrorText == true)
+                                            _displayErrorText = false;
+                                          showGeneralDialog(
+                                            barrierDismissible: false,
+                                            transitionDuration: const Duration(
+                                                milliseconds: 200),
+                                            context: context,
+                                            pageBuilder: (context, animation,
+                                                    secondaryAnimation) =>
+                                                CustomDialog(),
+                                          ).then((annulla) {
+                                            if (xorBool(_start == null,
+                                                    _end == null) &&
+                                                !annulla) {
+                                              _end = _start = null;
 
-                                        Flushbar(
-                                          margin: EdgeInsets.all(30.0),
-                                          padding: EdgeInsets.all(20),
-                                          borderRadius: 20,
-                                          backgroundGradient: LinearGradient(
-                                            colors: [
-                                              Globals.bluScolorito,
-                                              Theme.of(context).accentColor
-                                            ],
-                                            stops: [0.3, 1],
-                                          ),
-                                          boxShadows: [
-                                            BoxShadow(
-                                              color: Colors.black45,
-                                              offset: Offset(3, 3),
-                                              blurRadius: 6,
-                                            ),
-                                          ],
-                                          duration: Duration(seconds: 3),
-                                          isDismissible: true,
-                                          icon: Icon(
-                                            Icons.error_outline,
-                                            size: 35,
-                                            color: Theme.of(context)
-                                                .backgroundColor,
-                                          ),
-                                          shouldIconPulse: true,
-                                          animationDuration:
-                                              Duration(seconds: 1),
-                                          // All of the previous Flushbars could be dismissed by swiping down
-                                          // now we want to swipe to the sides
-                                          dismissDirection:
-                                              FlushbarDismissDirection
-                                                  .HORIZONTAL,
-                                          // The default curve is Curves.easeOut
-                                          forwardAnimationCurve:
-                                              Curves.fastOutSlowIn,
-                                          title:
-                                              'Errore durante la ricerca delle circolari: ',
-                                          message:
-                                              'Inserire sia la data iniziale che la data finale',
-                                        ).show(context);
-                                      } else if (!annulla) {
-                                        data = main.session.bacheca.data;
+                                              showSimpleNotification(
+                                                Center(
+                                                  child: Text(
+                                                    'Errore durante la ricerca delle circolari: ',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                background: Theme.of(context)
+                                                    .accentColor,
+                                                position:
+                                                    NotificationPosition.bottom,
+                                                duration: Duration(seconds: 2),
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 20),
+                                                slideDismiss: true,
+                                                subtitle: Center(
+                                                  child: Text(
+                                                    '\nInserire sia la data iniziale che la data finale',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.white70,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (!annulla) {
+                                              data = main.session.bacheca.data;
+                                              setState(() {});
+                                              rebuildAllChildren(context);
+                                            }
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.tune,
+                                          size: 26,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8.0,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          // main.prefs.setBool('showNew', false);
+                                          // main.prefs.setBool('showValid', false);
+                                          if (_displayErrorText == true)
+                                            _displayErrorText = false;
+                                          HapticFeedback.heavyImpact();
+                                          setState(() {
+                                            _textController.clear();
+                                            _start = _end = null;
+                                            // showNew = false;
+                                            // showValid = false;
+                                            files = [];
+                                            frasi = {};
+                                            _highlight = '';
+                                          });
+                                          rebuildAllChildren(context);
+                                        },
+                                        child: Icon(
+                                          Icons.clear,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                controller: _textController,
+                                decoration: InputDecoration(
+                                  enabledBorder: InputBorder.none,
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  hintText: _displayErrorText
+                                      ? 'Inserire una parola o frase valide'
+                                      : 'Inserire la parola chiave..',
+                                  hintStyle: TextStyle(
+                                    color: _displayErrorText
+                                        ? Colors.red.withOpacity(0.8)
+                                        : Colors.white70,
+                                  ),
+                                  helperMaxLines: 1,
+                                  disabledBorder: InputBorder.none,
+                                  focusColor: Colors.transparent,
+                                  focusedBorder: InputBorder.none,
+                                  focusedErrorBorder: InputBorder.none,
+                                ),
+                                onTap: () => _displayErrorText = false,
+                                onSubmit: (String value) {
+                                  if (value == '') {
+                                    setState(() => _displayErrorText = true);
+                                  } else
+                                    _ocr().then((value) {
+                                      if (value) {
                                         setState(() {});
                                         rebuildAllChildren(context);
+                                      } else {
+                                        showSimpleNotification(
+                                          Center(
+                                            child: Text(
+                                              'Parola o frase inesistenti',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          background:
+                                              Theme.of(context).accentColor,
+                                          position: NotificationPosition.bottom,
+                                          duration: Duration(seconds: 2),
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 20),
+                                          slideDismiss: true,
+                                          subtitle: Center(
+                                            child: Text(
+                                              '\nReinserire la parola chiave',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white70,
+                                              ),
+                                            ),
+                                          ),
+                                        );
                                       }
                                     });
-                                  },
-                                  child: Icon(
-                                    Icons.tune,
-                                    size: 26,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 8.0,
-                                ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    // main.prefs.setBool('showNew', false);
-                                    // main.prefs.setBool('showValid', false);
-                                    if (_displayErrorText == true)
-                                      _displayErrorText = false;
-                                    HapticFeedback.heavyImpact();
-                                    setState(() {
-                                      _textController.clear();
-                                      _start = _end = null;
-                                      // showNew = false;
-                                      // showValid = false;
-                                      files = [];
-                                      frasi = {};
-                                      _highlight = '';
-                                    });
-                                    rebuildAllChildren(context);
-                                  },
-                                  child: Icon(
-                                    Icons.clear,
-                                    size: 28,
-                                  ),
+                                },
+                              ),
+                            ),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: <Widget>[
+                                Container(
+                                  margin: EdgeInsets.only(top: 15.0),
+                                  child: Column(
+                                      children: data.where((d) {
+                                    if (_start != null && _end != null) {
+                                      if (d.start_date.isBefore(_start) &&
+                                          d.end_date.isAfter(_end)) {
+                                        return d.start_date.isBefore(_start) &&
+                                            d.end_date.isAfter(_end);
+                                      } else
+                                        return false;
+                                    } else
+                                      return d !=
+                                          null; // non serve un else if (_start == null && _end == null) perche nel .then((annull)){...} ce gia il check del bottone premuto e delle variabili _start & _end
+                                  }).where((v) {
+                                    if (showValid) {
+                                      return v.valid == true;
+                                    } else
+                                      return v != null;
+                                  }).where((n) {
+                                    if (showNew) {
+                                      return n.isNew == true;
+                                    } else
+                                      return n != null;
+                                  }).map<Widget>((c) {
+                                    if (files.isEmpty) {
+                                      bool _expand = false;
+                                      return Container(
+                                        margin: EdgeInsets.only(
+                                            left: 15.0,
+                                            right: 15.0,
+                                            bottom: 3.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white10,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                        child: CustomExpansionTile(
+                                          onExpansionChanged:
+                                              (isExpanded) async {
+                                            _expand = isExpanded;
+
+                                            setState(() {
+                                              _expand = !_expand;
+
+                                              if (c.content ==
+                                                  null) // BUG: check not in progress
+                                                c.loadContent(
+                                                    () => setState(() {}));
+                                            });
+                                          },
+                                          onTapEnabled: false,
+                                          title: AutoSizeText(
+                                            c.title,
+                                            textAlign: TextAlign.center,
+                                            maxLines: !_expand ? 2 : 20,
+                                            overflow: TextOverflow.ellipsis,
+                                            minFontSize: 13.0,
+                                            maxFontSize: 15.0,
+                                          ),
+                                          leading: GestureDetector(
+                                            onTap: c.attachments.isEmpty
+                                                ? null
+                                                : () async {
+                                                    int n;
+
+                                                    if (c.attachments.length ==
+                                                        1)
+                                                      n = 1;
+                                                    else {
+                                                      if (Platform.isAndroid)
+                                                        n = await _settingModalBottomSheet(
+                                                            context, c);
+                                                      else if (Platform.isIOS)
+                                                        n = await _cupertinoAction(
+                                                            context, c);
+                                                      else
+                                                        n = await _settingModalBottomSheet(
+                                                            context, c);
+                                                    }
+                                                    if (n != null) {
+                                                      if (c.isNew)
+                                                        c.loadContent(
+                                                            () => setState(() {
+                                                                  _loading =
+                                                                      true;
+                                                                }));
+
+                                                      var _pathh =
+                                                          await c.downloadPdf(
+                                                              number: n);
+                                                      _pathh = _pathh?.path;
+                                                      if (mounted &&
+                                                          _pathh != null) {
+                                                        setState(() {
+                                                          _loading = false;
+                                                        });
+
+                                                        OpenFile.open(_pathh);
+                                                      }
+                                                    }
+                                                  },
+                                            child: LayoutBuilder(
+                                              builder: (BuildContext context,
+                                                  BoxConstraints constraints) {
+                                                return SizedBox(
+                                                  width: (50 / 366) *
+                                                      constraints.maxWidth,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
+                                                      Icon(
+                                                        MdiIcons.filePdf,
+                                                        size: (25 / 366) *
+                                                            constraints
+                                                                .maxWidth,
+                                                        color: Theme.of(context)
+                                                                    .brightness ==
+                                                                Brightness.dark
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                      ),
+                                                      AutoSizeText(
+                                                        '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
+                                                        style: TextStyle(
+                                                            fontSize: 8),
+                                                        maxLines: 1,
+                                                        minFontSize: 6.0,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          trailing: (isExpanded) =>
+                                              AnimatedCrossFade(
+                                            duration:
+                                                Duration(milliseconds: 300),
+                                            crossFadeState: !isExpanded
+                                                ? CrossFadeState.showFirst
+                                                : CrossFadeState.showSecond,
+                                            firstCurve: Curves.easeInQuad,
+                                            secondCurve: Curves.decelerate,
+                                            firstChild: Icon(
+                                              MdiIcons.eye,
+                                              color: c.isNew
+                                                  ? Colors.yellow
+                                                      .withOpacity(0.7)
+                                                  : Colors.white,
+                                            ),
+                                            secondChild:
+                                                Icon(MdiIcons.eyeOffOutline),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: c.content == null
+                                                ? Container(
+                                                    height: 2,
+                                                    child:
+                                                        LinearProgressIndicator(
+                                                      value: null,
+                                                      backgroundColor: Theme.of(
+                                                                      context)
+                                                                  .brightness ==
+                                                              Brightness.dark
+                                                          ? Colors.white
+                                                          : Colors.black12,
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation(
+                                                              Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    margin: EdgeInsets.fromLTRB(
+                                                        10.0, 5.0, 10.0, 10.0),
+                                                    child: Text(c.content,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyText1),
+                                                  ),
+                                          ),
+                                        ),
+                                      );
+                                    } else if (files
+                                        .contains(c.id.toString())) {
+                                      String text = '';
+
+                                      for (int i = 0;
+                                          i < frasi[c.id.toString()].length;
+                                          i++) {
+                                        int tmp = i + 1;
+                                        text += '$tmp)' +
+                                            '“' +
+                                            frasi[c.id.toString()][i] +
+                                            '”' +
+                                            '\n\n';
+                                      }
+                                      bool _expand = false;
+                                      return Container(
+                                        margin: EdgeInsets.only(
+                                            left: 15.0,
+                                            right: 15.0,
+                                            bottom: 3.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white10,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                        child: CustomExpansionTile(
+                                          onExpansionChanged:
+                                              (isExpanded) async {
+                                            _expand = isExpanded;
+
+                                            setState(() {
+                                              _expand = !_expand;
+
+                                              if (c.content ==
+                                                  null) // BUG: check not in progress
+                                                c.loadContent(
+                                                    () => setState(() {}));
+                                            });
+                                          },
+                                          onTapEnabled: false,
+                                          title: AutoSizeText(
+                                            c.title,
+                                            textAlign: TextAlign.left,
+                                            maxLines: !_expand ? 2 : 20,
+                                            overflow: TextOverflow.ellipsis,
+                                            minFontSize: 13.0,
+                                            maxFontSize: 15.0,
+                                          ),
+                                          leading: GestureDetector(
+                                            onTap: c.attachments.isEmpty
+                                                ? null
+                                                : () async {
+                                                    int n;
+
+                                                    if (c.attachments.length ==
+                                                        1)
+                                                      n = 1;
+                                                    else {
+                                                      if (Platform.isAndroid)
+                                                        n = await _settingModalBottomSheet(
+                                                            context, c);
+                                                      else if (Platform.isIOS)
+                                                        n = await _cupertinoAction(
+                                                            context, c);
+                                                      else
+                                                        n = await _settingModalBottomSheet(
+                                                            context, c);
+                                                    }
+                                                    if (n != null) {
+                                                      if (c.isNew)
+                                                        c.loadContent(
+                                                            () => setState(() {
+                                                                  _loading =
+                                                                      true;
+                                                                }));
+
+                                                      var _pathh =
+                                                          await c.downloadPdf(
+                                                              number: n);
+                                                      _pathh = _pathh?.path;
+                                                      if (mounted &&
+                                                          _pathh != null) {
+                                                        setState(() {
+                                                          _loading = false;
+                                                        });
+
+                                                        OpenFile.open(_pathh);
+                                                      }
+                                                    }
+                                                  },
+                                            child: LayoutBuilder(
+                                              builder: (BuildContext context,
+                                                  BoxConstraints constraints) {
+                                                return SizedBox(
+                                                  width: (50 / 366) *
+                                                      constraints.maxWidth,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
+                                                      Icon(
+                                                        MdiIcons.filePdf,
+                                                        size: (25 / 366) *
+                                                            constraints
+                                                                .maxWidth,
+                                                        color: Theme.of(context)
+                                                                    .brightness ==
+                                                                Brightness.dark
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                      ),
+                                                      AutoSizeText(
+                                                        '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
+                                                        style: TextStyle(
+                                                            fontSize: 8),
+                                                        maxLines: 1,
+                                                        minFontSize: 6.0,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          trailing: (isExpanded) =>
+                                              AnimatedCrossFade(
+                                            duration:
+                                                Duration(milliseconds: 300),
+                                            crossFadeState: !isExpanded
+                                                ? CrossFadeState.showFirst
+                                                : CrossFadeState.showSecond,
+                                            firstCurve: Curves.easeInQuad,
+                                            secondCurve: Curves.decelerate,
+                                            firstChild: Icon(
+                                              MdiIcons.eye,
+                                              color: c.isNew
+                                                  ? Colors.yellow
+                                                  : Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                            ),
+                                            secondChild:
+                                                Icon(MdiIcons.eyeOffOutline),
+                                          ),
+                                          child: Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10.0, 10.0, 10.0, 15.0),
+                                              child: HighlightText(
+                                                text: text,
+                                                highlight: _highlight,
+                                                highlightColor: Colors
+                                                    .yellowAccent
+                                                    .withOpacity(0.7),
+                                                style: TextStyle(
+                                                  height: 1.2,
+                                                  fontSize: 13.0,
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  fontFamily: 'CoreSans',
+                                                  fontStyle: FontStyle.italic,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              )),
+                                        ),
+                                      );
+                                    } else {
+                                      return Offstage();
+                                    }
+                                  }).toList()),
                                 ),
                               ],
                             ),
-                          ),
-                          controller: _textController,
-                          decoration: InputDecoration(
-                            enabledBorder: InputBorder.none,
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            hintText: _displayErrorText
-                                ? 'Inserire una parola o frase valide'
-                                : 'Inserire la parola chiave..',
-                            hintStyle: TextStyle(
-                              color: _displayErrorText
-                                  ? Colors.red.withOpacity(0.8)
-                                  : Colors.white70,
-                            ),
-                            helperMaxLines: 1,
-                            disabledBorder: InputBorder.none,
-                            focusColor: Colors.transparent,
-                            focusedBorder: InputBorder.none,
-                            focusedErrorBorder: InputBorder.none,
-                          ),
-                          onTap: () => _displayErrorText = false,
-                          onSubmit: (String value) {
-                            if (value == '') {
-                              setState(() => _displayErrorText = true);
-                            } else
-                              _ocr().then((value) {
-                                if (value) {
-                                  setState(() {});
-                                  rebuildAllChildren(context);
-                                } else {
-                                  Flushbar(
-                                    margin: EdgeInsets.all(30.0),
-                                    padding: EdgeInsets.all(20),
-                                    borderRadius: 20,
-                                    backgroundGradient: LinearGradient(
-                                      colors: [
-                                        Globals.bluScolorito,
-                                        Theme.of(context).accentColor
-                                      ],
-                                      stops: [0.3, 1],
-                                    ),
-                                    boxShadows: [
-                                      BoxShadow(
-                                        color: Colors.black45,
-                                        offset: Offset(3, 3),
-                                        blurRadius: 6,
-                                      ),
-                                    ],
-                                    duration: Duration(seconds: 3),
-                                    isDismissible: true,
-                                    icon: Icon(
-                                      Icons.error_outline,
-                                      size: 35,
-                                      color: Theme.of(context).backgroundColor,
-                                    ),
-                                    shouldIconPulse: true,
-                                    animationDuration: Duration(seconds: 1),
-                                    // All of the previous Flushbars could be dismissed by swiping down
-                                    // now we want to swipe to the sides
-                                    dismissDirection:
-                                        FlushbarDismissDirection.HORIZONTAL,
-                                    // The default curve is Curves.easeOut
-                                    forwardAnimationCurve: Curves.fastOutSlowIn,
-                                    title: 'Parola o frase inesistenti',
-                                    message: 'Reinserire la parola chiave',
-                                  ).show(context);
-                                }
-                              });
-                          },
-                        ),
-                      ),
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.only(top: 15.0),
-                            child: Column(
-                                children: data.where((d) {
-                              if (_start != null && _end != null) {
-                                if (d.start_date.isBefore(_start) &&
-                                    d.end_date.isAfter(_end)) {
-                                  return d.start_date.isBefore(_start) &&
-                                      d.end_date.isAfter(_end);
-                                } else
-                                  return false;
-                              } else
-                                return d !=
-                                    null; // non serve un else if (_start == null && _end == null) perche nel .then((annull)){...} ce gia il check del bottone premuto e delle variabili _start & _end
-                            }).where((v) {
-                              if (showValid) {
-                                return v.valid == true;
-                              } else
-                                return v != null;
-                            }).where((n) {
-                              if (showNew) {
-                                return n.isNew == true;
-                              } else
-                                return n != null;
-                            }).map<Widget>((c) {
-                              if (files.isEmpty) {
-                                bool _expand = false;
-                                return Container(
-                                  margin: EdgeInsets.only(
-                                      left: 15.0, right: 15.0, bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white10,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10.0),
-                                    ),
-                                  ),
-                                  child: CustomExpansionTile(
-                                    onExpansionChanged: (isExpanded) async {
-                                      _expand = isExpanded;
-
-                                      setState(() {
-                                        _expand = !_expand;
-
-                                        if (c.content ==
-                                            null) // TODO: check not in progress
-                                          c.loadContent(() => setState(() {}));
-                                      });
-                                    },
-                                    onTapEnabled: false,
-                                    title: AutoSizeText(
-                                      c.title,
-                                      textAlign: TextAlign.center,
-                                      maxLines: !_expand ? 2 : 20,
-                                      overflow: TextOverflow.ellipsis,
-                                      minFontSize: 13.0,
-                                      maxFontSize: 15.0,
-                                    ),
-                                    leading: GestureDetector(
-                                      onTap: c.attachments.isEmpty
-                                          ? null
-                                          : () async {
-                                              int n;
-
-                                              if (c.attachments.length == 1)
-                                                n = 1;
-                                              else {
-                                                if (Platform.isAndroid)
-                                                  n = await _settingModalBottomSheet(
-                                                      context, c);
-                                                else if (Platform.isIOS)
-                                                  n = await _cupertinoAction(
-                                                      context, c);
-                                                else
-                                                  n = await _settingModalBottomSheet(
-                                                      context, c);
-                                              }
-                                              if (n != null) {
-                                                if (c.isNew)
-                                                  c.loadContent(
-                                                      () => setState(() {
-                                                            _loading = true;
-                                                          }));
-
-                                                var _pathh = await c
-                                                    .downloadPdf(number: n);
-                                                _pathh = _pathh?.path;
-                                                if (mounted && _pathh != null) {
-                                                  setState(() {
-                                                    _loading = false;
-                                                  });
-
-                                                  OpenFile.open(_pathh);
-                                                }
-                                              }
-                                            },
-                                      child: SizedBox(
-                                        width:
-                                            45.0, //FIXME esiste una maniera migliore per scegliere la larghezza dato ch deve avere una larghezza definita il 'leading'
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Icon(
-                                              MdiIcons.filePdf,
-                                              size: 24,
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            ),
-                                            AutoSizeText(
-                                              '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
-                                              style: TextStyle(fontSize: 8),
-                                              maxLines: 1,
-                                              minFontSize: 6.0,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    trailing: (isExpanded) => AnimatedCrossFade(
-                                      duration: Duration(milliseconds: 300),
-                                      crossFadeState: !isExpanded
-                                          ? CrossFadeState.showFirst
-                                          : CrossFadeState.showSecond,
-                                      firstCurve: Curves.easeInQuad,
-                                      secondCurve: Curves.decelerate,
-                                      firstChild: Icon(
-                                        MdiIcons.eye,
-                                        color: c.isNew
-                                            ? Colors.yellow.withOpacity(0.7)
-                                            : Colors.white,
-                                      ),
-                                      secondChild: Icon(MdiIcons.eyeOffOutline),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: c.content == null
-                                          ? Container(
-                                              height: 2,
-                                              child: LinearProgressIndicator(
-                                                value: null,
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                        : Colors.black12,
-                                                valueColor:
-                                                    AlwaysStoppedAnimation(Theme
-                                                                    .of(context)
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                              ),
-                                            )
-                                          : Container(
-                                              margin: EdgeInsets.fromLTRB(
-                                                  10.0, 5.0, 10.0, 10.0),
-                                              child: Text(c.content,
-                                                  textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1),
-                                            ),
-                                    ),
-                                  ),
-                                );
-                              } else if (files.contains(c.id.toString())) {
-                                String text = '';
-
-                                for (int i = 0;
-                                    i < frasi[c.id.toString()].length;
-                                    i++) {
-                                  int tmp = i + 1;
-                                  text += '$tmp)' +
-                                      '“' +
-                                      frasi[c.id.toString()][i] +
-                                      '”' +
-                                      '\n\n';
-                                }
-                                bool _expand = false;
-                                return Container(
-                                  margin: EdgeInsets.only(
-                                      left: 15.0, right: 15.0, bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white10,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10.0),
-                                    ),
-                                  ),
-                                  child: CustomExpansionTile(
-                                    onExpansionChanged: (isExpanded) async {
-                                      _expand = isExpanded;
-
-                                      setState(() {
-                                        _expand = !_expand;
-
-                                        if (c.content ==
-                                            null) // TODO: check not in progress
-                                          c.loadContent(() => setState(() {}));
-                                      });
-                                    },
-                                    onTapEnabled: false,
-                                    title: AutoSizeText(
-                                      c.title,
-                                      textAlign: TextAlign.left,
-                                      maxLines: !_expand ? 2 : 20,
-                                      overflow: TextOverflow.ellipsis,
-                                      minFontSize: 13.0,
-                                      maxFontSize: 15.0,
-                                    ),
-                                    leading: GestureDetector(
-                                      onTap: c.attachments.isEmpty
-                                          ? null
-                                          : () async {
-                                              int n;
-
-                                              if (c.attachments.length == 1)
-                                                n = 1;
-                                              else {
-                                                if (Platform.isAndroid)
-                                                  n = await _settingModalBottomSheet(
-                                                      context, c);
-                                                else if (Platform.isIOS)
-                                                  n = await _cupertinoAction(
-                                                      context, c);
-                                                else
-                                                  n = await _settingModalBottomSheet(
-                                                      context, c);
-                                              }
-                                              if (n != null) {
-                                                if (c.isNew)
-                                                  c.loadContent(
-                                                      () => setState(() {
-                                                            _loading = true;
-                                                          }));
-
-                                                var _pathh = await c
-                                                    .downloadPdf(number: n);
-                                                _pathh = _pathh?.path;
-                                                if (mounted && _pathh != null) {
-                                                  setState(() {
-                                                    _loading = false;
-                                                  });
-
-                                                  OpenFile.open(_pathh);
-                                                }
-                                              }
-                                            },
-                                      child: SizedBox(
-                                        width:
-                                            45.0, //FIXME esiste una maniera migliore per scegliere la larghezza dato ch deve avere una larghezza definita il 'leading'
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Icon(
-                                              MdiIcons.filePdf,
-                                              size: 24,
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            ),
-                                            Text(
-                                              '${c.start_date.day}/${c.start_date.month}/${c.start_date.year.toString().replaceRange(0, 2, '')}',
-                                              style: TextStyle(fontSize: 8),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    trailing: (isExpanded) => AnimatedCrossFade(
-                                      duration: Duration(milliseconds: 300),
-                                      crossFadeState: !isExpanded
-                                          ? CrossFadeState.showFirst
-                                          : CrossFadeState.showSecond,
-                                      firstCurve: Curves.easeInQuad,
-                                      secondCurve: Curves.decelerate,
-                                      firstChild: Icon(
-                                        MdiIcons.eye,
-                                        color: c.isNew
-                                            ? Colors.yellow
-                                            : Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black,
-                                      ),
-                                      secondChild: Icon(MdiIcons.eyeOffOutline),
-                                    ),
-                                    child: Padding(
-                                        padding: EdgeInsets.fromLTRB(
-                                            10.0, 10.0, 10.0, 15.0),
-                                        child: HighlightText(
-                                          text: text,
-                                          highlight: _highlight,
-                                          highlightColor: Colors.yellowAccent
-                                              .withOpacity(0.7),
-                                          style: TextStyle(
-                                            height: 1.2,
-                                            fontSize: 13.0,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                            fontFamily: 'CoreSans',
-                                            fontStyle: FontStyle.italic,
-                                            letterSpacing: 1.2,
-                                          ),
-                                        )),
-                                  ),
-                                );
-                              } else {
-                                return Offstage();
-                              }
-                            }).toList()),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
                   ),
                 )
               ],

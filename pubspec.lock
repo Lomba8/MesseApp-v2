@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  android_intent:
-    dependency: "direct main"
-    description:
-      name: android_intent
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.7+7"
   app_settings:
     dependency: "direct main"
     description:
@@ -274,15 +267,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
-  flushbar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "681425d7e1177dbd714c13af5460ee4e836edac9"
-      url: "https://github.com/valterh4ck3r/flushbar.git"
-    source: git
-    version: "1.9.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -316,6 +300,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.5"
+  flutter_launcher_name:
+    dependency: "direct dev"
+    description:
+      name: flutter_launcher_name
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -466,6 +457,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.3"
+  overlay_support:
+    dependency: "direct main"
+    description:
+      name: overlay_support
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
   package_info:
     dependency: "direct main"
     description:

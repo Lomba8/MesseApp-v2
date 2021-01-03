@@ -6,16 +6,56 @@ import 'package:Messedaglia/utils/db_manager.dart' as dbManager;
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:account_selector/account.dart';
 import 'package:Messedaglia/widgets/account_selector.dart';
-import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Preferences extends StatefulWidget {
   @override
   _PreferencesState createState() => _PreferencesState();
+}
+
+_launchURL(String url, BuildContext context) async {
+  try {
+    if (await canLaunch(Uri.encodeFull(url))) {
+      await launch(Uri.encodeFull(url), forceWebView: true);
+    } else {
+      showSimpleNotification(
+        Center(
+          child: Text(
+            'Impossibile aprire l\'url:\n',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        background: Theme.of(context).accentColor,
+        position: NotificationPosition.bottom,
+        duration: Duration(seconds: 2),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        slideDismiss: true,
+        subtitle: Center(
+          child: Text(
+            url,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white70,
+            ),
+          ),
+        ),
+      );
+      throw 'Could not launch $url';
+    }
+  } catch (e, s) {
+    print(e);
+    print(s);
+  }
 }
 
 class _PreferencesState extends State<Preferences> {
@@ -66,7 +106,7 @@ class _PreferencesState extends State<Preferences> {
               context,
               MaterialPageRoute(
                 builder: (context) => LicensePage(
-                  applicationName: main.appName,
+                  applicationName: main.pkgInfo.appName,
                 ),
               ),
             ),
@@ -139,8 +179,7 @@ class _PreferencesState extends State<Preferences> {
                           } else {
                             main.avatar = null;
                           }
-                          Phoenix.rebirth(
-                              context); //FIXME non riesce a disporre il menu.timer
+                          Phoenix.rebirth(context);
                         }
                       },
                       addAccountTapCallback: () {
@@ -215,21 +254,6 @@ class _PreferencesState extends State<Preferences> {
 }
 
 class _Header extends ResizableWidget {
-  final TapGestureRecognizer _websiteTap = TapGestureRecognizer()
-    ..onTap = () => AndroidIntent(
-            action: 'action_view', data: 'https://www.messedaglia.edu.it')
-        .launch();
-  final TapGestureRecognizer _supportTap = TapGestureRecognizer()
-    ..onTap = () => AndroidIntent(
-            action: 'action_view',
-            data:
-                'mailto:messeapp@messedaglia.edu.it?subject=FEEDBACK MESSEAPP&body=${main.appName} (${main.appVersion} running on ${main.platform} ${main.osVersion}')
-        .launch();
-  final TapGestureRecognizer _bugsTap = TapGestureRecognizer()
-    ..onTap = () => AndroidIntent(
-        action: 'action_view',
-        data: 'https://github.com/Lomba8/MesseApp-v2/issues');
-
   @override
   Widget build(BuildContext context, [double heightFactor]) => Container(
         height:
@@ -272,11 +296,12 @@ class _Header extends ResizableWidget {
               child: Center(
                 child: RichText(
                   text: TextSpan(
-                      text: '${main.appName}  ',
+                      text: '${main.pkgInfo.appName}  ',
                       style: Theme.of(context).textTheme.bodyText2,
                       children: [
                         TextSpan(
-                            text: '(${main.appVersion})',
+                            text:
+                                '${main.pkgInfo.appName} (${main.pkgInfo.buildNumber})',
                             style: Theme.of(context).textTheme.bodyText1)
                       ]),
                 ),
@@ -303,7 +328,9 @@ class _Header extends ResizableWidget {
                       textAlign: TextAlign.end,
                       text: TextSpan(
                           text: 'www.messedaglia.edu.it',
-                          recognizer: _websiteTap,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => _launchURL(
+                                'https://www.messedaglia.edu.it', context),
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               decoration: TextDecoration.underline)))
@@ -331,8 +358,11 @@ class _Header extends ResizableWidget {
                   RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                          recognizer: _supportTap,
-                          text: 'messeapp@messedaglia.edu.it',
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => _launchURL(
+                                'mailto:messeapp@messedaglia.edu.it?subject=FEEDBACK MESSEAPP&body=${main.pkgInfo.appName} (${main.pkgInfo.version} running on ${main.platform} ${main.osVersion})',
+                                context),
+                          text: '...@messedaglia.edu.it',
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               decoration: TextDecoration.underline)))
@@ -360,7 +390,10 @@ class _Header extends ResizableWidget {
                   RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                          recognizer: _bugsTap,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => _launchURL(
+                                'https://github.com/Lomba8/MesseApp-v2/issues',
+                                context),
                           text: 'github.com/.../issues',
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,

@@ -5,11 +5,11 @@ import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:circular_splash_transition/circular_splash_transition.dart';
@@ -49,7 +49,6 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
-    main.route = 'login_screen';
 
     _controller = VideoPlayerController.asset('videos/loading.mp4')
       ..initialize().then((_) {
@@ -75,8 +74,6 @@ class _LoginScreenState extends State<LoginScreen>
         main.session.login().then((ok) async {
           print('login');
           if (ok == '') {
-            await downloadOrari();
-            await downloadVacanze(); //TODO: move
             downloadAll();
           } else {
             print('splash = false');
@@ -86,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen>
       }
     } else
       splash = false;
-    // downloadAll();
     _firstInputFocusNode = new FocusNode();
     _secondInputFocusNode = new FocusNode();
   }
@@ -96,7 +92,6 @@ class _LoginScreenState extends State<LoginScreen>
     _firstInputFocusNode?.dispose();
     _secondInputFocusNode?.dispose();
     _controller.dispose();
-    main.route = '';
     _splash_controller.dispose();
     super.dispose();
   }
@@ -108,7 +103,9 @@ class _LoginScreenState extends State<LoginScreen>
           r = await http.get('https://app.messe.dev/tutor');
           await main.prefs.setString('tutor', '');
           await main.prefs.setString('tutor', r.body);
-        }
+        },
+        downloadOrari,
+        downloadVacanze,
       ]);
 
   void _submit(BuildContext context) async {
@@ -142,8 +139,6 @@ class _LoginScreenState extends State<LoginScreen>
           setState(() {
             splash = true;
           });
-        await downloadOrari();
-        await downloadVacanze(); //TODO: move
         downloadAll();
       } else {
         _formKey.currentState.reset();
@@ -159,39 +154,34 @@ class _LoginScreenState extends State<LoginScreen>
                     : 'Riprova piu tardi')),
           ));
         else
-          Flushbar(
-            padding: EdgeInsets.all(20),
-            borderRadius: 20,
-            backgroundGradient: LinearGradient(
-              colors: [Globals.bluScolorito, Theme.of(context).accentColor],
-              stops: [0.3, 1],
-            ),
-            boxShadows: [
-              BoxShadow(
-                color: Colors.black45,
-                offset: Offset(3, 3),
-                blurRadius: 6,
+          showSimpleNotification(
+            Center(
+              child: Text(
+                req + '\n',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ],
-            duration: Duration(seconds: 3),
-            isDismissible: true,
-            icon: Icon(
-              Icons.error_outline,
-              size: 35,
-              color: Theme.of(context).backgroundColor,
             ),
-            shouldIconPulse: true,
-            animationDuration: Duration(seconds: 1),
-            // All of the previous Flushbars could be dismissed by swiping down
-            // now we want to swipe to the sides
-            dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-            // The default curve is Curves.easeOut
-            forwardAnimationCurve: Curves.fastOutSlowIn,
-            title: req,
-            message: req != 'Service Unavailable'
-                ? 'Reinserire le credenziali'
-                : 'Riprova piu tardi',
-          ).show(context);
+            background: Theme.of(context).accentColor,
+            position: NotificationPosition.bottom,
+            duration: Duration(seconds: 2),
+            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            slideDismiss: true,
+            subtitle: Center(
+              child: Text(
+                req != 'Service Unavailable'
+                    ? 'Reinserire le credenziali'
+                    : 'Riprova piu tardi',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+          );
       }
     }
     if (mounted)

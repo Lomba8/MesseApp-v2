@@ -82,7 +82,7 @@ class DidatticaRegistroData extends RegistroData {
 
   @override
   Future<void> create() {
-    // TODO: implement create
+    // non usiamo il db ma salviamo su .json
   }
 }
 

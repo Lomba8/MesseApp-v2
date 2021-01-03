@@ -125,7 +125,6 @@ class LessonsDetails extends StatefulWidget {
 }
 
 class _LessonsDetailsState extends State<LessonsDetails> {
-  Lezione _expanded;
   @override
   Widget build(BuildContext context) => Material(
         color: Theme.of(context).backgroundColor,
@@ -167,66 +166,54 @@ class _LessonsDetailsState extends State<LessonsDetails> {
           ),
           SliverList(
             delegate: SliverChildListDelegate(
-              main.session.lessons.data
-                  .where((lezione) => lezione.sbj == widget._sbj)
-                  .map<Widget>(
-                    (Lezione l) => CustomExpansionTile(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25.0, vertical: 10),
-                        child: l.info == null
-                            ? null
-                            : Text(
-                                l.info,
-                                textAlign: TextAlign.justify,
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white70
-                                      : Colors.black,
-                                  fontSize: 13,
-                                  letterSpacing: 1.2,
-                                  fontFamily: 'roboto',
-                                  height: 1.5,
-                                ),
-                              ),
-                      ),
-                      title: Text(DateFormat.MMMMEEEEd('it').format(l.date)),
-                      subtitle: Text(
-                        (main.session.subjects.data[l.author] == l.sbj ||
-                                    (main.session.subjects.data[l.author]
-                                            ?.contains(l.sbj) ??
-                                        false)
-                                ? ''
-                                : '${l.author}\n') +
-                            l.lessonType,
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white70
-                              : Colors.black,
-                          fontSize: 12,
-                          fontFamily: 'roboto',
-                          height: 1.7,
-                        ),
-                      ),
-                      leading: CircleAvatar(
-                        child: Text('${l.hour + 1}ª',
+              main.session.lessons.data.length == 0
+                  ? [Center(child: Text('Non ci sono lezioni !'))]
+                  : main.session.lessons.data
+                      .where((lezione) => lezione.sbj == widget._sbj)
+                      .map<Widget>(
+                        (Lezione l) => CustomExpansionTile(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 25.0, vertical: 10),
+                            child: l.info == null
+                                ? null
+                                : Text(
+                                    l.info,
+                                    textAlign: TextAlign.justify,
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white70
+                                          : Colors.black,
+                                      fontSize: 13,
+                                      letterSpacing: 1.2,
+                                      fontFamily: 'roboto',
+                                      height: 1.5,
+                                    ),
+                                  ),
+                          ),
+                          title:
+                              Text(DateFormat.MMMMEEEEd('it').format(l.date)),
+                          subtitle: Text(
+                            (main.session.subjects.data[l.author] == l.sbj ||
+                                        (main.session.subjects.data[l.author]
+                                                ?.contains(l.sbj) ??
+                                            false)
+                                    ? ''
+                                    : '${l.author}\n') +
+                                l.lessonType,
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? Colors.white
+                                  ? Colors.white70
                                   : Colors.black,
-                            )),
-                        backgroundColor: ((Globals.subjects[l.sbj] ??
-                                    {})['colore'] ??
-                                (Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black))
-                            .withOpacity(0.3),
-                      ),
-                      trailing: (bool) => Container(
-                        child: CircleAvatar(
-                            child: Text('${l.duration.inHours} h',
+                              fontSize: 12,
+                              fontFamily: 'roboto',
+                              height: 1.7,
+                            ),
+                          ),
+                          leading: CircleAvatar(
+                            child: Text('${l.hour + 1}ª',
                                 style: TextStyle(
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
@@ -239,11 +226,28 @@ class _LessonsDetailsState extends State<LessonsDetails> {
                                                 Brightness.dark
                                             ? Colors.white
                                             : Colors.black))
+                                    .withOpacity(0.3),
+                          ),
+                          trailing: (bool) => Container(
+                            child: CircleAvatar(
+                                child: Text('${l.duration.inHours} h',
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
+                                backgroundColor: ((Globals.subjects[l.sbj] ??
+                                            {})['colore'] ??
+                                        (Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black))
                                     .withOpacity(0.3)),
-                      ),
-                    ),
-                  )
-                  .toList(),
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
           ),
         ]),

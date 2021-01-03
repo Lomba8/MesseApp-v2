@@ -37,8 +37,7 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   void initState() {
-    _controller1 =
-        ScrollController(); //FIXME toglierli del tutto e metterer .reversed.toList() e fare seenAll()
+    _controller1 = ScrollController();
     _controller2 = ScrollController();
     _controller3 = ScrollController();
     _controller4 = ScrollController();
@@ -156,7 +155,7 @@ class _NoteListViewState extends State<NoteListView> {
   @override
   void initState() {
     widget.controller.addListener(() async {
-      if (widget.controller.hasClients) {
+      if (widget.controller.hasClients && main.session.note.data.length != 0) {
         try {
           int n = widget.controller.offset.toInt() ~/ 140;
           int ntte = main.session.note.data
@@ -194,10 +193,11 @@ class _NoteListViewState extends State<NoteListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (main.session.note.data
-            .where((nota) => nota.tipologia == widget.type)
-            .length <
-        1)
+    if (main.session.note.data.length != 0 &&
+        main.session.note.data
+                .where((nota) => nota.tipologia == widget.type)
+                .length <
+            1)
       return Offstage();
     else
       return Padding(

@@ -12,6 +12,18 @@ import 'package:Messedaglia/main.dart' as main;
 Map<String, Calendar> _instances = {};
 const int _pagesCount = 2000;
 
+int differenceInMonths(DateTime a, DateTime b) {
+  int diff = (((a.year - b.year) * (365 + 1 / 4 - 1 / 100 + 1 / 400) +
+              (a.month - b.month) * 30.6 +
+              (a.day - b.day)) /
+          30.44)
+      .truncate();
+  if (diff.isNegative)
+    return diff - 1;
+  else
+    return diff;
+}
+
 class Calendar extends ResizableWidget {
   final void Function(DateTime day, List<Evento> events) _onDayChanged;
   PageController _controller;
@@ -22,6 +34,8 @@ class Calendar extends ResizableWidget {
   final String Function() passedTime;
 
   set currentDay(DateTime currentDay) {
+    giornoSelezionato =
+        currentDay; // tiene in memoria lultimo giorno selezionato
     _onDayChanged(
       _currentDay = currentDay,
       session.agenda.getEvents(currentDay),
@@ -31,11 +45,15 @@ class Calendar extends ResizableWidget {
   Calendar(
       [this._currentDay, this._onDayChanged, String key, this.passedTime]) {
     if (key != null) {
-      _page = _instances[key]?._page ?? 0;
+      _page = _instances[key]?._page ??
+          differenceInMonths(_currentDay, DateTime.now());
       _controller = PageController(
-          initialPage: _currentDay.month > DateTime.now().month
-              ? _pagesCount ~/ 2 + 1 /* + _page*/
-              : _pagesCount ~/ 2 /* + _page*/);
+        // initialPage: _currentDay.month > DateTime.now().month
+        //     ? _pagesCount ~/ 2 + 1 /* + _page*/
+        //     : _pagesCount ~/ 2 /* + _page*/,
+        initialPage:
+            _pagesCount ~/ 2 + differenceInMonths(_currentDay, DateTime.now()),
+      );
       _instances[key] = this;
     } else {
       _page = 0;
@@ -121,7 +139,7 @@ class Calendar extends ResizableWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               AutoSizeText(
-                '${main.session.agenda.newEventi > 0 ? main.session.agenda.newEventi : 'nessun'} nuov${main.session.agenda.newEventi > 1 ? 'i' : 'o'} event${main.session.agenda.newEventi > 1 ? 'i' : 'o'} - ${passedTime()}               ', //FIXME: conta gli eventi precedenti credo
+                '${main.session.agenda.newEventi > 0 ? main.session.agenda.newEventi : 'nessun'} nuov${main.session.agenda.newEventi > 1 ? 'i' : 'o'} event${main.session.agenda.newEventi > 1 ? 'i' : 'o'} - ${passedTime()}               ',
                 textAlign: TextAlign.center,
                 minFontSize: 10,
                 maxFontSize: 13,

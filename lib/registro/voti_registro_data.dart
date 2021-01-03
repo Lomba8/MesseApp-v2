@@ -65,10 +65,12 @@ class VotiRegistroData extends RegistroData {
   }
 
   Iterable<String> sbjsWithMarks([int period = 0]) {
-    return Set.from(data
-        .where((Voto v) =>
-            periods[period] == 'TOTALE' || v.period == periods[period])
-        .map((Voto v) => v.sbj));
+    return data.length == 0
+        ? Iterable.empty()
+        : Set.from(data
+            .where((Voto v) =>
+                periods[period] == 'TOTALE' || v.period == periods[period])
+            .map((Voto v) => v.sbj));
   }
 
   set period(int i) {
@@ -77,7 +79,6 @@ class VotiRegistroData extends RegistroData {
     periods[i] = temp;
   }
 
-  // FIXME: non salva sul db
   void allSeen({String sbj}) {
     data
         .where((Voto v) =>
@@ -127,10 +128,11 @@ class VotiRegistroData extends RegistroData {
   Map<int, double> averageByMonth({bool currentPeriod = false}) {
     List<double> sums = List.filled(10, 0.0);
     List<int> counts = List.filled(10, 0);
-    data.where((Voto v) => !v.isBlue).forEach((Voto v) {
-      counts[(v.date.month + 3) % 12]++;
-      sums[(v.date.month + 3) % 12] += v.voto;
-    });
+    if (data.length > 0)
+      data.where((Voto v) => !v.isBlue).forEach((Voto v) {
+        counts[(v.date.month + 3) % 12]++;
+        sums[(v.date.month + 3) % 12] += v.voto;
+      });
     return Map.fromIterables(Iterable.generate(10, (i) => i),
         Iterable.generate(10, (i) => sums[i] / counts[i]));
   }
@@ -139,11 +141,14 @@ class VotiRegistroData extends RegistroData {
 
   bool hasNewMarks(String sbj) => sbjVoti(sbj).any((v) => v.isNew);
 
-  int get newVotiTot => data.where((Voto v) => v.isNew).length;
-  int get newVotiPeriodCount => data
-      .where((Voto v) =>
-          v.isNew && (v.period == periods[0] || periods[0] == 'TOTALE'))
-      .length;
+  int get newVotiTot =>
+      data.length == 0 ? 0 : data.where((Voto v) => v.isNew).length;
+  int get newVotiPeriodCount => data.length == 0
+      ? 0
+      : data
+          .where((Voto v) =>
+              v.isNew && (v.period == periods[0] || periods[0] == 'TOTALE'))
+          .length;
 
   @override
   Future<void> create() async {

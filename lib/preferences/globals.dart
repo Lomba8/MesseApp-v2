@@ -132,7 +132,7 @@ class Globals {
     'LINGUA E CULTURA LATINA': {
       'colore': Colors.amber,
       'icona': MdiIcons
-          .romanNumeral6, // FIXME cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
+          .romanNumeral6, // CHOOSE cosa mettere?  scholl-outline, cash-multiple, currency-usd-off, romanNumeral9?
     },
     'LINGUA E LETTERATURA ITALIANA': {
       'colore': Colors.cyan,
@@ -145,7 +145,7 @@ class Globals {
     'PROGETTI / POTENZIAMENTO': {
       'colore': Colors.grey,
       'icona': MdiIcons
-          .sleep, // FIXME cosa mettere?   weightLifter, bag-personal-outline, foodOff?
+          .sleep, // CHOOSE cosa mettere?   weightLifter, bag-personal-outline, foodOff?
     },
     "RELIGIONE-ATTIVITA' ALTERNATIVE": {
       'colore': Colors.deepPurple,
@@ -208,7 +208,7 @@ class Globals {
   }
 
   static Map<String, Icon> iconeAreaStudenti = {
-    // TODO: scegliere icone
+    // CHOOSE: scegliere icone
     'Alternanza':
         Icon(Icons.headset_mic), // headset_mic, work, home_work, euro, weekend
     'Giustificazioni': Icon(MdiIcons.calendarAlert, size: 35), //transitTransfer
@@ -372,8 +372,7 @@ class Globals {
     },
     'verde': {
       'color': Color.fromRGBO(144, 237, 137, 0.7),
-      'textColor': Color.fromRGBO(72, 118, 63,
-          1), // TODO: scegliere un colore, quello di prima non si vedeva con il tema chiaro
+      'textColor': Color.fromRGBO(72, 118, 63, 1),
       'gradientColors': [
         Color.fromRGBO(21, 195, 65, 1.0),
         Color.fromRGBO(46, 208, 81, 1.0),

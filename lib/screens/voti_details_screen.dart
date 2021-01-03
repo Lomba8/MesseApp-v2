@@ -7,8 +7,6 @@ import 'package:flutter/rendering.dart';
 
 import '../registro/voti_registro_data.dart';
 
-//FIXME: grafico
-
 class VotiDetails extends StatefulWidget {
   final List<Voto> voti;
   final String sbjDesc;
@@ -261,7 +259,7 @@ class VotiDetailsState extends State<VotiDetails> {
           show: false,
         ),
         borderData: FlBorderData(
-          show: false, //TODO: meglio senza o con?
+          show: false, //CHOOSE: meglio senza o con? per me senza
           border: Border(
             left: BorderSide(
               color: Theme.of(context).brightness == Brightness.dark

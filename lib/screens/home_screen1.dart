@@ -31,6 +31,7 @@ class _HomeState extends State<Home> {
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
     await main.session.downloadAll((v) {});
+    setState(() {});
   }
 
   @override
@@ -97,7 +98,8 @@ class _HomeState extends State<Home> {
                         if (result) {
                           PickedFile selectedFile = await ImagePicker()
                               .getImage(source: ImageSource.gallery);
-                          image = File(selectedFile.path);
+                          if (selectedFile != null)
+                            image = File(selectedFile.path);
 
                           if (image != null) {
                             main.avatarList.add({
@@ -306,7 +308,7 @@ class _HomeState extends State<Home> {
   Color orange = Color(0xFFfc6e22);
 
   List<Color> redGradient = [
-    // TODO scegliere il rosso finale
+    // fare pulizia
     Color(0xFFff000d), // per me è il pirmo se non il penultimo
     Color(0xFFed0b0e),
     Color(0xFFe60000),

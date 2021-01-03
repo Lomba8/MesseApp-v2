@@ -81,146 +81,156 @@ class _DidatticaScreenData extends State<DidatticaScreen>
                     preferredSize:
                         Size.fromHeight(MediaQuery.of(context).size.width / 8)),
               ),
-              SliverGrid.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.9,
-                  children: <Widget>[
-                    if (directory.parent != null)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () => setState(() {
-                            if (directory.children.values.every((val) =>
-                                val.changed ==
-                                    directory.children.values?.first?.changed &&
-                                directory.children.values?.first?.changed ==
-                                    false)) directory = directory.view();
-                            directory = directory.parent;
-                          }),
-                          child: Column(
-                            children: <Widget>[
-                              Stack(
-                                alignment: Alignment.center,
+              main.session.didactics.data.length == 0
+                  ? Center(child: Text('Non ci sono file !'))
+                  : SliverGrid.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.9,
+                      children: <Widget>[
+                        if (directory.parent != null)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () => setState(() {
+                                if (directory.children.values.every((val) =>
+                                    val.changed ==
+                                        directory
+                                            .children.values?.first?.changed &&
+                                    directory.children.values?.first?.changed ==
+                                        false)) directory = directory.view();
+                                directory = directory.parent;
+                              }),
+                              child: Column(
                                 children: <Widget>[
-                                  Icon(Icons.folder,
-                                      size: 125, color: Colors.white54),
-                                  Icon(
-                                    Icons.arrow_back,
-                                    size: 30,
-                                    color: Colors.black,
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                '..',
-                                textAlign: TextAlign.center,
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                  ]
-                      .followedBy(directory.children.values
-                          .map<Widget>((path) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onTap: () async {
-                                    if (path is CustomDirectory) {
-                                      setState(() {
-                                        directory = path;
-                                      });
-                                    } else {
-                                      path.changed = false;
-                                      setState(() => _loading = !_loading);
-                                      String filePath =
-                                          await (path as CustomFile).download();
-                                      setState(() => _loading = !_loading);
-                                      OpenFile.open(filePath);
-                                    }
-                                  },
-                                  child: Column(
+                                  Stack(
+                                    alignment: Alignment.center,
                                     children: <Widget>[
-                                      Stack(
-                                        alignment: Alignment.center,
-                                        children: <Widget>[
-                                          Icon(
-                                            path is CustomDirectory
-                                                ? Icons.folder
-                                                : (path as CustomFile).type ==
-                                                        'link'
-                                                    ? Icons.link
-                                                    : (Globals.estensioni[
-                                                            (path as CustomFile)
-                                                                .type] ??
-                                                        {
-                                                          'icona': Icons
-                                                              .insert_drive_file
-                                                        })['icona'],
-                                            size: 125,
-                                            color: (path is CustomDirectory
-                                                    ? (main.session.subjects
-                                                                .subjectTheme(
-                                                                    path
-                                                                        .name) ??
-                                                            main.session
-                                                                .subjects
-                                                                .subjectTheme(path
-                                                                    .parent
-                                                                    ?.name) ??
-                                                            {})['colore']
-                                                        ?.withOpacity(0.5)
-                                                    : (Globals.estensioni[
-                                                            (path as CustomFile)
-                                                                .type] ??
-                                                        {})['colore']) ??
-                                                Colors.white54,
-                                          ),
-                                          Positioned(
-                                            left: 20,
-                                            top: 30,
-                                            child: Icon(
-                                              Icons.brightness_1,
-                                              color: path.changed
-                                                  ? Colors.yellow
-                                                  : Colors.transparent,
-                                              size: 20,
-                                            ),
-                                          ),
-                                          if (path is CustomDirectory)
-                                            Positioned(
-                                              right: 15,
-                                              bottom: 25,
-                                              child: Icon(
-                                                (main.session.subjects
-                                                        .subjectTheme(
-                                                            path.name) ??
-                                                    main.session.subjects
-                                                        .subjectTheme(path
-                                                            .parent?.name) ??
-                                                    {})['icona'],
-                                                size: 20,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                        ],
+                                      Icon(Icons.folder,
+                                          size: 125, color: Colors.white54),
+                                      Icon(
+                                        Icons.arrow_back,
+                                        size: 30,
+                                        color: Colors.black,
                                       ),
-                                      Text(
-                                        path.name.isEmpty
-                                            ? 'Senza nome'
-                                            : path.name.contains('.')
-                                                ? path.name.substring(0,
-                                                    path.name.lastIndexOf('.'))
-                                                : path.name,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      )
                                     ],
                                   ),
-                                ),
-                              )))
-                      .toList()),
+                                  Text(
+                                    '..',
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                      ]
+                          .followedBy(directory.children.values
+                              .map<Widget>((path) => Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () async {
+                                        if (path is CustomDirectory) {
+                                          setState(() {
+                                            directory = path;
+                                          });
+                                        } else {
+                                          path.changed = false;
+                                          setState(() => _loading = !_loading);
+                                          String filePath =
+                                              await (path as CustomFile)
+                                                  .download();
+                                          setState(() => _loading = !_loading);
+                                          OpenFile.open(filePath);
+                                        }
+                                      },
+                                      child: Column(
+                                        children: <Widget>[
+                                          Stack(
+                                            alignment: Alignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                path is CustomDirectory
+                                                    ? Icons.folder
+                                                    : (path as CustomFile)
+                                                                .type ==
+                                                            'link'
+                                                        ? Icons.link
+                                                        : (Globals
+                                                                .estensioni[(path
+                                                                    as CustomFile)
+                                                                .type] ??
+                                                            {
+                                                              'icona': Icons
+                                                                  .insert_drive_file
+                                                            })['icona'],
+                                                size: 125,
+                                                color: (path is CustomDirectory
+                                                        ? (main
+                                                                    .session.subjects
+                                                                    .subjectTheme(path
+                                                                        .name) ??
+                                                                main.session
+                                                                    .subjects
+                                                                    .subjectTheme(path
+                                                                        .parent
+                                                                        ?.name) ??
+                                                                {})['colore']
+                                                            ?.withOpacity(0.5)
+                                                        : (Globals
+                                                                .estensioni[(path
+                                                                    as CustomFile)
+                                                                .type] ??
+                                                            {})['colore']) ??
+                                                    Colors.white54,
+                                              ),
+                                              Positioned(
+                                                left: 20,
+                                                top: 30,
+                                                child: Icon(
+                                                  Icons.brightness_1,
+                                                  color: path.changed
+                                                      ? Colors.yellow
+                                                      : Colors.transparent,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                              if (path is CustomDirectory)
+                                                Positioned(
+                                                  right: 15,
+                                                  bottom: 25,
+                                                  child: Icon(
+                                                    (main.session.subjects
+                                                            .subjectTheme(
+                                                                path.name) ??
+                                                        main.session.subjects
+                                                            .subjectTheme(path
+                                                                .parent
+                                                                ?.name) ??
+                                                        {})['icona'],
+                                                    size: 20,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          Text(
+                                            path.name.isEmpty
+                                                ? 'Senza nome'
+                                                : path.name.contains('.')
+                                                    ? path.name.substring(
+                                                        0,
+                                                        path.name
+                                                            .lastIndexOf('.'))
+                                                    : path.name,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )))
+                          .toList()),
             ]),
           ),
         ),

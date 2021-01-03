@@ -24,17 +24,11 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:device_info/device_info.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
-
-//TODO: mettere quando non ce connessione internet https://rive.app/a/atiq31416/files/flare/no-network-available
-
-//TODO: per il caricamento del download usare questo flare con i nomi dei vari stadi delle animazioni da associar alla fase del donload delle circolari
-//https://rive.app/a/pollux/files/flare/liquid-download/preview
-
-//TODO: loader https://rive.app/a/chrisob94/files/flare/loader/preview
 
 /*final GoogleSignIn _signIn = GoogleSignIn(
     signInOption: SignInOption.standard,
@@ -48,6 +42,8 @@ List avatarList = List();
 Uint8List avatar;
 int accountId;
 List materie = List();
+
+PackageInfo pkgInfo;
 
 void main() {
   initializeDateFormatting('it_IT', null).then((_) async {
@@ -67,6 +63,7 @@ void main() {
     await session?.load();
 
     // TODO: usare per notificare delle releases nuove con packageInfo.version & .buildNumber
+
     // _signIn.signIn();
     notificationsPlugin.initialize(
       InitializationSettings(
@@ -92,17 +89,14 @@ void main() {
       avatar = null;
     }
 
-    final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
-    appName = pkgInfo.appName;
-    appVersion = pkgInfo.version;
+    pkgInfo = await PackageInfo.fromPlatform();
+
     platform = Platform.operatingSystem;
     if (Platform.isAndroid)
       osVersion = (await deviceInfo.androidInfo).version.codename;
     else if (Platform.isIOS)
       osVersion = (await deviceInfo.iosInfo).systemVersion;
     connection_main = await (Connectivity().checkConnectivity());
-
-    //connection_main = Connectivity().onConnectivityChanged;
 
     if (prefs.getBool('DarkMode') == null) {
       _theme = ThemeMode
@@ -236,25 +230,26 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
   @override
   Widget build(BuildContext context) {
     mainContext = context;
-    return MaterialApp(
-      theme: Globals.lightTheme,
-      navigatorKey: navigatorKey,
-      darkTheme: Globals.darkTheme,
-      themeMode: _theme,
-      debugShowCheckedModeBanner: false,
-      title: 'Applicazione di prova',
-      initialRoute: LoginScreen.id,
-      routes: {
-        Menu.id: (context) => widget.menu,
-        LoginScreen.id: (context) => widget.loginScreen,
-        Voti.id: (context) => widget.voti,
-        DidatticaScreen.id: (context) => widget.didatticaScreen,
-        NoteScreen.id: (context) => widget.noteScreen,
-        Agenda.id: (context) => widget.agenda,
-        BachecaScreen.id: (context) => widget.bachecaScreen,
-        AbsencesScreen.id: (context) => widget.absencesScreen,
-      },
-      //home: MapScreen(),
+    return OverlaySupport(
+      child: MaterialApp(
+        theme: Globals.lightTheme,
+        navigatorKey: navigatorKey,
+        darkTheme: Globals.darkTheme,
+        themeMode: _theme,
+        debugShowCheckedModeBanner: false,
+        title: 'Applicazione di prova',
+        initialRoute: LoginScreen.id,
+        routes: {
+          Menu.id: (context) => widget.menu,
+          LoginScreen.id: (context) => widget.loginScreen,
+          Voti.id: (context) => widget.voti,
+          DidatticaScreen.id: (context) => widget.didatticaScreen,
+          NoteScreen.id: (context) => widget.noteScreen,
+          Agenda.id: (context) => widget.agenda,
+          BachecaScreen.id: (context) => widget.bachecaScreen,
+          AbsencesScreen.id: (context) => widget.absencesScreen,
+        },
+      ),
     );
   }
 }
@@ -280,11 +275,9 @@ final Map<String, Future<dynamic> Function()> notificationCallbacks = {};
 SharedPreferences prefs;
 
 ConnectivityResult connection;
-String appName, appVersion, platform, osVersion, route;
+String platform, osVersion;
 bool maintenance = false, add = false;
 dynamic connection_main;
 BuildContext mainContext;
-//https://encrypted-vtbn0.gstatic.com/video?q=tbn:ANd9GcSn0bRM5qNQI4KGQXS0sndsunb3K7glw5dKxphjADZM-xL1Qb1s
-//https://pub.dev › packages › flare_splash_screen
 
-//FIXME: se mi interessa aggiungere lo sblocco con impronta digitale usare questa gif di flare https://rive.app/a/Parth181195/files/flare/material-fingerprint/preview
+//CHOOSE: se mi interessa aggiungere lo sblocco con impronta digitale usare questa gif di flare https://rive.app/a/Parth181195/files/flare/material-fingerprint/preview

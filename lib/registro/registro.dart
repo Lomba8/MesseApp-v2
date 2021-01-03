@@ -11,6 +11,7 @@ import 'package:Messedaglia/registro/note_registro_data.dart';
 import 'package:Messedaglia/registro/subjects_registro_data.dart';
 import 'package:Messedaglia/registro/voti_registro_data.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite/sqlite_api.dart';
@@ -52,12 +53,14 @@ class RegistroApi {
   void init() {
     voti = VotiRegistroData(account: this);
     agenda = AgendaRegistroData(account: this);
-    subjects = SubjectsRegistroData(account: this); //TODO db migration
+    subjects = SubjectsRegistroData(
+        account: this); // non usiamo il db ma salviamo su .json
     bacheca = BachecaRegistroData(account: this);
     note = NoteRegistroData(account: this);
     lessons = LessonsRegistroData(account: this);
     absences = AbsencesRegistroData(account: this);
-    didactics = DidatticaRegistroData(account: this); //TODO: db migartion
+    didactics = DidatticaRegistroData(
+        account: this); // non usiamo il db ma salviamo su .json
   }
 
   Map get asMap => <String, dynamic>{
@@ -131,7 +134,7 @@ class RegistroApi {
         return res.reasonPhrase;
       }
 
-      if (res.statusCode != 200) return res.reasonPhrase;
+      if (res.statusCode != HttpStatus.ok) return res.reasonPhrase;
       Map json = jsonDecode(res.body);
       token = json['token'];
       tokenExpiration = DateTime.parse(json['expire']
@@ -205,8 +208,8 @@ class RegistroApi {
   }
 
   void save() async {
-    saveData(subjects, 'subjects'); //TODO sharedprefs migration
-    saveData(didactics, 'didactics');
+    saveData(subjects, 'subjects'); // non usiamo il db ma salviamo su .json
+    saveData(didactics, 'didactics'); // non usiamo il db ma salviamo su .json
   }
 
   Future<void> load() async {
@@ -224,6 +227,8 @@ class RegistroApi {
     if (data != null) subjects.fromJson(data);
     data = await loadData('didactics');
     if (data != null) didactics.fromJson(data);
+    await downloadOrari(load: true);
+    await downloadVacanze(load: true);
   }
 
   @override

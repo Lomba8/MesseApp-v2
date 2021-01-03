@@ -92,95 +92,119 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                 expansion: true,
               ),
             ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  Padding(
-                      padding: EdgeInsets.all(30.0 - 15.0),
-                      child: Column(
-                        children: session.voti.sbjsWithMarks().expand((sbj) {
-                          double average = session.voti.average(sbj);
-                          return [
-                            SizedBox(
-                              height: 55,
-                              child: ListTile(
-                                  onLongPress: () => null,
-                                  onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => VotiDetails(
-                                                  session.voti
-                                                      .sbjVoti(sbj)
-                                                      .toList(),
-                                                  sbj))).then((value) async {
-                                        session.voti.allSeen(sbj: sbj);
-                                        _setStateIfAlive();
-                                      }),
-                                  leading: Stack(
-                                    children: [
-                                      Text(
-                                        average.isNaN
-                                            ? '  Blu'
-                                            : '  ' +
-                                                average.toStringAsPrecision(2),
-                                        style: TextStyle(
-                                          fontFamily: 'CoreSansRounded',
-                                          fontWeight:
-                                              session.voti.hasNewMarks(sbj)
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
+            if (session.voti.data.length > 0)
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    Padding(
+                        padding: EdgeInsets.all(30.0 - 15.0),
+                        child: Column(
+                          children: session.voti.sbjsWithMarks().expand((sbj) {
+                            double average = session.voti.average(sbj);
+                            return [
+                              SizedBox(
+                                height: 55,
+                                child: ListTile(
+                                    onLongPress: () => null,
+                                    onTap: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        VotiDetails(
+                                                            session.voti
+                                                                .sbjVoti(sbj)
+                                                                .toList(),
+                                                            sbj)))
+                                            .then((value) async {
+                                          session.voti.allSeen(sbj: sbj);
+                                          _setStateIfAlive();
+                                        }),
+                                    leading: Stack(
+                                      children: [
+                                        Text(
+                                          average.isNaN
+                                              ? '  Blu'
+                                              : '  ' +
+                                                  average
+                                                      .toStringAsPrecision(2),
+                                          style: TextStyle(
+                                            fontFamily: 'CoreSansRounded',
+                                            fontWeight:
+                                                session.voti.hasNewMarks(sbj)
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                          ),
                                         ),
-                                      ),
-                                      session.voti.hasNewMarks(sbj)
-                                          ? Positioned(
-                                              bottom: 6,
-                                              left: 0,
-                                              child: Icon(
-                                                Icons.brightness_1,
-                                                size: 10,
-                                                color: Colors.yellow,
-                                              ),
-                                            )
-                                          : SizedBox(),
-                                    ],
-                                  ),
-                                  trailing: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 10,
-                                    child: IconButton(
-                                      icon: Icon(Icons.arrow_forward_ios),
-                                      onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => VotiDetails(
-                                                  session.voti
-                                                      .sbjVoti(sbj)
-                                                      .toList(),
-                                                  sbj))).then((value) {
-                                        session.voti.allSeen(sbj: sbj);
-                                        _setStateIfAlive();
-                                      }),
+                                        session.voti.hasNewMarks(sbj)
+                                            ? Positioned(
+                                                bottom: 6,
+                                                left: 0,
+                                                child: Icon(
+                                                  Icons.brightness_1,
+                                                  size: 10,
+                                                  color: Colors.yellow,
+                                                ),
+                                              )
+                                            : SizedBox(),
+                                      ],
                                     ),
-                                  ),
-                                  title: AutoSizeText(
-                                    sbj,
-                                    maxLines: 1,
-                                    minFontSize: session.voti.hasNewMarks(sbj)
-                                        ? Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize +
-                                            1.0
-                                        : Theme.of(context)
-                                            .textTheme
-                                            .bodyText2
-                                            .fontSize,
-                                    overflowReplacement: Marquee(
-                                      pauseAfterRound:
-                                          Duration(milliseconds: 800),
-                                      blankSpace: 20,
-                                      velocity: 50,
-                                      text: sbj,
+                                    trailing: Container(
+                                      width: MediaQuery.of(context).size.width /
+                                          10,
+                                      child: IconButton(
+                                        icon: Icon(Icons.arrow_forward_ios),
+                                        onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    VotiDetails(
+                                                        session.voti
+                                                            .sbjVoti(sbj)
+                                                            .toList(),
+                                                        sbj))).then((value) {
+                                          session.voti.allSeen(sbj: sbj);
+                                          _setStateIfAlive();
+                                        }),
+                                      ),
+                                    ),
+                                    title: AutoSizeText(
+                                      sbj,
+                                      maxLines: 1,
+                                      minFontSize: session.voti.hasNewMarks(sbj)
+                                          ? Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2
+                                                  .fontSize +
+                                              1.0
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .bodyText2
+                                              .fontSize,
+                                      overflowReplacement: Marquee(
+                                        pauseAfterRound:
+                                            Duration(milliseconds: 800),
+                                        blankSpace: 20,
+                                        velocity: 50,
+                                        text: sbj,
+                                        style: TextStyle(
+                                            letterSpacing: 1.0,
+                                            fontWeight:
+                                                session.voti.hasNewMarks(sbj)
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                            fontSize:
+                                                session.voti.hasNewMarks(sbj)
+                                                    ? Theme.of(context)
+                                                            .textTheme
+                                                            .bodyText2
+                                                            .fontSize +
+                                                        1.0
+                                                    : Theme.of(context)
+                                                        .textTheme
+                                                        .bodyText2
+                                                        .fontSize),
+                                      ),
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                           letterSpacing: 1.0,
                                           fontWeight:
@@ -198,48 +222,31 @@ class _VotiState extends State<Voti> with SingleTickerProviderStateMixin {
                                                       .textTheme
                                                       .bodyText2
                                                       .fontSize),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        letterSpacing: 1.0,
-                                        fontWeight:
-                                            session.voti.hasNewMarks(sbj)
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                        fontSize: session.voti.hasNewMarks(sbj)
-                                            ? Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2
-                                                    .fontSize +
-                                                1.0
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize),
-                                  )),
-                            ),
-                            Container(
-                                height: 2,
-                                padding: EdgeInsets.symmetric(horizontal: 25.0),
-                                child: LinearProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        average.isNaN
-                                            ? Colors.blue[800]
-                                            : Voto.getColor(average)),
-                                    value: average.isNaN ? 10 : average / 10,
-                                    backgroundColor: average.isNaN
-                                        ? Colors.blue[800]
-                                        : Voto.getColor(average)
-                                            .withAlpha(50))),
-                            SizedBox(
-                              height: 20.0,
-                            )
-                          ];
-                        }).toList(),
-                      ))
-                ],
+                                    )),
+                              ),
+                              Container(
+                                  height: 2,
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 25.0),
+                                  child: LinearProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          average.isNaN
+                                              ? Colors.blue[800]
+                                              : Voto.getColor(average)),
+                                      value: average.isNaN ? 10 : average / 10,
+                                      backgroundColor: average.isNaN
+                                          ? Colors.blue[800]
+                                          : Voto.getColor(average)
+                                              .withAlpha(50))),
+                              SizedBox(
+                                height: 20.0,
+                              )
+                            ];
+                          }).toList(),
+                        ))
+                  ],
+                ),
               ),
-            ),
           ])),
     );
   }
@@ -483,7 +490,7 @@ class MarkPainter extends CustomPainter {
             style: TextStyle(
                 color: _theme.brightness == Brightness.light
                     ? Colors.black
-                    : Colors.white, // FIXME: supporto tema chiaro
+                    : Colors.white,
                 fontSize: size.height / 3,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'CoreSansRounded')),

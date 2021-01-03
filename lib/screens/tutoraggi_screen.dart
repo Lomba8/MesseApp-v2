@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/widgets/background_painter.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:Messedaglia/main.dart' as main;
 import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:positioned_tap_detector/positioned_tap_detector.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,25 +25,7 @@ class TutoraggiScreen extends StatefulWidget {
 var cardAspectRatio = 12.0 / 16.0;
 var widgetAspectRatio = cardAspectRatio * 1.2;
 
-//const int numero_tutor = 4; // FIXME da implementare coi dati del server
 List<String> keys = new List();
-
-// List<String> tutor = [
-//   "Amos Lo Verde",
-//   "Giacomo Brognara",
-//   "Pietro Cipriani",
-// ];
-
-// List<String> classe = [
-//   "5N",
-//   "4F",
-//   "4G",
-// ];
-// List<String> email = [
-//   "amos.loverde@messedaglia.edu.it",
-//   "giacomo.brognara@messedaglia.edu.it",
-//   "pietro.cipriani@messedaglia.edu.it",
-// ];
 
 final String _defaultBody = '''Buona giornata,
 \nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
@@ -78,35 +60,29 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
     if (await canLaunch(Uri.encodeFull(url))) {
       await launch(Uri.encodeFull(url));
     } else {
-      Flushbar(
-        padding: EdgeInsets.all(10),
-        borderRadius: 20,
-        backgroundGradient: LinearGradient(
-          colors: Globals.sezioni['viola']['gradientColors'],
-          stops: [0.3, 0.6, 1],
-        ),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black45,
-            offset: Offset(3, 3),
-            blurRadius: 6,
+      showSimpleNotification(
+        Text(
+          'Errore nell\'aprire l\'url:',
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-        ],
-        duration: Duration(seconds: 5),
-        isDismissible: true,
-        icon: Icon(
-          Icons.error_outline,
-          size: 35,
-          color: Theme.of(context).backgroundColor,
         ),
-        shouldIconPulse: true,
-        animationDuration: Duration(seconds: 1),
-        dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-        // The default curve is Curves.easeOut
-        forwardAnimationCurve: Curves.fastOutSlowIn,
-        title: 'Errore nell\'aprire l\'url:',
-        message: '$url',
-      ).show(context);
+        background: Theme.of(context).accentColor,
+        position: NotificationPosition.bottom,
+        duration: Duration(seconds: 2),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        // elevation: 10.0,
+        slideDismiss: true,
+        subtitle: Text(
+          '\n$url',
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.white70,
+          ),
+        ),
+      );
     }
   }
 

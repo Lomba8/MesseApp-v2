@@ -1,6 +1,5 @@
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/screens/screens.dart';
-import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:Messedaglia/widgets/note_widget.dart';
 import 'package:Messedaglia/widgets/nav_bar_sotto.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:Messedaglia/widgets/menu_screen_widgets.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'agenda_screen.dart';
 import 'area_studenti_screen.dart';
@@ -141,7 +139,7 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         ),
         builder: (context, state) {
           _state = state;
-          //FIXME: choose svg images
+          //CHOOSE: choose svg images
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.3,
             child: SingleChildScrollView(
@@ -212,14 +210,18 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
                                 color: Colors.white,
                               ),
                             ),
-                            main.session.didactics.data.children.values.any(
-                                    (customDir) => customDir.changed == true)
-                                ? Icon(
-                                    Icons.brightness_1,
-                                    color: Colors.yellow,
-                                    size: 12,
-                                  )
-                                : Offstage(),
+                            main.session.didactics.data is Map &&
+                                    main.session.didactics.data.length == 0
+                                ? Offstage()
+                                : main.session.didactics.data.children.values
+                                        .any((customDir) =>
+                                            customDir.changed == true)
+                                    ? Icon(
+                                        Icons.brightness_1,
+                                        color: Colors.yellow,
+                                        size: 12,
+                                      )
+                                    : Offstage(),
                           ],
                         ),
                         Stack(

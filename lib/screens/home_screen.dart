@@ -103,7 +103,7 @@ class _HomeState extends State<Home> {
   //   flutterLocalNotificationsPlugin.schedule(
   //       1,
   //       'Tanti auguri🎉🎁',
-  //       '${session.nome}', //FIXME: le notifiche non spuntano la data di compleanno
+  //       '${session.nome}', //BUG: le notifiche non spuntano la data di compleanno
   //       DateTime(DateTime.now().year, int.parse(data[1]), int.parse(data[2])),
   //       platformChannelSpecifics);
   //   print(

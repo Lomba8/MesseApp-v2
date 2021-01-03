@@ -149,7 +149,9 @@ class AbsencesRegistroData extends RegistroData {
         int.parse(account.cls?.split('')?.first ?? '1') > 2 ? 990 : 891;
 
     double oreSaltate = 0;
-    List<Assenza> _assenze = data.values.toList();
+
+    List _assenze = data.values
+        .toList(); // non ho messo List <Assenza> perchè se non ce ne sono (data.values == null) diventa List <dynamic> e da errore
     _assenze.forEach((assenza) {
       if (assenza.type == 'ABA0' && assenza.hoursAbsence.isEmpty) {
         oreSaltate += dailyHours(assenza.date);
