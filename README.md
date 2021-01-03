@@ -92,7 +92,7 @@ Durante lo sviluppo della applicazione sono stati usati i seguenti linguaggi e f
 
 <!-- GETTING STARTED -->
 
-###Imparare ad usare Flutter
+##Imparare ad usare Flutter
 
 Prima di tutto dovrete scaricarvi l'[sdk](https://flutter.dev/docs/get-started/install), basterà seguire questa semplice guida e dare una occhiata ai suggerimenti riportati di seguito
 
@@ -124,5 +124,3 @@ Distribuita sotto licenza [GNU GPLv3](../LICENSE.md).
 Cipriani Pietro & Lombardi Giacomo - [contact@messe.dev](mailto:contact@messe.dev)
 
 Project Link: [Messe App](https://github.com/Lomba8/MesseApp-v2)
-
-<!-- ACKNOWLEDGEMENTS -->
