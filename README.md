@@ -104,7 +104,8 @@ Per facilitarvi la vita vi consiglio di
 - MacOs da Catalina in poi(zsh di default) [video](https://www.youtube.com/watch?v=U4TJ5ITGe5Y)
 - MacOs prima di catalina (bash di defautl) [video](https://www.youtube.com/watch?v=N5hZwH0ySk8)
 - Windows [video](https://www.youtube.com/watch?v=as4VlE2TjhM)
-  Per avviare l'applicazione (dopo aver runnato flutter pub get) premete F5
+
+Per avviare l'applicazione (dopo aver runnato flutter pub get) premete F5
 
 ## Contribuire
 
