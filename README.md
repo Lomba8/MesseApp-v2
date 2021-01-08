@@ -3,7 +3,7 @@
 - [ ] create a [release](https://github.com/Lomba8/MesseApp-v2/releases/new) and a respective [badge](https://shields.io/category/version)
 <p align="center">
   <a href="https://github.com/Lomba8/Messe-App-v2">
-    <img src="https://github.com/Lomba8/messe-app-status/blob/master/messeapp.png?raw=true" alt="Logo" width="100" height="100" style="border-radius: 10%">
+    <img src="https://github.com/Lomba8/messe-app-status/blob/master/messeapp.png?raw=true" alt="Logo" width="100" height="100" style="border-radius: 20%">
   </a>
 
  <h1 align="center">Messe App</h1>
@@ -92,7 +92,7 @@ Durante lo sviluppo della applicazione sono stati usati i seguenti linguaggi e f
 
 <!-- GETTING STARTED -->
 
-###Imparare ad usare Flutter
+## Imparare ad usare Flutter
 
 Prima di tutto dovrete scaricarvi l'[sdk](https://flutter.dev/docs/get-started/install), basterà seguire questa semplice guida e dare una occhiata ai suggerimenti riportati di seguito
 
@@ -104,7 +104,8 @@ Per facilitarvi la vita vi consiglio di
 - MacOs da Catalina in poi(zsh di default) [video](https://www.youtube.com/watch?v=U4TJ5ITGe5Y)
 - MacOs prima di catalina (bash di defautl) [video](https://www.youtube.com/watch?v=N5hZwH0ySk8)
 - Windows [video](https://www.youtube.com/watch?v=as4VlE2TjhM)
-  Per avviare l'applicazione (dopo aver runnato flutter pub get) premete F5
+
+Per avviare l'applicazione (dopo aver runnato flutter pub get) premete F5
 
 ## Contribuire
 
@@ -124,5 +125,3 @@ Distribuita sotto licenza [GNU GPLv3](../LICENSE.md).
 Cipriani Pietro & Lombardi Giacomo - [contact@messe.dev](mailto:contact@messe.dev)
 
 Project Link: [Messe App](https://github.com/Lomba8/MesseApp-v2)
-
-<!-- ACKNOWLEDGEMENTS -->
