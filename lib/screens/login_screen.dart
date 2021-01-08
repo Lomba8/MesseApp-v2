@@ -122,7 +122,6 @@ class _LoginScreenState extends State<LoginScreen>
       if (req == '') {
         _btnController.success();
         main.session = account;
-        await main.session.load();
         if (main.prefs.getString('avatar') != null) {
           main.avatarList = jsonDecode(main.prefs.getString('avatar'));
           main.avatar = jsonDecode(main.prefs.getString('avatar'))

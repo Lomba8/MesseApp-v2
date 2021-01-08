@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Messedaglia/screens/preferences_screen.dart';
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:Messedaglia/widgets/menu_grid_icons.dart';
+import 'package:Messedaglia/widgets/today_widget.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_permission_validator/easy_permission_validator.dart';
@@ -14,6 +15,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:platform_alert_dialog/platform_alert_dialog.dart';
+
+int touchIndex;
 
 class Home extends StatefulWidget {
   static final String id = 'home_screen';
@@ -28,6 +31,9 @@ class _HomeState extends State<Home> {
       ? 0
       : 1; // 0=> trimestre 1=>pentamestre 2=>totale
 
+  double _height;
+  Size size;
+
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
     await main.session.downloadAll((v) {});
@@ -36,11 +42,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    List voti = List();
+    size = MediaQuery.of(context).size;
+    List voti = [];
     main.session.voti.averageByMonth().forEach((key, value) => voti.add(value));
     if (displayed != 2)
       voti = voti.sublist(
           displayed == 0 ? 0 : 4, displayed == 0 ? 3 : voti.length);
+    _height = voti.every((element) => element.isNaN)
+        ? 50
+        : size.height / ((3.5 / 428) * size.width);
     return Scaffold(
       body: LiquidPullToRefresh(
         onRefresh: _refresh,
@@ -204,12 +214,11 @@ class _HomeState extends State<Home> {
               ],
               bottom: PreferredSize(
                 child: Container(
-                  height: MediaQuery.of(context).size.width / 8,
+                  height: size.width / 8,
                   alignment: Alignment.center,
                   child: Offstage(),
                 ),
-                preferredSize:
-                    Size.fromHeight(MediaQuery.of(context).size.width / 7),
+                preferredSize: Size.fromHeight(size.width / 7),
               ),
               flexibleSpace: CustomPaint(
                 painter: BackgroundPainter(Theme.of(context)),
@@ -220,7 +229,8 @@ class _HomeState extends State<Home> {
               delegate: SliverChildListDelegate(
                 <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: (50 / 428) * size.width),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -234,7 +244,9 @@ class _HomeState extends State<Home> {
                                   : Colors.white70,
                               fontFamily: 'CoreSansRounded',
                               fontWeight: FontWeight.w600,
-                              fontSize: displayed == 0 ? 20 : 17,
+                              fontSize: displayed == 0
+                                  ? (20 / 428) * size.width
+                                  : (17 / 428) * size.width,
                             ),
                           ),
                         ),
@@ -248,7 +260,9 @@ class _HomeState extends State<Home> {
                                   : Colors.white70,
                               fontFamily: 'CoreSansRounded',
                               fontWeight: FontWeight.w600,
-                              fontSize: displayed == 1 ? 20 : 17,
+                              fontSize: displayed == 1
+                                  ? (20 / 428) * size.width
+                                  : (17 / 428) * size.width,
                             ),
                           ),
                         ),
@@ -262,29 +276,64 @@ class _HomeState extends State<Home> {
                                   : Colors.white70,
                               fontFamily: 'CoreSansRounded',
                               fontWeight: FontWeight.w600,
-                              fontSize: displayed == 2 ? 20 : 17,
+                              fontSize: displayed == 2
+                                  ? (20 / 428) * size.width
+                                  : (17 / 428) * size.width,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Container(
+                  AnimatedContainer(
                     //TODO: scegliere un widget alternativo da displayare se non ci sono voti
-                    margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
-                    height: MediaQuery.of(context).size.height / 4,
+                    duration: Duration(milliseconds: 300),
+                    height: _height,
+                    margin: EdgeInsets.only(
+                        top: (40 / 428) * size.width,
+                        right: (23 / 428) * size.width,
+                        left: (23 / 428) * size.width),
                     width: double.infinity,
                     child: voti.every((element) => element.isNaN)
                         ? Center(
                             child: Text(
-                            'no voti',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
+                              'Non ci sono voti',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: (20 / 428) * size.width,
+                              ),
                             ),
-                          ))
-                        : BarChart(
-                            mainBarData(),
+                          )
+                        : Material(
+                            color: Colors.transparent,
+                            elevation: 10,
+                            borderRadius: BorderRadius.circular(20.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                              ),
+                              padding: const EdgeInsets.all(20.0),
+                              child: BarChart(
+                                mainBarData(),
+                              ),
+                            ),
+                          ),
+                  ),
+                  Divider(height: (40 / 428) * size.width),
+                  //TODO: scegliere un widget alternativo da displayare se non ci sono lezioni
+                  Container(
+                    child: main.session.lessons.hasLessonsToday()
+                        ? TodayWidget()
+                        : Center(
+                            child: Text(
+                              '\nNon ci sono lezioni',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: (20 / 428) * size.width,
+                              ),
+                            ),
                           ),
                   ),
                 ],
@@ -296,48 +345,17 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // List<Color> orangeGradient = [
-  //   Color(0xFFff822e),
-  //   Color(0xFFff864f),
-  //   Color(0xFFfe6b35),
-  //   Color(0xFFfc6e22),
-  //   Color(0xFFff5f01),
-  // ];
-
   Color green = Color(0xFF21fc0d);
   Color orange = Color(0xFFfc6e22);
-
-  List<Color> redGradient = [
-    // fare pulizia
-    Color(0xFFff000d), // per me è il pirmo se non il penultimo
-    Color(0xFFed0b0e),
-    Color(0xFFe60000),
-    Color(0xFFff0000),
-    Color(0xFFff0000)
-  ];
-
-  // List<Color> greenGradient = [
-  //   Color(0xFF004000),
-  //   Color(0xFF008000),
-  //   Color(0xFF00bf00),
-  //   Color(0xFF54db18),
-  //   Color(0xFF28f81e)
-  // ].reversed.toList();
-
-  // List<Color> redGradient = [
-  //   Color(0xFF400000),
-  //   Color(0xFF800000),
-  //   Color(0xFFbf0000),
-  //   Color(0xFFff0000),
-  //   Color(0xFFff4040)
-  // ].reversed.toList();
+  Color red = Color(0xFFff000d);
 
   int touchedIndex;
 
+  // ignore: missing_return
   Color getRodDataColor(double average) {
     if (average >= 6) return green;
     if (average >= 5 && average < 6) return orange;
-    if (average < 5) return redGradient[0];
+    if (average < 5) return red;
   }
 
   BarChartData mainBarData() {
@@ -353,10 +371,15 @@ class _HomeState extends State<Home> {
               //showingTooltipIndicators: [avg.toInt()],
               barRods: [
                 BarChartRodData(
-                  y: avg,
+                  y: i == touchedIndex ? avg + 1 : avg,
                   color: getRodDataColor(avg),
                   width: 15,
                   borderRadius: BorderRadius.circular(10.0),
+                  backDrawRodData: BackgroundBarChartRodData(
+                    y: 10,
+                    color: Color.fromRGBO(38, 38, 51, 1),
+                    show: true,
+                  ),
                 )
               ],
             ),
@@ -370,10 +393,21 @@ class _HomeState extends State<Home> {
     return BarChartData(
       alignment: BarChartAlignment.spaceAround,
       barTouchData: BarTouchData(
+        touchCallback: (barTouchResponse) {
+          setState(() {
+            if (barTouchResponse.spot != null &&
+                barTouchResponse.touchInput is! FlPanEnd &&
+                barTouchResponse.touchInput is! FlLongPressEnd) {
+              touchedIndex = barTouchResponse.spot.touchedBarGroupIndex;
+            } else {
+              touchedIndex = -1;
+            }
+          });
+        },
         touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.transparent,
-          tooltipBottomMargin: 0,
-          tooltipPadding: EdgeInsets.all(0),
+          tooltipBgColor: Color(0xFF33333D),
+          tooltipBottomMargin: 10,
+          tooltipPadding: EdgeInsets.symmetric(horizontal: 13, vertical: 5),
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             return BarTooltipItem(
               (rod.y).toStringAsFixed(1).replaceAll('.', ','),
@@ -381,21 +415,12 @@ class _HomeState extends State<Home> {
                 color: Colors.white,
                 backgroundColor: Colors.transparent,
                 wordSpacing: 1.2,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
               ),
             );
           },
         ),
-        // touchCallback: (barTouchResponse) {
-        //   setState(() {
-        //     if (barTouchResponse.spot != null &&
-        //         barTouchResponse.touchInput is! FlPanEnd &&
-        //         barTouchResponse.touchInput is! FlLongPressEnd) {
-        //       touchedIndex = barTouchResponse.spot.touchedBarGroupIndex;
-        //     } else {
-        //       touchedIndex = -1;
-        //     }
-        //   });
-        // },
       ),
       titlesData: FlTitlesData(
         show: true,

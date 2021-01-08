@@ -25,7 +25,7 @@ class TutoraggiScreen extends StatefulWidget {
 var cardAspectRatio = 12.0 / 16.0;
 var widgetAspectRatio = cardAspectRatio * 1.2;
 
-List<String> keys = new List();
+List<String> keys = List<String>.empty(growable: true);
 
 final String _defaultBody = '''Buona giornata,
 \nrichiedo un tutoraggio per _ studenti in data dd/mm/yyyy dalle hh alle hh.
@@ -279,7 +279,7 @@ class _CardScrollWidgetState extends State<CardScrollWidget> {
         var primaryCardLeft = safeWidth - widthOfPrimaryCard;
         var horizontalInset = primaryCardLeft / 2;
 
-        List<Widget> cardList = new List();
+        List<Widget> cardList = List<Widget>.empty(growable: true);
 
         for (var i = 0; i < widget.tutor.length; i++) {
           keys.add(widget.tutor[i].keys.first);

@@ -31,8 +31,8 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
 
   List get e => session.agenda.data;
 
-  List<Evento> dayEvents = List<Evento>();
-  List<Lezione> dayLessons = List<Lezione>();
+  List<Evento> dayEvents = List<Evento>.empty(growable: true);
+  List<Lezione> dayLessons = List<Lezione>.empty(growable: true);
   Evento _onTop;
 
   double lunghezzaDash = 0;

@@ -326,7 +326,7 @@ class _AbsencesListViewState extends State<AbsencesListView> {
 
   @override
   Widget build(BuildContext context) {
-    List<Assenza> assenze = List();
+    List<Assenza> assenze = List<Assenza>.empty(growable: true);
     main.session.absences.data.forEach((k, v) {
       if (v.type == widget.type) assenze.add(v);
     });

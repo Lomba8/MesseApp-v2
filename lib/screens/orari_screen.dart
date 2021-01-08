@@ -131,7 +131,7 @@ class _OrariState extends State<Orari> {
                               appName: 'Messe App',
                             );
 
-                            var result = await permissionValidator.photos();
+                            bool result = await permissionValidator.photos();
 
                             if (result) {
                               downloadOrario(selectedClass).then((_) {

@@ -13,6 +13,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:Messedaglia/main.dart' as main;
 
 class LessonsScreen extends StatefulWidget {
+  static final String id = 'lessons_screen';
+
   @override
   _LessonsScreenState createState() => _LessonsScreenState();
 }

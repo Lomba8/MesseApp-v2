@@ -103,7 +103,12 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
           positioning: SnapPositioning.relativeToAvailableSpace,
           snappings: [SnapSpec.footerSnap, 1], //[SnapSpec.footerSnap, 0.5],
           snap: true,
-          initialSnap: SnapSpec.expanded,
+          initialSnap: main.session.voti.newVotiTot > 0 ||
+                  main.session.note.newNote > 0 ||
+                  main.session.agenda.newEventi > 0 ||
+                  main.session.absences.newAssenze > 0
+              ? SnapSpec.expanded
+              : SnapSpec.footerSnap,
         ),
         listener: (state) {
           if (sheetExtended != state.isExpanded)
@@ -118,7 +123,10 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
             child: NavBarSotto(
               (pos) async {
                 if (pos == 2) {
-                  sheetController.snapToExtent(state.maxExtent,
+                  sheetController.snapToExtent(
+                      state.extent == state.maxExtent
+                          ? state.minExtent
+                          : state.maxExtent,
                       duration: Duration(milliseconds: 200));
                 } else
                   await sheetController.snapToExtent(state.minExtent,

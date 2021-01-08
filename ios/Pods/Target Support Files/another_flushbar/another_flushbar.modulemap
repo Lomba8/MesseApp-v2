@@ -1,6 +1,0 @@
-framework module another_flushbar {
-  umbrella header "another_flushbar-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -61,8 +61,8 @@ _launchURL(String url, BuildContext context) async {
 class _PreferencesState extends State<Preferences> {
   bool _darkTheme = main.theme == ThemeMode.dark; //TODO: dynamic theme o senza?
 
-  List<Account> accountList = List<Account>();
-  List<int> accountIds = List<int>();
+  List<Account> accountList = List<Account>.empty(growable: true);
+  List<int> accountIds = List<int>.empty(growable: true);
 
   @override
   void initState() {
@@ -201,7 +201,6 @@ class _PreferencesState extends State<Preferences> {
                             : null;
                         await main.session?.load();
                         if (reload) {
-                          dispose();
                           if (main.prefs.getString('avatar') != null) {
                             main.avatarList.removeWhere(
                                 (element) => element['id'] == id.toString());

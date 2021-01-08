@@ -67,6 +67,8 @@ class Calendar extends ResizableWidget {
 
   @override
   Widget build(BuildContext context, [double heightFactor]) {
+    print(_page);
+    print(differenceInMonths(_currentDay, DateTime.now()));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
@@ -85,7 +87,9 @@ class Calendar extends ResizableWidget {
                   child: Text(
                 DateFormat.yMMMM('it')
                     .format(DateTime(
-                        DateTime.now().year, DateTime.now().month + _page))
+                        DateTime.now().year,
+                        DateTime.now().month +
+                            _page)) //FIXME: non funziona se il mese dell'evento non è lo stesso corrente
                     .toUpperCase(),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).primaryColor),
@@ -152,7 +156,7 @@ class Calendar extends ResizableWidget {
     );
   }
 
-  // TODO: fix chiusura completa dell'header quando ci sono pochi eventi
+  // ! FIXME: chiusura completa dell'header quando ci sono pochi eventi
   Iterable<Widget> _children(BuildContext context, int index,
       [double heightFactor = 0]) sync* {
     // TODO: se il giorno selezionato è in un altro mese, che settimana prendiamo?

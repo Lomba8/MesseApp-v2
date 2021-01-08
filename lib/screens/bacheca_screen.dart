@@ -40,7 +40,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
   FocusNode _firstInputFocusNode;
   String _highlight = '';
 
-  List<String> files = List<String>();
+  List<String> files = List<String>.empty(growable: true);
   Map<String, List<dynamic>> frasi = {};
 
   bool _displayErrorText = false, _loading = false;
@@ -58,7 +58,7 @@ class _BachecaScreenState extends State<BachecaScreen> {
 
   Future<int> _uploadFiles() async {
     var uri = 'http://bd466fb4.ngrok.io/upload';
-    List<MultipartFile> newList = new List<MultipartFile>();
+    List<MultipartFile> newList = new List<MultipartFile>.empty(growable: true);
 
     var send = await http.post(uri, headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

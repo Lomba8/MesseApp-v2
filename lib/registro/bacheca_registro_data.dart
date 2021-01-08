@@ -26,7 +26,7 @@ class BachecaRegistroData extends RegistroData {
     try {
       List<int> ids = [];
       json = json['items'];
-      List<int> deleted_ids = new List();
+      List<int> deleted_ids = List<int>.empty(growable: true);
 
       json.forEach((c) {
         if (c['cntStatus'] == 'deleted') deleted_ids.add(c['pubId']);

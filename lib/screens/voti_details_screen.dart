@@ -23,8 +23,8 @@ class VotiDetailsState extends State<VotiDetails> {
   @override
   void initState() {
     super.initState();
-    _dates = List();
-    _gradientColors = List();
+    _dates = [];
+    _gradientColors = [];
   }
 
   @override

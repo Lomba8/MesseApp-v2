@@ -12,6 +12,7 @@ import 'package:Messedaglia/screens/didattica_screen.dart';
 import 'package:Messedaglia/screens/login_screen.dart';
 import 'package:Messedaglia/screens/menu_screen.dart';
 import 'package:Messedaglia/screens/note_screen.dart';
+import 'package:Messedaglia/screens/screens.dart';
 import 'package:Messedaglia/screens/voti_screen.dart';
 import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,10 +39,10 @@ import 'package:connectivity/connectivity.dart';
 RegistroApi session;
 List vacanze;
 
-List avatarList = List();
+List avatarList = [];
 Uint8List avatar;
 int accountId;
-List materie = List();
+List materie = [];
 
 PackageInfo pkgInfo;
 
@@ -210,6 +211,7 @@ class MaterialAppWithTheme extends StatefulWidget {
   final BachecaScreen bachecaScreen = BachecaScreen();
   final NoteScreen noteScreen = NoteScreen();
   final AbsencesScreen absencesScreen = AbsencesScreen();
+  final LessonsScreen lessonsScreen = LessonsScreen();
 
   @override
   State<StatefulWidget> createState() =>
@@ -248,6 +250,7 @@ class _MaterialAppWithThemeState extends State<MaterialAppWithTheme> {
           Agenda.id: (context) => widget.agenda,
           BachecaScreen.id: (context) => widget.bachecaScreen,
           AbsencesScreen.id: (context) => widget.absencesScreen,
+          LessonsScreen.id: (context) => widget.lessonsScreen,
         },
       ),
     );

@@ -109,6 +109,15 @@ class LessonsRegistroData extends RegistroData {
     await super.load();
     data = data.map<Lezione>((v) => Lezione.parse(v)).toList()..sort();
   }
+
+  bool hasLessonsToday() =>
+      data
+          .where((a) =>
+              a.date.isAtSameMomentAs(DateTime(DateTime.now().year,
+                  DateTime.now().month, DateTime.now().day)) ==
+              true)
+          .length >
+      0;
 }
 
 class Lezione extends Comparable<Lezione> {

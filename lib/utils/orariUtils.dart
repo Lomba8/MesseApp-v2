@@ -9,7 +9,7 @@ import 'package:Messedaglia/utils/db_manager.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 Map orari = {};
-List holidays = List();
+List holidays = [];
 
 Future downloadOrari({bool load = false}) async {
   getSelected();
@@ -17,11 +17,15 @@ Future downloadOrari({bool load = false}) async {
   Batch batch = database.batch();
   if (load) {
     batch.rawQuery('SELECT * FROM orari');
-    orariData = (await batch.commit())
-        .last
-        .map((cls) => cls.row)
-        .toList(); //FIXME tutti i metodi funzionano con l'ordine del json del server non quello del db cosa fare?
-    // print(orariData);
+    orariData = (await batch.commit()).last.forEach((cls) {
+      List<String> orario = List<String>.empty(growable: true);
+      for (int giorno = 0; giorno < 6; giorno++) {
+        for (int ora = 1; ora < 37; ora += 6) {
+          orario.add(cls.row[giorno + ora]);
+        }
+      }
+      orari[cls.row[0]] = {'orari': orario, 'url': cls.row[37]};
+    });
   } else
     try {
       http.Response res = await http.get('https://app.messe.dev/orari',
@@ -53,7 +57,7 @@ Future downloadOrari({bool load = false}) async {
             .toList(); //FIXME tutti i metodi funzionano con l'ordine del json del server non quello del db cosa fare?
         // print(orariData);
       } else {
-        print('Request failed with status: ${res.statusCode}.');
+        throw ('Request failed with status: ${res.statusCode}.');
       }
     } catch (e, s) {
       print(e);
@@ -63,9 +67,9 @@ Future downloadOrari({bool load = false}) async {
 
 Future downloadVacanze({bool load = false}) async {
   if (load) {
-    holidays = jsonDecode(main.prefs.getString('holidays'))
-        .map((e) => DateTime.parse(e))
-        .toList();
+    holidays = jsonDecode(main.prefs.getString('holidays'));
+    if (holidays != null)
+      holidays = holidays.map((e) => DateTime.parse(e)).toList();
   } else
     try {
       http.Response res = await http.get('https://app.messe.dev/holidays',
@@ -82,7 +86,7 @@ Future downloadVacanze({bool load = false}) async {
             .map((e) => DateTime.parse(e))
             .toList();
       } else {
-        print('Request failed with status: ${res.statusCode}.');
+        throw ('Request failed with status: ${res.statusCode}.');
       }
     } catch (e, s) {
       print(e);
@@ -98,7 +102,7 @@ void getSelected() =>
 Iterable<String> getSbjs(int day, [String cls]) sync* {
   cls ??= selectedClass;
   if (cls == null) return;
-  for (int i = day; i < orari[cls]['orari'].length; i += 6)
+  for (int i = day; i < orari[cls]['orari']?.length ?? 0; i += 6)
     if (orari[cls]['orari'][i] != '') yield orari[cls]['orari'][i];
 }
 
@@ -121,7 +125,9 @@ final Map<String, Color> colors = {
 
 int dailyHours(DateTime day) {
   int _ore = 0;
-  for (int i = day.weekday; i < orari[selectedClass]['orari'].length; i += 6) {
+  for (int i = day.weekday;
+      i < orari[selectedClass]['orari']?.length ?? 0;
+      i += 6) {
     if (orari[selectedClass]['orari'][i] != "") _ore++;
   }
   return _ore;
