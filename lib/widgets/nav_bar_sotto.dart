@@ -93,6 +93,12 @@ class _NavBarSottoState extends State<NavBarSotto>
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) => Column(

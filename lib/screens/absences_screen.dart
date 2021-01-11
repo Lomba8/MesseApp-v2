@@ -2,6 +2,7 @@ import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/main.dart';
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/registro/absences_registro_data.dart';
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -208,27 +209,46 @@ class _AbsencesScreenState extends State<AbsencesScreen>
                         ),
                         height: _heightAnimation.value * 60,
                         child: Center(
-                          child: Text(
-                            'Puoi fare ancora:\n' +
-                                ' • ' +
-                                (main.session.absences.giorniRestanti() ~/ 24)
-                                    .toString() +
-                                ' giorni di assenza\n' +
-                                ' • ' +
-                                main.session.absences
-                                    .giorniRestanti()
-                                    .remainder(24)
-                                    .toInt()
-                                    .toString() +
-                                ' or${main.session.absences.giorniRestanti().remainder(24) > 1 ? "e" : "a"} di assenza',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                              height: 1.5,
-                              fontFamily: 'CoreSans',
-                              letterSpacing: 1.6,
-                            ),
-                          ),
+                          child: selectedClass == null
+                              ? GestureDetector(
+                                  onTap: () => showDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      builder: (context) => Dialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 8.0,
+                                                right: 8.0,
+                                                top: 15.0),
+                                            child: _selectionChildren,
+                                          ))),
+                                  child:
+                                      Text('  Tocca per scegliere la classe'))
+                              : Text(
+                                  'Puoi fare ancora:\n' +
+                                      ' • ' +
+                                      (main.session.absences.giorniRestanti() ~/
+                                              24)
+                                          .toString() +
+                                      ' giorni di assenza\n' +
+                                      ' • ' +
+                                      main.session.absences
+                                          .giorniRestanti()
+                                          .remainder(24)
+                                          .toInt()
+                                          .toString() +
+                                      ' or${main.session.absences.giorniRestanti().remainder(24) > 1 ? "e" : "a"} di assenza',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                    height: 1.5,
+                                    fontFamily: 'CoreSans',
+                                    letterSpacing: 1.6,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -302,6 +322,129 @@ class _AbsencesScreenState extends State<AbsencesScreen>
           ],
         ),
       ),
+    );
+  }
+
+  GridView get _selectionChildren {
+    TextStyle titleStyle = TextStyle(
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.black.withOpacity(0.75)
+            : Colors.white54,
+        fontSize: 20);
+    List<Widget> children = [
+      AspectRatio(
+        aspectRatio: 2,
+        child: Text(
+          'I',
+          style: titleStyle,
+          textAlign: TextAlign.center,
+        ),
+      ),
+      Text(
+        'II',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'III',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'IV',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Text(
+        'V',
+        style: titleStyle,
+        textAlign: TextAlign.center,
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _ ',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _ ',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _ ',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _ ',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(left: 3.0),
+        child: Text(
+          '   _ _ _ _ _ ',
+          style: TextStyle(fontSize: 5.0),
+        ),
+      ),
+    ];
+
+    String sezioni = 'ABCDEFGHILMNOPQRSTUVZ';
+    for (int sezione = 0; sezione < sezioni.length; sezione++) {
+      bool hasMore = false;
+      for (int anno = 1; anno <= 5; anno++) {
+        if (orari.containsKey('$anno${sezioni[sezione]}')) {
+          children.add(GestureDetector(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              main.prefs.setString(
+                  'selectedClass', selectedClass = '$anno${sezioni[sezione]}');
+              setState(() {});
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: '$anno${sezioni[sezione]}' == selectedClass
+                    ? Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black
+                    : Colors.transparent,
+              ),
+              child: Center(
+                child: Text(
+                  sezioni[sezione],
+                  style: TextStyle(
+                      color: ('$anno${sezioni[sezione]}' == selectedClass) !=
+                              (Theme.of(context).brightness == Brightness.light)
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 16,
+                      fontFamily: 'CoreSans'),
+                ),
+              ),
+            ),
+          ));
+          hasMore = true;
+        } else
+          children.add(Container());
+      }
+      if (!hasMore) break;
+    }
+
+    return GridView.count(
+      physics: NeverScrollableScrollPhysics(),
+      crossAxisCount: 5,
+      childAspectRatio: 2,
+      children: children,
+      shrinkWrap: true,
     );
   }
 }

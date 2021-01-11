@@ -153,16 +153,16 @@ class _PreferencesState extends State<Preferences> {
                       unselectedTextColor: Colors.white,
                       selectedTextColor: Theme.of(context).primaryColor,
                       tapCallback: (id) async {
-                        //use the index of item selected to do your work over here
+                        //FIXME: la prima volta che si switcha account passi per il login screene  devi premere annulla
                         print('switching to $id');
                         if (id == main.session.usrId)
                           return;
                         else {
                           main.session =
                               dbManager.accounts[accountIds.indexOf(id)];
-                          await main.session
-                              .load(); //FIXME session.load() is asynchronous and it renders menu_screen.dart bvefore the data is retrieved and managed
                           if (main.prefs.getString('avatar') != null) {
+                            await main.session
+                                .load(); //FIXME session.load() is asynchronous and it renders menu_screen.dart bvefore the data is retrieved and managed
                             main.avatarList =
                                 jsonDecode(main.prefs.getString('avatar'));
                             main.avatar = jsonDecode(
@@ -179,7 +179,8 @@ class _PreferencesState extends State<Preferences> {
                           } else {
                             main.avatar = null;
                           }
-                          Phoenix.rebirth(context);
+                          Phoenix.rebirth(
+                              context); // FIXME Duplicate GlobalKey detected in widget tree.
                         }
                       },
                       addAccountTapCallback: () {
@@ -295,7 +296,8 @@ class _Header extends ResizableWidget {
               child: Center(
                 child: RichText(
                   text: TextSpan(
-                      text: '${main.pkgInfo.appName}  ',
+                      text:
+                          '${main.pkgInfo.appName}  ', // BUG: in iOS non legge il pkgInfo.appNAme serve agguingere una stringa in Info.plist chiamata "Bundle display name" oltre a " Bundle Name"
                       style: Theme.of(context).textTheme.bodyText2,
                       children: [
                         TextSpan(

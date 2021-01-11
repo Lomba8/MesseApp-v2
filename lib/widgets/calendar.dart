@@ -11,18 +11,12 @@ import 'package:Messedaglia/main.dart' as main;
 
 Map<String, Calendar> _instances = {};
 const int _pagesCount = 2000;
+bool
+    resetPage; // perc capire se c'é un push da parte di eventi_widget.dart nella home screen
 
-int differenceInMonths(DateTime a, DateTime b) {
-  int diff = (((a.year - b.year) * (365 + 1 / 4 - 1 / 100 + 1 / 400) +
-              (a.month - b.month) * 30.6 +
-              (a.day - b.day)) /
-          30.44)
-      .truncate();
-  if (diff.isNegative)
-    return diff - 1;
-  else
-    return diff;
-}
+int differenceInMonths(DateTime a, DateTime b) =>
+    a.month -
+    b.month; // BUG: non funzionerebbe se l'evento fosse di un anno precedente, anche se non fa differenza perché l'evento verrebbe marcato come già visto riga 127 agenda_registro.dart e a riga 24 di eventi_widget.dart vengono filtrati gli eventi
 
 class Calendar extends ResizableWidget {
   final void Function(DateTime day, List<Evento> events) _onDayChanged;
@@ -45,14 +39,22 @@ class Calendar extends ResizableWidget {
   Calendar(
       [this._currentDay, this._onDayChanged, String key, this.passedTime]) {
     if (key != null) {
-      _page = _instances[key]?._page ??
-          differenceInMonths(_currentDay, DateTime.now());
+      if (resetPage == null)
+        resetPage = false; // controllo se si è mai andati su agenda_screen.dart
+
+      if (resetPage) _instances[key]?._page = 0;
+
+      if (differenceInMonths(_currentDay, DateTime.now()) == 0)
+        _page = _instances[key]?._page ?? 0;
+
+      if (differenceInMonths(_currentDay, DateTime.now()) != 0 && resetPage)
+        _page = differenceInMonths(_currentDay, DateTime.now());
+
+      if (differenceInMonths(_currentDay, DateTime.now()) != 0 && !resetPage)
+        _page += _instances[key]?._page;
+
       _controller = PageController(
-        // initialPage: _currentDay.month > DateTime.now().month
-        //     ? _pagesCount ~/ 2 + 1 /* + _page*/
-        //     : _pagesCount ~/ 2 /* + _page*/,
-        initialPage:
-            _pagesCount ~/ 2 + differenceInMonths(_currentDay, DateTime.now()),
+        initialPage: _pagesCount ~/ 2 + _page,
       );
       _instances[key] = this;
     } else {
@@ -67,8 +69,7 @@ class Calendar extends ResizableWidget {
 
   @override
   Widget build(BuildContext context, [double heightFactor]) {
-    print(_page);
-    print(differenceInMonths(_currentDay, DateTime.now()));
+    resetPage = false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
@@ -87,9 +88,7 @@ class Calendar extends ResizableWidget {
                   child: Text(
                 DateFormat.yMMMM('it')
                     .format(DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month +
-                            _page)) //FIXME: non funziona se il mese dell'evento non è lo stesso corrente
+                        DateTime.now().year, DateTime.now().month + _page))
                     .toUpperCase(),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).primaryColor),
@@ -127,6 +126,7 @@ class Calendar extends ResizableWidget {
           child: PageView.builder(
             itemCount: _pagesCount,
             onPageChanged: (value) {
+              resetPage = false;
               _page = value - _pagesCount ~/ 2;
               currentDay = _currentDay;
             },

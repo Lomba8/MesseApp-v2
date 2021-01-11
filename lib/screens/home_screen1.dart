@@ -410,7 +410,7 @@ class _HomeState extends State<Home> {
           tooltipPadding: EdgeInsets.symmetric(horizontal: 13, vertical: 5),
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             return BarTooltipItem(
-              (rod.y).toStringAsFixed(1).replaceAll('.', ','),
+              (rod.y - 1).toStringAsFixed(1).replaceAll('.', ','),
               TextStyle(
                 color: Colors.white,
                 backgroundColor: Colors.transparent,

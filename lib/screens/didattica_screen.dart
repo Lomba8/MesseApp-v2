@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:open_file/open_file.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class DidatticaScreen extends StatefulWidget {
   static final String id = 'didattica_screen';

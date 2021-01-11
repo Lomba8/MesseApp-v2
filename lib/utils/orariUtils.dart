@@ -12,7 +12,7 @@ Map orari = {};
 List holidays = [];
 
 Future downloadOrari({bool load = false}) async {
-  getSelected();
+  selectedClass = main.prefs.getString('selectedClass') ?? session.cls;
   var orariData;
   Batch batch = database.batch();
   if (load) {
@@ -95,9 +95,6 @@ Future downloadVacanze({bool load = false}) async {
 }
 
 String selectedClass = session.cls;
-
-void getSelected() =>
-    selectedClass = main.prefs.getString('selectedClass') ?? session.cls;
 
 Iterable<String> getSbjs(int day, [String cls]) sync* {
   cls ??= selectedClass;

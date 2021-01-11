@@ -25,7 +25,7 @@ class Agenda extends StatefulWidget {
   _AgendaState createState() => _AgendaState();
 }
 
-class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
+class _AgendaState extends State<Agenda> {
   DateTime _currentDate;
   bool _value = false;
 
@@ -115,7 +115,10 @@ class _AgendaState extends State<Agenda> with SingleTickerProviderStateMixin {
                 _currentDate,
                 (day, events) async {
                   dayEvents.forEach((evt) async => await evt.seen());
-                  dayEvents = events;
+                  dayEvents = events
+                      .toList()
+                      .where((e) => e.account.usrId == session.usrId)
+                      .toList();
                   dayEvents.forEach((evt) async => await evt.seen());
                   setState(() {
                     //dayLessons = session.lessons.data['date'][day];

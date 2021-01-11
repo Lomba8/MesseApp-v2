@@ -88,6 +88,7 @@ class _TutoraggiScreenState extends State<TutoraggiScreen>
 
   @override
   void dispose() {
+    animationController.dispose();
     super.dispose();
   }
 

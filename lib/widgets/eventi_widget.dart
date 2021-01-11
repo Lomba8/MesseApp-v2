@@ -1,6 +1,7 @@
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/preferences/globals.dart';
 import 'package:Messedaglia/screens/menu_screen.dart' as menu;
+import 'package:Messedaglia/widgets/calendar.dart';
 import 'package:Messedaglia/widgets/calendar_month_icons.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,7 @@ class EventiWidget extends StatelessWidget {
                                       e.date.isAtSameMomentAs(evento.date)
                                           ? await e.seen()
                                           : null);
+                                  resetPage = true;
                                   menu.push(1);
                                 },
                                 dense: true,

@@ -83,8 +83,10 @@ class AgendaRegistroData extends RegistroData {
   int get newEventi => data.length == 0
       ? 0
       : data
-          .where(
-              (Evento v) => v.isNew == true && v.date.isAfter(DateTime.now()))
+          .where((Evento v) =>
+              v.isNew == true &&
+              v.date.isAfter(DateTime.now()) &&
+              v.autore != "Didattica a distanza")
           .length;
 
   @override
