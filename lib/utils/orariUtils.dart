@@ -51,11 +51,15 @@ Future downloadOrari({bool load = false}) async {
         await batch.commit();
       } else if (res.statusCode == HttpStatus.notModified) {
         batch.rawQuery('SELECT * FROM orari');
-        orariData = (await batch.commit())
-            .last
-            .map((cls) => cls.row)
-            .toList(); //FIXME tutti i metodi funzionano con l'ordine del json del server non quello del db cosa fare?
-        // print(orariData);
+        orariData = (await batch.commit()).last.forEach((cls) {
+          List<String> orario = List<String>.empty(growable: true);
+          for (int giorno = 0; giorno < 6; giorno++) {
+            for (int ora = 1; ora < 37; ora += 6) {
+              orario.add(cls.row[giorno + ora]);
+            }
+          }
+          orari[cls.row[0]] = {'orari': orario, 'url': cls.row[37]};
+        });
       } else {
         throw ('Request failed with status: ${res.statusCode}.');
       }

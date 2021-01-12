@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:Messedaglia/main.dart' as main;
 import 'package:Messedaglia/registro/registro.dart';
 import 'package:Messedaglia/utils/db_manager.dart' as dbManager;
+import 'package:Messedaglia/utils/orariUtils.dart';
 import 'package:Messedaglia/widgets/expansion_sliver.dart';
 import 'package:account_selector/account.dart';
 import 'package:Messedaglia/widgets/account_selector.dart';
@@ -153,16 +154,14 @@ class _PreferencesState extends State<Preferences> {
                       unselectedTextColor: Colors.white,
                       selectedTextColor: Theme.of(context).primaryColor,
                       tapCallback: (id) async {
-                        //FIXME: la prima volta che si switcha account passi per il login screene  devi premere annulla
                         print('switching to $id');
                         if (id == main.session.usrId)
                           return;
                         else {
                           main.session =
                               dbManager.accounts[accountIds.indexOf(id)];
+                          selectedClass = null;
                           if (main.prefs.getString('avatar') != null) {
-                            await main.session
-                                .load(); //FIXME session.load() is asynchronous and it renders menu_screen.dart bvefore the data is retrieved and managed
                             main.avatarList =
                                 jsonDecode(main.prefs.getString('avatar'));
                             main.avatar = jsonDecode(
@@ -176,8 +175,11 @@ class _PreferencesState extends State<Preferences> {
                                             main.session.usrId.toString())
                                         .first['base64'])
                                 : null;
+                            await main.session
+                                .load(); //FIXME session.load() is asynchronous and it renders menu_screen.dart bvefore the data is retrieved and managed
                           } else {
                             main.avatar = null;
+                            await main.session.load();
                           }
                           Phoenix.rebirth(
                               context); // FIXME Duplicate GlobalKey detected in widget tree.
@@ -186,9 +188,9 @@ class _PreferencesState extends State<Preferences> {
                       addAccountTapCallback: () {
                         // operation to perform when add account is clicked
                         print('adding');
+                        selectedClass = null;
                         main.add = true;
-                        Phoenix.rebirth(
-                            context); //FIXEM manc il sesison.load() (?)
+                        Phoenix.rebirth(context);
                       },
                       removeAccountTapCallback: (int id) async {
                         // operation to perform when add account is deleted
@@ -202,6 +204,7 @@ class _PreferencesState extends State<Preferences> {
                             : null;
                         await main.session?.load();
                         if (reload) {
+                          selectedClass = null;
                           if (main.prefs.getString('avatar') != null) {
                             main.avatarList.removeWhere(
                                 (element) => element['id'] == id.toString());
