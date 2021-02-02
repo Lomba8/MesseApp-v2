@@ -136,11 +136,11 @@ void main() {
     // Crashlytics.instance.enableInDevMode = true;
 
     // Pass all uncaught errors to Crashlytics.
-    // FlutterError.onError = (flutterError) =>
-    //     FirebaseCrashlytics.instance.recordFlutterError(flutterError);
+    FlutterError.onError = (flutterError) =>
+        FirebaseCrashlytics.instance.recordFlutterError(flutterError);
 
-    // FlutterError.onError = (flutterError) =>
-    //     FirebaseCrashlytics.instance.log(flutterError.toString());
+    FlutterError.onError = (flutterError) =>
+        FirebaseCrashlytics.instance.log(flutterError.toString());
 
     runZonedGuarded(() async {
       runApp(Phoenix(child: MaterialAppWithTheme()));

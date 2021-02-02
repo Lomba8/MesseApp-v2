@@ -35,7 +35,7 @@ class NoteRegistroData extends RegistroData {
               {
                 'id': nota['evtId'],
                 'usrId': account.usrId,
-                'evt': nota['evtText'],
+                'evt': nota['evtText'].trim(),
                 'date': tipologia != 'NTST'
                     ? DateTime.parse(nota['evtDate']).toIso8601String()
                     : null,

@@ -154,6 +154,7 @@ class _PreferencesState extends State<Preferences> {
                       unselectedTextColor: Colors.white,
                       selectedTextColor: Theme.of(context).primaryColor,
                       tapCallback: (id) async {
+                        // FIXME: la prima volta che si switcha account passa per il login screen ed imposta splash=true come se il login non riuscisse
                         print('switching to $id');
                         if (id == main.session.usrId)
                           return;
