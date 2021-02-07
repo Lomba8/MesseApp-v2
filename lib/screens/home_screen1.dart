@@ -324,17 +324,19 @@ class _HomeState extends State<Home> {
                   Divider(height: (40 / 428) * size.width),
                   //TODO: scegliere un widget alternativo da displayare se non ci sono lezioni
                   Container(
-                    child: main.session.lessons.hasLessonsToday()
-                        ? TodayWidget()
-                        : Center(
-                            child: Text(
-                              '\nNon ci sono lezioni',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: (20 / 428) * size.width,
-                              ),
-                            ),
-                          ),
+                    child: main.session.lessons.data.length > 0
+                        ? main.session.lessons.hasLessonsToday()
+                            ? TodayWidget()
+                            : Center(
+                                child: Text(
+                                  '\nNon ci sono lezioni',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: (20 / 428) * size.width,
+                                  ),
+                                ),
+                              )
+                        : Offstage(),
                   ),
                 ],
               ),

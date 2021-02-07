@@ -18,7 +18,7 @@ class Menu extends StatefulWidget {
   MenuState createState() => MenuState();
 }
 
-SheetController sheetController;
+final SheetController sheetController = SheetController();
 SheetState _state;
 
 class MenuState extends State<Menu> with WidgetsBindingObserver {
@@ -67,7 +67,6 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    sheetController = SheetController();
     super.initState();
   }
 
@@ -101,7 +100,10 @@ class MenuState extends State<Menu> with WidgetsBindingObserver {
         //color: Colors.black,
         snapSpec: SnapSpec(
           positioning: SnapPositioning.relativeToAvailableSpace,
-          snappings: [SnapSpec.footerSnap, 1], //[SnapSpec.footerSnap, 0.5],
+          snappings: [
+            SnapSpec.footerSnap,
+            SnapSpec.expanded
+          ], //[SnapSpec.footerSnap, 0.5],
           snap: true,
           initialSnap: main.session.voti.newVotiTot > 0 ||
                   main.session.note.newNote > 0 ||

@@ -95,14 +95,19 @@ class TodayWidget extends StatelessWidget {
                   Container(
                     child: CircleAvatar(
                       child: Icon(
-                        (Globals.subjects[main.session.subjects.data[l.author]
-                                    [0]] ??
+                        (Globals.subjects[
+                                    main.session.subjects.data[l.author] != null
+                                        ? main.session.subjects.data[l.author]
+                                            [0]
+                                        : {}] ??
                                 {})['icona'] ??
                             MdiIcons.sleep,
                         color: Colors.black,
                       ),
                       backgroundColor: (Globals.subjects[
-                                  main.session.subjects.data[l.author][0]] ??
+                                  main.session.subjects.data[l.author] != null
+                                      ? main.session.subjects.data[l.author][0]
+                                      : {}] ??
                               {})['colore']
                           ?.withOpacity(0.7),
                     ),

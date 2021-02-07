@@ -76,16 +76,21 @@ class VotiDetailsState extends State<VotiDetails> {
             SliverList(
                 delegate: SliverChildListDelegate(
               [
-                Padding(
-                  padding: EdgeInsets.only(right: 30),
-                  child: AspectRatio(
-                    aspectRatio: 1.7,
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: LineChart(_votiData(context)),
+                if (widget.voti
+                        .where((voto) => voto.voto != null && !voto.voto.isNaN)
+                        .toList()
+                        .length !=
+                    0)
+                  Padding(
+                    padding: EdgeInsets.only(right: 30),
+                    child: AspectRatio(
+                      aspectRatio: 1.7,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: LineChart(_votiData(context)),
+                      ),
                     ),
                   ),
-                ),
               ]..addAll(
                   (widget.voti ?? []).reversed.map<Widget>((mark) => Padding(
                         padding: const EdgeInsets.only(top: 20.0),

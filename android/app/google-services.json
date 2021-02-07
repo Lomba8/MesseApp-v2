@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "124862575258",
+    "firebase_url": "https://messe-app-a5761.firebaseio.com",
+    "project_id": "messe-app-a5761",
+    "storage_bucket": "messe-app-a5761.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124862575258:android:98dbaea005c6736101a523",
+        "android_client_info": {
+          "package_name": "com.messeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "124862575258-ucc18ptma561tgm8f6cb2tlpkdr8tadu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.messeapp",
+            "certificate_hash": "a60b4207b0e411503de0c7c760e82136b3fde101"
+          }
+        },
+        {
+          "client_id": "124862575258-pfegqt2goclkkctl1tmff2depjktq11s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIxuU4OF5BTuMgwS0NF2vgDVeJzrg8WaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124862575258-pfegqt2goclkkctl1tmff2depjktq11s.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "124862575258-grj3s5v7hrutgafsmjs41g6upco044k3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.messeapp",
+                "app_store_id": "1541245086"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

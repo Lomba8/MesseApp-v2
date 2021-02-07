@@ -140,8 +140,9 @@ class AbsencesRegistroData extends RegistroData {
     data = dataTmp;
   }
 
-  int get newAssenze =>
-      data.length > 0 ? data.values.where((v) => v.isNew == true).length : 0;
+  int get newAssenze => data.length > 0
+      ? data.values.where((v) => v.justified == false).length
+      : 0;
 
   double giorniRestanti() {
     // https://www.studenti.it/come-calcolare-numero-massimo-assenze-scuola.html Per il liceo scientifico, il totale annuale è di 891 ore al biennio e di 990 al triennio minimo 75%

@@ -306,7 +306,7 @@ class _Header extends ResizableWidget {
                       children: [
                         TextSpan(
                             text:
-                                '${main.pkgInfo.appName} (${main.pkgInfo.buildNumber})',
+                                '${main.pkgInfo.buildNumber} (${main.pkgInfo.version})',
                             style: Theme.of(context).textTheme.bodyText1)
                       ]),
                 ),

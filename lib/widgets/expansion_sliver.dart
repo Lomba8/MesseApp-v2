@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:Messedaglia/widgets/background_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:path/path.dart';
 
 class ExpansionSliver extends StatelessWidget {
   final ExpansionSliverDelegate delegate;
@@ -20,7 +21,7 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
   final dynamic value;
   final IconData leading, action;
   final Function leadingCallback, actionCallback;
-  final bool back, expansion, preferences;
+  final bool back, expansion, preferences, agenda;
   BuildContext _context;
 
   ExpansionSliverDelegate(
@@ -35,6 +36,7 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
     this.expansion = false,
     this.back = false,
     this.preferences = false,
+    this.agenda = false,
   });
 
   @override
@@ -120,7 +122,8 @@ class ExpansionSliverDelegate extends SliverPersistentHeaderDelegate {
       MediaQuery.of(_context).padding.top +
       kToolbarHeight +
       (preferences ? 20 : 0) +
-      (body?.maxExtent(_context) ?? 0);
+      (body?.maxExtent(_context) ?? 0) -
+      (agenda ? (61 / 428) * MediaQuery.of(_context).size.width : 0);
 
   @override
   double get minExtent =>

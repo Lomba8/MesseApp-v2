@@ -120,7 +120,7 @@ class Calendar extends ResizableWidget {
         ),
         Container(
           height: MediaQuery.of(context).size.width /
-              7 *
+              8.4 *
               interpolate(1.0, 6.0,
                   heightFactor), // il massimo numero di righe è 6, il massimo numero di colonne è 7: i giorni sono in un aspect ratio di 1:1
           child: PageView.builder(

@@ -132,6 +132,7 @@ class _AgendaState extends State<Agenda> {
               ),
               value: _value,
               expansion: true,
+              agenda: true,
             ),
           ),
           SliverList(
@@ -257,7 +258,7 @@ class _AgendaState extends State<Agenda> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Nessun evento programmato per questa giornata!',
+                      'Non ci sono eventi oggi!',
                       textAlign: TextAlign.center,
                     ),
                   )
