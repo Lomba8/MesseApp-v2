@@ -13,10 +13,10 @@ PODS:
   - Firebase/Crashlytics (6.33.0):
     - Firebase/CoreOnly
     - FirebaseCrashlytics (~> 4.6.1)
-  - firebase_core (0.5.2):
+  - firebase_core (0.5.3):
     - Firebase/CoreOnly (~> 6.33.0)
     - Flutter
-  - firebase_crashlytics (0.2.3):
+  - firebase_crashlytics (0.2.4):
     - Firebase/CoreOnly (~> 6.33.0)
     - Firebase/Crashlytics (~> 6.33.0)
     - firebase_core
@@ -69,7 +69,7 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - "permission_handler (5.0.1+1)":
+  - "permission_handler (5.1.0+2)":
     - Flutter
   - PromisesObjC (1.2.12)
   - Reachability (3.2)
@@ -161,13 +161,13 @@ SPEC CHECKSUMS:
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   ext_storage: 4eaf3a84d5594106e2ebcc2502248cfde53c8fa1
   Firebase: 8db6f2d1b2c5e2984efba4949a145875a8f65fe5
-  firebase_core: 350ba329d1641211bc6183a3236893cafdacfea7
-  firebase_crashlytics: ebe0a8b60ac43115a4c80db5c63a00bbdeaf1770
+  firebase_core: 5d6a02f3d85acd5f8321c2d6d62877626a670659
+  firebase_crashlytics: 7b37f8e79a82175606a3447852c9efa8e10034b3
   FirebaseCore: d889d9e12535b7f36ac8bfbf1713a0836a3012cd
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
   FirebaseCrashlytics: 1a747c9cc084a24dc6d9511c991db1cd078154eb
   FirebaseInstallations: 466c7b4d1f58fe16707693091da253726a731ed2
-  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleDataTransport: f56af7caa4ed338dc8e138a5d7c5973e66440833
@@ -178,7 +178,7 @@ SPEC CHECKSUMS:
   open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
@@ -188,4 +188,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.9.0
+COCOAPODS: 1.10.1

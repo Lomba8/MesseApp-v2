@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen>
         _btnController.reset();
 
         if (Platform.isAndroid)
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          Scaffold.of(context).showSnackBar(SnackBar(
             duration: Duration(seconds: 3),
             content: Text(req +
                 '\n' +

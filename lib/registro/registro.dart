@@ -131,7 +131,8 @@ class RegistroApi {
         print("Error during login request: ${res.toString()}");
         print(e);
         print(s);
-        return res.reasonPhrase;
+        return res?.reasonPhrase ??
+            'Errore, controlla la connesione ad internet e riprova';
       }
 
       if (res.statusCode != HttpStatus.ok) return res.reasonPhrase;

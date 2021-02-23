@@ -170,4 +170,10 @@ class Evento implements EventInterface {
         'autore': autore,
         'info': info
       };
+
+  @override
+  int getId() {
+    // TODO: implement getId
+    // throw UnimplementedError();
+  }
 }

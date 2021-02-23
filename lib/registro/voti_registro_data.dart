@@ -26,6 +26,7 @@ class VotiRegistroData extends RegistroData {
       for (Map m in json) {
         if (m['canceled']) continue;
         ids.add(m['evtId']);
+        DateTime date = DateTime.tryParse(m['evtDate']?.replaceAll(':', ''));
         batch.insert(
           'voti',
           {
@@ -37,7 +38,11 @@ class VotiRegistroData extends RegistroData {
             'votoStr': m['displayValue'],
             'info': m['notesForFamily'],
             'usrId': account.usrId,
-            'new': 1
+            'new': DateTime(DateTime.now().year, DateTime.now().month,
+                        DateTime.now().day)
+                    .isAfter(date)
+                ? 0
+                : 1,
           },
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );

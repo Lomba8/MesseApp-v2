@@ -114,12 +114,12 @@ class _AgendaState extends State<Agenda> {
               body: Calendar(
                 _currentDate,
                 (day, events) async {
-                  dayEvents.forEach((evt) async => await evt.seen());
+                  // dayEvents.forEach((evt) async => await evt.seen());
                   dayEvents = events
                       .toList()
                       .where((e) => e.account.usrId == session.usrId)
                       .toList();
-                  dayEvents.forEach((evt) async => await evt.seen());
+                  // dayEvents.forEach((evt) async => await evt.seen());
                   setState(() {
                     //dayLessons = session.lessons.data['date'][day];
                     _currentDate = day;
@@ -499,13 +499,14 @@ class EventCard extends StatelessWidget {
             ),
           ),
           Center(
-            child: evento.isNew ?? true
-                ? Icon(
-                    Icons.brightness_1,
-                    color: Colors.yellow,
-                    size: 15.0,
-                  )
-                : SizedBox(),
+            child:
+                evento.isNew && evento.autore != "Didattica a distanza" ?? true
+                    ? Icon(
+                        Icons.brightness_1,
+                        color: Colors.yellow,
+                        size: 15.0,
+                      )
+                    : SizedBox(),
           ),
         ],
       );
