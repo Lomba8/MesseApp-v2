@@ -114,12 +114,12 @@ class _AgendaState extends State<Agenda> {
               body: Calendar(
                 _currentDate,
                 (day, events) async {
-                  // dayEvents.forEach((evt) async => await evt.seen());
+                  // dayEvents.forEach((evt) async => await evt.seen()); gli eventi nuovi li teniamo come sempre nuovi
                   dayEvents = events
                       .toList()
                       .where((e) => e.account.usrId == session.usrId)
                       .toList();
-                  // dayEvents.forEach((evt) async => await evt.seen());
+                  // dayEvents.forEach((evt) async => await evt.seen()); gli eventi nuovi li teniamo come sempre nuovi
                   setState(() {
                     //dayLessons = session.lessons.data['date'][day];
                     _currentDate = day;

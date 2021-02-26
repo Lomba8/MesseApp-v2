@@ -76,10 +76,14 @@ class AssenzeWidget extends StatelessWidget {
                                       ),
                                       child: AutoSizeText(
                                         Assenza.getTipo(assenza.type)
-                                            .split(' ')
-                                            .map((e) => e[0].toString())
-                                            .join('')
-                                            .trim(),
+                                                .split(' ')
+                                                .map((e) => e[0].toString())
+                                                .join('')
+                                                .trim() +
+                                            (assenza.hoursAbsence.isNotEmpty ==
+                                                    true
+                                                ? 'P'
+                                                : ''),
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
@@ -103,14 +107,23 @@ class AssenzeWidget extends StatelessWidget {
                                       ),
                                     ),
                                     AutoSizeText(
-                                      assenza.hour == null
+                                      (assenza.hoursAbsence.isEmpty &&
+                                              assenza.hour == null)
                                           ? ''
-                                          : assenza.hour.toString() + 'ᵃ',
+                                          : (assenza.hour != null)
+                                              ? assenza.hour.toString() + 'ᵃ '
+                                              : assenza.hoursAbsence
+                                                  .map((skippedLesson) =>
+                                                      skippedLesson['hPos']
+                                                          .toString() +
+                                                      'ᵃ')
+                                                  .join()
+                                                  .toString(),
                                       maxLines: 1,
                                       maxFontSize: 13,
-                                      minFontSize: 8,
+                                      minFontSize: 3,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        fontSize: 15.0,
                                         color: Colors.white,
                                         fontFamily: 'CoreSans',
                                         fontWeight: FontWeight.w600,
@@ -122,16 +135,17 @@ class AssenzeWidget extends StatelessWidget {
                                                       .split(' ')
                                                       .length >
                                                   1 ||
-                                              assenza.type == 'ABA0'
+                                              (assenza.type == 'ABA0' &&
+                                                  assenza.hoursAbsence.isEmpty)
                                           ? Assenza.getDateWithSlashes(
                                               assenza.date)
                                           : Assenza.getDateWithSlashesShort(
                                               assenza.date),
                                       maxLines: 1,
                                       maxFontSize: 13,
-                                      minFontSize: 8,
+                                      minFontSize: 3,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        fontSize: 15.0,
                                         color: Colors.white70,
                                         fontFamily: 'CoreSans',
                                         fontWeight: FontWeight.w600,

@@ -218,9 +218,11 @@ class Assenza {
   static String getDateWithSlashesShort(date) =>
       DateFormat.d('it').format(date) +
       '/' +
-      DateFormat.M('it').format(date) +
+      DateFormat.M('it').format(
+          date) /* +
       '/' +
-      DateFormat.y('it').format(date).split('').sublist(2).join().toString();
+      DateFormat.y('it').format(date).split('').sublist(2).join().toString()*/
+      ;
 
   // String get type => getTipo(tipologia);
   static String getTipo(String tipologia) {
