@@ -13,7 +13,7 @@ description: Applicazione (quasi) ufficiale del liceo "A. Messedaglia"
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
 #! NB: prima di fare build eseguire "flutter run" in modo da aggiornare le varabili locali della versione della app
-version: 1.0.3+1
+version: 1.0.4+2
 publish_to: none
 
 environment:
