@@ -148,7 +148,8 @@ class Evento implements EventInterface {
   @override
   Widget getDot([double opacity]) => Container(
         margin: EdgeInsets.symmetric(horizontal: 1.0),
-        color: (((isNew ?? true) && autore != "Didattica a distanza")
+        color: ((/*(isNew ?? true) &&*/ date.isAfter(DateTime.now()) &&
+                    autore != "Didattica a distanza")
                 ? Colors.red
                 : Colors.lightBlueAccent)
             .withOpacity(opacity),
